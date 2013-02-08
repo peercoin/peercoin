@@ -365,7 +365,7 @@ public:
     void SetSecret(const CSecret& vchSecret, bool fCompressed)
     { 
         assert(vchSecret.size() == 32);
-        SetData(fTestNet ? 239 : 128, &vchSecret[0], vchSecret.size());
+        SetData(fTestNet ? 245 : 183, &vchSecret[0], vchSecret.size());
         if (fCompressed)
             vchData.push_back(1);
     }
@@ -384,10 +384,10 @@ public:
         bool fExpectTestNet = false;
         switch(nVersion)
         {
-            case 128:
+            case 183:
                 break;
 
-            case 239:
+            case 245:
                 fExpectTestNet = true;
                 break;
 
