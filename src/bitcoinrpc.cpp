@@ -153,7 +153,7 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out)
 
     if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired))
     {
-        out.push_back(Pair("type", GetTxnOutputType(TX_NONSTANDARD)));
+        out.push_back(Pair("type", GetTxnOutputType(type)));
         return;
     }
 
