@@ -14,7 +14,7 @@
 #include <limits>
 #include <cstring>
 #include <cstdio>
-
+#include <openssl/crypto.h> // for OPENSSL_cleanse()
 #include <boost/type_traits/is_fundamental.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -941,7 +941,7 @@ public:
             if (nReadPosNext > vch.size())
             {
                 setstate(std::ios::failbit, "CDataStream::read() : end of data");
-                memset(pch, 0, nSize);
+                OPENSSL_cleanse(pch,nSize);
                 nSize = vch.size() - nReadPos;
             }
             memcpy(pch, &vch[nReadPos], nSize);
