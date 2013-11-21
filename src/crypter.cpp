@@ -21,7 +21,7 @@ bool CCrypter::SetKeyFromPassphrase(const SecureString& strKeyData, const std::v
     // Note that this does nothing about suspend-to-disk (which will put all our key data on disk)
     // Note as well that at no point in this program is any attempt made to prevent stealing of keys by reading the memory of the running process.  
     mlock(&chKey[0], sizeof chKey);
-    mlock(&chIV[0], sizeof chIV);
+    mlock(&chIV[0],  sizeof chIV);
 
     int i = 0;
     if (nDerivationMethod == 0)
@@ -30,8 +30,8 @@ bool CCrypter::SetKeyFromPassphrase(const SecureString& strKeyData, const std::v
 
     if (i != (int)WALLET_CRYPTO_KEY_SIZE)
     {
-        OPENSSL_cleanse(chKey, sizeof(chKey));
-        OPENSSL_cleanse(chIV, sizeof(chIV));
+        OPENSSL_cleanse(&chKey, sizeof(chKey));
+        OPENSSL_cleanse(&chIV, sizeof(chIV));
         return false;
     }
 
