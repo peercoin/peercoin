@@ -38,6 +38,10 @@ using namespace json_spirit;
 
 void ThreadRPCServer2(void* parg);
 
+// Key used by getwork/getblocktemplate miners.
+// Allocated in StartRPCThreads, free'd in StopRPCThreads
+CReserveKey* pMiningKey = NULL;
+
 static std::string strRPCUserColonPass;
 
 static int64 nWalletUnlockTime;
@@ -279,7 +283,54 @@ Value getconnectioncount(const Array& params, bool fHelp)
             "getconnectioncount\n"
             "Returns the number of connections to other nodes.");
 
+    LOCK(cs_vNodes);
     return (int)vNodes.size();
+}
+
+static void CopyNodeStats(std::vector<CNodeStats>& vstats)
+{
+    vstats.clear();
+
+    LOCK(cs_vNodes);
+    vstats.reserve(vNodes.size());
+    BOOST_FOREACH(CNode* pnode, vNodes) {
+        CNodeStats stats;
+        pnode->copyStats(stats);
+        vstats.push_back(stats);
+    }
+}
+
+Value getpeerinfo(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getpeerinfo\n"
+            "Returns data about each connected network node.");
+
+    vector<CNodeStats> vstats;
+    CopyNodeStats(vstats);
+
+    Array ret;
+
+    BOOST_FOREACH(const CNodeStats& stats, vstats) {
+        Object obj;
+
+        obj.push_back(Pair("addr", stats.addrName));
+        obj.push_back(Pair("services", strprintf("%08"PRI64x, stats.nServices)));
+        obj.push_back(Pair("lastsend", (boost::int64_t)stats.nLastSend));
+        obj.push_back(Pair("lastrecv", (boost::int64_t)stats.nLastRecv));
+        obj.push_back(Pair("conntime", (boost::int64_t)stats.nTimeConnected));
+        obj.push_back(Pair("version", stats.nVersion));
+        obj.push_back(Pair("subver", stats.strSubVer));
+        obj.push_back(Pair("inbound", stats.fInbound));
+        obj.push_back(Pair("releasetime", (boost::int64_t)stats.nReleaseTime));
+        obj.push_back(Pair("height", stats.nStartingHeight));
+        obj.push_back(Pair("banscore", stats.nMisbehavior));
+
+        ret.push_back(obj);
+    }
+    
+    return ret;
 }
 
 
@@ -1273,6 +1324,11 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             entry.push_back(Pair("category", wtx.GetDepthInMainChain() ? "immature" : "orphan"));
             entry.push_back(Pair("amount", ValueFromAmount(nGeneratedImmature)));
         }
+        else if (wtx.IsCoinStake())
+        {
+            entry.push_back(Pair("category", "stake"));
+            entry.push_back(Pair("amount", ValueFromAmount(nGeneratedMature)));
+        }
         else
         {
             entry.push_back(Pair("category", "generate"));
@@ -1857,7 +1913,6 @@ Value getwork(const Array& params, bool fHelp)
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;
     static vector<CBlock*> vNewBlock;
-    static CReserveKey reservekey(pwalletMain);
 
     if (params.size() == 0)
     {
@@ -1882,7 +1937,7 @@ Value getwork(const Array& params, bool fHelp)
             nStart = GetTime();
 
             // Create new block
-            pblock = CreateNewBlock(pwalletMain);
+            pblock = CreateNewBlock(*pMiningKey, pwalletMain);
             if (!pblock)
                 throw JSONRPCError(-7, "Out of memory");
             vNewBlock.push_back(pblock);
@@ -1935,40 +1990,58 @@ Value getwork(const Array& params, bool fHelp)
         pblock->nNonce = pdata->nNonce;
         pblock->vtx[0].vin[0].scriptSig = mapNewBlock[pdata->hashMerkleRoot].second;
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
+
+        assert(pwalletMain != NULL);
         if (!pblock->SignBlock(*pwalletMain))
             throw JSONRPCError(-100, "Unable to sign block, wallet locked?");
 
-        return CheckWork(pblock, *pwalletMain, reservekey);
+        return CheckWork(pblock, *pwalletMain, *pMiningKey);
     }
 }
 
 
-Value getmemorypool(const Array& params, bool fHelp)
+Value getblocktemplate(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
-            "getmemorypool [data]\n"
-            "If [data] is not specified, returns data needed to construct a block to work on:\n"
+            "getblocktemplate [params]\n"
+            "Returns data needed to construct a block to work on:\n"
             "  \"version\" : block version\n"
             "  \"previousblockhash\" : hash of current highest block\n"
             "  \"transactions\" : contents of non-coinbase transactions that should be included in the next block\n"
+            "  \"coinbaseaux\" : data that should be included in coinbase\n"
             "  \"coinbasevalue\" : maximum allowable input to coinbase transaction, including the generation award and transaction fees\n"
-            "  \"coinbaseflags\" : data that should be included in coinbase so support for new features can be judged\n"
-            "  \"time\" : timestamp appropriate for next block\n"
+            "  \"target\" : hash target\n"
             "  \"mintime\" : minimum timestamp appropriate for next block\n"
             "  \"curtime\" : current timestamp\n"
+            "  \"mutable\" : list of ways the block template may be changed\n"
+            "  \"noncerange\" : range of valid nonces\n"
+            "  \"sigoplimit\" : limit of sigops in blocks\n"
+            "  \"sizelimit\" : limit of block size\n"
             "  \"bits\" : compressed target of next block\n"
-            "If [data] is specified, tries to solve the block and returns true if it was successful.");
+            "  \"height\" : height of the next block\n"
+            "See https://en.bitcoin.it/wiki/BIP_0022 for full specification.");
 
-    if (params.size() == 0)
+    std::string strMode = "template";
+    if (params.size() > 0)
+    {
+        const Object& oparam = params[0].get_obj();
+        const Value& modeval = find_value(oparam, "mode");
+        if (modeval.type() == str_type)
+            strMode = modeval.get_str();
+        else
+            throw JSONRPCError(-8, "Invalid mode");
+    }
+
+    if (strMode != "template")
+        throw JSONRPCError(-8, "Invalid mode");
+
     {
         if (vNodes.empty())
             throw JSONRPCError(-9, "PPCoin is not connected!");
 
         if (IsInitialBlockDownload())
             throw JSONRPCError(-10, "PPCoin is downloading blocks...");
-
-        static CReserveKey reservekey(pwalletMain);
 
         // Update block
         static unsigned int nTransactionsUpdatedLast;
@@ -1978,16 +2051,26 @@ Value getmemorypool(const Array& params, bool fHelp)
         if (pindexPrev != pindexBest ||
             (nTransactionsUpdated != nTransactionsUpdatedLast && GetTime() - nStart > 5))
         {
+            // Clear pindexPrev so future calls make a new block, despite any failures from here on
+            pindexPrev = NULL;
+
+            // Store the pindexBest used before CreateNewBlock, to avoid races
             nTransactionsUpdatedLast = nTransactionsUpdated;
-            pindexPrev = pindexBest;
+            CBlockIndex* pindexPrevNew = pindexBest;
             nStart = GetTime();
 
             // Create new block
             if(pblock)
+            {
                 delete pblock;
-            pblock = CreateNewBlock(pwalletMain);
+                pblock = NULL;
+            }
+            pblock = CreateNewBlock(*pMiningKey, pwalletMain);
             if (!pblock)
                 throw JSONRPCError(-7, "Out of memory");
+
+            // Need to update only after we know CreateNewBlock succeeded
+            pindexPrev = pindexPrevNew;
         }
 
         // Update nTime
@@ -1995,44 +2078,111 @@ Value getmemorypool(const Array& params, bool fHelp)
         pblock->nNonce = 0;
 
         Array transactions;
-        BOOST_FOREACH(CTransaction tx, pblock->vtx) {
-            if(tx.IsCoinBase() || tx.IsCoinStake())
+        map<uint256, int64_t> setTxIndex;
+        int i = 0;
+        CTxDB txdb("r");
+        BOOST_FOREACH (CTransaction& tx, pblock->vtx)
+        {
+            uint256 txHash = tx.GetHash();
+            setTxIndex[txHash] = i++;
+
+            if (tx.IsCoinBase())
                 continue;
+
+            Object entry;
 
             CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
             ssTx << tx;
+            entry.push_back(Pair("data", HexStr(ssTx.begin(), ssTx.end())));
 
-            transactions.push_back(HexStr(ssTx.begin(), ssTx.end()));
+            entry.push_back(Pair("hash", txHash.GetHex()));
+
+            MapPrevTx mapInputs;
+            map<uint256, CTxIndex> mapUnused;
+            bool fInvalid = false;
+            if (tx.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
+            {
+                entry.push_back(Pair("fee", (int64_t)(tx.GetValueIn(mapInputs) - tx.GetValueOut())));
+
+                Array deps;
+                BOOST_FOREACH (MapPrevTx::value_type& inp, mapInputs)
+                {
+                    if (setTxIndex.count(inp.first))
+                        deps.push_back(setTxIndex[inp.first]);
+                }
+                entry.push_back(Pair("depends", deps));
+
+                int64_t nSigOps = tx.GetLegacySigOpCount();
+                nSigOps += tx.GetP2SHSigOpCount(mapInputs);
+                entry.push_back(Pair("sigops", nSigOps));
+            }
+
+            transactions.push_back(entry);
+        }
+
+        Object aux;
+        aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
+
+        uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+
+        static Array aMutable;
+        if (aMutable.empty())
+        {
+            aMutable.push_back("time");
+            aMutable.push_back("transactions");
+            aMutable.push_back("prevblock");
         }
 
         Object result;
         result.push_back(Pair("version", pblock->nVersion));
         result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
         result.push_back(Pair("transactions", transactions));
+        result.push_back(Pair("coinbaseaux", aux));
         result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
-        result.push_back(Pair("coinbaseflags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
-        result.push_back(Pair("time", (int64_t)pblock->nTime));
+        result.push_back(Pair("target", hashTarget.GetHex()));
         result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast()+1));
-        result.push_back(Pair("curtime", (int64_t)GetAdjustedTime()));
+        result.push_back(Pair("mutable", aMutable));
+        result.push_back(Pair("noncerange", "00000000ffffffff"));
+        result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
+        result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
+        result.push_back(Pair("curtime", (int64_t)pblock->nTime));
         result.push_back(Pair("bits", HexBits(pblock->nBits)));
+        result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
 
         return result;
     }
-    else
-    {
-        // Parse parameters
-        CDataStream ssBlock(ParseHex(params[0].get_str()), SER_NETWORK, PROTOCOL_VERSION);
-        CBlock pblock;
-        ssBlock >> pblock;
-
-        static CReserveKey reservekey(pwalletMain);
-
-        if (!pblock.SignBlock(*pwalletMain))
-            throw JSONRPCError(-100, "Unable to sign block, wallet locked?");
-
-        return CheckWork(&pblock, *pwalletMain, reservekey);
-    }
 }
+
+Value submitblock(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 1 || params.size() > 2)
+        throw runtime_error(
+            "submitblock <hex data> [optional-params-obj]\n"
+            "[optional-params-obj] parameter is currently ignored.\n"
+            "Attempts to submit new block to network.\n"
+            "See https://en.bitcoin.it/wiki/BIP_0022 for full specification.");
+
+    vector<unsigned char> blockData(ParseHex(params[0].get_str()));
+    CDataStream ssBlock(blockData, SER_NETWORK, PROTOCOL_VERSION);
+    CBlock block;
+    try {
+        ssBlock >> block;
+    }
+    catch (std::exception &e) {
+        throw JSONRPCError(-22, "Block decode failed");
+    }
+
+    // PPCoin: sign block
+    if (!block.SignBlock(*pwalletMain))
+        throw JSONRPCError(-100, "Unable to sign block, wallet locked?");
+
+    bool fAccepted = CheckWork(&block, *pwalletMain, *pMiningKey);
+    if (!fAccepted)
+        return "rejected"; // TODO: report validation state
+
+    return Value::null;
+}
+
 
 Value getblockhash(const Array& params, bool fHelp)
 {
@@ -2295,6 +2445,7 @@ static const CRPCCommand vRPCCommands[] =
     { "getblockcount",          &getblockcount,          true },
     { "getblocknumber",         &getblocknumber,         true },
     { "getconnectioncount",     &getconnectioncount,     true },
+    { "getpeerinfo",            &getpeerinfo,            true },
     { "getdifficulty",          &getdifficulty,          true },
     { "getgenerate",            &getgenerate,            true },
     { "setgenerate",            &setgenerate,            true },
@@ -2333,7 +2484,8 @@ static const CRPCCommand vRPCCommands[] =
     { "getwork",                &getwork,                true },
     { "listaccounts",           &listaccounts,           false },
     { "settxfee",               &settxfee,               false },
-    { "getmemorypool",          &getmemorypool,          true },
+    { "getblocktemplate",       &getblocktemplate,       true },
+    { "submitblock",            &submitblock,            false },
     { "listsinceblock",         &listsinceblock,         false },
     { "dumpprivkey",            &dumpprivkey,            false },
     { "importprivkey",          &importprivkey,          false },
@@ -2623,6 +2775,10 @@ private:
 void ThreadRPCServer(void* parg)
 {
     IMPLEMENT_RANDOMIZE_STACK(ThreadRPCServer(parg));
+
+    // getwork/getblocktemplate mining rewards paid here:
+    pMiningKey = new CReserveKey(pwalletMain);
+
     try
     {
         vnThreadsRunning[THREAD_RPCSERVER]++;
@@ -2636,6 +2792,9 @@ void ThreadRPCServer(void* parg)
         vnThreadsRunning[THREAD_RPCSERVER]--;
         PrintException(NULL, "ThreadRPCServer()");
     }
+
+    delete pMiningKey; pMiningKey = NULL;
+
     printf("ThreadRPCServer exiting\n");
 }
 
@@ -2672,7 +2831,7 @@ void ThreadRPCServer2(void* parg)
     asio::ip::address bindAddress = mapArgs.count("-rpcallowip") ? asio::ip::address_v4::any() : asio::ip::address_v4::loopback();
 
     asio::io_service io_service;
-    ip::tcp::endpoint endpoint(bindAddress, GetArg("-rpcport", RPC_PORT));
+    ip::tcp::endpoint endpoint(bindAddress, GetArg("-rpcport", fTestNet? TESTNET_RPC_PORT : RPC_PORT));
     ip::tcp::acceptor acceptor(io_service);
     try
     {
@@ -2780,7 +2939,7 @@ void ThreadRPCServer2(void* parg)
             if (valMethod.type() != str_type)
                 throw JSONRPCError(-32600, "Method must be a string");
             string strMethod = valMethod.get_str();
-            if (strMethod != "getwork" && strMethod != "getmemorypool")
+            if (strMethod != "getwork" && strMethod != "getblocktemplate")
                 printf("ThreadRPCServer method=%s\n", strMethod.c_str());
 
             // Parse params
@@ -2793,34 +2952,11 @@ void ThreadRPCServer2(void* parg)
             else
                 throw JSONRPCError(-32600, "Params must be an array");
 
-            // Find method
-            const CRPCCommand *pcmd = tableRPC[strMethod];
-            if (!pcmd)
-                throw JSONRPCError(-32601, "Method not found");
+            Value result = tableRPC.execute(strMethod, params);
 
-            // Observe safe mode
-            string strWarning = GetWarnings("rpc");
-            if (strWarning != "" && !GetBoolArg("-disablesafemode") &&
-                !pcmd->okSafeMode)
-                throw JSONRPCError(-2, string("Safe mode: ") + strWarning);
-
-            try
-            {
-                // Execute
-                Value result;
-                {
-                    LOCK2(cs_main, pwalletMain->cs_wallet);
-                    result = pcmd->actor(params, false);
-                }
-
-                // Send reply
-                string strReply = JSONRPCReply(result, Value::null, id);
-                stream << HTTPReply(200, strReply) << std::flush;
-            }
-            catch (std::exception& e)
-            {
-                ErrorReply(stream, JSONRPCError(-1, e.what()), id);
-            }
+            // Send reply
+            string strReply = JSONRPCReply(result, Value::null, id);
+            stream << HTTPReply(200, strReply) << std::flush;
         }
         catch (Object& objError)
         {
@@ -2833,7 +2969,34 @@ void ThreadRPCServer2(void* parg)
     }
 }
 
+json_spirit::Value CRPCTable::execute(const std::string &strMethod, const json_spirit::Array &params) const
+{
+    // Find method
+    const CRPCCommand *pcmd = tableRPC[strMethod];
+    if (!pcmd)
+        throw JSONRPCError(-32601, "Method not found");
 
+    // Observe safe mode
+    string strWarning = GetWarnings("rpc");
+    if (strWarning != "" && !GetBoolArg("-disablesafemode") &&
+        !pcmd->okSafeMode)
+        throw JSONRPCError(-2, string("Safe mode: ") + strWarning);
+
+    try
+    {
+        // Execute
+        Value result;
+        {
+            LOCK2(cs_main, pwalletMain->cs_wallet);
+            result = pcmd->actor(params, false);
+        }
+        return result;
+    }
+    catch (std::exception& e)
+    {
+        throw JSONRPCError(-1, e.what());
+    }
+}
 
 
 Object CallRPC(const string& strMethod, const Array& params)
@@ -2852,7 +3015,7 @@ Object CallRPC(const string& strMethod, const Array& params)
     SSLStream sslStream(io_service, context);
     SSLIOStreamDevice d(sslStream, fUseSSL);
     iostreams::stream<SSLIOStreamDevice> stream(d);
-    if (!d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", CBigNum(RPC_PORT).ToString().c_str())))
+    if (!d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", CBigNum(fTestNet? TESTNET_RPC_PORT : RPC_PORT).ToString().c_str())))
         throw runtime_error("couldn't connect to server");
 
     // HTTP basic authentication
@@ -2907,6 +3070,70 @@ void ConvertTo(Value& value)
     }
 }
 
+// Convert strings to command-specific RPC representation
+Array RPCConvertValues(const std::string &strMethod, const std::vector<std::string> &strParams)
+{
+    Array params;
+    BOOST_FOREACH(const std::string &param, strParams)
+        params.push_back(param);
+
+    int n = params.size();
+
+    //
+    // Special case non-string parameter types
+    //
+    if (strMethod == "setgenerate"            && n > 0) ConvertTo<bool>(params[0]);
+    if (strMethod == "setgenerate"            && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "sendtoaddress"          && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "settxfee"               && n > 0) ConvertTo<double>(params[0]);
+    if (strMethod == "getreceivedbyaddress"   && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "getreceivedbyaccount"   && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "listreceivedbyaddress"  && n > 0) ConvertTo<boost::int64_t>(params[0]);
+    if (strMethod == "listreceivedbyaddress"  && n > 1) ConvertTo<bool>(params[1]);
+    if (strMethod == "listreceivedbyaccount"  && n > 0) ConvertTo<boost::int64_t>(params[0]);
+    if (strMethod == "listreceivedbyaccount"  && n > 1) ConvertTo<bool>(params[1]);
+    if (strMethod == "getbalance"             && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "getblockhash"           && n > 0) ConvertTo<boost::int64_t>(params[0]);
+    if (strMethod == "getblock"               && n > 1) ConvertTo<bool>(params[1]);
+    if (strMethod == "move"                   && n > 2) ConvertTo<double>(params[2]);
+    if (strMethod == "move"                   && n > 3) ConvertTo<boost::int64_t>(params[3]);
+    if (strMethod == "sendfrom"               && n > 2) ConvertTo<double>(params[2]);
+    if (strMethod == "sendfrom"               && n > 3) ConvertTo<boost::int64_t>(params[3]);
+    if (strMethod == "listtransactions"       && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "listtransactions"       && n > 2) ConvertTo<boost::int64_t>(params[2]);
+    if (strMethod == "listaccounts"           && n > 0) ConvertTo<boost::int64_t>(params[0]);
+    if (strMethod == "walletpassphrase"       && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "walletpassphrase"       && n > 2) ConvertTo<bool>(params[2]);
+    if (strMethod == "getblocktemplate"       && n > 0) ConvertTo<Object>(params[0]);
+    if (strMethod == "listsinceblock"         && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "sendalert"              && n > 2) ConvertTo<boost::int64_t>(params[2]);
+    if (strMethod == "sendalert"              && n > 3) ConvertTo<boost::int64_t>(params[3]);
+    if (strMethod == "sendalert"              && n > 4) ConvertTo<boost::int64_t>(params[4]);
+    if (strMethod == "sendalert"              && n > 5) ConvertTo<boost::int64_t>(params[5]);
+    if (strMethod == "sendalert"              && n > 6) ConvertTo<boost::int64_t>(params[6]);
+    if (strMethod == "sendmany"               && n > 1)
+    {
+        string s = params[1].get_str();
+        Value v;
+        if (!read_string(s, v) || v.type() != obj_type)
+            throw runtime_error("type mismatch");
+        params[1] = v.get_obj();
+    }
+    if (strMethod == "sendmany"                && n > 2) ConvertTo<boost::int64_t>(params[2]);
+    if (strMethod == "reservebalance"          && n > 0) ConvertTo<bool>(params[0]);
+    if (strMethod == "reservebalance"          && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "addmultisigaddress"      && n > 0) ConvertTo<boost::int64_t>(params[0]);
+    if (strMethod == "addmultisigaddress"      && n > 1)
+    {
+        string s = params[1].get_str();
+        Value v;
+        if (!read_string(s, v) || v.type() != array_type)
+            throw runtime_error("type mismatch "+s);
+        params[1] = v.get_array();
+    }
+    return params;
+}
+
 int CommandLineRPC(int argc, char *argv[])
 {
     string strPrint;
@@ -2926,62 +3153,8 @@ int CommandLineRPC(int argc, char *argv[])
         string strMethod = argv[1];
 
         // Parameters default to strings
-        Array params;
-        for (int i = 2; i < argc; i++)
-            params.push_back(argv[i]);
-        int n = params.size();
-
-        //
-        // Special case non-string parameter types
-        //
-        if (strMethod == "setgenerate"            && n > 0) ConvertTo<bool>(params[0]);
-        if (strMethod == "setgenerate"            && n > 1) ConvertTo<boost::int64_t>(params[1]);
-        if (strMethod == "sendtoaddress"          && n > 1) ConvertTo<double>(params[1]);
-        if (strMethod == "settxfee"               && n > 0) ConvertTo<double>(params[0]);
-        if (strMethod == "getreceivedbyaddress"   && n > 1) ConvertTo<boost::int64_t>(params[1]);
-        if (strMethod == "getreceivedbyaccount"   && n > 1) ConvertTo<boost::int64_t>(params[1]);
-        if (strMethod == "listreceivedbyaddress"  && n > 0) ConvertTo<boost::int64_t>(params[0]);
-        if (strMethod == "listreceivedbyaddress"  && n > 1) ConvertTo<bool>(params[1]);
-        if (strMethod == "listreceivedbyaccount"  && n > 0) ConvertTo<boost::int64_t>(params[0]);
-        if (strMethod == "listreceivedbyaccount"  && n > 1) ConvertTo<bool>(params[1]);
-        if (strMethod == "getbalance"             && n > 1) ConvertTo<boost::int64_t>(params[1]);
-        if (strMethod == "getblockhash"           && n > 0) ConvertTo<boost::int64_t>(params[0]);
-        if (strMethod == "getblock"               && n > 1) ConvertTo<bool>(params[1]);
-        if (strMethod == "move"                   && n > 2) ConvertTo<double>(params[2]);
-        if (strMethod == "move"                   && n > 3) ConvertTo<boost::int64_t>(params[3]);
-        if (strMethod == "sendfrom"               && n > 2) ConvertTo<double>(params[2]);
-        if (strMethod == "sendfrom"               && n > 3) ConvertTo<boost::int64_t>(params[3]);
-        if (strMethod == "listtransactions"       && n > 1) ConvertTo<boost::int64_t>(params[1]);
-        if (strMethod == "listtransactions"       && n > 2) ConvertTo<boost::int64_t>(params[2]);
-        if (strMethod == "listaccounts"           && n > 0) ConvertTo<boost::int64_t>(params[0]);
-        if (strMethod == "walletpassphrase"       && n > 1) ConvertTo<boost::int64_t>(params[1]);
-        if (strMethod == "walletpassphrase"       && n > 2) ConvertTo<bool>(params[2]);
-        if (strMethod == "listsinceblock"         && n > 1) ConvertTo<boost::int64_t>(params[1]);
-        if (strMethod == "sendalert"              && n > 2) ConvertTo<boost::int64_t>(params[2]);
-        if (strMethod == "sendalert"              && n > 3) ConvertTo<boost::int64_t>(params[3]);
-        if (strMethod == "sendalert"              && n > 4) ConvertTo<boost::int64_t>(params[4]);
-        if (strMethod == "sendalert"              && n > 5) ConvertTo<boost::int64_t>(params[5]);
-        if (strMethod == "sendalert"              && n > 6) ConvertTo<boost::int64_t>(params[6]);
-        if (strMethod == "sendmany"               && n > 1)
-        {
-            string s = params[1].get_str();
-            Value v;
-            if (!read_string(s, v) || v.type() != obj_type)
-                throw runtime_error("type mismatch");
-            params[1] = v.get_obj();
-        }
-        if (strMethod == "sendmany"                && n > 2) ConvertTo<boost::int64_t>(params[2]);
-        if (strMethod == "reservebalance"          && n > 0) ConvertTo<bool>(params[0]);
-        if (strMethod == "reservebalance"          && n > 1) ConvertTo<double>(params[1]);
-        if (strMethod == "addmultisigaddress"      && n > 0) ConvertTo<boost::int64_t>(params[0]);
-        if (strMethod == "addmultisigaddress"      && n > 1)
-        {
-            string s = params[1].get_str();
-            Value v;
-            if (!read_string(s, v) || v.type() != array_type)
-                throw runtime_error("type mismatch "+s);
-            params[1] = v.get_array();
-        }
+        std::vector<std::string> strParams(&argv[2], &argv[argc]);
+        Array params = RPCConvertValues(strMethod, strParams);
 
         // Execute
         Object reply = CallRPC(strMethod, params);
