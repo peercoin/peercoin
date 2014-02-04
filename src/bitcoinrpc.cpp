@@ -3073,6 +3073,72 @@ Object CallRPC(const string& strMethod, const Array& params)
     return reply;
 }
 
+std::string CallPeercoinRPC(const std::string &strMethod, const std::vector<std::string> &strParams)
+{
+    if (mapPeercoinArgs["-rpcuser"] == "" && mapPeercoinArgs["-rpcpassword"] == "")
+        throw runtime_error(strprintf(
+            _("You must set rpcpassword=<password> in the peercoin configuration file:\n%s\n"
+              "If the file does not exist, create it with owner-readable-only file permissions."),
+                GetConfigFile().string().c_str()));
+
+    // Connect to localhost
+    bool fUseSSL = GetBoolArg("-rpcssl");
+    asio::io_service io_service;
+    ssl::context context(io_service, ssl::context::sslv23);
+    context.set_options(ssl::context::no_sslv2);
+    SSLStream sslStream(io_service, context);
+    SSLIOStreamDevice d(sslStream, fUseSSL);
+    iostreams::stream<SSLIOStreamDevice> stream(d);
+    if (!d.connect(GetPeercoinArg("-rpcconnect", "127.0.0.1"), GetPeercoinArg("-rpcport", CBigNum(fTestNet? PEERCOIN_TESTNET_RPC_PORT : PEERCOIN_RPC_PORT).ToString().c_str())))
+        throw runtime_error("couldn't connect to peercoin RPC server");
+
+    // HTTP basic authentication
+    string strUserPass64 = EncodeBase64(mapPeercoinArgs["-rpcuser"] + ":" + mapPeercoinArgs["-rpcpassword"]);
+    map<string, string> mapRequestHeaders;
+    mapRequestHeaders["Authorization"] = string("Basic ") + strUserPass64;
+
+    // Send request
+    Array params = RPCConvertValues(strMethod, strParams);
+    string strRequest = JSONRPCRequest(strMethod, params, 1);
+    string strPost = HTTPPost(strRequest, mapRequestHeaders);
+    stream << strPost << std::flush;
+
+    // Receive reply
+    map<string, string> mapHeaders;
+    string strReply;
+    int nStatus = ReadHTTP(stream, mapHeaders, strReply);
+    if (nStatus == 401)
+        throw runtime_error("incorrect rpcuser or rpcpassword (authorization failed)");
+    else if (nStatus >= 400 && nStatus != 400 && nStatus != 404 && nStatus != 500)
+        throw runtime_error(strprintf("server returned HTTP error %d", nStatus));
+    else if (strReply.empty())
+        throw runtime_error("no response from server");
+
+    // Parse reply
+    Value valReply;
+    if (!read_string(strReply, valReply))
+        throw runtime_error("couldn't parse reply from server");
+    const Object& reply = valReply.get_obj();
+    if (reply.empty())
+        throw runtime_error("expected reply to have result, error and id properties");
+
+    const Value& result = find_value(reply, "result");
+    const Value& error  = find_value(reply, "error");
+
+    if (error.type() != null_type)
+        throw runtime_error("command " + strMethod + " on peercoin RPC failed: " + write_string(error, false));
+    else
+    {
+        // Result
+        if (result.type() == null_type)
+            return "";
+        else if (result.type() == str_type)
+            return result.get_str();
+        else
+            return write_string(result, true);
+    }
+}
+
 
 
 

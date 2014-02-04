@@ -20,6 +20,9 @@
 #define TESTNET_PORT 9923
 #define TESTNET_RPC_PORT 9924
 
+#define PEERCOIN_RPC_PORT         9902
+#define PEERCOIN_TESTNET_RPC_PORT 9904
+
 extern bool fTestNet;
 
 void GetMessageStart(unsigned char pchMessageStart[], bool fPersistent = false);
