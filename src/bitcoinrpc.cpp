@@ -140,7 +140,81 @@ string AccountFromValue(const Value& value)
     return strAccount;
 }
 
-Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPrintTransactionDetail)
+
+void TxToJSON(const CTransaction& tx, Object& txdata)
+{
+    // tx data
+    txdata.push_back(Pair("txid", tx.GetHash().ToString().c_str()));
+    txdata.push_back(Pair("version", (int)tx.nVersion));
+    txdata.push_back(Pair("locktime", (int)tx.nLockTime));
+    txdata.push_back(Pair("is_coinbase", tx.IsCoinBase()));
+    txdata.push_back(Pair("is_coinstake", tx.IsCoinStake()));
+
+    // add inputs
+    Array vins;
+    BOOST_FOREACH(const CTxIn& txin, tx.vin)
+    {
+        Object vin;
+
+        if (txin.prevout.IsNull()) 
+        {
+            vin.push_back(Pair("coinbase", HexStr(txin.scriptSig).c_str()));
+        }
+        else 
+        {
+            vin.push_back(Pair("txid", txin.prevout.hash.ToString().c_str()));
+            vin.push_back(Pair("vout", (int)txin.prevout.n));
+        }
+
+        vin.push_back(Pair("sequence", (boost::uint64_t)txin.nSequence));
+
+        vins.push_back(vin);
+    }
+    txdata.push_back(Pair("vin", vins));
+
+    // add outputs
+    Array vouts;
+    int n = 0;
+    BOOST_FOREACH(const CTxOut& txout, tx.vout)
+    {
+        Object vout;
+
+        std::vector<CBitcoinAddress> addresses;
+        txnouttype txtype;
+        int nRequired;
+
+        vout.push_back(Pair("value", ValueFromAmount(txout.nValue)));
+        vout.push_back(Pair("n", n));
+
+        Object scriptpubkey;
+
+        scriptpubkey.push_back(Pair("asm", txout.scriptPubKey.ToString()));
+        scriptpubkey.push_back(Pair("hex", HexStr(txout.scriptPubKey.begin(), txout.scriptPubKey.end())));
+
+        if (ExtractAddresses(txout.scriptPubKey, txtype, addresses, nRequired))
+        {
+            scriptpubkey.push_back(Pair("type", GetTxnOutputType(txtype)));
+            scriptpubkey.push_back(Pair("reqSig", nRequired));
+
+            Array addrs;
+            BOOST_FOREACH(const CBitcoinAddress& addr, addresses)
+                addrs.push_back(addr.ToString());
+            scriptpubkey.push_back(Pair("addresses", addrs));
+        }
+        else
+        {
+            scriptpubkey.push_back(Pair("type", GetTxnOutputType(TX_NONSTANDARD)));
+        }
+
+        vout.push_back(Pair("scriptPubKey",scriptpubkey));
+
+        vouts.push_back(vout);   
+        n++;             
+    }
+    txdata.push_back(Pair("vout", vouts));
+}
+
+Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fTxInfo, bool fTxDetails)
 {
     Object result;
     result.push_back(Pair("hash", block.GetHash().GetHex()));
@@ -165,7 +239,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
     Array txinfo;
     BOOST_FOREACH (const CTransaction& tx, block.vtx)
     {
-        if (fPrintTransactionDetail)
+        if (fTxInfo && !fTxDetails)
         {
             txinfo.push_back(tx.ToStringShort());
             txinfo.push_back(DateTimeStrFormat(tx.nTime));
@@ -174,14 +248,18 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
             BOOST_FOREACH(const CTxOut& txout, tx.vout)
                 txinfo.push_back(txout.ToStringShort());
         }
+        else if (fTxDetails) 
+        {
+            Object txdata;
+            TxToJSON(tx, txdata);
+            txinfo.push_back(txdata);
+        }
         else
             txinfo.push_back(tx.GetHash().GetHex());
     }
     result.push_back(Pair("tx", txinfo));
     return result;
 }
-
-
 
 ///
 /// Note: This interface may still be subject to change.
@@ -2204,10 +2282,11 @@ Value getblockhash(const Array& params, bool fHelp)
 
 Value getblock(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2)
+    if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
-            "getblock <hash> [txinfo]\n"
+            "getblock <hash> [txinfo] [txdetails]\n"
             "txinfo optional to print more detailed tx info\n"
+            "txdetails optional to print even more detailed tx info\n"
             "Returns details of a block with given block-hash.");
 
     std::string strHash = params[0].get_str();
@@ -2220,7 +2299,10 @@ Value getblock(const Array& params, bool fHelp)
     CBlockIndex* pblockindex = mapBlockIndex[hash];
     block.ReadFromDisk(pblockindex, true);
 
-    return blockToJSON(block, pblockindex, params.size() > 1 ? params[1].get_bool() : false);
+    bool fTxInfo = params.size() > 1 ? params[1].get_bool() : false;
+    bool fTxDetails = params.size() > 2 ? params[2].get_bool() : false;
+
+    return blockToJSON(block, pblockindex, fTxInfo, fTxDetails);
 }
 
 
@@ -3095,6 +3177,7 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "getbalance"             && n > 1) ConvertTo<boost::int64_t>(params[1]);
     if (strMethod == "getblockhash"           && n > 0) ConvertTo<boost::int64_t>(params[0]);
     if (strMethod == "getblock"               && n > 1) ConvertTo<bool>(params[1]);
+    if (strMethod == "getblock"               && n > 2) ConvertTo<bool>(params[2]);
     if (strMethod == "move"                   && n > 2) ConvertTo<double>(params[2]);
     if (strMethod == "move"                   && n > 3) ConvertTo<boost::int64_t>(params[3]);
     if (strMethod == "sendfrom"               && n > 2) ConvertTo<double>(params[2]);
