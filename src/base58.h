@@ -484,4 +484,39 @@ public:
     }
 };
 
+class CPeercoinSecret : public CBitcoinSecret
+{
+public:
+    void SetSecret(const CSecret& vchSecret, bool fCompressed)
+    {
+        assert(vchSecret.size() == 32);
+        SetData(128 + (fTestNet ? CPeercoinAddress::PUBKEY_ADDRESS_TEST : CPeercoinAddress::PUBKEY_ADDRESS), &vchSecret[0], vchSecret.size());
+        if (fCompressed)
+            vchData.push_back(1);
+    }
+
+    bool IsValid() const
+    {
+        bool fExpectTestNet = false;
+        switch(nVersion)
+        {
+             case (128 + CPeercoinAddress::PUBKEY_ADDRESS):
+                break;
+
+            case (128 + CPeercoinAddress::PUBKEY_ADDRESS_TEST):
+                fExpectTestNet = true;
+                break;
+
+            default:
+                return false;
+        }
+        return fExpectTestNet == fTestNet && (vchData.size() == 32 || (vchData.size() == 33 && vchData[32] == 1));
+    }
+
+    CPeercoinSecret(const CSecret& vchSecret, bool fCompressed)
+    {
+        SetSecret(vchSecret, fCompressed);
+    }
+};
+
 #endif

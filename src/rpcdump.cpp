@@ -104,3 +104,37 @@ Value dumpprivkey(const Array& params, bool fHelp)
         throw JSONRPCError(-4,"Private key for address " + strAddress + " is not known");
     return CBitcoinSecret(vchSecret, fCompressed).ToString();
 }
+
+Value exportpeercoinkeys(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "exportpeercoinkeys\n"
+            "Add the peercoin keys associated with the peershare address to the peercoin wallet. Peercoin must be running and accept RPC commands.");
+
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(-13, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+    if (fWalletUnlockMintOnly) // ppcoin: no dumpprivkey in mint-only mode
+        throw JSONRPCError(-102, "Wallet is unlocked for minting only.");
+
+    Object ret;
+    BOOST_FOREACH(const PAIRTYPE(CBitcoinAddress, string)& item, pwalletMain->mapAddressBook)
+    {
+        const CBitcoinAddress& address = item.first;
+        CSecret vchSecret;
+        bool fCompressed;
+        if (!pwalletMain->GetSecret(address, vchSecret, fCompressed))
+            throw JSONRPCError(-4,"Private key for address " + address.ToString() + " is not known");
+
+        std::vector<string> params;
+        params.push_back(CPeercoinSecret(vchSecret, fCompressed).ToString());
+        params.push_back("Peershares");
+        try {
+          CallPeercoinRPC("importprivkey", params);
+          ret.push_back(Pair(address.ToString(), "ok"));
+        } catch (runtime_error &error) {
+          ret.push_back(Pair(address.ToString(), "error"));
+        }
+    }
+    return ret;
+}
