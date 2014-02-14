@@ -358,6 +358,73 @@ public:
     }
 };
 
+class CPeercoinAddress : public CBitcoinAddress
+{
+public:
+    enum
+    {
+        PUBKEY_ADDRESS = 55,  // ppcoin: addresses begin with 'P'
+        SCRIPT_ADDRESS = 117, // ppcoin: addresses begin with 'p'
+        PUBKEY_ADDRESS_TEST = 111,
+        SCRIPT_ADDRESS_TEST = 196,
+    };
+
+    bool SetHash160(const uint160& hash160)
+    {
+        SetData(fTestNet ? PUBKEY_ADDRESS_TEST : PUBKEY_ADDRESS, &hash160, 20);
+        return true;
+    }
+
+    bool SetScriptHash160(const uint160& hash160)
+    {
+        SetData(fTestNet ? SCRIPT_ADDRESS_TEST : SCRIPT_ADDRESS, &hash160, 20);
+        return true;
+    }
+
+    bool IsValid() const
+    {
+        unsigned int nExpectedSize = 20;
+        bool fExpectTestNet = false;
+        switch(nVersion)
+        {
+            case PUBKEY_ADDRESS:
+                nExpectedSize = 20; // Hash of public key
+                fExpectTestNet = false;
+                break;
+            case SCRIPT_ADDRESS:
+                nExpectedSize = 20; // Hash of CScript
+                fExpectTestNet = false;
+                break;
+
+            case PUBKEY_ADDRESS_TEST:
+                nExpectedSize = 20;
+                fExpectTestNet = true;
+                break;
+            case SCRIPT_ADDRESS_TEST:
+                nExpectedSize = 20;
+                fExpectTestNet = true;
+                break;
+
+            default:
+                return false;
+        }
+        return fExpectTestNet == fTestNet && vchData.size() == nExpectedSize;
+    }
+    bool IsScript() const
+    {
+        if (!IsValid())
+            return false;
+        if (fTestNet)
+            return nVersion == SCRIPT_ADDRESS_TEST;
+        return nVersion == SCRIPT_ADDRESS;
+    }
+
+    CPeercoinAddress(const CBitcoinAddress &address)
+    {
+        SetHash160(address.GetHash160());
+    }
+};
+
 /** A base58-encoded secret key */
 class CBitcoinSecret : public CBase58Data
 {
