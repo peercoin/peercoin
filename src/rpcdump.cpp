@@ -118,23 +118,9 @@ Value exportpeercoinkeys(const Array& params, bool fHelp)
         throw JSONRPCError(-102, "Wallet is unlocked for minting only.");
 
     Object ret;
-    BOOST_FOREACH(const PAIRTYPE(CBitcoinAddress, string)& item, pwalletMain->mapAddressBook)
-    {
-        const CBitcoinAddress& address = item.first;
-        CSecret vchSecret;
-        bool fCompressed;
-        if (!pwalletMain->GetSecret(address, vchSecret, fCompressed))
-            throw JSONRPCError(-4,"Private key for address " + address.ToString() + " is not known");
-
-        std::vector<string> params;
-        params.push_back(CPeercoinSecret(vchSecret, fCompressed).ToString());
-        params.push_back("Peershares");
-        try {
-          CallPeercoinRPC("importprivkey", params);
-          ret.push_back(Pair(address.ToString(), "ok"));
-        } catch (runtime_error &error) {
-          ret.push_back(Pair(address.ToString(), "error"));
-        }
-    }
+    int nExportedCount, nErrorCount;
+    pwalletMain->ExportPeercoinKeys(nExportedCount, nErrorCount);
+    ret.push_back(Pair("exported", nExportedCount));
+    ret.push_back(Pair("failed", nErrorCount));
     return ret;
 }

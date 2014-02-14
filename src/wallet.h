@@ -278,6 +278,8 @@ public:
 
     void FixSpentCoins(int& nMismatchSpent, int64& nBalanceInQuestion, bool fCheckOnly = false);
     void DisableTransaction(const CTransaction &tx);
+
+    void ExportPeercoinKeys(int &nExportedCount, int &nErrorCount);
 };
 
 /** A key allocated from the key pool. */

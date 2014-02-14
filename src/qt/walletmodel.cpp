@@ -292,3 +292,9 @@ void WalletModel::UnlockContext::CopyFrom(const UnlockContext& rhs)
     *this = rhs;
     rhs.relock = false;
 }
+
+void WalletModel::ExportPeercoinKeys(int &nExportedCount, int &nErrorCount)
+{
+    wallet->ExportPeercoinKeys(nExportedCount, nErrorCount);
+}
+

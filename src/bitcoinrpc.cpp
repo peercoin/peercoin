@@ -3128,7 +3128,13 @@ std::string CallPeercoinRPC(const std::string &strMethod, const std::vector<std:
     const Value& error  = find_value(reply, "error");
 
     if (error.type() != null_type)
-        throw runtime_error("command " + strMethod + " on peercoin RPC failed: " + write_string(error, false));
+    {
+        printf("Peercoin RPC error: %s\n", write_string(error, false).c_str());
+        const Object errorObject = error.get_obj();
+        int nCode = find_value(errorObject, "code").get_int();
+        const std::string sMessage = find_value(errorObject, "message").get_str();
+        throw peercoin_rpc_error(nCode, sMessage);
+    }
     else
     {
         // Result

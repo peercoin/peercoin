@@ -9,6 +9,7 @@
 #include "crypter.h"
 #include "ui_interface.h"
 #include "kernel.h"
+#include "bitcoinrpc.h"
 
 using namespace std;
 
@@ -1885,5 +1886,42 @@ void CWallet::GetAllReserveAddresses(set<CBitcoinAddress>& setAddress)
         if (!HaveKey(address))
             throw runtime_error("GetAllReserveKeyHashes() : unknown key in key pool");
         setAddress.insert(address);
+    }
+}
+
+void CWallet::ExportPeercoinKeys(int &nExportedCount, int &nErrorCount)
+{
+    nExportedCount = 0;
+    nErrorCount = 0;
+
+    if (IsLocked())
+        throw runtime_error("The wallet is locked. Please unlock it first.");
+    if (fWalletUnlockMintOnly)
+        throw runtime_error("Wallet is unlocked for minting only.");
+
+    LOCK(cs_wallet);
+    BOOST_FOREACH(const PAIRTYPE(CBitcoinAddress, string)& item, mapAddressBook)
+    {
+        const CBitcoinAddress& address = item.first;
+        CSecret vchSecret;
+        bool fCompressed;
+        if (!GetSecret(address, vchSecret, fCompressed))
+        {
+            printf("Private key for address %s is not known\n", address.ToString().c_str());
+            nErrorCount++;
+            continue;
+        }
+
+        std::vector<string> params;
+        params.push_back(CPeercoinSecret(vchSecret, fCompressed).ToString());
+        params.push_back("Peershares");
+        try {
+            CallPeercoinRPC("importprivkey", params);
+            printf("Exported private key of address %s\n", address.ToString().c_str());
+            nExportedCount++;
+        } catch (peercoin_rpc_error &error) {
+            printf("Failed to export private key of address %s: %s\n", address.ToString().c_str(), error.what());
+            nErrorCount++;
+        }
     }
 }

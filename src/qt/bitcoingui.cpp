@@ -63,6 +63,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     QMainWindow(parent),
     clientModel(0),
     walletModel(0),
+    exportPeercoinKeysAction(0),
     encryptWalletAction(0),
     changePassphraseAction(0),
     aboutQtAction(0),
@@ -255,6 +256,8 @@ void BitcoinGUI::createActions()
     changePassphraseAction->setToolTip(tr("Change the passphrase used for wallet encryption"));
     openRPCConsoleAction = new QAction(tr("&Debug window"), this);
     openRPCConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
+    exportPeercoinKeysAction = new QAction(QIcon(":/icons/export"), tr("&Export peercoin keys"), this);
+    exportPeercoinKeysAction->setToolTip(tr("Export the peercoin keys associated with the peershare addresses to peercoin via RPC"));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(optionsAction, SIGNAL(triggered()), this, SLOT(optionsClicked()));
@@ -264,6 +267,7 @@ void BitcoinGUI::createActions()
     connect(encryptWalletAction, SIGNAL(triggered(bool)), this, SLOT(encryptWallet(bool)));
     connect(backupWalletAction, SIGNAL(triggered()), this, SLOT(backupWallet()));
     connect(changePassphraseAction, SIGNAL(triggered()), this, SLOT(changePassphrase()));
+    connect(exportPeercoinKeysAction, SIGNAL(triggered()), this, SLOT(exportPeercoinKeys()));
 }
 
 void BitcoinGUI::createMenuBar()
@@ -285,6 +289,9 @@ void BitcoinGUI::createMenuBar()
 #endif
     file->addSeparator();
     file->addAction(quitAction);
+
+    QMenu *shares = appMenuBar->addMenu(tr("&Shares"));
+    shares->addAction(exportPeercoinKeysAction);
 
     QMenu *settings = appMenuBar->addMenu(tr("&Settings"));
     settings->addAction(encryptWalletAction);
@@ -845,6 +852,25 @@ void BitcoinGUI::unlockWallet()
         AskPassphraseDialog dlg(AskPassphraseDialog::Unlock, this);
         dlg.setModel(walletModel);
         dlg.exec();
+    }
+}
+
+void BitcoinGUI::exportPeercoinKeys()
+{
+    try {
+        int iExportedCount, iErrorCount;
+        walletModel->ExportPeercoinKeys(iExportedCount, iErrorCount);
+        QMessageBox::information(this,
+                tr("Peercoin keys export"),
+                tr("%1 key(s) were exported to peercoin.\n%2 key(s) were either already known or invalid.")
+                  .arg(iExportedCount)
+                  .arg(iErrorCount)
+                );
+    }
+    catch (std::runtime_error &e) {
+        QMessageBox::critical(this,
+                tr("Peercoin keys export"),
+                tr("Error: %1").arg(e.what()));
     }
 }
 
