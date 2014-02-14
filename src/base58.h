@@ -264,10 +264,10 @@ class CBitcoinAddress : public CBase58Data
 public:
     enum
     {
-        PUBKEY_ADDRESS = 55,  // ppcoin: addresses begin with 'P'
-        SCRIPT_ADDRESS = 117, // ppcoin: addresses begin with 'p'
-        PUBKEY_ADDRESS_TEST = 111,
-        SCRIPT_ADDRESS_TEST = 196,
+        PUBKEY_ADDRESS = 63,  // peershare addresses begin with 'S'
+        SCRIPT_ADDRESS = 125, // peershare script addresses begin with 's'
+        PUBKEY_ADDRESS_TEST = 32,
+        SCRIPT_ADDRESS_TEST = 212,
     };
 
     bool SetHash160(const uint160& hash160)
