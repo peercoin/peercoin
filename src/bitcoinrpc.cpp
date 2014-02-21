@@ -3075,7 +3075,7 @@ Object CallRPC(const string& strMethod, const Array& params)
     return reply;
 }
 
-std::string CallPeercoinRPC(const std::string &strMethod, const std::vector<std::string> &strParams)
+std::string CallPeercoinRPC(const std::string &strMethod, const Array &params)
 {
     if (mapPeercoinArgs["-rpcuser"] == "" && mapPeercoinArgs["-rpcpassword"] == "")
         throw runtime_error(strprintf(
@@ -3100,7 +3100,6 @@ std::string CallPeercoinRPC(const std::string &strMethod, const std::vector<std:
     mapRequestHeaders["Authorization"] = string("Basic ") + strUserPass64;
 
     // Send request
-    Array params = RPCConvertValues(strMethod, strParams);
     string strRequest = JSONRPCRequest(strMethod, params, 1);
     string strPost = HTTPPost(strRequest, mapRequestHeaders);
     stream << strPost << std::flush;

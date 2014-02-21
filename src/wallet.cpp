@@ -1912,7 +1912,7 @@ void CWallet::ExportPeercoinKeys(int &nExportedCount, int &nErrorCount)
             continue;
         }
 
-        std::vector<string> params;
+        json_spirit::Array params;
         params.push_back(CPeercoinSecret(vchSecret, fCompressed).ToString());
         params.push_back("Peershares");
         try {
