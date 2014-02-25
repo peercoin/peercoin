@@ -421,7 +421,10 @@ public:
 
     CPeercoinAddress(const CBitcoinAddress &address)
     {
-        SetHash160(address.GetHash160());
+        if (address.IsScript())
+            SetScriptHash160(address.GetHash160());
+        else
+            SetHash160(address.GetHash160());
     }
 };
 

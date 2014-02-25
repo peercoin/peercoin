@@ -1905,23 +1905,78 @@ void CWallet::ExportPeercoinKeys(int &nExportedCount, int &nErrorCount)
         const CBitcoinAddress& address = item.first;
         CSecret vchSecret;
         bool fCompressed;
-        if (!GetSecret(address, vchSecret, fCompressed))
+        if (address.IsScript())
         {
-            printf("Private key for address %s is not known\n", address.ToString().c_str());
-            nErrorCount++;
-            continue;
-        }
+            const uint160 hash = address.GetHash160();
+            CScript script;
+            if (!GetCScript(hash, script))
+            {
+                printf("Failed get script of address %s\n", address.ToString().c_str());
+                nErrorCount++;
+                continue;
+            }
 
-        json_spirit::Array params;
-        params.push_back(CPeercoinSecret(vchSecret, fCompressed).ToString());
-        params.push_back("Peershares");
-        try {
-            CallPeercoinRPC("importprivkey", params);
-            printf("Exported private key of address %s\n", address.ToString().c_str());
-            nExportedCount++;
-        } catch (peercoin_rpc_error &error) {
-            printf("Failed to export private key of address %s: %s\n", address.ToString().c_str(), error.what());
-            nErrorCount++;
+            txnouttype type;
+            std::vector<CBitcoinAddress> vAddresses;
+            int nRequired;
+            if (!ExtractAddresses(script, type, vAddresses, nRequired))
+            {
+                printf("Failed extract addresses from address %s\n", address.ToString().c_str());
+                nErrorCount++;
+                continue;
+            }
+
+            if (type != TX_MULTISIG)
+            {
+                printf("Address %s is not a multisig address\n", address.ToString().c_str());
+                nErrorCount++;
+                continue;
+            }
+
+            json_spirit::Array vPeercoinAddressStrings;
+            BOOST_FOREACH(const CBitcoinAddress &address, vAddresses)
+                vPeercoinAddressStrings.push_back(CPeercoinAddress(address).ToString());
+
+            json_spirit::Array params;
+            params.push_back(json_spirit::Value(nRequired));
+            params.push_back(vPeercoinAddressStrings);
+            params.push_back("Peershares");
+
+            try
+            {
+                string result = CallPeercoinRPC("addmultisigaddress", params);
+                printf("Exported multisig address %s: %s\n", address.ToString().c_str(), result.c_str());
+                nExportedCount++;
+            }
+            catch (peercoin_rpc_error &error)
+            {
+                printf("Failed to add multisig address of address %s: %s\n", address.ToString().c_str(), error.what());
+                nErrorCount++;
+            }
+        }
+        else
+        {
+            if (!GetSecret(address, vchSecret, fCompressed))
+            {
+                printf("Private key for address %s is not known\n", address.ToString().c_str());
+                nErrorCount++;
+                continue;
+            }
+
+            json_spirit::Array params;
+            params.push_back(CPeercoinSecret(vchSecret, fCompressed).ToString());
+            params.push_back("Peershares");
+            try
+            {
+                string result = CallPeercoinRPC("importprivkey", params);
+                printf("Exported private key of address %s: %s\n", address.ToString().c_str(), result.c_str());
+                nExportedCount++;
+            }
+            catch (peercoin_rpc_error &error)
+            {
+                printf("Failed to export private key of address %s: %s\n", address.ToString().c_str(), error.what());
+                nErrorCount++;
+            }
         }
     }
 }
