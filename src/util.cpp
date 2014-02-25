@@ -1052,7 +1052,7 @@ void ReadPeercoinConfigFile(map<string, string>& mapSettingsRet)
 
     fs::ifstream streamConfig(GetPeercoinConfigFile());
     if (!streamConfig.good())
-        return; // No peercoin config file is OK
+        return; // No Peercoin config file is OK
 
     set<string> setOptions;
     setOptions.insert("*");

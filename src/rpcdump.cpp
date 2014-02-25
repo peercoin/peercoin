@@ -110,7 +110,7 @@ Value exportpeercoinkeys(const Array& params, bool fHelp)
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "exportpeercoinkeys\n"
-            "Add the peercoin keys associated with the peershare address to the peercoin wallet. Peercoin must be running and accept RPC commands.");
+            "Add the Peercoin keys associated with the Peershares addresses to the Peercoin wallet. Peercoin must be running and accept RPC commands.");
 
     if (pwalletMain->IsLocked())
         throw JSONRPCError(-13, "Error: Please enter the wallet passphrase with walletpassphrase first.");

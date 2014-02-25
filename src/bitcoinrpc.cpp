@@ -645,7 +645,7 @@ Value getpeercoinaddresses(const Array& params, bool fHelp)
     if (fHelp || params.size() != 1)
         throw runtime_error(
             "getpeercoinaddresses <account>\n"
-            "Returns the list of addresses and the associated peercoin address for the given account.");
+            "Returns the list of addresses and the associated Peercoin address for the given account.");
 
     string strAccount = AccountFromValue(params[0]);
 
@@ -3079,7 +3079,7 @@ std::string CallPeercoinRPC(const std::string &strMethod, const std::vector<std:
 {
     if (mapPeercoinArgs["-rpcuser"] == "" && mapPeercoinArgs["-rpcpassword"] == "")
         throw runtime_error(strprintf(
-            _("You must set rpcpassword=<password> in the peercoin configuration file:\n%s\n"
+            _("You must set rpcpassword=<password> in the Peercoin configuration file:\n%s\n"
               "If the file does not exist, create it with owner-readable-only file permissions."),
                 GetConfigFile().string().c_str()));
 
@@ -3092,7 +3092,7 @@ std::string CallPeercoinRPC(const std::string &strMethod, const std::vector<std:
     SSLIOStreamDevice d(sslStream, fUseSSL);
     iostreams::stream<SSLIOStreamDevice> stream(d);
     if (!d.connect(GetPeercoinArg("-rpcconnect", "127.0.0.1"), GetPeercoinArg("-rpcport", CBigNum(fTestNet? PEERCOIN_TESTNET_RPC_PORT : PEERCOIN_RPC_PORT).ToString().c_str())))
-        throw runtime_error("couldn't connect to peercoin RPC server");
+        throw runtime_error("couldn't connect to Peercoin RPC server");
 
     // HTTP basic authentication
     string strUserPass64 = EncodeBase64(mapPeercoinArgs["-rpcuser"] + ":" + mapPeercoinArgs["-rpcpassword"]);

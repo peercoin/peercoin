@@ -256,8 +256,8 @@ void BitcoinGUI::createActions()
     changePassphraseAction->setToolTip(tr("Change the passphrase used for wallet encryption"));
     openRPCConsoleAction = new QAction(tr("&Debug window"), this);
     openRPCConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
-    exportPeercoinKeysAction = new QAction(QIcon(":/icons/export"), tr("&Export peercoin keys"), this);
-    exportPeercoinKeysAction->setToolTip(tr("Export the peercoin keys associated with the peershare addresses to peercoin via RPC"));
+    exportPeercoinKeysAction = new QAction(QIcon(":/icons/export"), tr("&Export Peercoin keys"), this);
+    exportPeercoinKeysAction->setToolTip(tr("Export the Peercoin keys associated with the Peershares addresses to Peercoin via RPC"));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(optionsAction, SIGNAL(triggered()), this, SLOT(optionsClicked()));
@@ -862,7 +862,7 @@ void BitcoinGUI::exportPeercoinKeys()
         walletModel->ExportPeercoinKeys(iExportedCount, iErrorCount);
         QMessageBox::information(this,
                 tr("Peercoin keys export"),
-                tr("%1 key(s) were exported to peercoin.\n%2 key(s) were either already known or invalid.")
+                tr("%1 key(s) were exported to Peercoin.\n%2 key(s) were either already known or invalid.")
                   .arg(iExportedCount)
                   .arg(iErrorCount)
                 );
