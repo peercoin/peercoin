@@ -1529,6 +1529,27 @@ Value listsinceblock(const Array& params, bool fHelp)
     return ret;
 }
 
+// ppc, kactech
+Value getrawtransaction(const Array& params, bool fHelp){
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "getrawtransaction <txid>\n"
+            "Get raw tx from db");
+    uint256 hash;
+    hash.SetHex(params[0].get_str());
+    CTxDB txdb("r");
+    CTxIndex txindex;
+    if (!txdb.ReadTxIndex(hash, txindex))
+        throw JSONRPCError(-5, "tx not found in index");
+    CTransaction tx;
+    if (!tx.ReadFromDisk(txindex.pos))
+        throw JSONRPCError(-5, "tx read failed");
+    CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
+    ssTx << tx;
+    string strHex = HexStr(ssTx.begin(), ssTx.end());
+    return strHex;
+}
+
 Value gettransaction(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -2327,6 +2348,7 @@ static const CRPCCommand vRPCCommands[] =
     { "getblock",               &getblock,               false },
     { "getblockhash",           &getblockhash,           false },
     { "gettransaction",         &gettransaction,         false },
+    { "getrawtransaction",      &getrawtransaction,      false },//ppc, kactech
     { "listtransactions",       &listtransactions,       false },
     { "signmessage",            &signmessage,            false },
     { "verifymessage",          &verifymessage,          false },
