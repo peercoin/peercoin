@@ -1530,6 +1530,47 @@ Value listsinceblock(const Array& params, bool fHelp)
 }
 
 // ppc, kactech
+Value listunspent(const Array& params, bool fHelp){
+    if (fHelp)
+        throw runtime_error(
+            "listunspent\n"
+            "List unspent outputs");
+    Array ret;
+    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
+    {
+        const CWalletTx& tx = (*it).second;
+        if(tx.IsFromMe())
+            continue;
+            
+        for (unsigned int i = 0; i < tx.vout.size(); i++)
+        {
+            if (tx.IsSpent(i) || !pwalletMain->IsMine(tx.vout[i]))
+                continue;
+            int64 n = tx.vout[i].nValue;
+            if (n <= 0)
+                continue;
+            Object entry;
+            entry.push_back(Pair("txid",  tx.GetHash().GetHex()));
+            entry.push_back(Pair("vout", (int)i));
+            
+            CBitcoinAddress address;
+            if (!ExtractAddress(tx.vout[i].scriptPubKey, address))
+                address = " unknown ";
+            entry.push_back(Pair("address", address.ToString()));
+
+            const CScript& pk = tx.vout[i].scriptPubKey;
+            entry.push_back(Pair("scriptPubKey", HexStr(pk.begin(), pk.end())));
+
+            entry.push_back(Pair("amount", (double)tx.vout[i].nValue / (double)COIN));
+            entry.push_back(Pair("confirmations", tx.GetDepthInMainChain()));
+        
+            ret.push_back(entry);              
+        }
+    }
+    return ret;
+}
+
+// ppc, kactech
 Value getrawtransaction(const Array& params, bool fHelp){
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -2348,6 +2389,7 @@ static const CRPCCommand vRPCCommands[] =
     { "getblock",               &getblock,               false },
     { "getblockhash",           &getblockhash,           false },
     { "gettransaction",         &gettransaction,         false },
+    { "listunspent",            &listunspent,            false },//ppc, kactech
     { "getrawtransaction",      &getrawtransaction,      false },//ppc, kactech
     { "listtransactions",       &listtransactions,       false },
     { "signmessage",            &signmessage,            false },
