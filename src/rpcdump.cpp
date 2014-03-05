@@ -104,3 +104,23 @@ Value dumpprivkey(const Array& params, bool fHelp)
         throw JSONRPCError(-4,"Private key for address " + strAddress + " is not known");
     return CBitcoinSecret(vchSecret, fCompressed).ToString();
 }
+
+Value exportpeercoinkeys(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "exportpeercoinkeys\n"
+            "Add the Peercoin keys associated with the Peershares addresses to the Peercoin wallet. Peercoin must be running and accept RPC commands.");
+
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(-13, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+    if (fWalletUnlockMintOnly) // ppcoin: no dumpprivkey in mint-only mode
+        throw JSONRPCError(-102, "Wallet is unlocked for minting only.");
+
+    Object ret;
+    int nExportedCount, nErrorCount;
+    pwalletMain->ExportPeercoinKeys(nExportedCount, nErrorCount);
+    ret.push_back(Pair("exported", nExportedCount));
+    ret.push_back(Pair("failed", nErrorCount));
+    return ret;
+}

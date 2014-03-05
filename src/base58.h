@@ -264,10 +264,10 @@ class CBitcoinAddress : public CBase58Data
 public:
     enum
     {
-        PUBKEY_ADDRESS = 55,  // ppcoin: addresses begin with 'P'
-        SCRIPT_ADDRESS = 117, // ppcoin: addresses begin with 'p'
-        PUBKEY_ADDRESS_TEST = 111,
-        SCRIPT_ADDRESS_TEST = 196,
+        PUBKEY_ADDRESS = 63,  // peershare addresses begin with 'S'
+        SCRIPT_ADDRESS = 125, // peershare script addresses begin with 's'
+        PUBKEY_ADDRESS_TEST = 32,
+        SCRIPT_ADDRESS_TEST = 212,
     };
 
     bool SetHash160(const uint160& hash160)
@@ -358,6 +358,76 @@ public:
     }
 };
 
+class CPeercoinAddress : public CBitcoinAddress
+{
+public:
+    enum
+    {
+        PUBKEY_ADDRESS = 55,  // ppcoin: addresses begin with 'P'
+        SCRIPT_ADDRESS = 117, // ppcoin: addresses begin with 'p'
+        PUBKEY_ADDRESS_TEST = 111,
+        SCRIPT_ADDRESS_TEST = 196,
+    };
+
+    bool SetHash160(const uint160& hash160)
+    {
+        SetData(fTestNet ? PUBKEY_ADDRESS_TEST : PUBKEY_ADDRESS, &hash160, 20);
+        return true;
+    }
+
+    bool SetScriptHash160(const uint160& hash160)
+    {
+        SetData(fTestNet ? SCRIPT_ADDRESS_TEST : SCRIPT_ADDRESS, &hash160, 20);
+        return true;
+    }
+
+    bool IsValid() const
+    {
+        unsigned int nExpectedSize = 20;
+        bool fExpectTestNet = false;
+        switch(nVersion)
+        {
+            case PUBKEY_ADDRESS:
+                nExpectedSize = 20; // Hash of public key
+                fExpectTestNet = false;
+                break;
+            case SCRIPT_ADDRESS:
+                nExpectedSize = 20; // Hash of CScript
+                fExpectTestNet = false;
+                break;
+
+            case PUBKEY_ADDRESS_TEST:
+                nExpectedSize = 20;
+                fExpectTestNet = true;
+                break;
+            case SCRIPT_ADDRESS_TEST:
+                nExpectedSize = 20;
+                fExpectTestNet = true;
+                break;
+
+            default:
+                return false;
+        }
+        return fExpectTestNet == fTestNet && vchData.size() == nExpectedSize;
+    }
+    bool IsScript() const
+    {
+        if (!IsValid())
+            return false;
+        if (fTestNet)
+            return nVersion == SCRIPT_ADDRESS_TEST;
+        return nVersion == SCRIPT_ADDRESS;
+    }
+
+    CPeercoinAddress(const CBitcoinAddress &address)
+    {
+        if (address.IsScript())
+            SetScriptHash160(address.GetHash160());
+        else
+            SetHash160(address.GetHash160());
+    }
+};
+
 /** A base58-encoded secret key */
 class CBitcoinSecret : public CBase58Data
 {
@@ -414,6 +484,41 @@ public:
 
     CBitcoinSecret()
     {
+    }
+};
+
+class CPeercoinSecret : public CBitcoinSecret
+{
+public:
+    void SetSecret(const CSecret& vchSecret, bool fCompressed)
+    {
+        assert(vchSecret.size() == 32);
+        SetData(128 + (fTestNet ? CPeercoinAddress::PUBKEY_ADDRESS_TEST : CPeercoinAddress::PUBKEY_ADDRESS), &vchSecret[0], vchSecret.size());
+        if (fCompressed)
+            vchData.push_back(1);
+    }
+
+    bool IsValid() const
+    {
+        bool fExpectTestNet = false;
+        switch(nVersion)
+        {
+             case (128 + CPeercoinAddress::PUBKEY_ADDRESS):
+                break;
+
+            case (128 + CPeercoinAddress::PUBKEY_ADDRESS_TEST):
+                fExpectTestNet = true;
+                break;
+
+            default:
+                return false;
+        }
+        return fExpectTestNet == fTestNet && (vchData.size() == 32 || (vchData.size() == 33 && vchData[32] == 1));
+    }
+
+    CPeercoinSecret(const CSecret& vchSecret, bool fCompressed)
+    {
+        SetSecret(vchSecret, fCompressed);
     }
 };
 

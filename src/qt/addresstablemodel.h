@@ -19,8 +19,9 @@ public:
     ~AddressTableModel();
 
     enum ColumnIndex {
-        Label = 0,   /**< User specified label */
-        Address = 1  /**< Bitcoin address */
+        Label = 0,          /**< User specified label */
+        Address = 1,        /**< Bitcoin address */
+        DividendAddress = 2 /**< Peercoin address */
     };
 
     enum RoleIndex {

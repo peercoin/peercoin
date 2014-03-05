@@ -120,6 +120,7 @@ void LogStackTrace();
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
+extern std::map<std::string, std::string> mapPeercoinArgs;
 extern bool fDebug;
 extern bool fPrintToConsole;
 extern bool fPrintToDebugger;
@@ -165,11 +166,15 @@ bool WildcardMatch(const char* psz, const char* mask);
 bool WildcardMatch(const std::string& str, const std::string& mask);
 int GetFilesize(FILE* file);
 boost::filesystem::path GetDefaultDataDir();
+boost::filesystem::path GetDefaultPeercoinDataDir();
 const boost::filesystem::path &GetDataDir(bool fNetSpecific = true);
+const boost::filesystem::path &GetPeercoinDataDir(bool fNetSpecific = true);
 boost::filesystem::path GetConfigFile();
+boost::filesystem::path GetPeercoinConfigFile();
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path &path, pid_t pid);
 void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
+void ReadPeercoinConfigFile(std::map<std::string, std::string>& mapSettingsRet);
 bool GetStartOnSystemStartup();
 bool SetStartOnSystemStartup(bool fAutoStart);
 void ShrinkDebugFile();
@@ -480,6 +485,7 @@ inline bool IsSwitchChar(char c)
  * @return command-line argument or default value
  */
 std::string GetArg(const std::string& strArg, const std::string& strDefault);
+std::string GetPeercoinArg(const std::string& strArg, const std::string& strDefault);
 
 /**
  * Return integer argument or default value
@@ -489,6 +495,7 @@ std::string GetArg(const std::string& strArg, const std::string& strDefault);
  * @return command-line argument (0 if invalid number) or default value
  */
 int64 GetArg(const std::string& strArg, int64 nDefault);
+int64 GetPeercoinArg(const std::string& strArg, int64 nDefault);
 
 /**
  * Return boolean argument or default value
@@ -498,6 +505,7 @@ int64 GetArg(const std::string& strArg, int64 nDefault);
  * @return command-line argument or default value
  */
 bool GetBoolArg(const std::string& strArg, bool fDefault=false);
+bool GetPeercoinBoolArg(const std::string& strArg, bool fDefault=false);
 
 /**
  * Set an argument if it doesn't already have a value

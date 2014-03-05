@@ -18,6 +18,20 @@ class CReserveKey;
 void ThreadRPCServer(void* parg);
 int CommandLineRPC(int argc, char *argv[]);
 
+std::string CallPeercoinRPC(const std::string &strMethod, const json_spirit::Array &params);
+
+class peercoin_rpc_error : public std::runtime_error
+{
+protected:
+    int nCode;
+
+public:
+    peercoin_rpc_error(int nCode, const std::string &sError) : std::runtime_error(sError), nCode(nCode)
+    {
+    }
+};
+
+
 /** Convert parameter values for RPC call from strings to command-specific JSON objects. */
 json_spirit::Array RPCConvertValues(const std::string &strMethod, const std::vector<std::string> &strParams);
 

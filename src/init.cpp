@@ -172,6 +172,7 @@ bool AppInit2(int argc, char* argv[])
         Shutdown(NULL);
     }
     ReadConfigFile(mapArgs, mapMultiArgs);
+    ReadPeercoinConfigFile(mapPeercoinArgs);
 #endif
 
     if (mapArgs.count("-?") || mapArgs.count("--help"))

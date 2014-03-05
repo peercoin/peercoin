@@ -63,6 +63,7 @@ using namespace boost;
 
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
+map<string, string> mapPeercoinArgs;
 bool fDebug = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugger = false;
@@ -558,10 +559,24 @@ std::string GetArg(const std::string& strArg, const std::string& strDefault)
     return strDefault;
 }
 
+std::string GetPeercoinArg(const std::string& strArg, const std::string& strDefault)
+{
+    if (mapPeercoinArgs.count(strArg))
+        return mapPeercoinArgs[strArg];
+    return strDefault;
+}
+
 int64 GetArg(const std::string& strArg, int64 nDefault)
 {
     if (mapArgs.count(strArg))
         return atoi64(mapArgs[strArg]);
+    return nDefault;
+}
+
+int64 GetPeercoinArg(const std::string& strArg, int64 nDefault)
+{
+    if (mapPeercoinArgs.count(strArg))
+        return atoi64(mapPeercoinArgs[strArg]);
     return nDefault;
 }
 
@@ -572,6 +587,17 @@ bool GetBoolArg(const std::string& strArg, bool fDefault)
         if (mapArgs[strArg].empty())
             return true;
         return (atoi(mapArgs[strArg]) != 0);
+    }
+    return fDefault;
+}
+
+bool GetPeercoinBoolArg(const std::string& strArg, bool fDefault)
+{
+    if (mapPeercoinArgs.count(strArg))
+    {
+        if (mapPeercoinArgs[strArg].empty())
+            return true;
+        return (atoi(mapPeercoinArgs[strArg]) != 0);
     }
     return fDefault;
 }
@@ -777,7 +803,7 @@ void FormatException(char* pszMessage, std::exception* pex, const char* pszThrea
     pszModule[0] = '\0';
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "ppcoin";
+    const char* pszModule = "peershares";
 #endif
     if (pex)
         snprintf(pszMessage, 1000,
@@ -854,7 +880,36 @@ boost::filesystem::path GetDefaultDataDir()
 
     // Windows: C:\Documents and Settings\username\Application Data\PPCoin
     // Mac: ~/Library/Application Support/PPCoin
-    // Unix: ~/.ppcoin
+    // Unix: ~/.peershares
+#ifdef WIN32
+    // Windows
+    return MyGetSpecialFolderPath(CSIDL_APPDATA, true) / "Peershares";
+#else
+    fs::path pathRet;
+    char* pszHome = getenv("HOME");
+    if (pszHome == NULL || strlen(pszHome) == 0)
+        pathRet = fs::path("/");
+    else
+        pathRet = fs::path(pszHome);
+#ifdef MAC_OSX
+    // Mac
+    pathRet /= "Library/Application Support";
+    fs::create_directory(pathRet);
+    return pathRet / "Peershares";
+#else
+    // Unix
+    return pathRet / ".peershares";
+#endif
+#endif
+}
+
+boost::filesystem::path GetDefaultPeercoinDataDir()
+{
+    namespace fs = boost::filesystem;
+
+    // Windows: C:\Documents and Settings\username\Application Data\PPCoin
+    // Mac: ~/Library/Application Support/PPCoin
+    // Unix: ~/.peershares
 #ifdef WIN32
     // Windows
     return MyGetSpecialFolderPath(CSIDL_APPDATA, true) / "PPCoin";
@@ -912,12 +967,54 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
     return path;
 }
 
+const boost::filesystem::path &GetPeercoinDataDir(bool fNetSpecific)
+{
+    namespace fs = boost::filesystem;
+
+    static fs::path pathCached[2];
+    static CCriticalSection csPathCached;
+    static bool cachedPath[2] = {false, false};
+
+    fs::path &path = pathCached[fNetSpecific];
+
+    // This can be called during exceptions by printf, so we cache the
+    // value so we don't have to do memory allocations after that.
+    if (cachedPath[fNetSpecific])
+        return path;
+
+    LOCK(csPathCached);
+
+    if (mapArgs.count("-peercoindatadir")) {
+        path = fs::system_complete(mapArgs["-peercoindatadir"]);
+        if (!fs::is_directory(path)) {
+            path = "";
+            return path;
+        }
+    } else {
+        path = GetDefaultPeercoinDataDir();
+    }
+    if (fNetSpecific && GetBoolArg("-testnet", false))
+        path /= "testnet";
+
+    cachedPath[fNetSpecific]=true;
+    return path;
+}
+
 boost::filesystem::path GetConfigFile()
 {
     namespace fs = boost::filesystem;
 
-    fs::path pathConfigFile(GetArg("-conf", "ppcoin.conf"));
+    fs::path pathConfigFile(GetArg("-conf", "peershares.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
+    return pathConfigFile;
+}
+
+boost::filesystem::path GetPeercoinConfigFile()
+{
+    namespace fs = boost::filesystem;
+
+    fs::path pathConfigFile(GetArg("-peercoinconf", "ppcoin.conf"));
+    if (!pathConfigFile.is_complete()) pathConfigFile = GetPeercoinDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
 
@@ -948,11 +1045,36 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
     }
 }
 
+void ReadPeercoinConfigFile(map<string, string>& mapSettingsRet)
+{
+    namespace fs = boost::filesystem;
+    namespace pod = boost::program_options::detail;
+
+    fs::ifstream streamConfig(GetPeercoinConfigFile());
+    if (!streamConfig.good())
+        return; // No Peercoin config file is OK
+
+    set<string> setOptions;
+    setOptions.insert("*");
+
+    for (pod::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
+    {
+        // Don't overwrite existing settings so command line settings override bitcoin.conf
+        string strKey = string("-") + it->string_key;
+        if (mapSettingsRet.count(strKey) == 0)
+        {
+            mapSettingsRet[strKey] = it->value[0];
+            //  interpret nofoo=1 as foo=0 (and nofoo=0 as foo=1) as long as foo not set)
+            InterpretNegativeSetting(strKey, mapSettingsRet);
+        }
+    }
+}
+
 boost::filesystem::path GetPidFile()
 {
     namespace fs = boost::filesystem;
 
-    fs::path pathPidFile(GetArg("-pid", "ppcoind.pid"));
+    fs::path pathPidFile(GetArg("-pid", "peershares.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -1205,7 +1327,7 @@ boost::filesystem::path static GetAutostartDir()
 
 boost::filesystem::path static GetAutostartFilePath()
 {
-    return GetAutostartDir() / "ppcoin.desktop";
+    return GetAutostartDir() / "peershares.desktop";
 }
 
 bool GetStartOnSystemStartup()

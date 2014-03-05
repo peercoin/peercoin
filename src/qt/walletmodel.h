@@ -103,6 +103,8 @@ public:
 
     UnlockContext requestUnlock();
 
+    void ExportPeercoinKeys(int &nExportedCount, int &nErrorCount);
+
 private:
     CWallet *wallet;
 
