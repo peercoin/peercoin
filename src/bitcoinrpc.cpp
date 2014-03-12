@@ -1576,15 +1576,25 @@ Value getrawtransaction(const Array& params, bool fHelp){
         throw runtime_error(
             "getrawtransaction <txid>\n"
             "Get raw tx from db");
+    bool fFound = false;
     uint256 hash;
     hash.SetHex(params[0].get_str());
-    CTxDB txdb("r");
-    CTxIndex txindex;
-    if (!txdb.ReadTxIndex(hash, txindex))
-        throw JSONRPCError(-5, "tx not found in index");
     CTransaction tx;
-    if (!tx.ReadFromDisk(txindex.pos))
-        throw JSONRPCError(-5, "tx read failed");
+    {
+        LOCK(mempool.cs);
+        if (mempool.exists(hash)){
+            tx = mempool.lookup(hash);
+            fFound = true;
+        }
+    }
+    if(!fFound){
+        CTxDB txdb("r");
+        CTxIndex txindex;
+        if (!txdb.ReadTxIndex(hash, txindex))
+            throw JSONRPCError(-5, "tx not found in index");
+        if (!tx.ReadFromDisk(txindex.pos))
+            throw JSONRPCError(-5, "tx read failed");
+    }
     CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
     ssTx << tx;
     string strHex = HexStr(ssTx.begin(), ssTx.end());
