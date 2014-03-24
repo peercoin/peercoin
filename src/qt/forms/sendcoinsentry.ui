@@ -50,7 +50,7 @@
     </widget>
    </item>
    <item row="5" column="1">
-    <widget class="BitcoinAmountField" name="payAmount"/>
+    <widget class="PPCoinAmountField" name="payAmount"/>
    </item>
    <item row="4" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -151,9 +151,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BitcoinAmountField</class>
+   <class>PPCoinAmountField</class>
    <extends>QLineEdit</extends>
-   <header>bitcoinamountfield.h</header>
+   <header>ppcoinamountfield.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
