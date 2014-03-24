@@ -1,12 +1,12 @@
-Name PPCoin
+Name Peercoin (PPCoin)
 
 RequestExecutionLevel highest
 SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.3.0
-!define COMPANY "PPCoin project"
+!define VERSION 0.4.0
+!define COMPANY "Peercoin (PPCoin) project"
 !define URL http://github.com/ppcoin/ppcoin/
 
 # MUI Symbol Definitions
