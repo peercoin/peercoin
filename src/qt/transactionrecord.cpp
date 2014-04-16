@@ -1,6 +1,7 @@
 #include "transactionrecord.h"
 
 #include "wallet.h"
+#include "base58.h"
 
 /* Return positive answer if transaction should be shown in list.
  */
@@ -53,7 +54,22 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             BOOST_FOREACH(const CTxOut& txout, wtx.vout)
             {
-                if(wallet->IsMine(txout))
+                TransactionRecord sub(hash, nTime);
+                CTxDestination address;
+                sub.idx = parts.size(); // sequence number
+                sub.credit = txout.nValue;
+                if (wtx.IsCoinBase())
+                {
+                    // Generated
+                    sub.type = TransactionRecord::Generated;
+                }
+                else if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address))
+                {
+                    // Received by Bitcoin Address
+                    sub.type = TransactionRecord::RecvWithAddress;
+                    sub.address = CBitcoinAddress(address).ToString();
+                }
+                else
                 {
                     TransactionRecord sub(hash, nTime);
                     CBitcoinAddress address;
@@ -64,12 +80,12 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                         // Generated
                         sub.type = TransactionRecord::Generated;
                     }
-                    else if (ExtractAddress(txout.scriptPubKey, address) && wallet->HaveKey(address))
-                    {
-                        // Received by Bitcoin Address
-                        sub.type = TransactionRecord::RecvWithAddress;
-                        sub.address = address.ToString();
-                    }
+                    // else if (ExtractAddress(txout.scriptPubKey, address) && wallet->HaveKey(address))
+                    // {
+                    //     // Received by Bitcoin Address
+                    //     sub.type = TransactionRecord::RecvWithAddress;
+                    //     sub.address = address.ToString();
+                    // }
                     else
                     {
                         // Received by IP connection (deprecated features), or a multisignature or other non-simple transaction
@@ -119,12 +135,12 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                         continue;
                     }
 
-                    CBitcoinAddress address;
-                    if (ExtractAddress(txout.scriptPubKey, address))
+                    CTxDestination address;
+                    if (ExtractDestination(txout.scriptPubKey, address))
                     {
                         // Sent to Bitcoin Address
                         sub.type = TransactionRecord::SendToAddress;
-                        sub.address = address.ToString();
+                        sub.address = CBitcoinAddress(address).ToString();
                     }
                     else
                     {
