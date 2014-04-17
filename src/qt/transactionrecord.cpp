@@ -54,43 +54,29 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             BOOST_FOREACH(const CTxOut& txout, wtx.vout)
             {
-                TransactionRecord sub(hash, nTime);
-                CTxDestination address;
-                sub.idx = parts.size(); // sequence number
-                sub.credit = txout.nValue;
-                if (wtx.IsCoinBase())
-                {
-                    // Generated
-                    sub.type = TransactionRecord::Generated;
-                }
-                else if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address))
-                {
-                    // Received by Bitcoin Address
-                    sub.type = TransactionRecord::RecvWithAddress;
-                    sub.address = CBitcoinAddress(address).ToString();
-                }
-                else
+                if(wallet->IsMine(txout))
                 {
                     TransactionRecord sub(hash, nTime);
-                    CBitcoinAddress address;
+                    CTxDestination address;
                     sub.idx = parts.size(); // sequence number
                     sub.credit = txout.nValue;
-                    if (wtx.IsCoinBase())
+
+                    if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address))
                     {
-                        // Generated
-                        sub.type = TransactionRecord::Generated;
+                        // Received by Bitcoin Address
+                        sub.type = TransactionRecord::RecvWithAddress;
+                        sub.address = CBitcoinAddress(address).ToString();
                     }
-                    // else if (ExtractAddress(txout.scriptPubKey, address) && wallet->HaveKey(address))
-                    // {
-                    //     // Received by Bitcoin Address
-                    //     sub.type = TransactionRecord::RecvWithAddress;
-                    //     sub.address = address.ToString();
-                    // }
                     else
                     {
                         // Received by IP connection (deprecated features), or a multisignature or other non-simple transaction
                         sub.type = TransactionRecord::RecvFromOther;
                         sub.address = mapValue["from"];
+                    }
+                    if (wtx.IsCoinBase())
+                    {
+                        // Generated
+                        sub.type = TransactionRecord::Generated;
                     }
 
                     parts.append(sub);
