@@ -100,6 +100,7 @@ class CTxIndex;
 
 void RegisterWallet(CWallet* pwalletIn);
 void UnregisterWallet(CWallet* pwalletIn);
+void SyncWithWallets(const CTransaction& tx, const CBlock* pblock = NULL, bool fUpdate = false, bool fConnect = true);
 bool ProcessBlock(CNode* pfrom, CBlock* pblock);
 bool CheckDiskSpace(uint64 nAdditionalBytes=0);
 FILE* OpenBlockFile(unsigned int nFile, unsigned int nBlockPos, const char* pszMode="rb");
@@ -123,8 +124,7 @@ std::string GetWarnings(std::string strFor);
 uint256 WantedByOrphan(const CBlock* pblockOrphan);
 const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake);
 void BitcoinMiner(CWallet *pwallet, bool fProofOfStake);
-
-
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock);
 
 
 
