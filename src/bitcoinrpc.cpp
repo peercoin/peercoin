@@ -3119,14 +3119,18 @@ Value signrawtransaction(const Array& params, bool fHelp)
 
 Value sendrawtransaction(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1 || params.size() > 1)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "sendrawtransaction <hex string>\n"
-            "Submits raw transaction (serialized, hex-encoded) to local node and network.");
+            "sendrawtransaction <hex string> [checkinputs=0]\n"
+            "Submits raw transaction (serialized, hex-encoded) to local node and network.\n"
+            "If checkinputs is non-zero, checks the validity of the inputs of the transaction before sending it.");
 
     // parse hex string from parameter
     vector<unsigned char> txData(ParseHex(params[0].get_str()));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+    bool fCheckInputs = false;
+    if (params.size() > 1)
+        fCheckInputs = (params[1].get_int() != 0);
     CTransaction tx;
 
     // deserialize binary data stream
@@ -3153,7 +3157,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     {
         // push to local node
         CTxDB txdb("r");
-        if (!tx.AcceptToMemoryPool(txdb, false))
+        if (!tx.AcceptToMemoryPool(txdb, fCheckInputs))
             throw JSONRPCError(-22, "TX rejected");
 
         SyncWithWallets(tx, NULL, true);
@@ -3878,6 +3882,7 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "createrawtransaction"   && n > 1) ConvertTo<Object>(params[1]);
     if (strMethod == "signrawtransaction"     && n > 1) ConvertTo<Array>(params[1]);
     if (strMethod == "signrawtransaction"     && n > 2) ConvertTo<Array>(params[2]);
+    if (strMethod == "sendrawtransaction"     && n > 1) ConvertTo<boost::int64_t>(params[1]);
 
     return params;
 }
