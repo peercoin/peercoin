@@ -16,6 +16,9 @@ unsigned int nProtocolV03TestSwitchTime = 1359781000;
 // Protocol switch time of v0.4 kernel protocol
 unsigned int nProtocolV04SwitchTime     = 1399300000;
 unsigned int nProtocolV04TestSwitchTime = 1395700000;
+// Protocol switch time of v0.5 protocol
+unsigned int nProtocolV05SwitchTime     = 1577887200; // 2020-01-01 14:00:00 UTC
+unsigned int nProtocolV05TestSwitchTime = 1577887200; // 2020-01-01 14:00:00 UTC
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 6-hour for production network and 20-minute for test network
@@ -40,6 +43,12 @@ bool IsProtocolV03(unsigned int nTimeCoinStake)
 bool IsProtocolV04(unsigned int nTimeBlock)
 {
     return (nTimeBlock >= (fTestNet? nProtocolV04TestSwitchTime : nProtocolV04SwitchTime));
+}
+
+// Whether the given block is subject to new v0.5 protocol
+bool IsProtocolV05(unsigned int nTimeBlock)
+{
+    return (nTimeBlock >= (fTestNet? nProtocolV05TestSwitchTime : nProtocolV05SwitchTime));
 }
 
 // Get the last stake modifier and its generation time from a given block

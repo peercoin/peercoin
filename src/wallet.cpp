@@ -354,7 +354,7 @@ void CWallet::WalletUpdateSpent(const CTransaction &tx)
                 CWalletTx& wtx = (*mi).second;
                 if (txin.prevout.n >= wtx.vout.size())
                     printf("WalletUpdateSpent: bad wtx %s\n", wtx.GetHash().ToString().c_str());
-                else if (!wtx.IsSpent(txin.prevout.n) && IsMine(wtx.vout[txin.prevout.n]))
+                else if (!wtx.IsSpent(txin.prevout.n) && (IsMine(wtx.vout[txin.prevout.n]) || IsMineForMintingOnly(wtx.vout[txin.prevout.n])))
                 {
                     printf("WalletUpdateSpent found spent coin %sppc %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
                     wtx.MarkSpent(txin.prevout.n);
@@ -514,7 +514,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const uint256 &hash, const CTransaction& 
         LOCK(cs_wallet);
         bool fExisted = mapWallet.count(hash);
         if (fExisted && !fUpdate) return false;
-        if (fExisted || IsMine(tx) || IsFromMe(tx))
+        if (fExisted || IsMine(tx) || IsFromMe(tx) || IsMineForMintingOnly(tx))
         {
             CWalletTx wtx(this,tx);
             // Get merkle branch if transaction was found in a block
@@ -943,6 +943,22 @@ int64 CWallet::GetBalance() const
     return nTotal;
 }
 
+int64 CWallet::GetMintingOnlyBalance() const
+{
+    int64 nTotal = 0;
+    {
+        LOCK(cs_wallet);
+        for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
+        {
+            const CWalletTx* pcoin = &(*it).second;
+            if (pcoin->IsConfirmed())
+                nTotal += pcoin->GetAvailableCreditForMintingOnly();
+        }
+    }
+
+    return nTotal;
+}
+
 int64 CWallet::GetUnconfirmedBalance() const
 {
     int64 nTotal = 0;
@@ -967,7 +983,10 @@ int64 CWallet::GetStake() const
     {
         const CWalletTx* pcoin = &(*it).second;
         if (pcoin->IsCoinStake() && pcoin->GetBlocksToMaturity() > 0 && pcoin->GetDepthInMainChain() > 0)
+        {
             nTotal += CWallet::GetCredit(*pcoin);
+            nTotal += CWallet::GetMintingOnlyCredit(*pcoin);
+        }
     }
     return nTotal;
 }
@@ -987,7 +1006,7 @@ int64 CWallet::GetImmatureBalance() const
 }
 
 // populate vCoins with vector of spendable COutputs
-void CWallet::AvailableCoins(vector<COutput>& vCoins, unsigned int nSpendTime, bool fOnlyConfirmed) const
+void CWallet::AvailableCoins(vector<COutput>& vCoins, unsigned int nSpendTime, bool fOnlyConfirmed, bool fMintingOnly) const
 {
     vCoins.clear();
 
@@ -1010,7 +1029,8 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, unsigned int nSpendTime, b
                 continue;
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
-                if (!(pcoin->IsSpent(i)) && IsMine(pcoin->vout[i]) &&
+                if (!(pcoin->IsSpent(i)) &&
+                    (fMintingOnly ? IsMineForMintingOnly(pcoin->vout[i]) : IsMine(pcoin->vout[i])) &&
                     !IsLockedCoin((*it).first, i) && pcoin->vout[i].nValue > 0)
                     vCoins.push_back(COutput(pcoin, i, pcoin->GetDepthInMainChain()));
             }
@@ -1176,6 +1196,29 @@ bool CWallet::SelectCoins(int64 nTargetValue, unsigned int nSpendTime, set<pair<
             SelectCoinsMinConf(nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet));
 }
 
+bool CWallet::SelectMintingOnlyCoins(unsigned int nSpendTime, set<pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64& nValueRet) const
+{
+    vector<COutput> vCoins;
+    AvailableCoins(vCoins, nSpendTime, true, true);
+
+    setCoinsRet.clear();
+    nValueRet = 0;
+
+    BOOST_FOREACH(COutput output, vCoins)
+    {
+        const CWalletTx *pcoin = output.tx;
+
+        int i = output.i;
+        int64 n = pcoin->vout[i].nValue;
+
+        pair<int64,pair<const CWalletTx*,unsigned int> > coin = make_pair(n,make_pair(pcoin, i));
+
+        setCoinsRet.insert(coin.second);
+        nValueRet += coin.first;
+    }
+
+    return true;
+}
 
 
 
@@ -1376,20 +1419,32 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
     // Choose coins to use
     int64 nBalance = GetBalance();
+    int64 nMintingOnlyBalance = GetMintingOnlyBalance();
     int64 nReserveBalance = 0;
     if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
-    if (nBalance <= nReserveBalance)
+    if (nBalance <= nReserveBalance && nMintingOnlyBalance == 0)
         return false;
     set<pair<const CWalletTx*,unsigned int> > setCoins;
     vector<const CWalletTx*> vwtxPrev;
     int64 nValueIn = 0;
-    if (!SelectCoins(nBalance - nReserveBalance, txNew.nTime, setCoins, nValueIn))
-        return false;
+    if (nBalance > nReserveBalance)
+    {
+        if (!SelectCoins(nBalance - nReserveBalance, txNew.nTime, setCoins, nValueIn))
+            return false;
+    }
+    if (nMintingOnlyBalance > 0)
+    {
+        int64 nMintingOnlyValueIn = 0;
+        if (!SelectMintingOnlyCoins(txNew.nTime, setCoins, nMintingOnlyValueIn))
+            return false;
+        nValueIn += nMintingOnlyValueIn;
+    }
     if (setCoins.empty())
         return false;
     int64 nCredit = 0;
     CScript scriptPubKeyKernel;
+    bool fMintingOnly = false;
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {
         CDiskTxPos postx;
@@ -1433,12 +1488,34 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 }
                 if (fDebug && GetBoolArg("-printcoinstake"))
                     printf("CreateCoinStake : parsed kernel type=%d\n", whichType);
-                if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH)
+                txnouttype subType = TX_NONSTANDARD;
+                if (whichType == TX_SCRIPTHASH)
+                {
+                    CScript subScript;
+                    if (!keystore.GetCScript(CScriptID(uint160(vSolutions[0])), subScript))
+                    {
+                        if (fDebug && GetBoolArg("-printcoinstake"))
+                            printf("CreateCoinStake : failed get script\n");
+                        break;
+                    }
+                    if (!Solver(subScript, subType, vSolutions))
+                    {
+                        if (fDebug && GetBoolArg("-printcoinstake"))
+                            printf("CreateCoinStake : failed parse script\n");
+                        break;
+                    }
+                    if (fDebug && GetBoolArg("-printcoinstake"))
+                        printf("CreateCoinStake : parsed sub script kernel type=%d\n", whichType);
+                }
+                if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && subType != TX_COLDMINTING)
                 {
                     if (fDebug && GetBoolArg("-printcoinstake"))
-                        printf("CreateCoinStake : no support for kernel type=%d\n", whichType);
-                    break;  // only support pay to public key and pay to address
+                        printf("CreateCoinStake : no support for kernel type=%d (subtype=%d)\n", whichType, subType);
+                    break;  // only support pay to public key, pay to address and cold minting
                 }
+                fMintingOnly = (subType == TX_COLDMINTING);
+                if (fMintingOnly && !IsProtocolV05(txNew.nTime - n))
+                    break; // Cold minting will not be accepted yet
                 if (whichType == TX_PUBKEYHASH) // pay to address type
                 {
                     // convert to pay to public key type
@@ -1470,7 +1547,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         if (fKernelFound)
             break; // if kernel is found stop searching
     }
-    if (nCredit == 0 || nCredit > nBalance - nReserveBalance)
+    if (nCredit == 0 || (nCredit > nBalance - nReserveBalance && !fMintingOnly))
         return false;
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {

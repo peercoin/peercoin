@@ -22,6 +22,8 @@ extern unsigned int nProtocolV03TestSwitchTime;
 bool IsProtocolV03(unsigned int nTimeCoinStake);
 // Whether a given block is subject to new v0.4 protocol
 bool IsProtocolV04(unsigned int nTimeBlock);
+// Whether a given block is subject to new v0.5 protocol
+bool IsProtocolV05(unsigned int nTimeBlock);
 
 // Compute the hash modifier for proof-of-stake
 bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64& nStakeModifier, bool& fGeneratedStakeModifier);

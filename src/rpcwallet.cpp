@@ -77,6 +77,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
     obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
+    obj.push_back(Pair("mintingonly",   ValueFromAmount(pwalletMain->GetMintingOnlyBalance())));
     obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetImmatureBalance())));
     obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
     obj.push_back(Pair("blocks",        (int)nBestHeight));
@@ -1601,3 +1602,49 @@ Value listlockunspent(const Array& params, bool fHelp)
     return ret;
 }
 
+
+Value addcoldmintingaddress(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 2 || params.size() > 3)
+    {
+        string msg = "addcoldmintingaddress <minting address> <spending address> [account]\n"
+            "Add a cold minting address to the wallet.\n"
+            "The coins sent to this address will be mintable only with the minting private key.\n"
+            "And they will be spendable only with the spending private key.\n"
+            "If [account] is specified, assign address to [account].";
+        throw runtime_error(msg);
+    }
+
+    string strAccount;
+    if (params.size() > 2)
+        strAccount = AccountFromValue(params[2]);
+
+    CBitcoinAddress mintingAddress(params[0].get_str());
+    CBitcoinAddress spendingAddress(params[1].get_str());
+
+    if (!mintingAddress.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid minting address");
+    if (!spendingAddress.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid spending address");
+
+    CKeyID mintingKeyID;
+    CKeyID spendingKeyID;
+
+    if (!mintingAddress.GetKeyID(mintingKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Minting address does not refer to a key");
+    if (!spendingAddress.GetKeyID(spendingKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Spending address does not refer to a key");
+
+    // Construct using pay-to-script-hash:
+    CScript inner;
+    inner.SetColdMinting(mintingKeyID, spendingKeyID);
+
+    CScriptID innerID = inner.GetID();
+    if (!pwalletMain->AddCScript(inner))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Failed to add script to wallet");
+
+    if (!pwalletMain->SetAddressBookName(innerID, strAccount))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Failed to set account");
+
+    return CBitcoinAddress(innerID).ToString();
+}

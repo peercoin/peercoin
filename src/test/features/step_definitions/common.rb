@@ -3,6 +3,7 @@ Before do
   @addresses = {}
   @nodes = {}
   @tx = {}
+  @pubkeys = {}
   protocol_v04_switch = Time.at(1395700000)
   net_start = protocol_v04_switch + 24 * 3600
   container_start = net_start + 90 * 24 * 3600
@@ -110,7 +111,7 @@ When(/^node "(.*?)" finds a block$/) do |node|
   @nodes[node].generate_stake
 end
 
-Then(/^all nodes should be at block "(.*?)"$/) do |block|
+Then(/^all nodes should (?:be at|reach) block "(.*?)"$/) do |block|
   begin
     wait_for do
       main = @nodes.values.map(&:top_hash)
@@ -188,4 +189,110 @@ end
 
 Then(/^node "(.*?)" should have (\d+) connection$/) do |arg1, arg2|
   expect(@nodes[arg1].info["connections"]).to eq(arg2.to_i)
+end
+
+When(/^node "(.*?)" retrieves the public key of the "(.*?)" address$/) do |arg1, arg2|
+  info = @nodes[arg1].rpc("validateaddress", @addresses[arg2])
+  @pubkeys[arg2] = info["pubkey"]
+end
+
+When(/^all nodes are after the protocol V05 switch time$/) do
+  source_path = File.expand_path('../../../../kernel.cpp', __FILE__)
+  if File.read(source_path) =~ /nProtocolV05TestSwitchTime *= *(\d+);/
+    switch_time = Time.at($1.to_i + 1)
+  else
+    raise "Protocol V05 switch time not found in #{source_path}"
+  end
+  @nodes.values.each do |node|
+    time = Time.parse(node.info["time"])
+    if time < switch_time
+      node.rpc("timetravel", (switch_time - time).to_i)
+    end
+  end
+  @time_shift = switch_time - Time.now
+end
+
+When(/^all nodes reach (\d+) transactions? in memory pool$/) do |arg1|
+  wait_for do
+    expect(@nodes.values.map { |node| node.rpc("getmininginfo")["pooledtx"] }).to eq(Array.new(@nodes.size, arg1.to_i))
+  end
+end
+
+When(/^node "(.*?)" finds blocks until just received coins are able to mint$/) do |arg1|
+  node = @nodes[arg1]
+  min_age = 60 * 60 * 24
+  blocks = 5
+  time_between_blocks = min_age / blocks
+  blocks.times do
+    time_travel(time_between_blocks)
+    node.rpc("generatestake")
+  end
+  max_age = 60 * 60 * 24 * 90
+  time_travel(max_age - min_age)
+  node.rpc("generatestake")
+  step 'all nodes reach the same height'
+end
+
+When(/^node "(.*?)" finds enough blocks for a Proof of Stake block to mint again$/) do |arg1|
+  step "node \"#{arg1}\" finds blocks until just received coins are able to mint"
+end
+
+Then(/^node "(.*?)" should be able to find a block "(.*?)"$/) do |arg1, arg2|
+  step "node \"#{arg1}\" finds a block \"#{arg2}\""
+end
+
+Then(/^node "(.*?)" should not be able to find a block "(.*?)"$/) do |arg1, arg2|
+  node = @nodes[arg1]
+  expect(node.rpc("generatestake", DEFAULT_TIMEOUT / 2)).to eq("0000000000000000000000000000000000000000000000000000000000000000")
+end
+
+Then(/^node "(.*?)" should have a stake of "([^"]*?)"$/) do |arg1, arg2|
+  wait_for do
+    expect(@nodes[arg1].info["stake"]).to eq(parse_number(arg2))
+  end
+end
+
+Then(/^node "(.*?)" should have a stake of "(.*?)" \+ the reward on block "(.*?)"$/) do |arg1, arg2, arg3|
+  node = @nodes[arg1]
+  expected_stake = parse_number(arg2)
+  block = @blocks[arg3]
+
+  block_info = node.rpc("getblock", block)
+  reward = block_info["mint"]
+  expected_stake += reward
+  expect(node.info["stake"]).to eq(expected_stake)
+end
+
+When(/^node "(.*?)" finds enough blocks for a Proof of Stake block to mature$/) do |arg1|
+  node = @nodes[arg1]
+  (5 + 1).times do
+    time_travel 30 * 60
+    node.generate_stake
+  end
+end
+
+When(/^node "(.*?)" dumps the private key of "(.*?)"$/) do |arg1, arg2|
+  node = @nodes[arg1]
+  address_name = arg2
+
+  @private_keys ||= {}
+  @private_keys[address_name] = node.rpc("dumpprivkey", @addresses[address_name])
+end
+
+When(/^node "(.*?)" imports the private key of "(.*?)"$/) do |arg1, arg2|
+  node = @nodes[arg1]
+  address_name = arg2
+
+  node.rpc("importprivkey", @private_keys[address_name])
+end
+
+Then(/^node "(.*?)" should have a balance of "(.*?)" \+ the reward on block "(.*?)"$/) do |arg1, arg2, arg3|
+  node = @nodes[arg1]
+  expected_balance = parse_number(arg2)
+  block = @blocks[arg3]
+
+  block_info = node.rpc("getblock", block)
+  reward = block_info["mint"]
+  expected_balance += reward
+  expect(node.info["balance"]).to eq(expected_balance)
 end

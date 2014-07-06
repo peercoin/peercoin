@@ -72,6 +72,7 @@ class CWallet : public CCryptoKeyStore
 {
 private:
     bool SelectCoins(int64 nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64& nValueRet) const;
+    bool SelectMintingOnlyCoins(unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64& nValueRet) const;
 
     CWalletDB *pwalletdbEncryption;
 
@@ -127,7 +128,7 @@ public:
     // check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf) { return nWalletMaxVersion >= wf; }
 
-    void AvailableCoins(std::vector<COutput>& vCoins, unsigned int nSpendTime, bool fOnlyConfirmed=true) const;
+    void AvailableCoins(std::vector<COutput>& vCoins, unsigned int nSpendTime, bool fOnlyConfirmed=true, bool fMintingOnly=false) const;
     bool SelectCoinsMinConf(int64 nTargetValue, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64& nValueRet) const;
     bool IsLockedCoin(uint256 hash, unsigned int n) const;
     void LockCoin(COutPoint& output);
@@ -179,6 +180,7 @@ public:
     void ReacceptWalletTransactions();
     void ResendWalletTransactions();
     int64 GetBalance() const;
+    int64 GetMintingOnlyBalance() const;
     int64 GetUnconfirmedBalance() const;
     int64 GetImmatureBalance() const;
     int64 GetStake() const;
@@ -218,6 +220,16 @@ public:
             throw std::runtime_error("CWallet::GetCredit() : value out of range");
         return (IsMine(txout) ? txout.nValue : 0);
     }
+    bool IsMineForMintingOnly(const CTxOut& txout) const
+    {
+        return ::IsMineForMintingOnly(*this, txout.scriptPubKey);
+    }
+    int64 GetMintingOnlyCredit(const CTxOut& txout) const
+    {
+        if (!MoneyRange(txout.nValue))
+            throw std::runtime_error("CWallet::GetMintingOnlyCredit() : value out of range");
+        return (IsMineForMintingOnly(txout) ? txout.nValue : 0);
+    }
     bool IsChange(const CTxOut& txout) const;
     int64 GetChange(const CTxOut& txout) const
     {
@@ -229,6 +241,13 @@ public:
     {
         BOOST_FOREACH(const CTxOut& txout, tx.vout)
             if (IsMine(txout))
+                return true;
+        return false;
+    }
+    bool IsMineForMintingOnly(const CTransaction& tx) const
+    {
+        BOOST_FOREACH(const CTxOut& txout, tx.vout)
+            if (IsMineForMintingOnly(txout))
                 return true;
         return false;
     }
@@ -255,6 +274,17 @@ public:
             nCredit += GetCredit(txout);
             if (!MoneyRange(nCredit))
                 throw std::runtime_error("CWallet::GetCredit() : value out of range");
+        }
+        return nCredit;
+    }
+    int64 GetMintingOnlyCredit(const CTransaction& tx) const
+    {
+        int64 nCredit = 0;
+        BOOST_FOREACH(const CTxOut& txout, tx.vout)
+        {
+            nCredit += GetMintingOnlyCredit(txout);
+            if (!MoneyRange(nCredit))
+                throw std::runtime_error("CWallet::GetMintingOnlyCredit() : value out of range");
         }
         return nCredit;
     }
@@ -634,6 +664,27 @@ public:
 
         nAvailableCreditCached = nCredit;
         fAvailableCreditCached = true;
+        return nCredit;
+    }
+
+    int64 GetAvailableCreditForMintingOnly() const
+    {
+        // Must wait until coinbase is safely deep enough in the chain before valuing it
+        if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
+            return 0;
+
+        int64 nCredit = 0;
+        for (unsigned int i = 0; i < vout.size(); i++)
+        {
+            if (!IsSpent(i))
+            {
+                const CTxOut &txout = vout[i];
+                nCredit += pwallet->GetMintingOnlyCredit(txout);
+                if (!MoneyRange(nCredit))
+                    throw std::runtime_error("CWalletTx::GetAvailableCreditForMintingOnly() : value out of range");
+            }
+        }
+
         return nCredit;
     }
 

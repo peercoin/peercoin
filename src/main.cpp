@@ -2748,6 +2748,20 @@ bool CBlock::SignBlock(const CKeyStore& keystore)
             return false;
         return key.Sign(GetHash(), vchBlockSig);
     }
+    else if (whichType == TX_SCRIPTHASH)
+    {
+        CScript subscript;
+        if (!keystore.GetCScript(CScriptID(uint160(vSolutions[0])), subscript))
+            return false;
+        if (!Solver(subscript, whichType, vSolutions))
+            return false;
+        if (whichType != TX_COLDMINTING)
+            return false;
+        CKey key;
+        if (!keystore.GetKey(uint160(vSolutions[0]), key))
+            return false;
+        return key.Sign(GetHash(), vchBlockSig);
+    }
     return false;
 }
 
@@ -2773,6 +2787,49 @@ bool CBlock::CheckBlockSignature() const
             return false;
         return key.Verify(GetHash(), vchBlockSig);
     }
+    else if (whichType == TX_SCRIPTHASH)
+    {
+        // Output is a pay-to-script-hash
+        // Only allowed with cold minting
+
+        if (!IsProtocolV05(nTime))
+            return false;
+
+        if (!IsProofOfStake())
+            return false;
+
+        // CoinStake scriptSig should contain 3 pushes: the signature, the pubkey and the cold minting script
+        CScript scriptSig = vtx[1].vin[0].scriptSig;
+        if (!scriptSig.IsPushOnly())
+            return false;
+        vector<vector<unsigned char> > stack;
+        if (!EvalScript(stack, scriptSig, CTransaction(), 0, 0, 0))
+            return false;
+        if (stack.size() != 3)
+            return false;
+
+        // Verify the script is a cold minting script
+        const valtype& scriptSerialized = stack.back();
+        CScript script(scriptSerialized.begin(), scriptSerialized.end());
+        if (!Solver(script, whichType, vSolutions))
+            return false;
+        if (whichType != TX_COLDMINTING)
+            return false;
+
+        // Verify the scriptSig pubkey matches the minting key
+        valtype& vchPubKey = stack[1];
+        if (Hash160(vchPubKey) != uint160(vSolutions[0]))
+            return false;
+
+        // Verify the block signature with the minting key
+        CKey key;
+        if (!key.SetPubKey(vchPubKey))
+            return false;
+        if (vchBlockSig.empty())
+            return false;
+        return key.Verify(GetHash(), vchBlockSig);
+    }
+
     return false;
 }
 
@@ -5177,7 +5234,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 }
 
 #ifdef TESTING
-void BitcoinMiner(CWallet *pwallet, bool fProofOfStake, bool fGenerateSingleBlock)
+void BitcoinMiner(CWallet *pwallet, bool fProofOfStake, bool fGenerateSingleBlock, int nTimeout)
 #else
 void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 #endif
@@ -5192,7 +5249,16 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 
     string strMintMessage = _("Info: Minting suspended due to locked wallet."); 
 
+#ifdef TESTING
+    int64 nStartTime = GetTime();
+#endif
+
     try { loop {
+#ifdef TESTING
+        if (nTimeout && (GetTime() - nStartTime > nTimeout))
+            return;
+#endif
+
         while (vNodes.empty())
             MilliSleep(1000);
 
@@ -5379,7 +5445,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet)
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
 #ifdef TESTING
-        minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false, false));
+        minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false, false, 0));
 #else
         minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false));
 #endif
