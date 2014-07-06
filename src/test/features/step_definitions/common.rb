@@ -3,6 +3,10 @@ Before do
   @addresses = {}
   @nodes = {}
   @tx = {}
+  protocol_v04_switch = Time.at(1395700000)
+  net_start = protocol_v04_switch + 24 * 3600
+  container_start = net_start + 90 * 24 * 3600
+  @time_shift = container_start - Time.now
 end
 
 Given(/^a network with nodes? (.+) able to mint$/) do |node_names|
@@ -16,9 +20,9 @@ Given(/^a network with nodes? (.+) able to mint$/) do |node_names|
       image: "peercoinnet/#{available_nodes[i]}",
       links: @nodes.values.map(&:name),
       args: {
-        debug: true,
-        timetravel: 30*24*3600,
+        timetravel: @time_shift,
       },
+      display_name: name,
     }
     node = CoinContainer.new(options)
     @nodes[name] = node
@@ -102,7 +106,7 @@ Given(/^node "(.*?)" generates a new address "(.*?)"$/) do |arg1, arg2|
 end
 
 When(/^node "(.*?)" sends "(.*?)" to "(.*?)" through transaction "(.*?)"$/) do |arg1, arg2, arg3, arg4|
-  @tx[arg4] = @nodes[arg1].rpc "sendtoaddress", @addresses[arg3], arg2.to_f
+  @tx[arg4] = @nodes[arg1].rpc "sendtoaddress", @addresses[arg3], parse_number(arg2)
 end
 
 Then(/^transaction "(.*?)" on node "(.*?)" should have (\d+) confirmations?$/) do |arg1, arg2, arg3|

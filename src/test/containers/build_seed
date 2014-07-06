@@ -2,8 +2,10 @@
 
 require File.expand_path('../boot', __FILE__)
 
-# Move to genesis time
-shift = (Time.at(1345090000) - Time.now).to_i + 24 * 3600
+# Move just after genesis time
+genesis_time = Time.at(1345090000)
+seed_start = genesis_time + 24 * 3600
+shift = seed_start - Time.now
 
 puts "Creating seed"
 seed = CoinContainer.new(

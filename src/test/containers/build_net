@@ -2,11 +2,15 @@
 
 require File.expand_path('../boot', __FILE__)
 
+protocol_v04_switch = Time.at(1395700000)
+net_start = protocol_v04_switch + 24 * 3600
+shift = net_start - Time.now
+
 puts "Starting seed"
 seed = CoinContainer.new(
   image: 'peercoin/seed',
   args: {
-    "timetravel" => -60*24*3600,
+    "timetravel" => shift,
   }
 )
 seed.wait_for_boot
@@ -19,7 +23,7 @@ nodes = node_names.map do |name|
     links: [seed.name],
     delete_at_exit: true,
     args: {
-      "timetravel" => -60*24*3600,
+      "timetravel" => shift,
     }
   )
 end

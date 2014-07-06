@@ -178,7 +178,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet);
 /** Run the stake minter thread */
 void MintStake(boost::thread_group& threadGroup, CWallet* pwallet);
 /** Generate a new block, without valid proof-of-work */
-CBlockTemplate* CreateNewBlock(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake=false);
+CBlockTemplate* CreateNewBlock(CReserveKey& reservekey, CWallet* pwallet = NULL, bool fProofOfStake=false);
 /** Modify the extranonce in a block */
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 /** Do mining precalculation */
