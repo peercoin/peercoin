@@ -2665,7 +2665,7 @@ extern map<uint256, CAlert> mapAlerts;
 Value sendalert(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 6)
-	throw runtime_error(
+        throw runtime_error(
             "sendalert <message> <privatekey> <minver> <maxver> <priority> <id> [cancelupto]\n"
             "<message> is the alert text message\n"
             "<privatekey> is hex string of alert master private key\n"
@@ -3168,6 +3168,23 @@ Value sendrawtransaction(const Array& params, bool fHelp)
 }
 
 
+Value getrawmempool(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getrawmempool\n"
+            "Returns all transaction ids in memory pool.");
+
+    vector<uint256> vtxid;
+    mempool.queryHashes(vtxid);
+
+    Array a;
+    BOOST_FOREACH(const uint256& hash, vtxid)
+        a.push_back(hash.ToString());
+
+    return a;
+}
+
 //
 // Call Table
 //
@@ -3237,6 +3254,7 @@ static const CRPCCommand vRPCCommands[] =
     { "decoderawtransaction",   &decoderawtransaction,   false},
     { "signrawtransaction",     &signrawtransaction,     false},
     { "sendrawtransaction",     &sendrawtransaction,     false},
+    { "getrawmempool",          &getrawmempool,          true },
 };
 
 CRPCTable::CRPCTable()
