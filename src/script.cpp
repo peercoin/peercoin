@@ -1093,6 +1093,12 @@ uint256 SignatureHash(CScript scriptCode, const CTransaction& txTo, unsigned int
         txTmp.vin.resize(1);
     }
 
+    // Blank out timestamp
+    if (nHashType & SIGHASH_ANYTIME)
+    {
+        txTmp.nTime = 0;
+    }
+
     // Serialize and hash
     CDataStream ss(SER_GETHASH, 0);
     ss.reserve(10000);
