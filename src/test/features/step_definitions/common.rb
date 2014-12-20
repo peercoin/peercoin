@@ -43,6 +43,43 @@ Given(/^a network with nodes? (.+) able to mint$/) do |node_names|
   end
 end
 
+Given(/^a node "(.*?)" connected only to node "(.*?)"$/) do |arg1, arg2|
+  other_node = @nodes[arg2]
+  name = arg1
+  options = {
+    image: "peercoinnet/a",
+    links: [other_node.name],
+    link_with_connect: true,
+    args: {
+      timetravel: @time_shift,
+    },
+    remove_wallet_before_startup: true,
+    display_name: name,
+  }
+  node = CoinContainer.new(options)
+  @nodes[name] = node
+  node.wait_for_boot
+  wait_for do
+    expect(node.info["connections"]).to eq(1)
+  end
+end
+
+Given(/^a node "(.*?)" with an empty wallet$/) do |arg1|
+  name = arg1
+  options = {
+    image: "peercoinnet/a",
+    links: @nodes.values.map(&:name),
+    args: {
+      timetravel: @time_shift,
+    },
+    remove_wallet_before_startup: true,
+    display_name: name,
+  }
+  node = CoinContainer.new(options)
+  @nodes[name] = node
+  node.wait_for_boot
+end
+
 After do
   if @nodes
     require 'thread'
@@ -63,6 +100,12 @@ When(/^node "(.*?)" finds a block "([^"]*?)"$/) do |node, block|
   @blocks[block] = @nodes[node].generate_stake
 end
 
+When(/^node "(.*?)" finds a block "([^"]*?)" not received by node "([^"]*?)"$/) do |node, block, other|
+  time_travel(5)
+  @nodes[other].rpc("ignorenextblock")
+  @blocks[block] = @nodes[node].generate_stake
+end
+
 When(/^node "(.*?)" finds a block$/) do |node|
   @nodes[node].generate_stake
 end
@@ -74,11 +117,27 @@ Then(/^all nodes should be at block "(.*?)"$/) do |block|
       main.all? { |hash| hash == @blocks[block] }
     end
   rescue
-    raise "Not at block #{block}: #{@nodes.values.map(&:top_hash).map { |hash| @blocks.key(hash) }.inspect}"
+    require 'pp'
+    pp @blocks
+    raise "Not at block #{block}: #{@nodes.values.map(&:top_hash).map { |hash| @blocks.key(hash) || hash }.inspect}"
   end
 end
 
-Given(/^all nodes reach the same height$/) do
+Then(/^nodes? (.+) (?:should be at|should reach|reach|reaches|is at|are at) block "(.*?)"$/) do |node_names, block|
+  nodes = node_names.scan(/"(.*?)"/).map { |name, | @nodes[name] }
+  begin
+    wait_for do
+      main = nodes.map(&:top_hash)
+      main.all? { |hash| hash == @blocks[block] }
+    end
+  rescue
+    require 'pp'
+    pp @blocks
+    raise "Not at block #{block}: #{nodes.map(&:top_hash).map { |hash| @blocks.key(hash) || hash }.inspect}"
+  end
+end
+
+Given(/^all nodes (?:should )?reach the same height$/) do
   wait_for do
     expect(@nodes.values.map(&:block_count).uniq.size).to eq(1)
   end
@@ -119,4 +178,14 @@ Then(/^all nodes should (?:have|reach) (\d+) transactions? in memory pool$/) do 
   wait_for do
     expect(@nodes.values.map { |node| node.rpc("getmininginfo")["pooledtx"] }).to eq(@nodes.map { arg1.to_i })
   end
+end
+
+Given(/^node "(.*?)" (?:should |)(?:reaches|have) a balance of "([^"]*?)"$/) do |arg1, arg2|
+  wait_for do
+    expect(@nodes[arg1].rpc("getbalance")).to eq(parse_number(arg2))
+  end
+end
+
+Then(/^node "(.*?)" should have (\d+) connection$/) do |arg1, arg2|
+  expect(@nodes[arg1].info["connections"]).to eq(arg2.to_i)
 end

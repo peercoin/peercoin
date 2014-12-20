@@ -63,6 +63,7 @@ int64 CTransaction::nMinRelayTxFee = MIN_RELAY_TX_FEE;
 CMedianFilter<int> cPeerBlockCounts(8, 0); // Amount of blocks that other nodes claim to have
 
 map<uint256, CBlock*> mapOrphanBlocks;
+map<uint256, CBlock*> mapDuplicateStakeBlocks;
 multimap<uint256, CBlock*> mapOrphanBlocksByPrev;
 set<pair<COutPoint, unsigned int> > setStakeSeenOrphan;
 map<uint256, uint256> mapProofOfStake;
@@ -80,6 +81,7 @@ int64 nHPSTimerStart = 0;
 
 #ifdef TESTING
 uint256 hashSingleStakeBlock;
+int nBlocksToIgnore = 0;
 #endif
 
 // Settings
@@ -2496,8 +2498,57 @@ bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uns
     return (nFound >= nRequired);
 }
 
+void CleanUpOldDuplicateStakeBlocks()
+{
+    int64 maxAge = 24 * 60 * 60;
+    int64 minTime = GetAdjustedTime() - maxAge;
+
+    BOOST_FOREACH(PAIRTYPE(const uint256, CBlock*)& item, mapDuplicateStakeBlocks)
+    {
+        const uint256& hash = item.first;
+        CBlock* block = item.second;
+        if (block)
+        {
+            if (block->GetBlockTime() < minTime)
+            {
+                mapDuplicateStakeBlocks.erase(hash);
+                delete block;
+            }
+        }
+        else
+        {
+            if (mapBlockIndex.count(hash) == 0)
+                mapDuplicateStakeBlocks.erase(hash);
+        }
+    }
+}
+
+static bool CheckProofOfStake(CValidationState &state, const CBlock* pblock, const uint256& hash)
+{
+    if (pblock->IsProofOfStake())
+    {
+        uint256 hashProofOfStake = 0;
+        if (!CheckProofOfStake(state, pblock->vtx[1], pblock->nBits, hashProofOfStake))
+            return false;
+        if (!mapProofOfStake.count(hash)) // add to mapProofOfStake
+            mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
+    }
+    return true;
+}
+
 bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBlockPos *dbp)
 {
+#ifdef TESTING
+    static set<uint256> setIgnoredBlockHashes;
+    if (nBlocksToIgnore)
+    {
+        nBlocksToIgnore--;
+        setIgnoredBlockHashes.insert(pblock->GetHash());
+        return error("ProcessBlock() : block ignored");
+    }
+    if (setIgnoredBlockHashes.count(pblock->GetHash()))
+        return error("ProcessBlock() : block ignored");
+#endif
     // Check for duplicate
     uint256 hash = pblock->GetHash();
     if (mapBlockIndex.count(hash))
@@ -2512,13 +2563,20 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
 
         if (pindexBest->IsProofOfStake() && proofOfStake.first == pindexBest->prevoutStake)
         {
-            // The best block's stake is reused, we cancel the best block
+            // The best block's stake is reused so we revert the best block and propagate the duplicate so that other nodes do the same
 
             // Only reject the best block if the duplicate is correctly signed
             if (!pblock->CheckBlockSignature())
                 return state.DoS(100, error("ProcessBlock() : Invalid signature in duplicate block"));
 
-            printf("ProcessBlock() : block uses the same stake as the best block. Canceling the best block\n");
+            printf("ProcessBlock() : block %s uses the same stake as the best block. Cancelling the best block\n", hash.GetHex().c_str());
+
+            // Save the block to be able to accept it if a new chain is built from it despite the rejection
+            mapDuplicateStakeBlocks[hash] = new CBlock(*pblock);
+
+            // Mark the best block as duplicate
+            // We don't need to store the block because its index will kept in mapBlockIndex
+            mapDuplicateStakeBlocks[pindexBest->GetBlockHash()] = NULL;
 
             // Relay the duplicate block so that other nodes are aware of the duplication
             RelayBlock(*pblock, hash);
@@ -2545,16 +2603,10 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
         return error("ProcessBlock() : CheckBlock FAILED");
 
     // ppcoin: verify hash target and signature of coinstake tx
-    if (pblock->IsProofOfStake())
+    if (!CheckProofOfStake(state, pblock, hash))
     {
-        uint256 hashProofOfStake = 0;
-        if (!CheckProofOfStake(state, pblock->vtx[1], pblock->nBits, hashProofOfStake))
-        {
-            printf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str());
-            return false; // do not error here as we expect this during initial block download
-        }
-        if (!mapProofOfStake.count(hash)) // add to mapProofOfStake
-            mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
+        printf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str());
+        return false; // do not error here as we expect this during initial block download
     }
 
     CBlockIndex* pcheckpoint = GetLastSyncCheckpoint();
@@ -2576,6 +2628,38 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
     // ppcoin: ask for pending sync-checkpoint if any
     if (!IsInitialBlockDownload())
         AskForPendingSyncCheckpoint(pfrom);
+
+    // ppcoin: the parent block was previously rejected because of duplicate stake
+    if (mapDuplicateStakeBlocks.count(pblock->hashPrevBlock))
+    {
+        printf("ProcessBlock() : parent block was previously rejected because of stake duplication. Reaccepting parent\n");
+        CBlock* pprevBlock = mapDuplicateStakeBlocks[pblock->hashPrevBlock];
+        if (mapBlockIndex.count(pblock->hashPrevBlock))
+        {
+            // The previous block was the highest block before removal, we just mark it as valid again
+            if (mapBlockIndex.count(pblock->hashPrevBlock) == 0)
+                return error("ProcessBlock() : previous highest block is not in index");
+            mapBlockIndex[pblock->hashPrevBlock]->nStatus &= ~BLOCK_FAILED_VALID;
+        }
+        else
+        {
+            if (!pprevBlock)
+                return error("ProcessBlock() : Previous block not stored nor in block index");
+            if (!pprevBlock->CheckBlock(state))
+                return error("ProcessBlock() : CheckBlock FAILED on previous block");
+            if (!CheckProofOfStake(state, pprevBlock, pprevBlock->GetHash()))
+                return error("ProcessBlock(): proof of stake check failed on previous block");
+            if (!pprevBlock->AcceptBlock(state, dbp))
+                return error("ProcessBlock() : AcceptBlock FAILED on previous block");
+        }
+        mapDuplicateStakeBlocks.erase(pblock->hashPrevBlock);
+        if (pprevBlock)
+            delete pprevBlock;
+    }
+
+    // ppcoin: remove old duplicated blocks from memory
+    if (mapDuplicateStakeBlocks.size())
+        CleanUpOldDuplicateStakeBlocks();
 
     // If we don't already have its previous block, shunt it off to holding area until we get it
     if (pblock->hashPrevBlock != 0 && !mapBlockIndex.count(pblock->hashPrevBlock))
@@ -5093,7 +5177,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 }
 
 #ifdef TESTING
-void BitcoinMiner(CWallet *pwallet, bool fProofOfStake, bool fGenerateSingleBlock, CBlockIndex *parent)
+void BitcoinMiner(CWallet *pwallet, bool fProofOfStake, bool fGenerateSingleBlock)
 #else
 void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 #endif
@@ -5123,15 +5207,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
         // Create new block
         //
         unsigned int nTransactionsUpdatedLast = nTransactionsUpdated;
-#ifdef TESTING
-        CBlockIndex* pindexPrev;
-        if (parent)
-            pindexPrev = parent;
-        else
-            pindexPrev = pindexBest;
-#else
         CBlockIndex* pindexPrev = pindexBest;
-#endif
 
         auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlock(reservekey, pwallet, fProofOfStake));
         if (!pblocktemplate.get())
@@ -5303,7 +5379,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet)
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
 #ifdef TESTING
-        minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false, false, (CBlockIndex*)NULL));
+        minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false, false));
 #else
         minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false));
 #endif
