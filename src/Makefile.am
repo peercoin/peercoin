@@ -83,8 +83,11 @@ if BUILD_BITCOIND
   bin_PROGRAMS += peercoind
 endif
 
-if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += peercoin-cli peercoin-tx
+if BUILD_BITCOIN_CLI
+  bin_PROGRAMS += peercoin-cli
+endif
+if BUILD_BITCOIN_TX
+  bin_PROGRAMS += peertcoin-tx
 endif
 
 .PHONY: FORCE check-symbols check-security
