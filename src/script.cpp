@@ -217,7 +217,7 @@ const char* GetOpName(opcodetype opcode)
     case OP_NOP10                  : return "OP_NOP10";
 
     // peercoin
-    case OP_COINSTAKE              : return "OP_COINSTAKE";
+    case OP_MINT                   : return "OP_MINT";
 
 
 
@@ -373,9 +373,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 }
                 break;
 
-                case OP_COINSTAKE:
+                case OP_MINT:
                 {
-                    CBigNum bn(txTo.IsCoinStake() ? 1 : 0);
+                    CBigNum bn(txTo.IsRestrictedCoinStake() ? 1 : 0);
                     stack.push_back(bn.getvch());
                 }
                 break;
@@ -1150,7 +1150,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
         mTemplates.insert(make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
 
         // ppcoin: Cold minting script
-        mTemplates.insert(make_pair(TX_COLDMINTING, CScript() << OP_DUP << OP_HASH160 << OP_COINSTAKE << OP_IF << OP_PUBKEYHASH << OP_ELSE << OP_PUBKEYHASH << OP_ENDIF << OP_EQUALVERIFY << OP_CHECKSIG));
+        mTemplates.insert(make_pair(TX_COLDMINTING, CScript() << OP_DUP << OP_HASH160 << OP_MINT << OP_IF << OP_PUBKEYHASH << OP_ELSE << OP_PUBKEYHASH << OP_ENDIF << OP_EQUALVERIFY << OP_CHECKSIG));
     }
 
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
@@ -1844,7 +1844,7 @@ void CScript::SetColdMinting(const CKeyID& mintingKey, const CKeyID& spendingKey
     *this
         << OP_DUP
         << OP_HASH160
-        << OP_COINSTAKE
+        << OP_MINT
         << OP_IF
         << mintingKey
         << OP_ELSE

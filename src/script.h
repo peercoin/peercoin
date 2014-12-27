@@ -204,7 +204,7 @@ enum opcodetype
 
 
     // peercoin
-    OP_COINSTAKE = 0xc0,
+    OP_MINT = 0xc0,
 
 
     // template matching params
