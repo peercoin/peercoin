@@ -1233,6 +1233,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64> >& vecSend,
                     return false;
                 }
                 CScript scriptChange;
+		unsigned int nInputTimeMax = 0;
                 BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
                 {
                     int64 nCredit = pcoin.first->vout[pcoin.second].nValue;
@@ -1241,7 +1242,12 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64> >& vecSend,
                     //a chance at a free transaction.
                     dPriority += (double)nCredit * (pcoin.first->GetDepthInMainChain()+1);
                     scriptChange = pcoin.first->vout[pcoin.second].scriptPubKey;
+		    if (pcoin.first->nTime > nInputTimeMax)
+		    {
+			nInputTimeMax = pcoin.first->nTime;
+		    }
                 }
+		wtxNew.nTime = nInputTimeMax;
 
                 int64 nChange = nValueIn - nValue - nFeeRet;
                 // The following if statement should be removed once enough miners
