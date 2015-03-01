@@ -2430,7 +2430,22 @@ Value sendalert(const Array& params, bool fHelp)
     return result;
 }
 
+Value getrawmempool(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getrawmempool\n"
+            "Returns all transaction ids in memory pool.");
 
+    vector<uint256> vtxid;
+    mempool.queryHashes(vtxid);
+
+    Array a;
+    BOOST_FOREACH(const uint256& hash, vtxid)
+        a.push_back(hash.ToString());
+
+    return a;
+}
 
 //
 // Call Table
@@ -2495,6 +2510,7 @@ static const CRPCCommand vRPCCommands[] =
     { "repairwallet",           &repairwallet,           false},
     { "makekeypair",            &makekeypair,            false},
     { "sendalert",              &sendalert,              false},
+    { "getrawmempool",          &getrawmempool,          true},
 };
 
 CRPCTable::CRPCTable()
