@@ -999,6 +999,7 @@ void MapPort(bool /* unused fMapPort */)
 static const char *strDNSSeed[][2] = {
     {"seed", "seed.ppcoin.net"},
     {"seedppc", "seedppc.ppcoin.net"},
+    {"7server", "ppcseed.ns.7server.net"},
     {"altcointech", "dnsseed.ppc.altcointech.net"},
     {"diandianbi", "seed.diandianbi.org"},
     {"tnseed", "tnseed.ppcoin.net"},
