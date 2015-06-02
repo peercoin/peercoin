@@ -1,2 +1,0 @@
-debian/bin/bitcoind usr/bin
-src/bitcoind usr/lib/bitcoin
