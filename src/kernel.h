@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 The PPCoin developers
+// Copyright (c) 2012-2015 The Peercoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef PPCOIN_KERNEL_H
@@ -19,11 +19,15 @@ extern unsigned int nProtocolV03SwitchTime;
 extern unsigned int nProtocolV03TestSwitchTime;
 // TxDB upgrade time for v0.4 protocol
 extern unsigned int nProtocolV04UpgradeTime;
+// TxDB Upgrade time for v0.5 protocol
+extern unsigned int nProtocolV05UpgradeTime;
 
 // Whether a given coinstake is subject to new v0.3 protocol
 bool IsProtocolV03(unsigned int nTimeCoinStake);
 // Whether a given block is subject to new v0.4 protocol
 bool IsProtocolV04(unsigned int nTimeBlock);
+// Whether a given transaction is subject to new v0.5 protocol
+bool IsProtocolV05(unsigned int nTimeTx);
 
 // Compute the hash modifier for proof-of-stake
 bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64& nStakeModifier, bool& fGeneratedStakeModifier);

@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2011-2013 The PPCoin developers
+// Copyright (c) 2011-2015 The Peercoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -481,7 +481,9 @@ bool CTransaction::CheckTransaction() const
         if (txout.IsEmpty() && (!IsCoinBase()) && (!IsCoinStake()))
             return DoS(100, error("CTransaction::CheckTransaction() : txout empty for user transaction"));
         // ppcoin: enforce minimum output amount
-        if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT)
+        // v0.5 protocol: zero amount allowed
+        if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT &&
+            !(IsProtocolV05(nTime) && (txout.nValue == 0)))
             return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue below minimum"));
         if (txout.nValue > MAX_MONEY)
             return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue too high"));
@@ -2372,7 +2374,9 @@ bool LoadBlockIndex(bool fAllowNew)
             CTxDB txdb;
             if (!txdb.WriteV04UpgradeTime(0))
                 return error("LoadBlockIndex() : failed to init upgrade info");
-            printf(" Upgrade Info: v0.4+ txdb initialization\n");
+            if (!txdb.WriteV05UpgradeTime(0))
+                return error("LoadBlockIndex() : failed to init upgrade info");
+            printf(" Upgrade Info: v0.5+ txdb initialization\n");
             txdb.Close();
         }
     }
@@ -2401,15 +2405,34 @@ bool LoadBlockIndex(bool fAllowNew)
         if (txdb.ReadV04UpgradeTime(nProtocolV04UpgradeTime))
         {
             if (nProtocolV04UpgradeTime)
-                printf(" Upgrade Info: txdb upgrade to v0.4 detected at timestamp %d\n", nProtocolV04UpgradeTime);
+                printf(" Upgrade Info: txdb upgrade v0.3->v0.4 detected at timestamp %d\n", nProtocolV04UpgradeTime);
             else
-                printf(" Upgrade Info: v0.4+ no txdb upgrade detected.\n");
+                printf(" Upgrade Info: no txdb upgrade v0.3->v0.4 detected.\n");
         }
         else
         {
             nProtocolV04UpgradeTime = GetTime();
-            printf(" Upgrade Info: upgrading txdb from v0.3 at timestamp %u\n", nProtocolV04UpgradeTime);
+            printf(" Upgrade Info: upgrading txdb from v0.3->v0.5 at timestamp %u\n", nProtocolV04UpgradeTime);
             if (!txdb.WriteV04UpgradeTime(nProtocolV04UpgradeTime))
+                return error("LoadBlockIndex() : failed to write upgrade info");
+        }
+        txdb.Close();
+    }
+
+    {
+        CTxDB txdb;
+        if (txdb.ReadV05UpgradeTime(nProtocolV05UpgradeTime))
+        {
+            if (nProtocolV05UpgradeTime)
+                printf(" Upgrade Info: txdb upgrade to v0.5 detected at timestamp %d\n", nProtocolV05UpgradeTime);
+            else
+                printf(" Upgrade Info: v0.5+ no txdb upgrade detected.\n");
+        }
+        else
+        {
+            nProtocolV05UpgradeTime = GetTime();
+            printf(" Upgrade Info: upgrading txdb to v0.5 at timestamp %u\n", nProtocolV05UpgradeTime);
+            if (!txdb.WriteV05UpgradeTime(nProtocolV05UpgradeTime))
                 return error("LoadBlockIndex() : failed to write upgrade info");
         }
         txdb.Close();
@@ -2556,7 +2579,15 @@ string GetWarnings(string strFor)
     if (IsProtocolV04(nProtocolV04UpgradeTime + 60*60*24)) // 1 day margin
     {
         nPriority = 5000;
-        strStatusBar = strRPC = "WARNING: Blockchain redownload required approaching or past v0.4 upgrade deadline.";
+        strStatusBar = strRPC = "WARNING: Blockchain redownload required upgrading from pre v0.4 wallet.";
+    }
+    else if (IsProtocolV05(nProtocolV05UpgradeTime + 60*60*24)) // 1 day margin
+    {
+        // v0.5 protocol does not change modifier computation from v0.4.
+        // So redownload of blockchain is not required for late upgrades, 
+        // but still recommended.
+        nPriority = 200;
+        strStatusBar = strRPC = "WARNING: Blockchain redownload recommended approaching or past v0.5 upgrade deadline.";
     }
 
     // Alerts
