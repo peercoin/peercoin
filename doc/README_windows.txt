@@ -1,6 +1,6 @@
-Peercoin (PPCoin) 0.4.0 BETA
+Peercoin (PPCoin) 0.5.0 BETA
 
-Copyright (c) 2011-2014 Peercoin (PPCoin) Developers
+Copyright (c) 2011-2015 Peercoin (PPCoin) Developers
 Distributed under the MIT/X11 software license, see the accompanying
 file license.txt or http://www.opensource.org/licenses/mit-license.php.
 This product includes software developed by the OpenSSL Project for use in
@@ -10,7 +10,7 @@ cryptographic software written by Eric Young (eay@cryptsoft.com).
 
 Intro
 -----
-PPCoin is a free open source project derived from Bitcoin, with
+Peercoin (PPCoin) is a free open source project derived from Bitcoin, with
 the goal of providing a long-term energy-efficient crypto-currency.
 Built on the foundation of Bitcoin, innovations such as proof-of-stake
 help further advance the field of crypto-currency.
@@ -36,13 +36,13 @@ but allowing incoming connections helps the PPCoin network.
 Upgrade
 -------
 All your existing coins/transactions should be intact with the upgrade.
-To upgrade from 0.3, first backup wallet in qt menu or by command line
+To upgrade from 0.4, first backup wallet in qt menu or by command line
 ppcoind backupwallet <destination_backup_file>
 Then shutdown ppcoind by
 ppcoind stop
-Uninstall v0.3 client, download and install v0.4 client.
-If upgrade is performed after upgrade deadline, blockchain re-download is
-required.
+Uninstall v0.4 client, download and install v0.5 client.
+If upgrade is performed after or close to upgrade deadline, blockchain
+re-download is required.
 
 
 See the documentation/wiki at github:
