@@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.4.1
+!define VERSION 0.4.2
 !define COMPANY "PPCoin project"
 !define URL http://github.com/ppcoin/ppcoin/
 
@@ -45,13 +45,13 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile ppcoin-0.4.1-win32-setup.exe
+OutFile ppcoin-0.4.2-win32-setup.exe
 InstallDir $PROGRAMFILES\PPCoin
 CRCCheck on
 XPStyle on
 BrandingText " "
 ShowInstDetails show
-VIProductVersion 0.4.1.0
+VIProductVersion 0.4.2.0
 VIAddVersionKey ProductName PPCoin
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
