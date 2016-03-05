@@ -1,4 +1,4 @@
-Peercoin (PPCoin) 0.5.1 BETA
+Peercoin (PPCoin) 0.5.2 BETA
 
 Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
 Distributed under the MIT/X11 software license, see the accompanying
@@ -39,7 +39,7 @@ ppcoind backupwallet <destination_backup_file>
 Then shutdown ppcoind by
 ppcoind stop
 Uninstall v0.4 client, download and install v0.5 client.
-Start up the new ppcoind (0.5.1).
+Start up the new ppcoind (0.5.2).
 If upgrade is performed after or close to upgrade deadline then blockchain
 re-download is required.
 
