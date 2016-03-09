@@ -188,8 +188,10 @@ bool AppInit2(int argc, char* argv[])
             "  -pid=<file>      \t\t  " + _("Specify pid file (default: ppcoind.pid)") + "\n" +
             "  -gen             \t\t  " + _("Generate coins") + "\n" +
             "  -gen=0           \t\t  " + _("Don't generate coins") + "\n" +
+#ifdef QT_GUI
             "  -min             \t\t  " + _("Start minimized") + "\n" +
             "  -splash          \t\t  " + _("Show splash screen on startup (default: 1)") + "\n" +
+#endif
             "  -datadir=<dir>   \t\t  " + _("Specify data directory") + "\n" +
             "  -dbcache=<n>     \t\t  " + _("Set database cache size in megabytes (default: 25)") + "\n" +
             "  -dblogsize=<n>   \t\t  " + _("Set database disk log size in megabytes (default: 100)") + "\n" +
