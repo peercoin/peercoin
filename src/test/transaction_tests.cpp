@@ -66,31 +66,31 @@ BOOST_AUTO_TEST_CASE(test_Get)
     MapPrevTx dummyInputs;
     std::vector<CTransaction> dummyTransactions = SetupDummyInputs(keystore, dummyInputs);
 
-    CTransaction t1;
-    t1.vin.resize(3);
-    t1.vin[0].prevout.hash = dummyTransactions[0].GetHash();
-    t1.vin[0].prevout.n = 1;
-    t1.vin[0].scriptSig << std::vector<unsigned char>(65, 0);
-    t1.vin[1].prevout.hash = dummyTransactions[1].GetHash();
-    t1.vin[1].prevout.n = 0;
-    t1.vin[1].scriptSig << std::vector<unsigned char>(65, 0) << std::vector<unsigned char>(33, 4);
-    t1.vin[2].prevout.hash = dummyTransactions[1].GetHash();
-    t1.vin[2].prevout.n = 1;
-    t1.vin[2].scriptSig << std::vector<unsigned char>(65, 0) << std::vector<unsigned char>(33, 4);
-    t1.vout.resize(2);
-    t1.vout[0].nValue = 90*CENT;
-    t1.vout[0].scriptPubKey << OP_1;
+    CTransaction t;
+    t.vin.resize(3);
+    t.vin[0].prevout.hash = dummyTransactions[0].GetHash();
+    t.vin[0].prevout.n = 1;
+    t.vin[0].scriptSig << std::vector<unsigned char>(65, 0);
+    t.vin[1].prevout.hash = dummyTransactions[1].GetHash();
+    t.vin[1].prevout.n = 0;
+    t.vin[1].scriptSig << std::vector<unsigned char>(65, 0) << std::vector<unsigned char>(33, 4);
+    t.vin[2].prevout.hash = dummyTransactions[1].GetHash();
+    t.vin[2].prevout.n = 1;
+    t.vin[2].scriptSig << std::vector<unsigned char>(65, 0) << std::vector<unsigned char>(33, 4);
+    t.vout.resize(2);
+    t.vout[0].nValue = 90*CENT;
+    t.vout[0].scriptPubKey << OP_1;
 
-    BOOST_CHECK(t1.AreInputsStandard(dummyInputs));
-    BOOST_CHECK_EQUAL(t1.GetValueIn(dummyInputs), (50+21+22)*CENT);
+    BOOST_CHECK(t.AreInputsStandard(dummyInputs));
+    BOOST_CHECK_EQUAL(t.GetValueIn(dummyInputs), (50+21+22)*CENT);
 
     // Adding extra junk to the scriptSig should make it non-standard:
-    t1.vin[0].scriptSig << OP_11;
-    BOOST_CHECK(!t1.AreInputsStandard(dummyInputs));
+    t.vin[0].scriptSig << OP_11;
+    BOOST_CHECK(!t.AreInputsStandard(dummyInputs));
 
     // ... as should not having enough:
-    t1.vin[0].scriptSig = CScript();
-    BOOST_CHECK(!t1.AreInputsStandard(dummyInputs));
+    t.vin[0].scriptSig = CScript();
+    BOOST_CHECK(!t.AreInputsStandard(dummyInputs));
 }
 
 BOOST_AUTO_TEST_CASE(test_GetThrow)
@@ -101,17 +101,17 @@ BOOST_AUTO_TEST_CASE(test_GetThrow)
 
     MapPrevTx missingInputs;
 
-    CTransaction t1;
-    t1.vin.resize(3);
-    t1.vin[0].prevout.hash = dummyTransactions[0].GetHash();
-    t1.vin[0].prevout.n = 0;
-    t1.vin[1].prevout.hash = dummyTransactions[1].GetHash();;
-    t1.vin[1].prevout.n = 0;
-    t1.vin[2].prevout.hash = dummyTransactions[1].GetHash();;
-    t1.vin[2].prevout.n = 1;
-    t1.vout.resize(2);
-    t1.vout[0].nValue = 90*CENT;
-    t1.vout[0].scriptPubKey << OP_1;
+    CTransaction t;
+    t.vin.resize(3);
+    t.vin[0].prevout.hash = dummyTransactions[0].GetHash();
+    t.vin[0].prevout.n = 0;
+    t.vin[1].prevout.hash = dummyTransactions[1].GetHash();;
+    t.vin[1].prevout.n = 0;
+    t.vin[2].prevout.hash = dummyTransactions[1].GetHash();;
+    t.vin[2].prevout.n = 1;
+    t.vout.resize(2);
+    t.vout[0].nValue = 90*CENT;
+    t.vout[0].scriptPubKey << OP_1;
 
     t.vout[0].scriptPubKey = CScript() << OP_1;
     BOOST_CHECK(t.IsStandard());
