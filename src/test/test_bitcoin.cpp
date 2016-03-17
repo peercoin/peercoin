@@ -6,10 +6,10 @@
 
 CWallet* pwalletMain;
 
-extern bool fPrintToConsole;
+extern bool fPrintToDebugger;
 struct TestingSetup {
     TestingSetup() {
-        fPrintToConsole = true; // don't want to write to debug.log file
+        fPrintToDebugger = true; // don't want to write to debug.log file
         pwalletMain = new CWallet();
         RegisterWallet(pwalletMain);
     }
