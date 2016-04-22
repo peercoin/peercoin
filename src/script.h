@@ -1,23 +1,22 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2012 The PPCoin developers
+// Copyright (c) 2012 The Peercoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef H_BITCOIN_SCRIPT
 #define H_BITCOIN_SCRIPT
 
+#include "base58.h"
+
 #include <string>
 #include <vector>
 
 #include <boost/foreach.hpp>
-#include <boost/variant.hpp>
-
-#include "keystore.h"
-#include "bignum.h"
 
 typedef std::vector<unsigned char> valtype;
 
 class CTransaction;
+class CKeyStore;
 
 /** Signature hash types/flags */
 enum
@@ -39,20 +38,6 @@ enum txnouttype
     TX_MULTISIG,
     TX_NULL_DATA,
 };
-
-class CNoDestination {
-public:
-    friend bool operator==(const CNoDestination &a, const CNoDestination &b) { return true; }
-    friend bool operator<(const CNoDestination &a, const CNoDestination &b) { return true; }
-};
-
-/** A txout script template with a specific destination. It is either:
- *  * CNoDestination: no destination set
- *  * CKeyID: TX_PUBKEYHASH destination
- *  * CScriptID: TX_SCRIPTHASH destination
- *  A CTxDestination is the internal data type encoded in a CBitcoinAddress
- */
-typedef boost::variant<CNoDestination, CKeyID, CScriptID> CTxDestination;
 
 const char* GetTxnOutputType(txnouttype t);
 
@@ -340,12 +325,6 @@ public:
         return *this;
     }
 
-    CScript& operator<<(const CPubKey& key)
-    {
-        std::vector<unsigned char> vchKey = key.Raw();
-        return (*this) << vchKey;
-    }
-
     CScript& operator<<(const CBigNum& b)
     {
         *this << b.getvch();
@@ -541,8 +520,13 @@ public:
     }
 
 
-    void SetDestination(const CTxDestination& address);
+    void SetBitcoinAddress(const CBitcoinAddress& address);
+    void SetBitcoinAddress(const std::vector<unsigned char>& vchPubKey)
+    {
+        SetBitcoinAddress(CBitcoinAddress(vchPubKey));
+    }
     void SetMultisig(int nRequired, const std::vector<CKey>& keys);
+    void SetPayToScriptHash(const CScript& subscript);
 
 
     void PrintHex() const
@@ -577,11 +561,6 @@ public:
     {
         printf("%s\n", ToString().c_str());
     }
-
-    CScriptID GetID() const
-    {
-        return CScriptID(Hash160(*this));
-    }
 };
 
 
@@ -593,14 +572,9 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::v
 int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned char> >& vSolutions);
 bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType);
 bool IsMine(const CKeyStore& keystore, const CScript& scriptPubKey);
-bool IsMine(const CKeyStore& keystore, const CTxDestination &dest);
-bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet);
-bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<CTxDestination>& addressRet, int& nRequiredRet);
-bool SignSignature(const CKeyStore& keystore, const CScript& fromPubKey, CTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
+bool ExtractAddress(const CScript& scriptPubKey, CBitcoinAddress& addressRet);
+bool ExtractAddresses(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<CBitcoinAddress>& addressRet, int& nRequiredRet);
 bool SignSignature(const CKeyStore& keystore, const CTransaction& txFrom, CTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
 bool VerifySignature(const CTransaction& txFrom, const CTransaction& txTo, unsigned int nIn, bool fValidatePayToScriptHash, int nHashType);
-bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn, bool fValidatePayToScriptHash, int nHashType);
-CScript CombineSignatures(CScript scriptPubKey, const CTransaction& txTo, unsigned int nIn, const CScript& scriptSig1, const CScript& scriptSig2);
-
 
 #endif

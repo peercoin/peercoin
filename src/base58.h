@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin Developers
-// Copyright (c) 2011-2012 The PPCoin developers
+// Copyright (c) 2011-2012 The Peercoin developers
+// Copyright (c) 2013-2014 Peershares Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,7 +21,6 @@
 #include <vector>
 #include "bignum.h"
 #include "key.h"
-#include "script.h"
 
 static const char* pszBase58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
@@ -260,42 +260,32 @@ public:
  * Script-hash-addresses have version 117 (or 196 testnet).
  * The data vector contains RIPEMD160(SHA256(cscript)), where cscript is the serialized redemption script.
  */
-class CBitcoinAddress;
-class CBitcoinAddressVisitor : public boost::static_visitor<bool>
-{
-private:
-    CBitcoinAddress *addr;
-public:
-    CBitcoinAddressVisitor(CBitcoinAddress *addrIn) : addr(addrIn) { }
-    bool operator()(const CKeyID &id) const;
-    bool operator()(const CScriptID &id) const;
-    bool operator()(const CNoDestination &no) const;
-};
-
 class CBitcoinAddress : public CBase58Data
 {
 public:
     enum
     {
-        PUBKEY_ADDRESS = 55,  // ppcoin: addresses begin with 'P'
-        SCRIPT_ADDRESS = 117, // ppcoin: addresses begin with 'p'
-        PUBKEY_ADDRESS_TEST = 111,
-        SCRIPT_ADDRESS_TEST = 196,
+        PUBKEY_ADDRESS = 63,  // Peershare addresses begin with 'S'
+        SCRIPT_ADDRESS = 125, // Peershare script addresses begin with 's'
+        PUBKEY_ADDRESS_TEST = 32,
+        SCRIPT_ADDRESS_TEST = 212,
     };
 
-    bool Set(const CKeyID &id) {
-        SetData(fTestNet ? PUBKEY_ADDRESS_TEST : PUBKEY_ADDRESS, &id, 20);
-        return true;
-    }
-
-    bool Set(const CScriptID &id) {
-        SetData(fTestNet ? SCRIPT_ADDRESS_TEST : SCRIPT_ADDRESS, &id, 20);
-        return true;
-    }
-
-    bool Set(const CTxDestination &dest)
+    bool SetHash160(const uint160& hash160)
     {
-        return boost::apply_visitor(CBitcoinAddressVisitor(this), dest);
+        SetData(fTestNet ? PUBKEY_ADDRESS_TEST : PUBKEY_ADDRESS, &hash160, 20);
+        return true;
+    }
+
+    void SetPubKey(const std::vector<unsigned char>& vchPubKey)
+    {
+        SetHash160(Hash160(vchPubKey));
+    }
+
+    bool SetScriptHash160(const uint160& hash160)
+    {
+        SetData(fTestNet ? SCRIPT_ADDRESS_TEST : SCRIPT_ADDRESS, &hash160, 20);
+        return true;
     }
 
     bool IsValid() const
@@ -327,14 +317,27 @@ public:
         }
         return fExpectTestNet == fTestNet && vchData.size() == nExpectedSize;
     }
+    bool IsScript() const
+    {
+        if (!IsValid())
+            return false;
+        if (fTestNet)
+            return nVersion == SCRIPT_ADDRESS_TEST;
+        return nVersion == SCRIPT_ADDRESS;
+    }
 
     CBitcoinAddress()
     {
     }
 
-    CBitcoinAddress(const CTxDestination &dest)
+    CBitcoinAddress(uint160 hash160In)
     {
-        Set(dest);
+        SetHash160(hash160In);
+    }
+
+    CBitcoinAddress(const std::vector<unsigned char>& vchPubKey)
+    {
+        SetPubKey(vchPubKey);
     }
 
     CBitcoinAddress(const std::string& strAddress)
@@ -347,57 +350,89 @@ public:
         SetString(pszAddress);
     }
 
-    CTxDestination Get() const {
-        if (!IsValid())
-            return CNoDestination();
-        switch (nVersion) {
-        case PUBKEY_ADDRESS:
-        case PUBKEY_ADDRESS_TEST: {
-            uint160 id;
-            memcpy(&id, &vchData[0], 20);
-            return CKeyID(id);
-        }
-        case SCRIPT_ADDRESS:
-        case SCRIPT_ADDRESS_TEST: {
-            uint160 id;
-            memcpy(&id, &vchData[0], 20);
-            return CScriptID(id);
-        }
-        }
-        return CNoDestination();
-    }
-
-    bool GetKeyID(CKeyID &keyID) const {
-        if (!IsValid())
-            return false;
-        switch (nVersion) {
-        case PUBKEY_ADDRESS:
-        case PUBKEY_ADDRESS_TEST: {
-            uint160 id;
-            memcpy(&id, &vchData[0], 20);
-            keyID = CKeyID(id);
-            return true;
-        }
-        default: return false;
-        }
-    }
-
-    bool IsScript() const {
-        if (!IsValid())
-            return false;
-        switch (nVersion) {
-        case SCRIPT_ADDRESS:
-        case SCRIPT_ADDRESS_TEST: {
-            return true;
-        }
-        default: return false;
-        }
+    uint160 GetHash160() const
+    {
+        assert(vchData.size() == 20);
+        uint160 hash160;
+        memcpy(&hash160, &vchData[0], 20);
+        return hash160;
     }
 };
 
-bool inline CBitcoinAddressVisitor::operator()(const CKeyID &id) const         { return addr->Set(id); }
-bool inline CBitcoinAddressVisitor::operator()(const CScriptID &id) const      { return addr->Set(id); }
-bool inline CBitcoinAddressVisitor::operator()(const CNoDestination &id) const { return false; }
+class CPeercoinAddress : public CBitcoinAddress
+{
+public:
+    enum
+    {
+        PUBKEY_ADDRESS = 55,  // Peercoin: addresses begin with 'P'
+        SCRIPT_ADDRESS = 117, // Peercoin: addresses begin with 'p'
+        PUBKEY_ADDRESS_TEST = 111,
+        SCRIPT_ADDRESS_TEST = 196,
+    };
+
+    bool SetHash160(const uint160& hash160)
+    {
+        SetData(fTestNet ? PUBKEY_ADDRESS_TEST : PUBKEY_ADDRESS, &hash160, 20);
+        return true;
+    }
+
+    bool SetScriptHash160(const uint160& hash160)
+    {
+        SetData(fTestNet ? SCRIPT_ADDRESS_TEST : SCRIPT_ADDRESS, &hash160, 20);
+        return true;
+    }
+
+    bool IsValid() const
+    {
+        unsigned int nExpectedSize = 20;
+        bool fExpectTestNet = false;
+        switch(nVersion)
+        {
+            case PUBKEY_ADDRESS:
+                nExpectedSize = 20; // Hash of public key
+                fExpectTestNet = false;
+                break;
+            case SCRIPT_ADDRESS:
+                nExpectedSize = 20; // Hash of CScript
+                fExpectTestNet = false;
+                break;
+
+            case PUBKEY_ADDRESS_TEST:
+                nExpectedSize = 20;
+                fExpectTestNet = true;
+                break;
+            case SCRIPT_ADDRESS_TEST:
+                nExpectedSize = 20;
+                fExpectTestNet = true;
+                break;
+
+            default:
+                return false;
+        }
+        return fExpectTestNet == fTestNet && vchData.size() == nExpectedSize;
+    }
+    bool IsScript() const
+    {
+        if (!IsValid())
+            return false;
+        if (fTestNet)
+            return nVersion == SCRIPT_ADDRESS_TEST;
+        return nVersion == SCRIPT_ADDRESS;
+    }
+
+    CPeercoinAddress(uint160 hash160In)
+    {
+        SetHash160(hash160In);
+    }
+
+    CPeercoinAddress(const CBitcoinAddress &address)
+    {
+        if (address.IsScript())
+            SetScriptHash160(address.GetHash160());
+        else
+            SetHash160(address.GetHash160());
+    }
+};
 
 /** A base58-encoded secret key */
 class CBitcoinSecret : public CBase58Data
@@ -455,6 +490,41 @@ public:
 
     CBitcoinSecret()
     {
+    }
+};
+
+class CPeercoinSecret : public CBitcoinSecret
+{
+public:
+    void SetSecret(const CSecret& vchSecret, bool fCompressed)
+    {
+        assert(vchSecret.size() == 32);
+        SetData(128 + (fTestNet ? CPeercoinAddress::PUBKEY_ADDRESS_TEST : CPeercoinAddress::PUBKEY_ADDRESS), &vchSecret[0], vchSecret.size());
+        if (fCompressed)
+            vchData.push_back(1);
+    }
+
+    bool IsValid() const
+    {
+        bool fExpectTestNet = false;
+        switch(nVersion)
+        {
+             case (128 + CPeercoinAddress::PUBKEY_ADDRESS):
+                break;
+
+            case (128 + CPeercoinAddress::PUBKEY_ADDRESS_TEST):
+                fExpectTestNet = true;
+                break;
+
+            default:
+                return false;
+        }
+        return fExpectTestNet == fTestNet && (vchData.size() == 32 || (vchData.size() == 33 && vchData[32] == 1));
+    }
+
+    CPeercoinSecret(const CSecret& vchSecret, bool fCompressed)
+    {
+        SetSecret(vchSecret, fCompressed);
     }
 };
 

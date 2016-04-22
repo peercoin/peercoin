@@ -70,7 +70,7 @@ public:
         QString hex; // is filled with the transaction hash if status is "OK"
     };
 
-    // Send coins to a list of recipients
+    // Send shares to a list of recipients
     SendCoinsReturn sendCoins(const QList<SendCoinsRecipient> &recipients);
 
     // Wallet encryption
@@ -102,6 +102,8 @@ public:
     };
 
     UnlockContext requestUnlock();
+
+    void ExportPeercoinKeys(int &nExportedCount, int &nErrorCount);
 
 private:
     CWallet *wallet;

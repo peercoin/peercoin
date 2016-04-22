@@ -168,8 +168,8 @@ MainOptionsPage::MainOptionsPage(QWidget *parent):
 {
     QVBoxLayout *layout = new QVBoxLayout();
 
-    bitcoin_at_startup = new QCheckBox(tr("&Start PPCoin on window system startup"));
-    bitcoin_at_startup->setToolTip(tr("Automatically start PPCoin after the computer is turned on"));
+    bitcoin_at_startup = new QCheckBox(tr("&Start Peershares on system startup"));
+    bitcoin_at_startup->setToolTip(tr("Automatically start Peershares after the computer is turned on"));
     layout->addWidget(bitcoin_at_startup);
 
 #ifndef Q_WS_MAC
@@ -183,11 +183,11 @@ MainOptionsPage::MainOptionsPage(QWidget *parent):
 #endif
 
     map_port_upnp = new QCheckBox(tr("Map port using &UPnP"));
-    map_port_upnp->setToolTip(tr("Automatically open the PPCoin client port on the router. This only works when your router supports UPnP and it is enabled."));
+    map_port_upnp->setToolTip(tr("Automatically open the Peershares client port on the router. This only works when your router supports UPnP and it is enabled."));
     layout->addWidget(map_port_upnp);
 
     connect_socks4 = new QCheckBox(tr("&Connect through SOCKS4 proxy:"));
-    connect_socks4->setToolTip(tr("Connect to the Bitcon network through a SOCKS4 proxy (e.g. when connecting through Tor)"));
+    connect_socks4->setToolTip(tr("Connect to the Peershares network through a SOCKS4 proxy (e.g. when connecting through Tor)"));
     layout->addWidget(connect_socks4);
 
     QHBoxLayout *proxy_hbox = new QHBoxLayout();
@@ -213,15 +213,16 @@ MainOptionsPage::MainOptionsPage(QWidget *parent):
     proxy_hbox->addStretch(1);
 
     layout->addLayout(proxy_hbox);
-    QLabel *fee_help = new QLabel(tr("Optional transaction fee per kB that helps make sure your transactions are processed quickly. Most transactions are 1 kB. Fee 0.01 recommended."));
+    QLabel *fee_help = new QLabel(tr("Mandatory network transaction fee per kB transferred. Most transactions are 1 kB and incur a 0.01 share fee. Note: transfer size may increase depending on the number of input transactions totaled to fund the output."));
     fee_help->setWordWrap(true);
     layout->addWidget(fee_help);
 
     QHBoxLayout *fee_hbox = new QHBoxLayout();
     fee_hbox->addSpacing(18);
-    QLabel *fee_label = new QLabel(tr("Pay transaction &fee"));
+    QLabel *fee_label = new QLabel(tr("Additional network &fee"));
     fee_hbox->addWidget(fee_label);
     fee_edit = new BitcoinAmountField();
+    fee_edit->setDisabled(true);
 
     fee_label->setBuddy(fee_edit);
     fee_hbox->addWidget(fee_edit);
@@ -282,7 +283,7 @@ DisplayOptionsPage::DisplayOptionsPage(QWidget *parent):
     layout->addLayout(unit_hbox);
 
     display_addresses = new QCheckBox(tr("&Display addresses in transaction list"), this);
-    display_addresses->setToolTip(tr("Whether to show PPCoin addresses in the transaction list"));
+    display_addresses->setToolTip(tr("Whether to show Peershares addresses in the transaction list"));
     layout->addWidget(display_addresses);
 
     layout->addStretch();

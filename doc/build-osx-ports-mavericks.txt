@@ -1,0 +1,121 @@
+Copyright (c) 2012-2013 PPCoin Developers
+Copyright (c) 2009-2012 Bitcoin Developers
+Distributed under the MIT/X11 software license, see the accompanying file
+license.txt or http://www.opensource.org/licenses/mit-license.php. This
+product includes software developed by the OpenSSL Project for use in the
+OpenSSL Toolkit (http://www.openssl.org/). This product includes cryptographic
+software written by Eric Young (eay@cryptsoft.com) and UPnP software written by
+Thomas Bernard.
+
+
+Mac OS X Mavericks build instructions
+How to build peersharesd and Peershares-Qt on 10.9
+
+
+Prerequisites
+
+Install Xcode from the App Store and launch it
+
+All of the commands should be executed in Terminal.app
+
+1.  Install the command line tools
+
+xcode-select --install
+
+2.  Download and install MacPorts from http://www.macports.org/install.php
+
+You cannot install Boost 1.55.0 from MacPorts and will have to build it
+https://github.com/bitcoin/bitcoin/issues/3228
+
+3.  Install dependencies from MacPorts
+
+sudo port selfupdate
+sudo port install db48@+no_java openssl miniupnpc
+
+4.  Download and extract Boost from
+http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz/
+
+tar xvfz Downloads/boost_1_55_0.tar.gz
+
+Boost 1.55.0 fails to build with current versions of clang so we need to patch
+https://trac.macports.org/ticket/42282
+
+5.  Download and replace the files needed to build Boost
+
+curl -O https://raw.githubusercontent.com/boostorg/atomic/e4bde20f2eec0a51be14533871d2123bd2ab9cf3/include/boost/atomic/detail/gcc-atomic.hpp
+curl -O https://raw.githubusercontent.com/boostorg/atomic/6bb71fdd8f7cc346d90fb14beb38b7297fc1ffd9/include/boost/atomic/detail/cas128strong.hpp
+mv gcc-atomic.hpp boost_1_55_0/boost/atomic/detail/
+mv cas128strong.hpp boost_1_55_0/boost/atomic/detail/
+
+6.  Build Boost
+
+cd boost_1_55_0/
+./bootstrap.sh
+./b2 --toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++" variant=release link=static threading=multi runtime-link=static --build-dir=build --build-type=minimal stage --with-program_options --with-system --with-filesystem --with-chrono --with-thread
+./b2 --toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++" variant=release link=shared threading=multi runtime-link=shared --build-dir=build --build-type=minimal stage --with-program_options --with-system --with-filesystem --with-chrono --with-thread
+cd ..
+
+7.  Duplicate Boost libraries appending -mt
+
+for f in boost_1_55_0/stage/lib/*.dylib; do cp "$f" "${f%.dylib}-mt.dylib"; done
+for f in boost_1_55_0/stage/lib/*.a; do cp "$f" "${f%.a}-mt.a"; done
+
+8.  Copy Boost libraries and source
+
+sudo cp boost_1_55_0/stage/lib/libboost_*.dylib /usr/lib/
+sudo cp boost_1_55_0/stage/lib/libboost_*.a /opt/local/lib/
+sudo cp -r boost_1_55_0/boost/ /usr/include/boost/
+
+9.  Clone the github tree to get the source code
+
+git clone https://github.com/Peershares/Peershares.git
+
+
+Building peersharesd
+
+1.  Run the makefile
+
+cd Peershares/src/
+make -f makefile.osx RELEASE=true 64BIT=true
+
+
+Building Peershares-Qt.app
+
+You cannot use Qt 4.8.6 if you want to deploy to other systems
+http://qt-project.org/forums/viewthread/41925
+
+1.  Download and install Qt 4.8.5 from
+http://download.qt-project.org/archive/qt/4.8/4.8.5/qt-mac-opensource-4.8.5.dmg
+
+2.  Download and install Qt Creator from http://qt-project.org/downloads
+
+3.  Use Qt Creator to build the project
+
+Double-click Peershares/peershares-qt.pro to open Qt-Creator
+Click the Configure Project button
+Click on the monitor icon on the left bar above Debug and change it to Release
+On the top menu, click Build and Build Project "peershares-qt"
+
+
+Deploying Peershares-Qt.app
+
+Deploying your app is needed to run it on non-development systems
+
+1.  Sym-link some shit
+
+sudo ln -s /opt/local/lib /opt/local/lib/lib
+sudo ln -s /opt/local/lib/db48/libdb_cxx-4.8.dylib /opt/local/lib/libdb_cxx-4.8.dylib
+
+2.  Copy Peershares-Qt.app and run macdeployqt to bundle required libraries
+
+mkdir deploy
+cp -r build-peershares-qt-Desktop-Release/Peershares-Qt.app/ deploy/Peershares-Qt.app/
+sudo macdeployqt deploy/Peershares-Qt.app/
+
+3.  Fix a dependency path
+
+install_name_tool -change "/opt/local/lib/db48/libdb_cxx-4.8.dylib" "@executable_path/../Frameworks/libdb_cxx-4.8.dylib" deploy/Peershares-Qt.app/Contents/MacOS/Peershares-Qt
+
+4.  Compress Peershares-Qt.app into a zip
+
+Right-click on Peershares-Qt.app and click Compress

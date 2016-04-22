@@ -1,7 +1,6 @@
 #include "transactionrecord.h"
 
 #include "wallet.h"
-#include "base58.h"
 
 /* Return positive answer if transaction should be shown in list.
  */
@@ -43,16 +42,9 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
     if (showTransaction(wtx))
     {
-        if (wtx.IsCoinStake()) // ppcoin: coinstake transaction
+        if (wtx.IsCoinStake()) // peercoin: coinstake transaction
         {
-            TransactionRecord sub(hash, nTime, TransactionRecord::StakeMint, "", -nDebit, wtx.GetValueOut());
-            CTxDestination address;
-            CTxOut txout = wtx.vout[1];
-
-            if(ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address))
-                sub.address = CBitcoinAddress(address).ToString();
-
-            parts.append(sub);
+            parts.append(TransactionRecord(hash, nTime, TransactionRecord::StakeMint, "", -nDebit, wtx.GetValueOut()));
         }
         else if (nNet > 0 || wtx.IsCoinBase())
         {
@@ -64,26 +56,25 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 if(wallet->IsMine(txout))
                 {
                     TransactionRecord sub(hash, nTime);
-                    CTxDestination address;
+                    CBitcoinAddress address;
                     sub.idx = parts.size(); // sequence number
                     sub.credit = txout.nValue;
-
-                    if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address))
+                    if (wtx.IsCoinBase())
+                    {
+                        // Generated
+                        sub.type = TransactionRecord::Generated;
+                    }
+                    else if (ExtractAddress(txout.scriptPubKey, address) && wallet->HaveKey(address))
                     {
                         // Received by Bitcoin Address
                         sub.type = TransactionRecord::RecvWithAddress;
-                        sub.address = CBitcoinAddress(address).ToString();
+                        sub.address = address.ToString();
                     }
                     else
                     {
                         // Received by IP connection (deprecated features), or a multisignature or other non-simple transaction
                         sub.type = TransactionRecord::RecvFromOther;
                         sub.address = mapValue["from"];
-                    }
-                    if (wtx.IsCoinBase())
-                    {
-                        // Generated
-                        sub.type = TransactionRecord::Generated;
                     }
 
                     parts.append(sub);
@@ -128,12 +119,12 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                         continue;
                     }
 
-                    CTxDestination address;
-                    if (ExtractDestination(txout.scriptPubKey, address))
+                    CBitcoinAddress address;
+                    if (ExtractAddress(txout.scriptPubKey, address))
                     {
                         // Sent to Bitcoin Address
                         sub.type = TransactionRecord::SendToAddress;
-                        sub.address = CBitcoinAddress(address).ToString();
+                        sub.address = address.ToString();
                     }
                     else
                     {

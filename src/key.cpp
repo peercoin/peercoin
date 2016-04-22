@@ -240,18 +240,18 @@ CPrivKey CKey::GetPrivKey() const
     return vchPrivKey;
 }
 
-bool CKey::SetPubKey(const CPubKey& vchPubKey)
+bool CKey::SetPubKey(const std::vector<unsigned char>& vchPubKey)
 {
-    const unsigned char* pbegin = &vchPubKey.vchPubKey[0];
-    if (!o2i_ECPublicKey(&pkey, &pbegin, vchPubKey.vchPubKey.size()))
+    const unsigned char* pbegin = &vchPubKey[0];
+    if (!o2i_ECPublicKey(&pkey, &pbegin, vchPubKey.size()))
         return false;
     fSet = true;
-    if (vchPubKey.vchPubKey.size() == 33)
+    if (vchPubKey.size() == 33)
         SetCompressedPubKey();
     return true;
 }
 
-CPubKey CKey::GetPubKey() const
+std::vector<unsigned char> CKey::GetPubKey() const
 {
     int nSize = i2o_ECPublicKey(pkey, NULL);
     if (!nSize)
@@ -260,7 +260,7 @@ CPubKey CKey::GetPubKey() const
     unsigned char* pbegin = &vchPubKey[0];
     if (i2o_ECPublicKey(pkey, &pbegin) != nSize)
         throw key_error("CKey::GetPubKey() : i2o_ECPublicKey returned unexpected size");
-    return CPubKey(vchPubKey);
+    return vchPubKey;
 }
 
 bool CKey::Sign(uint256 hash, std::vector<unsigned char>& vchSig)
@@ -350,57 +350,13 @@ bool CKey::SetCompactSignature(uint256 hash, const std::vector<unsigned char>& v
     return false;
 }
 
-bool CKey::Verify(uint256 hash, const std::vector<unsigned char>& vchSigParam)
+bool CKey::Verify(uint256 hash, const std::vector<unsigned char>& vchSig)
 {
-    // Prevent the problem described here: https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2015-July/009697.html
-    // by removing the extra length bytes
-    std::vector<unsigned char> vchSig(vchSigParam.begin(), vchSigParam.end());
-    if (vchSig.size() > 1 && vchSig[1] & 0x80)
-    {
-        unsigned char nLengthBytes = vchSig[1] & 0x7f;
-
-        if (vchSig.size() < 2 + nLengthBytes)
-            return false;
-
-        if (nLengthBytes > 4)
-        {
-            unsigned char nExtraBytes = nLengthBytes - 4;
-            for (unsigned char i = 0; i < nExtraBytes; i++)
-                if (vchSig[2 + i])
-                    return false;
-            vchSig.erase(vchSig.begin() + 2, vchSig.begin() + 2 + nExtraBytes);
-            vchSig[1] = 0x80 | (nLengthBytes - nExtraBytes);
-        }
-    }
-
-    if (vchSig.empty())
-        return false;
-
-    // New versions of OpenSSL will reject non-canonical DER signatures. de/re-serialize first.
-    unsigned char *norm_der = NULL;
-    ECDSA_SIG *norm_sig = ECDSA_SIG_new();
-    const unsigned char* sigptr = &vchSig[0];
-    assert(norm_sig);
-    if (d2i_ECDSA_SIG(&norm_sig, &sigptr, vchSig.size()) == NULL)
-    {
-        /* As of OpenSSL 1.0.0p d2i_ECDSA_SIG frees and nulls the pointer on
-         * error. But OpenSSL's own use of this function redundantly frees the
-         * result. As ECDSA_SIG_free(NULL) is a no-op, and in the absence of a
-         * clear contract for the function behaving the same way is more
-         * conservative.
-         */
-        ECDSA_SIG_free(norm_sig);
-        return false;
-    }
-    int derlen = i2d_ECDSA_SIG(norm_sig, &norm_der);
-    ECDSA_SIG_free(norm_sig);
-    if (derlen <= 0)
-        return false;
-
     // -1 = error, 0 = bad sig, 1 = good
-    bool ret = ECDSA_verify(0, (unsigned char*)&hash, sizeof(hash), norm_der, derlen, pkey) == 1;
-    OPENSSL_free(norm_der);
-    return ret;
+    if (ECDSA_verify(0, (unsigned char*)&hash, sizeof(hash), &vchSig[0], vchSig.size(), pkey) != 1)
+        return false;
+
+    return true;
 }
 
 bool CKey::VerifyCompact(uint256 hash, const std::vector<unsigned char>& vchSig)

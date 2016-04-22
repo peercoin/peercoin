@@ -34,57 +34,6 @@ void OptionsModel::Init()
 
 bool OptionsModel::Upgrade()
 {
-    QSettings settings;
-
-    if (settings.contains("bImportFinished"))
-        return false; // Already upgraded
-
-    settings.setValue("bImportFinished", true);
-
-    // Move settings from old wallet.dat (if any):
-    CWalletDB walletdb("wallet.dat");
-
-    QList<QString> intOptions;
-    intOptions << "nDisplayUnit" << "nTransactionFee";
-    foreach(QString key, intOptions)
-    {
-        int value = 0;
-        if (walletdb.ReadSetting(key.toStdString(), value))
-        {
-            settings.setValue(key, value);
-            walletdb.EraseSetting(key.toStdString());
-        }
-    }
-    QList<QString> boolOptions;
-    boolOptions << "bDisplayAddresses" << "fMinimizeToTray" << "fMinimizeOnClose" << "fUseProxy" << "fUseUPnP";
-    foreach(QString key, boolOptions)
-    {
-        bool value = false;
-        if (walletdb.ReadSetting(key.toStdString(), value))
-        {
-            settings.setValue(key, value);
-            walletdb.EraseSetting(key.toStdString());
-        }
-    }
-    try
-    {
-        CAddress addrProxyAddress;
-        if (walletdb.ReadSetting("addrProxy", addrProxyAddress))
-        {
-            addrProxy = addrProxyAddress;
-            settings.setValue("addrProxy", addrProxy.ToStringIPPort().c_str());
-            walletdb.EraseSetting("addrProxy");
-        }
-    }
-    catch (std::ios_base::failure &e)
-    {
-        // 0.6.0rc1 saved this as a CService, which causes failure when parsing as a CAddress
-        if (walletdb.ReadSetting("addrProxy", addrProxy))
-        {
-            settings.setValue("addrProxy", addrProxy.ToStringIPPort().c_str());
-            walletdb.EraseSetting("addrProxy");
-        }
-    }
     Init();
 
     return true;

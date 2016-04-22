@@ -1,0 +1,7 @@
+Team comms (IRC, CC, Skype, etc.) re: Gitian process setup, Gitian testing, Peershares testing
+Peershares Gitian process pre-merge testing
+Peershares Gitian pre-merge build output regression testing
+Gitian compilation and testing with Bdb 4.8.30-2, Bdb 4.8.30-10, Bdb 4.8.30-11, Bdb 4.8.24
+Peershares issues tracking
+Peershares dividend testing
+Peershares regression testing

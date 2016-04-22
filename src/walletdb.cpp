@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2012 The PPCoin developers
+// Copyright (c) 2012 The Peercoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -109,7 +109,7 @@ void CWalletDB::ListAccountCreditDebit(const string& strAccount, list<CAccountin
 
 int CWalletDB::LoadWallet(CWallet* pwallet)
 {
-    pwallet->vchDefaultKey = CPubKey();
+    pwallet->vchDefaultKey.clear();
     int nFileVersion = 0;
     vector<uint256> vWalletUpgrade;
     bool fIsEncrypted = false;
@@ -156,7 +156,7 @@ int CWalletDB::LoadWallet(CWallet* pwallet)
             {
                 string strAddress;
                 ssKey >> strAddress;
-                ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()];
+                ssValue >> pwallet->mapAddressBook[strAddress];
             }
             else if (strType == "tx")
             {

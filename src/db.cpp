@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2011-2013 The PPCoin developers
+// Copyright (c) 2011-2013 The Peercoin developers
+// Copyright (c) 2013-2014 The Peershares developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -519,26 +520,6 @@ bool CTxDB::WriteCheckpointPubKey(const string& strPubKey)
     return Write(string("strCheckpointPubKey"), strPubKey);
 }
 
-bool CTxDB::ReadV04UpgradeTime(unsigned int& nUpgradeTime)
-{
-    return Read(string("nProtocolV04UpgradeTime"), nUpgradeTime);
-}
-
-bool CTxDB::WriteV04UpgradeTime(const unsigned int& nUpgradeTime)
-{
-    return Write(string("nProtocolV04UpgradeTime"), nUpgradeTime);
-}
-
-bool CTxDB::ReadV05UpgradeTime(unsigned int& nUpgradeTime)
-{
-    return Read(string("nProtocolV05UpgradeTime"), nUpgradeTime);
-}
-
-bool CTxDB::WriteV05UpgradeTime(const unsigned int& nUpgradeTime)
-{
-    return Write(string("nProtocolV05UpgradeTime"), nUpgradeTime);
-}
-
 CBlockIndex static * InsertBlockIndex(uint256 hash)
 {
     if (hash == 0)
@@ -619,7 +600,7 @@ bool CTxDB::LoadBlockIndex()
             if (!pindexNew->CheckIndex())
                 return error("LoadBlockIndex() : CheckIndex failed at %d", pindexNew->nHeight);
 
-            // ppcoin: build setStakeSeen
+            // Peershares: build setStakeSeen
             if (pindexNew->IsProofOfStake())
                 setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
         }
@@ -650,7 +631,7 @@ bool CTxDB::LoadBlockIndex()
     {
         CBlockIndex* pindex = item.second;
         pindex->bnChainTrust = (pindex->pprev ? pindex->pprev->bnChainTrust : 0) + pindex->GetBlockTrust();
-        // ppcoin: calculate stake modifier checksum
+        // Peershares: calculate stake modifier checksum
         pindex->nStakeModifierChecksum = GetStakeModifierChecksum(pindex);
         if (!CheckStakeModifierCheckpoints(pindex->nHeight, pindex->nStakeModifierChecksum))
             return error("CTxDB::LoadBlockIndex() : Failed stake modifier checkpoint height=%d, modifier=0x%016"PRI64x, pindex->nHeight, pindex->nStakeModifier);
@@ -670,7 +651,7 @@ bool CTxDB::LoadBlockIndex()
     bnBestChainTrust = pindexBest->bnChainTrust;
     printf("LoadBlockIndex(): hashBestChain=%s  height=%d  trust=%s\n", hashBestChain.ToString().substr(0,20).c_str(), nBestHeight, bnBestChainTrust.ToString().c_str());
 
-    // ppcoin: load hashSyncCheckpoint
+    // Peershares: load hashSyncCheckpoint
     if (!ReadSyncCheckpoint(Checkpoints::hashSyncCheckpoint))
         return error("CTxDB::LoadBlockIndex() : hashSyncCheckpoint not loaded");
     printf("LoadBlockIndex(): synchronized checkpoint %s\n", Checkpoints::hashSyncCheckpoint.ToString().c_str());

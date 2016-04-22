@@ -1,11 +1,11 @@
 TEMPLATE = app
-TARGET = ppcoin-qt
-VERSION = 0.6.3.0
+TARGET = peershares
+VERSION = 0.1.0.0
 INCLUDEPATH += src src/json src/qt
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
 
-# for boost 1.37, add -mt to the boost libraries 
+# for boost 1.55, add -mt to the boost libraries 
 # use: qmake BOOST_LIB_SUFFIX=-mt
 # for boost thread win32 with _win32 sufix
 # use: BOOST_THREAD_LIB_SUFFIX=_win32-...
@@ -14,6 +14,19 @@ CONFIG += no_include_pwd
 # Dependency library locations can be customized with BOOST_INCLUDE_PATH, 
 #    BOOST_LIB_PATH, BDB_INCLUDE_PATH, BDB_LIB_PATH
 #    OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
+
+#BOOST_INCLUDE_PATH=/opt/local/include/boost
+#BOOST_LIB_PATH=/opt/local/lib
+#BDB_INCLUDE_PATH=/opt/local/include/db48
+#BDB_LIB_PATH=/opt/local/lib/db48
+#OPENSSL_INCLUDE_PATH=/opt/local/include/openssl
+#OPENSSL_LIB_PATH=/opt/local/lib
+
+#MINIUPNPC_INCLUDE_PATH=/opt/local/include/miniupnpc
+#MINIUPNPC_LIB_PATH=/opt/local/lib
+
+#QRENCODE_INCLUDE_PATH=/opt/local/include
+#QRENCODE_LIB_PATH=/opt/local/lib
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -164,7 +177,9 @@ HEADERS += src/qt/bitcoingui.h \
     src/allocators.h \
     src/ui_interface.h \
     src/qt/rpcconsole.h \
-    src/kernel.h
+    src/kernel.h \
+    src/distribution.h \
+    src/qt/distributedivdialog.h
 
 SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/transactiontablemodel.cpp \
@@ -220,7 +235,10 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/notificator.cpp \
     src/qt/qtipcserver.cpp \
     src/qt/rpcconsole.cpp \
-    src/kernel.cpp
+    src/kernel.cpp \
+    src/distribution.cpp \
+    src/scanbalance.cpp \
+    src/qt/distributedivdialog.cpp
 
 RESOURCES += \
     src/qt/bitcoin.qrc
@@ -235,7 +253,8 @@ FORMS += \
     src/qt/forms/overviewpage.ui \
     src/qt/forms/sendcoinsentry.ui \
     src/qt/forms/askpassphrasedialog.ui \
-    src/qt/forms/rpcconsole.ui
+    src/qt/forms/rpcconsole.ui \
+    src/qt/forms/distributedivdialog.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h
@@ -280,7 +299,7 @@ OTHER_FILES += \
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
     macx:BOOST_LIB_SUFFIX = -mt
-    windows:BOOST_LIB_SUFFIX = -mgw44-mt-1_43
+    windows:BOOST_LIB_SUFFIX = -mgw48-mt-1_55
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
@@ -331,8 +350,8 @@ macx:HEADERS += src/qt/macdockiconhandler.h
 macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
 macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
 macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
-macx:ICON = src/qt/res/icons/ppcoin.icns
-macx:TARGET = "PPcoin-Qt"
+macx:ICON = src/qt/res/icons/peershares.icns
+macx:TARGET = "Peershares"
 
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH

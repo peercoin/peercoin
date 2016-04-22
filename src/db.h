@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2011-2012 The PPCoin developers
+// Copyright (c) 2011-2012 The Peercoin developers
+// Copyright (c) 2013-2014 The Peershares developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_DB_H
@@ -300,10 +301,6 @@ public:
     bool WriteSyncCheckpoint(uint256 hashCheckpoint);
     bool ReadCheckpointPubKey(std::string& strPubKey);
     bool WriteCheckpointPubKey(const std::string& strPubKey);
-    bool ReadV04UpgradeTime(unsigned int& nUpgradeTime);
-    bool WriteV04UpgradeTime(const unsigned int& nUpgradeTime);
-    bool ReadV05UpgradeTime(unsigned int& nUpgradeTime);
-    bool WriteV05UpgradeTime(const unsigned int& nUpgradeTime);
     bool LoadBlockIndex();
 };
 
