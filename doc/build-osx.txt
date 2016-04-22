@@ -1,4 +1,5 @@
-Copyright (c) 2012-2013 PPCoin Developers
+Copyright (c) 2013-2014 Peershares Developers
+Copyright (c) 2012-2013 Peercoin Developers
 Copyright (c) 2009-2012 Bitcoin Developers
 Distributed under the MIT/X11 software license, see the accompanying file
 license.txt or http://www.opensource.org/licenses/mit-license.php.  This
@@ -8,29 +9,34 @@ software written by Eric Young (eay@cryptsoft.com) and UPnP software written by
 Thomas Bernard.
 
 
-Mac OS X bitcoind build instructions
+Mac OS X peersharesd build instructions
+
+Modified for Bitcoin by
 Laszlo Hanyecz <solar@heliacal.net>
 Douglas Huff <dhuff@jrbobdobbs.org>
 
-Modified for PPCoin by Jeff Larkin <jefflarkin@gmail.com>
+Modified for Peercoin by 
+Jeff Larkin <jefflarkin@gmail.com>
+
+Modified for Peershares by
+Ben Rossi <brossicrypto@gmail.com>
 
 
-See readme-qt.rst for instructions on building PPCoin QT, the
+
+See readme-qt.rst for instructions on building Peershares-QT, the
 graphical user interface.
 
-Tested on 10.5 and 10.6 intel.  PPC is not supported because it's big-endian.
+Tested on 10.8 and 10.9 (Intel).  Older versions of OS X (10.5 and 10.6) should be possible, but have not been tested. PowerPC (PPC) is not supported because it's big-endian.
 
-All of the commands should be executed in Terminal.app.. it's in
-/Applications/Utilities
+All of the commands should be executed in Terminal.app (/Applications/Utilities)
 
 You need to install XCode with all the options checked so that the compiler and
-everything is available in /usr not just /Developer I think it comes on the DVD
-but you can get the current version from http://developer.apple.com
+everything is available in /usr not just /Developer. You can get the current version from http://developer.apple.com
 
 
 1.  Clone the github tree to get the source code:
 
-git clone git@github.com:ppcoin/ppcoin.git ppcoin
+git clone git@github.com:peershares/peershares.git
 
 2.  Download and install MacPorts from http://www.macports.org/
 
@@ -46,14 +52,14 @@ sudo port install qrencode
 
 4.  Now you should be able to build bitcoind:
 
-cd ppcoin/src
+cd peershares/src
 make -f makefile.osx
 # To build 64-bit binaies:
 make -f makefile.osx RELEASE=true 64BIT=true
 
 Run:
-  ./ppcoind --help  # for a list of command-line options.
+  ./peersharesd --help  # for a list of command-line options.
 Run
-  ./ppcoind -daemon # to start the bitcoin daemon.
+  ./peersharesd -daemon # to start the bitcoin daemon.
 Run
-  ./ppcoind help # When the daemon is running, to get a list of RPC commands
+  ./peersharesd help # When the daemon is running, to get a list of RPC commands

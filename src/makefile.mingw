@@ -1,5 +1,6 @@
 # Copyright (c) 2009-2010 Satoshi Nakamoto
-# Copyright (c) 2012 The PPCoin developers
+# Copyright (c) 2012 The Peercoin developers
+# Copyright (c) 2013-2014 The Peershares developers
 # Distributed under the MIT/X11 software license, see the accompanying
 # file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,61 +22,53 @@
 #   Extract to c:\db-4.8.30.NC-mgw
 #   In MinGW MSYS:
 #     cd build_unix
-#     sh ../dist/configure --disable-replication --enable-mingw --enable-cxx --prefix=/usr/local
-#   Edit db.h@113 in build_unix
-#   from
-#     typedef pthread_t db_threadid_t;
-#   to 
-#     typedef u_int32_t db_threadid_t;
+#     sh ../dist/configure --disable-replication --enable-mingw --enable-cxx
 #   Then
 #     make
 #
-# - Build Boost C++ library version: 1.47.0
+# - Build Boost C++ library version: 1_55_0
 #   download from http://www.boost.org/users/download/
-#   Extract to c:\boost-1.47.0-mgw
-#   Install Boost.Build:
-#     cd tools\build\v2
+#   Extract to c:\boost-1_55_0-mgw
+#   Install Boost Build:
+#     cd c:\boost-1_55_0-mgw
 #     bootstrap.bat
-#     b2 install --prefix=BOOST_BUILD_INSTALL_DIR
+#     b2 --build-type=complete --with-chrono --with-filesystem --with-program_options --with-system --with-thread toolset=gcc stage
 #   Add BOOST_BUILD_INSTALL_DIR to your PATH system environment variable
-#   Build boost library in MSDOS:
-#     cd c:\boost-1.47.0-mgw
-#     bjam toolset=gcc --build-type=complete stage
 #
-# - Build Miniupnp library version: 1.6
+# - Build Miniupnp library version: 1.9
 #   download from http://miniupnp.free.fr/files/
-#   file name is miniupnpc-1.6.20120509.tar.gz
-#   Extract to c:\miniupnpc-1.6-mgw
-#   In MinGW MSYS shell:
-#     cd /c/miniupnpc-1.6-mgw
-#     make -f Makefile.mingw
+#   file name is miniupnpc-1.9.tar.gz
+#   Extract to c:\miniupnpc-1.9-mgw
+#   Install Miniupnpc:
+#     cd c:\miniupnpc-1.9-mgw
+#     mingw32-make -f Makefile.mingw init upnpc-static
 #     mkdir miniupnpc
-#     cp *.h miniupnpc/
+#     copy *.h miniupnpc/
 #
-# - Build ppcoind.exe
+# - Build peersharesd.exe
 #   in MinGW MSYS
-#     cd ppcoin/src
-#     make ppcoind.exe -f makefile.mingw USE_UPNP=1
-#
+#     cd peershares/src
+#     make -f makefile.mingw
+#     strip peersharesd.exe
 #
 
 USE_UPNP:=0
 
 INCLUDEPATHS= \
- -I"C:\boost-1.47.0-mgw" \
+ -I"C:\boost_1_55_0-mgw" \
  -I"C:\db-4.8.30.NC-mgw\build_unix" \
  -I"C:\openssl-1.0.1g-mgw\include"
 
 LIBPATHS= \
- -L"C:\boost-1.47.0-mgw\stage\lib" \
+ -L"C:\boost_1_55_0-mgw\stage\lib" \
  -L"C:\db-4.8.30.NC-mgw\build_unix" \
  -L"C:\openssl-1.0.1g-mgw"
 
 LIBS= \
- -l boost_system-mgw46-mt-s-1_47 \
- -l boost_filesystem-mgw46-mt-s-1_47 \
- -l boost_program_options-mgw46-mt-s-1_47 \
- -l boost_thread-mgw46-mt-s-1_47 \
+ -l boost_system-mgw48-mt-s-1_55 \
+ -l boost_filesystem-mgw48-mt-s-1_55 \
+ -l boost_program_options-mgw48-mt-s-1_55 \
+ -l boost_thread-mgw48-mt-s-1_55 \
  -l db_cxx \
  -l ssl \
  -l crypto
@@ -87,8 +80,8 @@ CFLAGS=-mthreads -O2 -w -Wno-invalid-offsetof -Wformat $(DEBUGFLAGS) $(DEFS) $(I
 TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 
 ifdef USE_UPNP
- INCLUDEPATHS += -I"C:\miniupnpc-1.6-mgw"
- LIBPATHS += -L"C:\miniupnpc-1.6-mgw"
+ INCLUDEPATHS += -I"C:\miniupnpc-1.9-mgw"
+ LIBPATHS += -L"C:\miniupnpc-1.9-mgw"
  LIBS += -l miniupnpc -l iphlpapi
  DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
 endif
@@ -99,6 +92,7 @@ LIBS += -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell
 HEADERS = $(wildcard *.h)
 
 OBJS= \
+    obj/scanbalance.o \
     obj/version.o \
     obj/checkpoints.o \
     obj/netbase.o \
@@ -119,15 +113,16 @@ OBJS= \
     obj/wallet.o \
     obj/walletdb.o \
     obj/noui.o \
-    obj/kernel.o
+    obj/kernel.o \
+    obj/distribution.o
 
 
-all: ppcoind.exe
+all: peersharesd.exe
 
 obj/%.o: %.cpp $(HEADERS)
 	g++ -c $(CFLAGS) -o $@ $<
 
-ppcoind.exe: $(OBJS:obj/%=obj/%)
+peersharesd.exe: $(OBJS:obj/%=obj/%)
 	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
@@ -135,11 +130,11 @@ TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 obj-test/%.o: test/%.cpp $(HEADERS)
 	g++ -c $(TESTDEFS) $(CFLAGS) -o $@ $<
 
-test_bitcoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+test_peershares.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework $(LIBS)
 
 clean:
-	-del /Q ppcoind test_bitcoin
+	-del /Q peersharesd test_peershares
 	-del /Q obj\*
 	-del /Q obj-test\*
 	-del /Q build.h

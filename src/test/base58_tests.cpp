@@ -1,6 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
-#include "base58.h"
+#include "main.h"
+#include "wallet.h"
+#include "util.h"
 
 BOOST_AUTO_TEST_SUITE(base58_tests)
 

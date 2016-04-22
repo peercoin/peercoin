@@ -11,11 +11,9 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#ifndef _WINSOCKAPI_
 #include <winsock2.h>
 #include <mswsock.h>
 #include <ws2tcpip.h>
-#endif
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -27,7 +25,9 @@
 #include <ifaddrs.h>
 #endif
 
+#ifndef _WIN64
 typedef u_int SOCKET;
+#endif
 #ifdef WIN32
 #define MSG_NOSIGNAL        0
 #define MSG_DONTWAIT        0

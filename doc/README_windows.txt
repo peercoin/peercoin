@@ -1,74 +1,52 @@
-Peercoin (PPCoin) 0.5.3 BETA
-
-Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
+# Peershares
+-----------
+Copyright (c) 2011-2014 Peershares Developers
+Copyright (c) 2011-2014 PPCoin Developers
+Copyright (c) 2011-2014 Bitcoin Developers
 Distributed under the MIT/X11 software license, see the accompanying
 file license.txt or http://www.opensource.org/licenses/mit-license.php.
 This product includes software developed by the OpenSSL Project for use in
 the OpenSSL Toolkit (http://www.openssl.org/).  This product includes
 cryptographic software written by Eric Young (eay@cryptsoft.com).
 
+# What is Peershares?
+--------------------
+Peershares is an inexpensive and decentralized ledger to be used by 
+businesses for tracking share ownership and distributing dividends in an automated fashion. 
+Shares can be transferred and held just like other cryptocurrency units, such as peercoins or bitcoins.
 
-Intro
+Using Peershares, individuals, businesses, or organizations of any size could raise 
+funding through an initial offering without depending on a third party such as a stock exchange. 
+While trading shares through exchanges will be useful to provide liquidity, 
+Peershares can be traded on any number of exchanges just as Peercoins can.
+
+Each business using Peershares will have their own blockchain that is independent of all others. 
+Blockchains can be secured cheaply and easily using Peercoin's proof-of-stake, 
+once the initial (issuer-controlled) shares has been generated using proof-of-work.
+Issuers can distribute dividends as Peercoins, which can then be held by the investors, 
+or if they would prefer, can then take those dividends and convert them to another cryptocurrency or fiat through their preferred exchange.
+
+A share issuer is not vulnerable to the failure of single stock exchange such as BTC Trading or Litecoin Global.
+
+# Setup
 -----
-Peercoin (PPCoin) is a free open source project derived from Bitcoin, with
-the goal of providing a long-term energy-efficient crypto-currency.
-Built on the foundation of Bitcoin, innovations such as proof-of-stake
-help further advance the field of crypto-currency.
-
-
-Setup
------
-After completing windows setup then run ppcoin-qt.
-Alternatively you can run windows command line (cmd) in ppcoin program dir.
-  cd daemon
-  ppcoind
-You would need to create a configuration file ppcoin.conf in the default
-wallet directory. Grant access to ppcoind/ppcoin-qt in anti-virus and firewall
-applications if necessary.
-
+Unpack the files into a directory and run your desired build:
+ 32/Peershares (GUI, 32-bit)
+ 32/Peershares-X.X.X-win-setup.exe (GUI installer, 32-bit)
+ 32/Peersharesd (command line, 32-bit)
+ 64/Peershares (GUI, 64-bit)
+ 64/Peershares-X.X.X-win-setup.exe (GUI installer, 64-bit)
+ 64/Peersharesd (command line, 64-bit)
+ 
 The software automatically finds other nodes to connect to.  You can
 enable Universal Plug and Play (UPnP) with your router/firewall
 or forward port 9901 (TCP) to your computer so you can receive
-incoming connections.  PPCoin works without incoming connections,
-but allowing incoming connections helps the PPCoin network.
+incoming connections.  Peershares works without incoming connections,
+but allowing incoming connections helps the Peershares network.
 
-
-Upgrade
--------
-All your existing coins/transactions should be intact with the upgrade.
-To upgrade from 0.4, first backup wallet in qt menu or by command line
-ppcoind backupwallet <destination_backup_file>
-Then shutdown ppcoind by
-ppcoind stop
-Uninstall v0.4 client, download and install v0.5 client.
-If upgrade is performed after or close to upgrade deadline, blockchain
-re-download is required.
-
-
-See the documentation/wiki at github:
-  http://github.com/ppcoin/ppcoin
-for help and more information.
-
-
-------------------
-Bitcoin 0.6.3 BETA
-
-Copyright (c) 2009-2012 Bitcoin Developers
-Distributed under the MIT/X11 software license, see the accompanying
-file license.txt or http://www.opensource.org/licenses/mit-license.php.
-This product includes software developed by the OpenSSL Project for use in
-the OpenSSL Toolkit (http://www.openssl.org/).  This product includes
-cryptographic software written by Eric Young (eay@cryptsoft.com).
-
-
-Intro
------
-Bitcoin is a free open source peer-to-peer electronic cash system that is
-completely decentralized, without the need for a central server or trusted
-parties.  Users hold the crypto keys to their own money and transact directly
-with each other, with the help of a P2P network to check for double-spending.
-
-
-See the bitcoin wiki at:
-  https://en.bitcoin.it/wiki/Main_Page
-for more help and information.
+# Resources
+----------
+Source Code: https://github.com/Peershares/Peershares
+Wiki Page: https://github.com/Peershares/Peershares/wiki
+Support Forum: http://www.peercointalk.org/index.php?board=61.0
+Subreddit: http://www.reddit.com/peershares

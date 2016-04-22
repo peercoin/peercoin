@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="labelExplanation">
      <property name="text">
-      <string>You can sign messages with your addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</string>
+      <string>You can sign messages with your Peershares addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
@@ -114,7 +114,7 @@
      <item>
       <widget class="QPushButton" name="signMessage">
        <property name="toolTip">
-        <string>Sign a message to prove you own this address</string>
+        <string>Sign a message to prove you own this Peershares address</string>
        </property>
        <property name="text">
         <string>&amp;Sign Message</string>

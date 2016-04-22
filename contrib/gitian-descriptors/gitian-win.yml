@@ -1,0 +1,96 @@
+---
+name: "peershares"
+suites:
+- "precise"
+architectures:
+- "amd64"
+packages:
+- "mingw-w64"
+- "g++-mingw-w64"
+- "git-core"
+- "unzip"
+- "nsis"
+- "faketime"
+
+reference_datetime: "2013-06-01 00:00:00"
+remotes:
+- "url": "https://github.com/peershares/peershares.git"
+  "dir": "peershares"
+files:
+- "qt-win32-4.8.5-gitian-r3.zip"
+- "qt-win64-4.8.5-gitian-r3.zip"
+- "boost-win32-1.55.0-gitian-r6.zip"
+- "boost-win64-1.55.0-gitian-r6.zip"
+- "peershares-deps-win32-gitian-r12.zip"
+- "peershares-deps-win64-gitian-r12.zip"
+script: |
+  # Defines
+  export TZ=UTC
+  INDIR=$HOME/build
+  OPTFLAGS='-O2'
+  TEMPDIR="$HOME/tempdir"
+  NEEDDIST=1
+  for BITS in 32 64; do # for architectures
+    #
+    STAGING=$HOME/staging${BITS}
+    BUILDDIR=$HOME/build${BITS}
+    BINDIR=$OUTDIR/$BITS
+    if [ "$BITS" == "32" ]; then
+      HOST=i686-w64-mingw32
+    else
+      HOST=x86_64-w64-mingw32
+    fi
+    export PATH=$STAGING/host/bin:$PATH
+    mkdir -p $STAGING $BUILDDIR $BINDIR
+    #
+    cd $STAGING
+    unzip $INDIR/qt-win${BITS}-4.8.5-gitian-r3.zip
+    unzip $INDIR/boost-win${BITS}-1.55.0-gitian-r6.zip
+    unzip $INDIR/peershares-deps-win${BITS}-gitian-r12.zip
+    if [ "$NEEDDIST" == "1" ]; then
+      # Make source code archive which is architecture independent so it only needs to be done once
+      cd $HOME/build/peershares
+      git archive --format=tar -o peershares.tar HEAD
+      cp doc/README_windows.txt $OUTDIR/readme.txt
+      cp COPYING $OUTDIR/license.txt
+      DISTNAME=peershares.tar
+      NEEDDIST=0
+    fi
+
+    # Build platform-dependent executables from source archive
+    cd $BUILDDIR
+    cp -r $HOME/build/peershares distsrc
+    cd distsrc
+
+    export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
+    export FAKETIME=$REFERENCE_DATETIME
+
+    $STAGING/host/bin/qmake -spec win32-g++ CROSS_COMPILE=$HOST USE_QRCODE=1 INCLUDEPATH=$STAGING BOOST_LIB_SUFFIX=-mt-s BOOST_THREAD_LIB_SUFFIX=_win32-mt-s DEFINES=BOOST_THREAD_USE_LIB BITCOIN_NEED_QT_PLUGINS=1 QMAKE_LRELEASE=lrelease QMAKE_CXXFLAGS=-frandom-seed=peershares QMAKE_LFLAGS="-static-libgcc -static-libstdc++ -frandom-seed=peershares" USE_BUILD_INFO=1
+    make $MAKEOPTS
+    ${HOST}-strip release/peershares.exe
+    cp -f release/peershares.exe $BINDIR/
+
+    cd src
+    make -f makefile.linux-mingw $MAKEOPTS HOST=$HOST DEPSDIR=$STAGING peersharesd.exe USE_UPNP=1 DEBUGFLAGS="-frandom-seed=peershares"
+    ${HOST}-strip peersharesd.exe
+    cp -f peersharesd.exe $BINDIR/
+
+    cd $BUILDDIR
+    mkdir nsis
+    cd nsis
+    tar -xf $HOME/build/peershares/$DISTNAME
+    mkdir release
+    cp $BINDIR/peershares.exe release/
+    cp $BINDIR/peersharesd.exe release/
+    makensis share/setup.nsi
+    cp share/Peershares-*setup*.exe $BINDIR
+    unset LD_PRELOAD
+    unset FAKETIME
+  done # for BITS in
+
+  # sort distribution tar file and normalize user/group/mtime information for deterministic output
+  mkdir -p $OUTDIR/src
+  rm -rf $TEMPDIR
+  mkdir -p $TEMPDIR
+  cd $TEMPDIR
+  tar -xvf $HOME/build/peershares/$DISTNAME | sort | tar --no-recursion -cT /dev/stdin --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 --mtime="$REFERENCE_DATETIME" | gzip -n > $OUTDIR/src/$DISTNAME.gz

@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2012 The PPCoin developers
+// Copyright (c) 2012 The Peercoin developers
+// Copyright (c) 2013-2014 The Peershares developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_UTIL_H
@@ -13,7 +14,9 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #else
+#ifndef _WIN64
 typedef int pid_t; /* define for windows compatiblity */
+#endif
 #endif
 #include <map>
 #include <vector>
@@ -120,6 +123,7 @@ void LogStackTrace();
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
+extern std::map<std::string, std::string> mapPeercoinArgs;
 extern bool fDebug;
 extern bool fPrintToConsole;
 extern bool fPrintToDebugger;
@@ -165,11 +169,15 @@ bool WildcardMatch(const char* psz, const char* mask);
 bool WildcardMatch(const std::string& str, const std::string& mask);
 int GetFilesize(FILE* file);
 boost::filesystem::path GetDefaultDataDir();
+boost::filesystem::path GetDefaultPeercoinDataDir();
 const boost::filesystem::path &GetDataDir(bool fNetSpecific = true);
+const boost::filesystem::path &GetPeercoinDataDir(bool fNetSpecific = true);
 boost::filesystem::path GetConfigFile();
+boost::filesystem::path GetPeercoinConfigFile();
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path &path, pid_t pid);
 void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
+void ReadPeercoinConfigFile(std::map<std::string, std::string>& mapSettingsRet);
 bool GetStartOnSystemStartup();
 bool SetStartOnSystemStartup(bool fAutoStart);
 void ShrinkDebugFile();
@@ -182,7 +190,6 @@ int64 GetAdjustedTime();
 std::string FormatFullVersion();
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
 void AddTimeData(const CNetAddr& ip, int64 nTime);
-void runCommand(std::string strCommand);
 
 
 
@@ -407,8 +414,7 @@ std::string HexStr(const T itbegin, const T itend, bool fSpaces=false)
     return std::string(rv.begin(), rv.end());
 }
 
-template<typename T>
-inline std::string HexStr(const T& vch, bool fSpaces=false)
+inline std::string HexStr(const std::vector<unsigned char>& vch, bool fSpaces=false)
 {
     return HexStr(vch.begin(), vch.end(), fSpaces);
 }
@@ -482,6 +488,7 @@ inline bool IsSwitchChar(char c)
  * @return command-line argument or default value
  */
 std::string GetArg(const std::string& strArg, const std::string& strDefault);
+std::string GetPeercoinArg(const std::string& strArg, const std::string& strDefault);
 
 /**
  * Return integer argument or default value
@@ -491,6 +498,7 @@ std::string GetArg(const std::string& strArg, const std::string& strDefault);
  * @return command-line argument (0 if invalid number) or default value
  */
 int64 GetArg(const std::string& strArg, int64 nDefault);
+int64 GetPeercoinArg(const std::string& strArg, int64 nDefault);
 
 /**
  * Return boolean argument or default value
@@ -500,6 +508,7 @@ int64 GetArg(const std::string& strArg, int64 nDefault);
  * @return command-line argument or default value
  */
 bool GetBoolArg(const std::string& strArg, bool fDefault=false);
+bool GetPeercoinBoolArg(const std::string& strArg, bool fDefault=false);
 
 /**
  * Set an argument if it doesn't already have a value
@@ -600,8 +609,8 @@ uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL
 
 inline uint160 Hash160(const std::vector<unsigned char>& vch)
 {
-    uint256 hash1 = 0;
-	if (vch.size()) SHA256(&vch[0], vch.size(), (unsigned char*)&hash1);
+    uint256 hash1;
+    SHA256(&vch[0], vch.size(), (unsigned char*)&hash1);
     uint160 hash2;
     RIPEMD160((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
     return hash2;
@@ -757,4 +766,3 @@ inline uint32_t ByteReverse(uint32_t value)
 }
 
 #endif
-

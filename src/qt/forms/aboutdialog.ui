@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About PPCoin</string>
+   <string>About Peershares</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
@@ -50,7 +50,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>&lt;b&gt;PPCoin&lt;/b&gt; version</string>
+          <string>&lt;b&gt;Peershares&lt;/b&gt; : version</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -86,9 +86,9 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="label_ppcoin_copyright">
+      <widget class="QLabel" name="label_peershares_copyright">
        <property name="text">
-        <string>Copyright © 2011-2016 Peercoin Developers</string>
+        <string>Copyright © 2013-2014 Peershares Developers</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -101,7 +101,8 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Copyright © 2009-2012 Bitcoin Developers
+        <string>Copyright © 2012-2013 The Peercoin Developers
+Copyright © 2009-2012 Bitcoin Developers
 
 This is experimental software.
 

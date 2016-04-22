@@ -78,10 +78,6 @@ License: GPL-3+
 Comment: Icon Pack: Kids
          Site: http://findicons.com/icon/17102/reload?id=17102
 
-Files: src/qt/res/images/splash2.jpg
-License: PUB-DOM
-Copyright: Crobbo (forum)
-Comment: Site: https://bitcointalk.org/index.php?topic=32273.0
 
 
 License: Expat

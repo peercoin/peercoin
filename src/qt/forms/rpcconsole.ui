@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Peercoin (PPCoin) debug window</string>
+   <string>Peershares Debugging Window</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>

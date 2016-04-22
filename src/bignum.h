@@ -11,15 +11,6 @@
 
 #include "util.h" // for uint64
 
-#if defined(_MSC_VER) && _MSC_VER >= 1800
-#ifdef max
-#undef max
-#endif
-#ifdef min
-#undef min
-#endif
-#endif
-
 /** Errors thrown by the bignum class */
 class bignum_error : public std::runtime_error
 {
