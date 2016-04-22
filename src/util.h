@@ -600,8 +600,8 @@ uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL
 
 inline uint160 Hash160(const std::vector<unsigned char>& vch)
 {
-    uint256 hash1;
-    SHA256(&vch[0], vch.size(), (unsigned char*)&hash1);
+    uint256 hash1 = 0;
+	if (vch.size()) SHA256(&vch[0], vch.size(), (unsigned char*)&hash1);
     uint160 hash2;
     RIPEMD160((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
     return hash2;

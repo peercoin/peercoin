@@ -6,6 +6,11 @@
 #ifndef BITCOIN_MAIN_H
 #define BITCOIN_MAIN_H
 
+#ifdef WIN32
+#define __PRETTY_FUNCTION__	__FUNCTION__
+#else
+#endif
+
 #include "bignum.h"
 #include "net.h"
 #include "script.h"
@@ -639,7 +644,7 @@ public:
     {
         CAutoFile filein = CAutoFile(OpenBlockFile(pos.nFile, 0, pfileRet ? "rb+" : "rb"), SER_DISK, CLIENT_VERSION);
         if (!filein)
-            return error("CTransaction::ReadFromDisk() : OpenBlockFile failed");
+			return error("CTransaction::ReadFromDisk() : OpenBlockFile failed");
 
         // Read transaction
         if (fseek(filein, pos.nTxPos, SEEK_SET) != 0)

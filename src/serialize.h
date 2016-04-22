@@ -23,6 +23,15 @@
 #include "allocators.h"
 #include "version.h"
 
+#if defined(_MSC_VER) && _MSC_VER >= 1800
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+#endif
+
 typedef long long  int64;
 typedef unsigned long long  uint64;
 
@@ -826,7 +835,8 @@ public:
             vch.insert(it, first, last);
     }
 
-    void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
+#if !defined(_MSC_VER) || _MSC_VER < 1800
+	void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
     {
         if (it == vch.begin() + nReadPos && last - first <= nReadPos)
         {
@@ -837,6 +847,7 @@ public:
         else
             vch.insert(it, first, last);
     }
+#endif
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1300
     void insert(iterator it, const char* first, const char* last)

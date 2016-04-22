@@ -18,6 +18,8 @@
 
 #ifndef WIN32
 #include <signal.h>
+#else
+#define strncasecmp(x,y,z) _strnicmp(x,y,z)
 #endif
 
 using namespace std;
