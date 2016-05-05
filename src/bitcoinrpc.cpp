@@ -246,6 +246,10 @@ void TxToJSON(const CTransaction& tx, Object& txdata)
         {
             vin.push_back(Pair("txid", txin.prevout.hash.ToString().c_str()));
             vin.push_back(Pair("vout", (int)txin.prevout.n));
+            Object o;
+            o.push_back(Pair("asm", txin.scriptSig.ToString()));
+            o.push_back(Pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
+            vin.push_back(Pair("scriptSig", o));
         }
 
         vin.push_back(Pair("sequence", (boost::uint64_t)txin.nSequence));
@@ -296,121 +300,6 @@ void TxToJSON(const CTransaction& tx, Object& txdata)
     txdata.push_back(Pair("vout", vouts));
 }
 
-/*
-<<<<<<< HEAD
-
-void TxToJSON(const CTransaction& tx, Object& txdata)
-{
-    // tx data
-    txdata.push_back(Pair("txid", tx.GetHash().ToString().c_str()));
-    txdata.push_back(Pair("version", (int)tx.nVersion));
-    txdata.push_back(Pair("locktime", (int)tx.nLockTime));
-    txdata.push_back(Pair("is_coinbase", tx.IsCoinBase()));
-    txdata.push_back(Pair("is_coinstake", tx.IsCoinStake()));
-=======
-    txnouttype type;
-    vector<CTxDestination> addresses;
-    int nRequired;
-
-    if (!ExtractDestinations(txprev.vout[txin.prevout.n].scriptPubKey, type,
-                          addresses, nRequired))
-    {
-        out.push_back(Pair("type", GetTxnOutputType(TX_NONSTANDARD)));
-        return;
-    }
->>>>>>> 1025440... Refactor: split CKeyID/CScriptID/CTxDestination from CBitcoinAddress
-
-    // add inputs
-    Array vins;
-    BOOST_FOREACH(const CTxIn& txin, tx.vin)
-    {
-        Object vin;
-
-<<<<<<< HEAD
-        if (txin.prevout.IsNull()) 
-        {
-            vin.push_back(Pair("coinbase", HexStr(txin.scriptSig).c_str()));
-        }
-        else 
-        {
-            vin.push_back(Pair("txid", txin.prevout.hash.ToString().c_str()));
-            vin.push_back(Pair("vout", (int)txin.prevout.n));
-        }
-
-        vin.push_back(Pair("sequence", (boost::uint64_t)txin.nSequence));
-=======
-    Array a;
-    BOOST_FOREACH(const CTxDestination& addr, addresses)
-        a.push_back(CBitcoinAddress(addr).ToString());
-    out.push_back(Pair("addresses", a));
-}
-
-void
-ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out)
-{
-    txnouttype type;
-    vector<CTxDestination> addresses;
-    int nRequired;
->>>>>>> 1025440... Refactor: split CKeyID/CScriptID/CTxDestination from CBitcoinAddress
-
-        vins.push_back(vin);
-    }
-    txdata.push_back(Pair("vin", vins));
-
-<<<<<<< HEAD
-    // add outputs
-    Array vouts;
-    int n = 0;
-    BOOST_FOREACH(const CTxOut& txout, tx.vout)
-=======
-    if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired))
->>>>>>> 1025440... Refactor: split CKeyID/CScriptID/CTxDestination from CBitcoinAddress
-    {
-        Object vout;
-
-        std::vector<CBitcoinAddress> addresses;
-        txnouttype txtype;
-        int nRequired;
-
-<<<<<<< HEAD
-        vout.push_back(Pair("value", ValueFromAmount(txout.nValue)));
-        vout.push_back(Pair("n", n));
-=======
-    Array a;
-    BOOST_FOREACH(const CTxDestination& addr, addresses)
-        a.push_back(CBitcoinAddress(addr).ToString());
-    out.push_back(Pair("addresses", a));
-}
->>>>>>> 1025440... Refactor: split CKeyID/CScriptID/CTxDestination from CBitcoinAddress
-
-        Object scriptpubkey;
-
-        scriptpubkey.push_back(Pair("asm", txout.scriptPubKey.ToString()));
-        scriptpubkey.push_back(Pair("hex", HexStr(txout.scriptPubKey.begin(), txout.scriptPubKey.end())));
-
-        if (ExtractAddresses(txout.scriptPubKey, txtype, addresses, nRequired))
-        {
-            scriptpubkey.push_back(Pair("type", GetTxnOutputType(txtype)));
-            scriptpubkey.push_back(Pair("reqSig", nRequired));
-
-            Array addrs;
-            BOOST_FOREACH(const CBitcoinAddress& addr, addresses)
-                addrs.push_back(addr.ToString());
-            scriptpubkey.push_back(Pair("addresses", addrs));
-        }
-        else
-        {
-            scriptpubkey.push_back(Pair("type", GetTxnOutputType(TX_NONSTANDARD)));
-        }
-
-        vout.push_back(Pair("scriptPubKey",scriptpubkey));
-
-        vouts.push_back(vout);   
-        n++;             
-    }
-    txdata.push_back(Pair("vout", vouts));
-}
-*/
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fTxInfo, bool fTxDetails)
 {
     Object result;
