@@ -1,4 +1,4 @@
-Peercoin (PPCoin) 0.5.3 BETA
+Peercoin (PPCoin) 0.5.4 BETA
 
 Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
 Distributed under the MIT/X11 software license, see the accompanying
