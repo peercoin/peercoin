@@ -130,7 +130,7 @@ void RandAddSeed()
     // Seed with CPU performance counter
     int64 nCounter = GetPerformanceCounter();
     RAND_add(&nCounter, sizeof(nCounter), 1.5);
-    memset(&nCounter, 0, sizeof(nCounter));
+    OPENSSL_cleanse(&nCounter, sizeof(nCounter));
 }
 
 void RandAddSeedPerfmon()
@@ -147,14 +147,14 @@ void RandAddSeedPerfmon()
     // Don't need this on Linux, OpenSSL automatically uses /dev/urandom
     // Seed with the entire set of perfmon data
     unsigned char pdata[250000];
-    memset(pdata, 0, sizeof(pdata));
     unsigned long nSize = sizeof(pdata);
+    OPENSSL_cleanse(pdata, nSize);
     long ret = RegQueryValueExA(HKEY_PERFORMANCE_DATA, "Global", NULL, NULL, pdata, &nSize);
     RegCloseKey(HKEY_PERFORMANCE_DATA);
     if (ret == ERROR_SUCCESS)
     {
         RAND_add(pdata, nSize, nSize/100.0);
-        memset(pdata, 0, nSize);
+        OPENSSL_cleanse(pdata, nSize);
         printf("%s RandAddSeed() %d bytes\n", DateTimeStrFormat(GetTime()).c_str(), nSize);
     }
 #endif
@@ -1234,7 +1234,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
     else
     {
         char pszExePath[MAX_PATH+1];
-        memset(pszExePath, 0, sizeof(pszExePath));
+        OPENSSL_cleanse(pszExePath, sizeof(pszExePath));
         if (readlink("/proc/self/exe", pszExePath, sizeof(pszExePath)-1) == -1)
             return false;
 
