@@ -92,7 +92,7 @@ BRIEF_MEMBER_DESC      = YES
 
 REPEAT_BRIEF           = YES
 
-# This tag implements a quasi-intelligent brief description abbreviator 
+# This tag implements a quasi-intelligent brief description abbreviation 
 # that is used to form the text in various listings. Each string 
 # in this list, if found as the leading text of the brief description, will be 
 # stripped from the text and the result after processing the whole list, is 
@@ -870,7 +870,7 @@ HTML_FILE_EXTENSION    = .html
 # standard header. Note that when using a custom header you are responsible 
 # for the proper inclusion of any scripts and style sheets that doxygen 
 # needs, which is dependent on the configuration options used. 
-# It is adviced to generate a default header using "doxygen -w html 
+# It is advised to generate a default header using "doxygen -w html 
 # header.html footer.html stylesheet.css YourConfigFile" and then modify 
 # that header. Note that the header is subject to change so you typically 
 # have to redo this when upgrading to a newer version of doxygen or when
