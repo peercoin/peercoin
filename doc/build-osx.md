@@ -78,11 +78,11 @@ Mining is also possible in disable-wallet mode using the `getblocktemplate` RPC 
 Running
 -------
 
-Peercoin Core is now available at `./src/peercoind`
+Peercoin is now available at `./src/peercoind`
 
-Before running, it's recommended that you create an RPC configuration file:
+Before running, you may create an empty configuration file:
 
-    echo -e "rpcuser=peercoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
+    touch "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
 
     chmod 600 "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
 
