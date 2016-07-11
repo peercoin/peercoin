@@ -241,6 +241,7 @@ bool AppInit2(int argc, char* argv[])
             "  -upgradewallet   \t  "   + _("Upgrade wallet to latest format") + "\n" +
             "  -keypool=<n>     \t  "   + _("Set key pool size to <n> (default: 100)") + "\n" +
             "  -rescan          \t  "   + _("Rescan the block chain for missing wallet transactions") + "\n" +
+            "  -zapwallettxes   \t  "   + _("Clear list of wallet transactions (diagnostic tool; implies -rescan)") + "\n" +
             "  -checkblocks=<n> \t\t  " + _("How many blocks to check at startup (default: 2500, 0 = all)") + "\n" +
             "  -checklevel=<n>  \t\t  " + _("How thorough the block verification is (0-6, default: 1)") + "\n";
 
@@ -289,6 +290,13 @@ bool AppInit2(int argc, char* argv[])
 #if !defined(QT_GUI)
     fServer = true;
 #endif
+
+    // -zapwallettx implies a rescan
+    if (GetBoolArg("-zapwallettxes", false)) {
+        if (SoftSetBoolArg("-rescan", true))
+            printf("AppInit2 : parameter interaction: -zapwallettxes=1 -> setting -rescan=1\n");
+    }
+
     fPrintToConsole = GetBoolArg("-printtoconsole");
     fPrintToDebugger = GetBoolArg("-printtodebugger");
     fLogTimestamps = GetBoolArg("-logtimestamps");
@@ -382,6 +390,20 @@ bool AppInit2(int argc, char* argv[])
         return false;
     }
     printf(" block index %15"PRI64d"ms\n", GetTimeMillis() - nStart);
+    
+    if (GetBoolArg("-zapwallettxes", false)) {
+        InitMessage(_("Zapping all transactions from wallet..."));
+
+        pwalletMain = new CWallet("wallet.dat");
+        int nZapWalletRet = pwalletMain->ZapWalletTx();
+        if (nZapWalletRet != DB_LOAD_OK) {
+            InitMessage(_("Error loading wallet.dat: Wallet corrupted"));
+            return false;
+        }
+
+        delete pwalletMain;
+        pwalletMain = NULL;
+    }
 
     InitMessage(_("Loading wallet..."));
     printf("Loading wallet...\n");
