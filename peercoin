@@ -1,0 +1,34 @@
+Peercoin (PPCoin) 0.6.0 BETA
+  		  
+  Copyright (c) 2011-2016 Peercoin (PPCoin) Developers		  Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
+  Distributed under the MIT/X11 software license, see the accompanying		  Distributed under the MIT/X11 software license, see the accompanying
+ @@ -39,7 +39,7 @@ ppcoind backupwallet <destination_backup_file>
+  Then shutdown ppcoind by		  Then shutdown ppcoind by
+  ppcoind stop		  ppcoind stop
+  Uninstall v0.6.0 client, download and install v0.6 client.		  Uninstall v0.5 client, download and install v0.6 client.
+ -Start up the new ppcoind (0.5.4).		 +Start up the new ppcoind (0.6.0).
+  If upgrade is performed after or close to upgrade deadline then blockchain		  If upgrade is performed after or close to upgrade deadline then blockchain
+  re-download is required.		  re-download is required.
+  		  
+View
+2  doc/README_windows.txt
+@@ -1,4 +1,4 @@
+ -Peercoin (PPCoin) 0.5.4 BETA
+  +Peercoin (PPCoin) 0.6.0 BETA
+   
+   
+   Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
+   Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
+   Distributed under the MIT/X11 software license, see the accompanying
+   Distributed under the MIT/X11 software license, see the accompanying
+  Show notes  View
+6  share/setup.nsi
+ @@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
+  		  
+  # General Symbol Definitions		  # General Symbol Definitions
+  !define REGKEY "SOFTWARE\$(^Name)"		  !define REGKEY "SOFTWARE\$(^Name)"
+ -!define VERSION 0.5.3		 +!define VERSION 0.5.4
+  !define COMPANY "PPCoin project"		  !define COMPANY "PPCoin project"
+  !define URL http://github.com/ppcoin/ppcoin/		  !define URL http://github.com/sunny-king/peercoin
+      @sunny-king9999@gmail.com
+
