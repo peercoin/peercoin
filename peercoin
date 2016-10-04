@@ -5,7 +5,7 @@ Peercoin (PPCoin) 0.6.0 BETA
  @@ -39,7 +39,7 @@ ppcoind backupwallet <destination_backup_file>
   Then shutdown ppcoind by		  Then shutdown ppcoind by
   ppcoind stop		  ppcoind stop
-  Uninstall v0.6.0 client, download and install v0.6 client.		  Uninstall v0.5 client, download and install v0.6 client.
+  Uninstall v0.6.0 client, download and install v0.6 client.		  Uninstall v0.5.4 client, download and install v0.6 client.
  -Start up the new ppcoind (0.5.4).		 +Start up the new ppcoind (0.6.0).
   If upgrade is performed after or close to upgrade deadline then blockchain		  If upgrade is performed after or close to upgrade deadline then blockchain
   re-download is required.		  re-download is required.
@@ -15,20 +15,140 @@ View
 @@ -1,4 +1,4 @@
  -Peercoin (PPCoin) 0.5.4 BETA
   +Peercoin (PPCoin) 0.6.0 BETA
-   
-   
-   Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
-   Copyright (c) 2011-2016 Peercoin (PPCoin) Developers
-   Distributed under the MIT/X11 software license, see the accompanying
-   Distributed under the MIT/X11 software license, see the accompanying
-  Show notes  View
-6  share/setup.nsi
- @@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
-  		  
-  # General Symbol Definitions		  # General Symbol Definitions
-  !define REGKEY "SOFTWARE\$(^Name)"		  !define REGKEY "SOFTWARE\$(^Name)"
- -!define VERSION 0.5.3		 +!define VERSION 0.5.4
-  !define COMPANY "PPCoin project"		  !define COMPANY "PPCoin project"
-  !define URL http://github.com/ppcoin/ppcoin/		  !define URL http://github.com/sunny-king/peercoin
+  // Votes is an internal data structure to count votes on a specific proposal
+  struct Votes {
+    address[] pass; // List of signers voting to pass a proposal
+    address[] fail; // List of signers voting to fail a proposal
+  }
+
+  // Version is the version details of a particular Geth release
+  struct Version {
+    uint32  major;  // Major version component of the release
+    uint32  minor;  // Minor version component of the release
+    uint32  patch;  // Patch version component of the release
+    bytes20 commit; // Git SHA1 commit hash of the release
+
+    uint64  time;  // Timestamp of the release approval
+    Votes   votes; // Votes that passed this release
+  }
+
+  // Oracle authorization details
+  mapping(address => bool) authorised; // Set of accounts allowed to vote on updating the contract
+  address[]                voters;     // List of addresses currently accepted as signers
+
+  // Various proposals being voted on
+  mapping(address => Votes) authProps; // Currently running user authorization proposals
+  address[]                 authPend;  // List of addresses being voted on (map indexes)
+
+  Version   verProp;  // Currently proposed release being voted on
+  Version[] releases; // All the positively voted releases
+
+  // isSigner is a modifier to authorize contract transactions.
+  modifier isSigner() {
+    if (authorised[msg.sender]) {
+      _
+    }
+  }
+
+  // Constructor to assign the initial set of signers.
+  function ReleaseOracle(address[] signers) {
+    // If no signers were specified, assign the creator as the sole signer
+    if (signers.length == 0) {
+      authorised[msg.sender] = true;
+      voters.push(msg.sender);
+      return;
+    }
+    // Otherwise assign the individual signers one by one
+    for (uint i = 0; i < signers.length; i++) {
+      authorised[signers[i]] = true;
+      voters.push(signers[i]);
+    }
+  }
+
+  // signers is an accessor method to retrieve all te signers (public accessor
+  // generates an indexed one, not a retreive-all version).
+  function signers() constant returns(address[]) {
+    return voters;
+  }
+
+  // authProposals retrieves the list of addresses that authorization proposals
+  // are currently being voted on.
+  function authProposals() constant returns(address[]) {
+    return authPend;
+  }
+
+  // authVotes retrieves the current authorization votes for a particular user
+  // to promote him into the list of signers, or demote him from there.
+  function authVotes(address user) constant returns(address[] promote, address[] demote) {
+    return (authProps[user].pass, authProps[user].fail);
+  }
+
+  // currentVersion retrieves the semantic version, commit hash and release time
+  // of the currently votec active release.
+  function currentVersion() constant returns (uint32 major, uint32 minor, uint32 patch, bytes20 commit, uint time) {
+    if (releases.length == 0) {
+      return (0, 0, 0, 0, 0);
+    }
+    var release = releases[releases.length - 1];
+
+    return (release.major, release.minor, release.patch, release.commit, release.time);
+  }
+
+  // proposedVersion retrieves the semantic version, commit hash and the current
+  // votes for the next proposed release.
+  function proposedVersion() constant returns (uint32 major, uint32 minor, uint32 patch, bytes20 commit, address[] pass, address[] fail) {
+    return (verProp.major, verProp.minor, verProp.patch, verProp.commit, verProp.votes.pass, verProp.votes.fail);
+  }
+
+  // promote pitches in on a voting campaign to promote a new user to a signer
+  // position.
+  function promote(address user) {
+    updateSigner(user, true);
+  }
+
+  // demote pitches in on a voting campaign to demote an authorised user from
+  // its signer position.
+  function demote(address user) {
+    updateSigner(user, false);
+  }
+
+  // release votes for a particular version to be included as the next release.
+  function release(uint32 major, uint32 minor, uint32 patch, bytes20 commit) {
+    updateRelease(major, minor, patch, commit, true);
+  }
+
+  // nuke votes for the currently proposed version to not be included as the next
+  // release. Nuking doesn't require a specific version number for simplicity.
+  function nuke() {
+    updateRelease(0, 0, 0, 0, false);
+  }
+
+  // updateSigner marks a vote for changing the status of an Ethereum user, either
+  // for or against the user being an authorised signer.
+  function updateSigner(address user, bool authorize) internal isSigner {
+    // Gather the current votes and ensure we don't double vote
+    Votes votes = authProps[user];
+    for (uint i = 0; i < votes.pass.length; i++) {
+      if (votes.pass[i] == msg.sender) {
+        return;
+      }
+    }
+    for (i = 0; i < votes.fail.length; i++) {
+      if (votes.fail[i] == msg.sender) {
+        return;
+      }
+    }
+    // If no authorization proposal is open, add the user to the index for later lookups
+    if (votes.pass.length == 0 && votes.fail.length == 0) {
+      authPend.push(user);
+    }
+    // Cast the vote and return if the proposal cannot be resolved yet
+    if (authorize) {
+      votes.pass.push(msg.sender);
+      if (votes.pass.length <= voters.length / 2) {
+        return;
+      }
+    } else {
+ 
       @sunny-king9999@gmail.com
 
