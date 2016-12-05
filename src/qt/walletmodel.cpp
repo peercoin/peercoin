@@ -14,7 +14,7 @@
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
     QObject(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
     transactionTableModel(0),
-    cachedBalance(0), cachedUnconfirmedBalance(0), cachedNumTransactions(0),
+    cachedBalance(0), cachedStake(0), cachedUnconfirmedBalance(0), cachedNumTransactions(0),
     cachedEncryptionStatus(Unencrypted)
 {
     addressTableModel = new AddressTableModel(wallet, this);
@@ -29,6 +29,11 @@ qint64 WalletModel::getBalance() const
 qint64 WalletModel::getStake() const
 {
     return wallet->GetStake();
+}
+
+qint64 WalletModel::getNewMint() const
+{
+    return wallet->GetNewMint();
 }
 
 qint64 WalletModel::getUnconfirmedBalance() const
@@ -49,12 +54,13 @@ int WalletModel::getNumTransactions() const
 void WalletModel::update()
 {
     qint64 newBalance = getBalance();
-    qint64 newUnconfirmedBalance = getUnconfirmedBalance();
+    qint64 newStake = getStake();
+    qint64 newUnconfirmedBalance = getUnconfirmedBalance() + getNewMint();
     int newNumTransactions = getNumTransactions();
     EncryptionStatus newEncryptionStatus = getEncryptionStatus();
 
-    if(cachedBalance != newBalance || cachedUnconfirmedBalance != newUnconfirmedBalance)
-        emit balanceChanged(newBalance, getStake(), newUnconfirmedBalance);
+    if(cachedBalance != newBalance || cachedStake != newStake || cachedUnconfirmedBalance != newUnconfirmedBalance)
+        emit balanceChanged(newBalance, newStake, newUnconfirmedBalance);
 
     if(cachedNumTransactions != newNumTransactions)
         emit numTransactionsChanged(newNumTransactions);
@@ -63,6 +69,7 @@ void WalletModel::update()
         emit encryptionStatusChanged(newEncryptionStatus);
 
     cachedBalance = newBalance;
+    cachedStake = newStake;
     cachedUnconfirmedBalance = newUnconfirmedBalance;
     cachedNumTransactions = newNumTransactions;
 }
