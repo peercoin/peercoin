@@ -48,7 +48,7 @@ static const int PROTOCOL_VERSION = 60006;
 // earlier versions not supported as of Feb 2012, and are disconnected
 // NOTE: as of bitcoin v0.6 message serialization (vSend, vRecv) still
 // uses MIN_PROTO_VERSION(209), where message format uses PROTOCOL_VERSION
-static const int MIN_PROTO_VERSION = 209;
+static const int MIN_PROTO_VERSION = 60006;
 
 // nTime field added to CAddress, starting with this version;
 // if possible, avoid requesting addresses nodes older than this
