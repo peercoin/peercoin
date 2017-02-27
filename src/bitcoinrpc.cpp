@@ -3076,6 +3076,27 @@ Value getrawmempool(const Array& params, bool fHelp)
     return a;
 }
 
+Value removetransaction(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "removetransaction txid\n"
+            "Removes transaction id from memory pool.");
+
+    uint256 hash;
+    hash.SetHex(params[0].get_str());
+
+    CTransaction tx;
+    uint256 hashBlock = 0;
+    if (!GetTransaction(hash, tx, hashBlock))
+        throw JSONRPCError(-5, "No information available about transaction in mempool");
+
+    mempool.remove(tx);
+    return tx.GetHash().GetHex();
+}
+
+
+
 //
 // Call Table
 //
@@ -3146,6 +3167,7 @@ static const CRPCCommand vRPCCommands[] =
     { "signrawtransaction",     &signrawtransaction,     false},
     { "sendrawtransaction",     &sendrawtransaction,     false},
     { "getrawmempool",          &getrawmempool,          true },
+    { "removetransaction",      &removetransaction,      false}
 };
 
 CRPCTable::CRPCTable()
