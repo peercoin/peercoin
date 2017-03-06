@@ -53,8 +53,8 @@ bool IsProtocolV05(unsigned int nTimeTx)
     return (nTimeTx >= (fTestNet? nProtocolV05TestSwitchTime : nProtocolV05SwitchTime));
 }
 
-// Whether a given block is subject to new v0.6 protocol
-bool IsProtocolV06(unsigned int nTimeBlock)
+// Whether the given block or transaction is subject to new v0.6 protocol
+bool IsProtocolV06(unsigned int nTimeTx)
 {
     // TODO decide on upgrade timing
     return false;
