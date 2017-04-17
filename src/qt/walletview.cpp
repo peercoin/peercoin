@@ -19,6 +19,7 @@
 #include <qt/transactionview.h>
 #include <qt/walletmodel.h>
 
+#include <interface/node.h>
 #include <ui_interface.h>
 
 #include <qt/multisigdialog.h>
@@ -175,7 +176,7 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
 void WalletView::processNewTransaction(const QModelIndex& parent, int start, int /*end*/)
 {
     // Prevent balloon-spam when initial block download is in progress
-    if (!walletModel || !clientModel || clientModel->inInitialBlockDownload())
+    if (!walletModel || !clientModel || clientModel->node().isInitialBlockDownload())
         return;
 
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
