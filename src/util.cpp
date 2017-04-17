@@ -207,7 +207,7 @@ inline int OutputDebugStringF(const char* pszFormat, ...)
         ret = vprintf(pszFormat, arg_ptr);
         va_end(arg_ptr);
     }
-    else
+    else if (!fPrintToDebugger)
     {
         // print to debug.log
         if (!fileout)
@@ -1377,3 +1377,12 @@ void LeaveCritical()
 }
 
 #endif /* DEBUG_LOCKORDER */
+
+
+void runCommand(std::string strCommand)
+{
+    int nErr = ::system(strCommand.c_str());
+    if (nErr)
+        printf("runCommand error: system(%s) returned %d\n", strCommand.c_str(), nErr);
+}
+

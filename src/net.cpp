@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2011-2013 The PPCoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2012 The Bitcoin Core developers
+// Copyright (c) 2011-2015 The Peercoin developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "irc.h"
@@ -871,10 +871,14 @@ void ThreadMapPort2(void* parg)
 #ifndef UPNPDISCOVER_SUCCESS
     /* miniupnpc 1.5 */
     devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0);
-#else
+#elif MINIUPNPC_API_VERSION < 14
     /* miniupnpc 1.6 */
     int error = 0;
     devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0, 0, &error);
+#else
+    /* miniupnpc 1.9.20150730 */
+    int error = 0;
+    devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0, 0, 2, &error);
 #endif
 
     struct UPNPUrls urls;
@@ -999,7 +1003,9 @@ void MapPort(bool /* unused fMapPort */)
 static const char *strDNSSeed[][2] = {
     {"seed", "seed.ppcoin.net"},
     {"seedppc", "seedppc.ppcoin.net"},
+    {"7server", "ppcseed.ns.7server.net"},
     {"altcointech", "dnsseed.ppc.altcointech.net"},
+    {"diandianbi", "seed.diandianbi.org"},
     {"tnseed", "tnseed.ppcoin.net"},
     {"tnseedppc", "tnseedppc.ppcoin.net"},
 };

@@ -182,6 +182,7 @@ int64 GetAdjustedTime();
 std::string FormatFullVersion();
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
 void AddTimeData(const CNetAddr& ip, int64 nTime);
+void runCommand(std::string strCommand);
 
 
 
@@ -406,7 +407,8 @@ std::string HexStr(const T itbegin, const T itend, bool fSpaces=false)
     return std::string(rv.begin(), rv.end());
 }
 
-inline std::string HexStr(const std::vector<unsigned char>& vch, bool fSpaces=false)
+template<typename T>
+inline std::string HexStr(const T& vch, bool fSpaces=false)
 {
     return HexStr(vch.begin(), vch.end(), fSpaces);
 }
