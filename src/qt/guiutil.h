@@ -20,6 +20,11 @@
 class QValidatedLineEdit;
 class SendCoinsRecipient;
 
+namespace interface
+{
+    class Node;
+}
+
 QT_BEGIN_NAMESPACE
 class QAbstractItemView;
 class QDateTime;

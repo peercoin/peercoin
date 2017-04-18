@@ -13,7 +13,7 @@
 #include <chainparams.h>
 #include <primitives/transaction.h>
 #include <key_io.h>
-#include <init.h>
+#include <interface/node.h>
 #include <policy/policy.h>
 #include <protocol.h>
 #include <script/script.h>
