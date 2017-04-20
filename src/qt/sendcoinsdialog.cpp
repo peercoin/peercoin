@@ -18,7 +18,6 @@
 #include <interface/node.h>
 #include <key_io.h>
 #include <wallet/coincontrol.h>
-#include <validation.h> // mempool
 #include <ui_interface.h>
 #include <txmempool.h>
 
