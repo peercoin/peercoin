@@ -1,6 +1,7 @@
 #include <qt/test/wallettests.h>
 #include <qt/test/util.h>
 
+#include <interfaces/chain.h>
 #include <interfaces/node.h>
 #include <base58.h>
 #include <qt/bitcoinamountfield.h>
@@ -128,7 +129,8 @@ void TestGUI()
     for (int i = 0; i < 5; ++i) {
         test.CreateAndProcessBlock({}, GetScriptForRawPubKey(test.coinbaseKey.GetPubKey()));
     }
-    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(WalletLocation(), WalletDatabase::CreateMock());
+    auto chain = interfaces::MakeChain();
+    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(*chain, WalletLocation(), WalletDatabase::CreateMock());
     bool firstRun;
     wallet->LoadWallet(firstRun);
     {
