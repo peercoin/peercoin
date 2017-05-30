@@ -28,7 +28,7 @@ Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.
 Notes
 -----
 
-See `doc/readme-qt.rst` for instructions on building PPCoin-Qt, the
+See `doc/readme-qt.rst` for instructions on building Peercoin-QT, the
 graphical user interface.
 
 Tested on OS X 10.5 through 10.8 on Intel processors only. PPC is not
@@ -132,7 +132,7 @@ Rerunning "openssl version" should now return the correct version.
 Creating a release build
 ------------------------
 
-A ppcoind binary is not included in the PPCoin-Qt.app bundle. You can ignore
+A ppcoind binary is not included in the Peercoin-QT.app bundle. You can ignore
 this section if you are building `ppcoind` for your own use.
 
 If you are building `ppcoind` for others, your build machine should be set up

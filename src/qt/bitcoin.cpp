@@ -154,9 +154,9 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("PPCoin");
     QApplication::setOrganizationDomain("ppcoin.org");
     if(GetBoolArg("-testnet")) // Separate UI settings for testnet
-        QApplication::setApplicationName("PPCoin-Qt-testnet");
+        QApplication::setApplicationName("Peercoin-QT-testnet");
     else
-        QApplication::setApplicationName("PPCoin-Qt");
+        QApplication::setApplicationName("Peercoin-QT");
 
     // ... then GUI settings:
     OptionsModel optionsModel;
