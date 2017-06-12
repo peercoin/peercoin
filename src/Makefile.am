@@ -131,6 +131,7 @@ BITCOIN_CORE_H = \
   rpc/protocol.h \
   rpc/safemode.h \
   rpc/server.h \
+  rpc/rawtransaction.h \
   rpc/register.h \
   rpc/util.h \
   scheduler.h \
