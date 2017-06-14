@@ -23,18 +23,6 @@
 
 #endif //HAVE_CONFIG_H
 
-// ppcoin version - intended for display purpose ONLY
-#define PPCOIN_VERSION_MAJOR       0
-#define PPCOIN_VERSION_MINOR       6
-#define PPCOIN_VERSION_REVISION    0
-#define PPCOIN_VERSION_BUILD       0
-
-// Copyright year (2009-this)
-// Todo: update this when changing our copyright comments in the source
-#define COPYRIGHT_YEAR 2017
-
-#endif //HAVE_CONFIG_H
-
 // Converts the parameter X to a string after macro replacement on X has been performed.
 // Don't merge these into one macro!
 #define STRINGIZE(X) DO_STRINGIZE(X)
