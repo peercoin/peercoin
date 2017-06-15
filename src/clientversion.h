@@ -1,6 +1,9 @@
 #ifndef CLIENTVERSION_H
 #define CLIENTVERSION_H
 
+#if defined(HAVE_CONFIG_H)
+#include "bitcoin-config.h"
+#else
 //
 // client versioning and copyright year
 //
@@ -14,15 +17,11 @@
 // Set to true for release, false for prerelease or test build
 #define CLIENT_VERSION_IS_RELEASE  true
 
-// ppcoin version - intended for display purpose ONLY
-#define PPCOIN_VERSION_MAJOR       0
-#define PPCOIN_VERSION_MINOR       6
-#define PPCOIN_VERSION_REVISION    0
-#define PPCOIN_VERSION_BUILD       0
-
 // Copyright year (2009-this)
 // Todo: update this when changing our copyright comments in the source
-#define COPYRIGHT_YEAR 2017
+#define COPYRIGHT_YEAR 2013
+
+#endif //HAVE_CONFIG_H
 
 // Converts the parameter X to a string after macro replacement on X has been performed.
 // Don't merge these into one macro!

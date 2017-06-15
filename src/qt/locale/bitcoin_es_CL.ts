@@ -758,7 +758,7 @@ Dirección: %4</translation>
     <message>
         <location filename="../guiutil.cpp" line="+424"/>
         <location line="+12"/>
-        <source>PPCoin-Qt</source>
+        <source>Peercoin-QT</source>
         <translation type="unfinished"/>
     </message>
     <message>

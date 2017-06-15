@@ -2,13 +2,17 @@
 #include "ui_rpcconsole.h"
 
 #include "clientmodel.h"
-#include "bitcoinrpc.h"
 #include "guiutil.h"
+
+#include "rpcserver.h"
+#include "rpcclient.h"
 
 #include <QTime>
 #include <QThread>
 #include <QKeyEvent>
+#if QT_VERSION < 0x050000
 #include <QUrl>
+#endif
 #include <QScrollBar>
 
 #include <openssl/crypto.h>
