@@ -188,7 +188,7 @@ void Shutdown()
     StopRPC();
     StopHTTPServer();
 #ifdef ENABLE_WALLET
-    FlushWallets();
+    WalletInit::Flush();
 #endif
     StopMapPort();
 
@@ -236,7 +236,7 @@ void Shutdown()
         pblocktree.reset();
     }
 #ifdef ENABLE_WALLET
-    StopWallets();
+    WalletInit::Stop();
 #endif
 
 #if ENABLE_ZMQ
@@ -258,7 +258,7 @@ void Shutdown()
     GetMainSignals().UnregisterBackgroundSignalScheduler();
     GetMainSignals().UnregisterWithMempoolSignals(mempool);
 #ifdef ENABLE_WALLET
-    CloseWallets();
+    WalletInit::Close();
 #endif
     globalVerifyHandle.reset();
     ECC_Stop();
@@ -410,7 +410,7 @@ std::string HelpMessage(HelpMessageMode mode)
         " " + _("Whitelisted peers cannot be DoS banned and their transactions are always relayed, even if they are already in the mempool, useful e.g. for a gateway"));
 
 #ifdef ENABLE_WALLET
-    strUsage += GetWalletHelpString(showDebug);
+    strUsage += WalletInit::GetHelpString(showDebug);
 #endif
 
 #if ENABLE_ZMQ
@@ -977,8 +977,7 @@ bool AppInitParameterInteraction()
     nBytesPerSigOp = gArgs.GetArg("-bytespersigop", nBytesPerSigOp);
 
 #ifdef ENABLE_WALLET
-    if (!WalletParameterInteraction())
-        return false;
+    if (!WalletInit::ParameterInteraction()) return false;
 #endif
 
     fIsBareMultisigStd = gArgs.GetBoolArg("-permitbaremultisig", DEFAULT_PERMIT_BAREMULTISIG);
@@ -1117,7 +1116,7 @@ bool AppInitMain()
      */
     RegisterAllCoreRPCCommands(tableRPC);
 #ifdef ENABLE_WALLET
-    RegisterWalletRPC(tableRPC);
+    WalletInit::RegisterRPC(tableRPC);
 #endif
 
     /* Start the RPC server already.  It will be started in "warmup" mode
@@ -1136,8 +1135,7 @@ bool AppInitMain()
 
     // ********************************************************* Step 5: verify wallet database integrity
 #ifdef ENABLE_WALLET
-    if (!VerifyWallets())
-        return false;
+    if (!WalletInit::Verify()) return false;
 #endif
     // ********************************************************* Step 6: network initialization
     // Note that we absolutely cannot open any actual connections
@@ -1444,8 +1442,7 @@ bool AppInitMain()
 
     // ********************************************************* Step 8: load wallet
 #ifdef ENABLE_WALLET
-    if (!OpenWallets())
-        return false;
+    if (!WalletInit::Open()) return false;
 #else
     LogPrintf("No wallet support compiled in!\n");
 #endif
@@ -1579,7 +1576,7 @@ bool AppInitMain()
     uiInterface.InitMessage(_("Done loading"));
 
 #ifdef ENABLE_WALLET
-    StartWallets(scheduler);
+    WalletInit::Start(scheduler);
     if (gArgs.GetBoolArg("-stakegen", true))
         MintStake(threadGroup);
 #endif
