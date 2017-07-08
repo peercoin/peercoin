@@ -88,7 +88,7 @@ public:
         ::Unserialize(s, VARINT(code));
         nHeight = code >> 1;
         fCoinBase = code & 1;
-        ::Unserialize(s, REF(CTxOutCompressor(out)));
+        ::Unserialize(s, CTxOutCompressor(out));
         // peercoin flags
         unsigned int nFlag = 0;
         ::Unserialize(s, VARINT(nFlag));
