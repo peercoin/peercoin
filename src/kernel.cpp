@@ -19,6 +19,10 @@ unsigned int nProtocolV04TestSwitchTime = 1395700000;
 // Protocol switch time of v0.5 kernel protocol
 unsigned int nProtocolV05SwitchTime     = 1461700000;
 unsigned int nProtocolV05TestSwitchTime = 1447700000;
+// Protocol switch time of v0.6 kernel protocol
+// supermajority hardfork: actual fork will happen later than switch time
+const unsigned int nProtocolV06SwitchTime     = 1499800000;
+const unsigned int nProtocolV06TestSwitchTime = 1499800000;
 
 
 // Modifier interval: time to elapse before new modifier is computed
@@ -54,10 +58,18 @@ bool IsProtocolV05(unsigned int nTimeTx)
 }
 
 // Whether a given block is subject to new v0.6 protocol
-bool IsProtocolV06(unsigned int nTimeBlock)
+// Test against previous block index! (always available)
+bool IsProtocolV06(const CBlockIndex* pindexPrev)
 {
-    // TODO decide on upgrade timing
+  if (pindexPrev->nTime < (fTestNet? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime))
     return false;
+
+  // if 750 of the last 1,000 blocks are version 2 or greater (51/100 if testnet):
+  if ((!fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 750, 1000)) ||
+      (fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 51, 100)))
+    return true;
+
+  return false;
 }
 
 // Get the last stake modifier and its generation time from a given block
