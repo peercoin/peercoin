@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <chain.h>
+#include <interfaces/chain.h>
 #include <key_io.h>
 #include <rpc/server.h>
 #include <validation.h>
@@ -133,7 +134,8 @@ UniValue importprivkey(const JSONRPCRequest& request)
     WalletRescanReserver reserver(pwallet);
     bool fRescan = true;
     {
-        LOCK2(cs_main, pwallet->cs_wallet);
+        auto locked_chain = pwallet->chain().lock();
+        LOCK(pwallet->cs_wallet);
 
         EnsureWalletIsUnlocked(pwallet);
 
@@ -299,7 +301,8 @@ UniValue importaddress(const JSONRPCRequest& request)
         fP2SH = request.params[3].get_bool();
 
     {
-        LOCK2(cs_main, pwallet->cs_wallet);
+        auto locked_chain = pwallet->chain().lock();
+        LOCK(pwallet->cs_wallet);
 
         CTxDestination dest = DecodeDestination(request.params[0].get_str());
         if (IsValidDestination(dest)) {
@@ -373,7 +376,8 @@ UniValue importpubkey(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Pubkey is not a valid public key");
 
     {
-        LOCK2(cs_main, pwallet->cs_wallet);
+        auto locked_chain = pwallet->chain().lock();
+        LOCK(pwallet->cs_wallet);
 
         for (const auto& dest : GetAllDestinationsForKey(pubKey)) {
             ImportAddress(pwallet, dest, strLabel);
@@ -422,7 +426,8 @@ UniValue importwallet(const JSONRPCRequest& request)
     int64_t nTimeBegin = 0;
     bool fGood = true;
     {
-        LOCK2(cs_main, pwallet->cs_wallet);
+        auto locked_chain = pwallet->chain().lock();
+        LOCK(pwallet->cs_wallet);
 
         EnsureWalletIsUnlocked(pwallet);
 
@@ -540,7 +545,8 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
             + HelpExampleRpc("dumpprivkey", "\"myaddress\"")
         );
 
-    LOCK2(cs_main, pwallet->cs_wallet);
+    auto locked_chain = pwallet->chain().lock();
+    LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -587,7 +593,8 @@ UniValue dumpwallet(const JSONRPCRequest& request)
             + HelpExampleRpc("dumpwallet", "\"test\"")
         );
 
-    LOCK2(cs_main, pwallet->cs_wallet);
+    auto locked_chain = pwallet->chain().lock();
+    LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -1021,7 +1028,8 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
     int64_t nLowestTimestamp = 0;
     UniValue response(UniValue::VARR);
     {
-        LOCK2(cs_main, pwallet->cs_wallet);
+        auto locked_chain = pwallet->chain().lock();
+        LOCK(pwallet->cs_wallet);
         EnsureWalletIsUnlocked(pwallet);
 
         // Verify all timestamps are present before importing any keys.
