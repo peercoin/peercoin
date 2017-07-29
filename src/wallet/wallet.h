@@ -89,7 +89,6 @@ class CCoinControl;
 class COutput;
 class CReserveKey;
 class CScript;
-class CTxMemPool;
 class CWalletTx;
 
 /** (client) version numbers for particular wallet features */

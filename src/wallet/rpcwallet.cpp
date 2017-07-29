@@ -410,7 +410,7 @@ static UniValue sendtoaddress(const JSONRPCRequest& request)
 
     CCoinControl coin_control;
     if (!request.params[6].isNull()) {
-        coin_control.m_confirm_target = ParseConfirmTarget(request.params[6]);
+        coin_control.m_confirm_target = ParseConfirmTarget(request.params[6], pwallet->chain().estimateMaxBlocks());
     }
 
     EnsureWalletIsUnlocked(pwallet);
@@ -859,7 +859,7 @@ static UniValue sendmany(const JSONRPCRequest& request)
 
     CCoinControl coin_control;
     if (!request.params[6].isNull()) {
-        coin_control.m_confirm_target = ParseConfirmTarget(request.params[6]);
+        coin_control.m_confirm_target = ParseConfirmTarget(request.params[6], pwallet->chain().estimateMaxBlocks());
     }
 
     std::set<CTxDestination> destinations;
@@ -2966,7 +2966,7 @@ void FundTransaction(CWallet* const pwallet, CMutableTransaction& tx, CAmount& f
             subtractFeeFromOutputs = options["subtractFeeFromOutputs"].get_array();
 
         if (options.exists("conf_target")) {
-            coinControl.m_confirm_target = ParseConfirmTarget(options["conf_target"]);
+            coinControl.m_confirm_target = ParseConfirmTarget(options["conf_target"], pwallet->chain().estimateMaxBlocks());
         }
       }
     }
