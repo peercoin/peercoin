@@ -1456,6 +1456,8 @@ bool CTransaction::HaveInputs(CCoinsViewCache &inputs) const
 
 bool CScriptCheck::operator()() const {
     const CScript &scriptSig = ptxTo->vin[nIn].scriptSig;
+    if (scriptPubKey.size() == 0)
+        return false;
     if (!VerifyScript(scriptSig, scriptPubKey, *ptxTo, nIn, nFlags, nHashType))
         return error("CScriptCheck() : %s VerifySignature failed", ptxTo->GetHash().ToString().c_str());
     return true;
