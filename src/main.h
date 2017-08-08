@@ -1207,8 +1207,12 @@ private:
 public:
     CScriptCheck() {}
     CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, int nHashTypeIn) :
-        scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey),
-        ptxTo(&txToIn), nIn(nInIn), nFlags(nFlagsIn), nHashType(nHashTypeIn) { }
+        ptxTo(&txToIn), nIn(nInIn), nFlags(nFlagsIn), nHashType(nHashTypeIn)
+    {
+        if (nInIn < txToIn.vin.size() &&
+            txToIn.vin[nInIn].prevout.n < txFromIn.vout.size())
+            scriptPubKey = txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey;
+    }
 
     bool operator()() const;
 
