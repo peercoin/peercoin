@@ -643,8 +643,4 @@ class CTransaction;
 void RelayTransaction(const CTransaction& tx, const uint256& hash);
 void RelayTransaction(const CTransaction& tx, const uint256& hash, const CDataStream& ss);
 
-class CBlock;
-void RelayBlock(const CBlock& tx, const uint256& hash);
-void RelayBlock(const CBlock& tx, const uint256& hash, const CDataStream& ss);
-
 #endif
