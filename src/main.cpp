@@ -80,6 +80,7 @@ int64 nHPSTimerStart = 0;
 
 #ifdef TESTING
 uint256 hashSingleStakeBlock;
+int nBlocksToIgnore = 0;
 #endif
 
 // Settings
@@ -2534,6 +2535,17 @@ bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uns
 
 bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBlockPos *dbp)
 {
+#ifdef TESTING
+    static set<uint256> setIgnoredBlockHashes;
+    if (nBlocksToIgnore)
+    {
+        nBlocksToIgnore--;
+        setIgnoredBlockHashes.insert(pblock->GetHash());
+        return error("ProcessBlock() : block ignored");
+    }
+    if (setIgnoredBlockHashes.count(pblock->GetHash()))
+        return error("ProcessBlock() : block ignored");
+#endif
     // Check for duplicate
     uint256 hash = pblock->GetHash();
     if (mapBlockIndex.count(hash))
@@ -5131,7 +5143,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 }
 
 #ifdef TESTING
-void BitcoinMiner(CWallet *pwallet, bool fProofOfStake, bool fGenerateSingleBlock, CBlockIndex *parent)
+void BitcoinMiner(CWallet *pwallet, bool fProofOfStake, bool fGenerateSingleBlock)
 #else
 void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 #endif
@@ -5161,15 +5173,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
         // Create new block
         //
         unsigned int nTransactionsUpdatedLast = nTransactionsUpdated;
-#ifdef TESTING
-        CBlockIndex* pindexPrev;
-        if (parent)
-            pindexPrev = parent;
-        else
-            pindexPrev = pindexBest;
-#else
         CBlockIndex* pindexPrev = pindexBest;
-#endif
 
         auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlock(reservekey, pwallet, fProofOfStake));
         if (!pblocktemplate.get())
@@ -5341,7 +5345,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet)
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
 #ifdef TESTING
-        minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false, false, (CBlockIndex*)NULL));
+        minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false, false));
 #else
         minerThreads->create_thread(boost::bind(&BitcoinMiner, pwallet, false));
 #endif
