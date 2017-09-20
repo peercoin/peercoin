@@ -16,8 +16,8 @@
 
 #include <qt/mintingtablemodel.h>
 
-#include <base58.h>
 #include <chain.h>
+#include <key_io.h>
 #include <keystore.h>
 #include <validation.h>
 #include <net.h> // for g_connman
