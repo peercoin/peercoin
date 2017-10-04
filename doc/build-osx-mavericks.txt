@@ -1,0 +1,93 @@
+Copyright (c) 2012-2013 PPCoin Developers
+Copyright (c) 2009-2012 Bitcoin Developers
+Distributed under the MIT/X11 software license, see the accompanying file
+license.txt or http://www.opensource.org/licenses/mit-license.php.  This
+product includes software developed by the OpenSSL Project for use in the
+OpenSSL Toolkit (http://www.openssl.org/).  This product includes cryptographic
+software written by Eric Young (eay@cryptsoft.com) and UPnP software written by
+Thomas Bernard.
+
+
+Mac OS X bitcoind build instructions
+Laszlo Hanyecz <solar@heliacal.net>
+Douglas Huff <dhuff@jrbobdobbs.org>
+
+Modified for PPCoin by Jeff Larkin <jefflarkin@gmail.com>
+Modified for OS/X 10.9 (Mavericks) by Sami Laine <laine.j.sami@gmail.com>
+
+
+See readme-qt.rst for instructions on building PPCoin QT, the
+graphical user interface.
+
+These recipes have been tested on 10.9 Intel only.
+
+Typographic conventions: all commands which should be executed in
+the Terminal emulator of your choice (Terminal.app is very popular
+and comes with OS/X) are in single quotes or are separated by
+empty lines and indented by two characters.
+
+So, for example 'this is a command' and
+
+  so is this
+
+Typographic conventions aside, let us move to the actual business of
+building PPCoin.
+
+1. Prerequisites
+
+   You need Apple XCode, XCode command line tools and Homebrew (see
+   <URL:http://brew.sh/>) to build PPCoin. Apple XCode and XCode command
+   line tools are mandatory, but there are other options for Homebrew
+   (namely Fink, <URL:http://www.finkproject.org/>, and MacPorts,
+   <URL:https://www.macports.org/>). However, this document and the
+   accompanied makefile.osx-mavericks will assume you're using Homebrew.
+   It shouldn't be too hard for you to modify the Makefile, in case
+   you don't feel like using Homebrew.
+
+   Download and install Apple XCode 5 from Apps Store. For more information
+   see <URL:https://developer.apple.com/xcode/>. You can also install
+   it by running 'xcode-select --install'. 
+
+   Install Homebrew from <URL:http://brew.sh/>. I recommend that you
+   do this as a normal user and not root. If you want to use default
+   location for Homebrew ("/usr/local"), just give your normal user
+   account ownership of the destination directory by running
+   'sudo chown <my_account_here> /usr/local'.
+
+   Remember to run 'brew doctor' before moving forward.
+
+2. Required programs and depency libraries
+
+   These come from Homebrew:
+
+     brew install berkeley-db4 boost boost-build git miniupnpc
+
+3. Clone the Primecoin git repository
+
+     git clone git@github.com:ppcoin/ppcoin.git ppcoin
+
+4. Build 64-bit PPCoin daemon
+
+     cd ppcoin/src && make -f makefile.osx-mavericks 64BIT=true
+
+   Leave 64BIT=true out, if you want a 32-bit binary (unless you're
+   absolutely sure, you probably don't).
+
+5. Test the binary
+
+   For a list of command line options, run:
+
+     src/ppcoind --help
+
+   To start the PPCoin daemon, run:
+ 
+     src/ppcoind -daemon
+
+   If you've enabled RPC, to get a list of RPC commands, run:
+
+     src/ppcoind help
+
+   The last one is actually far out from the scope of this document
+   and most likely fails. Consult help and search engines to find out
+   how to make best use of PPCoin daemon RPC.
+
