@@ -1749,8 +1749,7 @@ bool CBlock::ConnectBlock(CValidationState &state, CBlockIndex* pindex, CCoinsVi
     unsigned int flags = SCRIPT_VERIFY_NOCACHE |
                          (fStrictPayToScriptHash ? SCRIPT_VERIFY_P2SH : SCRIPT_VERIFY_NONE);
 
-    // Start enforcing CHECKLOCKTIMEVERIFY, (BIP65) for ProtocolV06
-    // blocks, when 75% of the network has upgraded:
+    // Start enforcing CHECKLOCKTIMEVERIFY, (BIP65) for ProtocolV06 blocks.
     if (IsProtocolV06(pindex->pprev)) {
         flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
     }
@@ -2477,7 +2476,7 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
 
         if (IsProtocolV06(pindexPrev))
         {
-            // Reject block.nVersion=1 blocks when 75% (51% on testnet) of the network has upgraded:
+            // Reject block.nVersion=1 blocks when protocol v06 got activated.
             if (nVersion < 2)
             {
                 return state.Invalid(error("AcceptBlock() : rejected nVersion=1 block"));

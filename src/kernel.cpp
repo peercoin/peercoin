@@ -64,9 +64,12 @@ bool IsProtocolV06(const CBlockIndex* pindexPrev)
   if (pindexPrev->nTime < (fTestNet? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime))
     return false;
 
-  // if 750 of the last 1,000 blocks are version 2 or greater (51/100 if testnet):
-  if ((!fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 750, 1000)) ||
-      (fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 51, 100)))
+  // if 900 of the last 1,000 blocks are version 2 or greater (90/100 if testnet):
+  // Soft-forking PoS can be dangerous if the super majority is too low
+  // The stake majority will decrease after the fork
+  // since only coindays of updated nodes will get destroyed.
+  if ((!fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 900, 1000)) ||
+      (fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 90, 100)))
     return true;
 
   return false;
