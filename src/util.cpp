@@ -1490,6 +1490,7 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
     ss << "/";
     ss << "Peercoin:" << FormatVersion(PPCOIN_VERSION);
     ss << "(" << CLIENT_BUILD << ")/";
+    ss << "rc1/";
     return ss.str();
 }
 
