@@ -22,7 +22,7 @@ unsigned int nProtocolV05TestSwitchTime = 1447700000;
 // Protocol switch time of v0.6 kernel protocol
 // supermajority hardfork: actual fork will happen later than switch time
 const unsigned int nProtocolV06SwitchTime     = 1600000000; // Sun 13 Sep 12:26:40 UTC 2020
-const unsigned int nProtocolV06TestSwitchTime = 1507700000; // Wed 11 Oct 05:33:20 UTC 2017
+const unsigned int nProtocolV06TestSwitchTime = 1508198400; // Tue 17 Oct 00:00:00 UTC 2017
 
 
 // Modifier interval: time to elapse before new modifier is computed
