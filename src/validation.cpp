@@ -714,7 +714,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
                 !CheckInputs(tx, stateDummy, view, true, scriptVerifyFlags & ~SCRIPT_VERIFY_CLEANSTACK, true, false, txdata)) {
                 // Only the witness is missing, so the transaction itself may be fine.
                 state.DoS(0, ValidationInvalidReason::TX_WITNESS_MUTATED, false,
-                          state.GetRejectCode(), state.GetRejectReason(), true, state.GetDebugMessage());
+                        state.GetRejectCode(), state.GetRejectReason(), true, state.GetDebugMessage());
             }
             return false; // state filled in by CheckInputs
         }
@@ -768,11 +768,6 @@ static bool AcceptToMemoryPoolWithTime(const CChainParams& chainparams, CTxMemPo
     std::vector<COutPoint> coins_to_uncache;
     bool res = AcceptToMemoryPoolWorker(chainparams, pool, state, tx, pfMissingInputs, nAcceptTime, bypass_limits, coins_to_uncache, test_accept);
     if (!res) {
-        // Remove coins that were not present in the coins cache before calling ATMPW;
-        // this is to prevent memory DoS in case we receive a large number of
-        // invalid transactions that attempt to overrun the in-memory coins cache
-        // (`CCoinsViewCache::cacheCoins`).
-
         for (const COutPoint& hashTx : coins_to_uncache)
             pcoinsTip->Uncache(hashTx);
     }
@@ -1848,7 +1843,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                     // CheckTxInputs may return MISSING_INPUTS but we can't return that, as
                     // it's not defined for a block, so we reset the reason flag to CONSENSUS here.
                     state.DoS(100, ValidationInvalidReason::CONSENSUS, false,
-                              state.GetRejectCode(), state.GetRejectReason(), state.CorruptionPossible(), state.GetDebugMessage());
+                            state.GetRejectCode(), state.GetRejectReason(), state.CorruptionPossible(), state.GetDebugMessage());
                 }
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
@@ -1995,7 +1990,7 @@ bool static FlushStateToDisk(const CChainParams& chainparams, CValidationState &
         // It's been very long since we flushed the cache. Do this infrequently, to optimize cache usage.
         bool fPeriodicFlush = mode == FlushStateMode::PERIODIC && nNow > nLastFlush + (int64_t)DATABASE_FLUSH_INTERVAL * 1000000;
         // Combine all conditions that result in a full cache flush.
-        fDoFullFlush = (mode == FLUSH_STATE_ALWAYS) || fCacheLarge || fCacheCritical || fPeriodicFlush;
+        fDoFullFlush = (mode == FlushStateMode::ALWAYS) || fCacheLarge || fCacheCritical || fPeriodicFlush;
         // Write blocks and block index to disk.
         if (fDoFullFlush || fPeriodicWrite) {
             // Depend on nMinDiskSpace to ensure we can write block index
