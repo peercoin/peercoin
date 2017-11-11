@@ -3545,6 +3545,15 @@ uint64_t CalculateCurrentUsage()
 }
 
 bool CheckDiskSpace(uint64_t nAdditionalBytes, bool blocks_dir)
+        // On a prune event, the chainstate DB is flushed.
+        // To avoid excessive prune events negating the benefit of high dbcache
+        // values, we should not prune too rapidly.
+        // So when pruning in IBD, increase the buffer a bit to avoid a re-prune too soon.
+        if (IsInitialBlockDownload()) {
+            // Since this is only relevant during IBD, we use a fixed 10%
+            nBuffer += nPruneTarget / 10;
+        }
+
 {
     uint64_t nFreeBytesAvailable = fs::space(blocks_dir ? GetBlocksDir() : GetDataDir()).available;
 
