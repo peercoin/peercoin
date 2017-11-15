@@ -55,8 +55,6 @@ static const unsigned int DEFAULT_TX_CONFIRM_TARGET = 6;
 static const bool DEFAULT_WALLETBROADCAST = true;
 static const bool DEFAULT_DISABLE_WALLET = false;
 
-extern const char * DEFAULT_WALLET_DAT;
-
 static const int64_t TIMESTAMP_MIN = 0;
 
 class CBlockIndex;
