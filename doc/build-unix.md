@@ -18,7 +18,7 @@ To Build in Terminal on Debian based Linux
 	echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.peercoin/peercoin.conf
 	git clone https://github.com/peercoin/peercoin
 	cd peercoin
-	git checkout v0.6.0ppc
+	git checkout -b v0.6.0ppc
 	qmake -qt=qt5 && make
 
 
