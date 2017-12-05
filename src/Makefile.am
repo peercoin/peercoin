@@ -630,13 +630,13 @@ bitcoin_bin_ldadd = \
 
 bitcoin_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
 
-peercoind_SOURCES = $(bitcoin_daemon_sources)
+peercoind_SOURCES = $(bitcoin_daemon_sources) init/bitcoind.cpp
 peercoind_CPPFLAGS = $(bitcoin_bin_cppflags)
 peercoind_CXXFLAGS = $(bitcoin_bin_cxxflags)
 peercoind_LDFLAGS = $(bitcoin_bin_ldflags)
 peercoind_LDADD = $(LIBBITCOIN_SERVER) $(bitcoin_bin_ldadd)
 
-peercoin_node_SOURCES = $(bitcoin_daemon_sources)
+peercoin_node_SOURCES = $(bitcoin_daemon_sources) init/bitcoin-node.cpp
 peercoin_node_CPPFLAGS = $(bitcoin_bin_cppflags)
 peercoin_node_CXXFLAGS = $(bitcoin_bin_cxxflags)
 peercoin_node_LDFLAGS = $(bitcoin_bin_ldflags)
