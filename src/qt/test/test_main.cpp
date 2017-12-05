@@ -87,7 +87,6 @@ int main(int argc, char* argv[])
     app.setApplicationName("Bitcoin-Qt-test");
     app.createNode(*init);
 
-    app.node().context()->args = &gArgs;     // Make gArgs available in the NodeContext
     AppTests app_tests(app);
     if (QTest::qExec(&app_tests) != 0) {
         fInvalid = true;
