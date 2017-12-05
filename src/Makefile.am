@@ -695,6 +695,7 @@ peercoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 
 # bitcoin-wallet binary #
 peercoin_wallet_SOURCES = bitcoin-wallet.cpp
+peercoin_wallet_SOURCES += init/bitcoin-wallet.cpp
 peercoin_wallet_CPPFLAGS = $(bitcoin_bin_cppflags)
 peercoin_wallet_CXXFLAGS = $(bitcoin_bin_cxxflags)
 peercoin_wallet_LDFLAGS = $(bitcoin_bin_ldflags)
