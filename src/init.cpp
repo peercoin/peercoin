@@ -19,6 +19,7 @@
 #include <fs.h>
 #include <httpserver.h>
 #include <httprpc.h>
+#include <index/txindex.h>
 #include <key.h>
 #include <validation.h>
 #include <miner.h>
@@ -179,6 +180,9 @@ void Interrupt()
     InterruptMapPort();
     if (g_connman)
         g_connman->Interrupt();
+    if (g_txindex) {
+        g_txindex->Interrupt();
+    }
 }
 
 void Shutdown()
@@ -209,6 +213,9 @@ void Shutdown()
     if (g_connman) g_connman->Stop();
     peerLogic.reset();
     g_connman.reset();
+    if (g_txindex) {
+        g_txindex.reset();
+    }
 
     StopTorControl();
 
@@ -1273,9 +1280,10 @@ bool AppInitMain()
     int64_t nTotalCache = (gArgs.GetArg("-dbcache", nDefaultDbCache) << 20);
     nTotalCache = std::max(nTotalCache, nMinDbCache << 20); // total cache cannot be less than nMinDbCache
     nTotalCache = std::min(nTotalCache, nMaxDbCache << 20); // total cache cannot be greater than nMaxDbcache
-    int64_t nBlockTreeDBCache = nTotalCache / 8;
-    nBlockTreeDBCache = std::min(nBlockTreeDBCache, (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX) ? nMaxBlockDBAndTxIndexCache : nMaxBlockDBCache) << 20);
+    int64_t nBlockTreeDBCache = std::min(nTotalCache / 8, nMaxBlockDBCache << 20);
     nTotalCache -= nBlockTreeDBCache;
+    int64_t nTxIndexCache = std::min(nTotalCache / 8, gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX) ? nMaxTxIndexCache << 20 : 0);
+    nTotalCache -= nTxIndexCache;
     int64_t nCoinDBCache = std::min(nTotalCache / 2, (nTotalCache / 4) + (1 << 23)); // use 25%-50% of the remainder for disk cache
     nCoinDBCache = std::min(nCoinDBCache, nMaxCoinsDBCache << 20); // cap total coins db cache
     nTotalCache -= nCoinDBCache;
@@ -1283,6 +1291,9 @@ bool AppInitMain()
     int64_t nMempoolSizeMax = gArgs.GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000;
     LogPrintf("Cache configuration:\n");
     LogPrintf("* Using %.1fMiB for block index database\n", nBlockTreeDBCache * (1.0 / 1024 / 1024));
+    if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
+        LogPrintf("* Using %.1fMiB for transaction index database\n", nTxIndexCache * (1.0 / 1024 / 1024));
+    }
     LogPrintf("* Using %.1fMiB for chain state database\n", nCoinDBCache * (1.0 / 1024 / 1024));
     LogPrintf("* Using %.1fMiB for in-memory UTXO set (plus up to %.1fMiB of unused mempool space)\n", nCoinCacheUsage * (1.0 / 1024 / 1024), nMempoolSizeMax * (1.0 / 1024 / 1024));
 
@@ -1312,8 +1323,6 @@ bool AppInitMain()
 
                 if (fRequestShutdown) break;
 
-                // LoadBlockIndex will load fTxIndex from the db, or set it if
-                // we're reindexing.
                 // Note that it also sets fReindex based on the disk flag!
                 // From here on out fReindex and fReset mean something different!
                 if (!LoadBlockIndex(chainparams)) {
@@ -1454,16 +1463,23 @@ bool AppInitMain()
         LogPrintf(" block index %15dms\n", GetTimeMillis() - nStart);
     }
 
-    // ********************************************************* Step 8: load wallet
+    // ********************************************************* Step 8: start indexers
+    if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
+        auto txindex_db = MakeUnique<TxIndexDB>(nTxIndexCache, false, fReindex);
+        g_txindex = MakeUnique<TxIndex>(std::move(txindex_db));
+        g_txindex->Start();
+    }
+
+    // ********************************************************* Step 9: load wallet
     if (!g_wallet_init_interface.Open()) return false;
 
-    // ********************************************************* Step 9: data directory maintenance
+    // ********************************************************* Step 10: data directory maintenance
 
     // Note that setting NODE_WITNESS is never required: the only downside from not
     // doing so is that after activation, no upgraded nodes will fetch from you.
     nLocalServices = ServiceFlags(nLocalServices | NODE_WITNESS);
 
-    // ********************************************************* Step 10: import blocks
+    // ********************************************************* Step 11: import blocks
 
     if (!CheckDiskSpace() && !CheckDiskSpace(0, true))
         return false;
@@ -1502,7 +1518,7 @@ bool AppInitMain()
         return false;
     }
 
-    // ********************************************************* Step 11: start node
+    // ********************************************************* Step 12: start node
 
     int chain_active_height;
 
@@ -1580,7 +1596,7 @@ bool AppInitMain()
         return false;
     }
 
-    // ********************************************************* Step 12: finished
+    // ********************************************************* Step 13: finished
 
     SetRPCWarmupFinished();
     uiInterface.InitMessage(_("Done loading"));
