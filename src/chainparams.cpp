@@ -165,6 +165,9 @@ public:
             0.007407208 // * estimated number of transactions per second after that timestamp
                         // 1743720/(1580808868-1345400356) = 0.007407208
         };
+
+        /* disable fallback fee on mainnet */
+        m_fallback_fee_enabled = false;
     }
 };
 
@@ -264,6 +267,8 @@ public:
             0.003581633 // * estimated number of transactions per second after that timestamp
                         // 868816/(1588604853-1346029522) = 0.003581633
         };
+        /* enable fallback fee on testnet */
+        m_fallback_fee_enabled = true;
     }
 };
 
@@ -338,6 +343,8 @@ public:
 
         bech32_hrp = "pcrt";
 
+        /* enable fallback fee on regtest */
+        m_fallback_fee_enabled = true;
         fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;

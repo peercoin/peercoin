@@ -5,6 +5,7 @@
 
 #include <wallet/init.h>
 
+#include <chainparams.h>
 #include <net.h>
 #include <util.h>
 #include <utilmoneystr.h>
@@ -104,6 +105,9 @@ bool WalletParameterInteraction()
         return InitError(_("Rescans are not possible in pruned mode. You will need to use -reindex which will download the whole blockchain again."));
 
     if (gArgs.IsArgSet("-reservebalance"))
+
+    g_wallet_allow_fallback_fee = Params().IsFallbackFeeEnabled();
+        g_wallet_allow_fallback_fee = nFeePerK != 0; //disable fallback fee in case value was set to 0, enable if non-null value
     {
         CAmount nReserveBalance = 0;
         if (!ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
