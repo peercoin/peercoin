@@ -266,6 +266,7 @@ UniValue getmininginfo(const JSONRPCRequest& request)
 }
 
 
+            "                  Note, that this value is not a fee rate. It is a value to modify absolute fee of the TX.\n"
 // NOTE: Assumes a conclusive result; if result is inconclusive, it must be handled by caller
 static UniValue BIP22ValidationResult(const CValidationState& state)
 {
