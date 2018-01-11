@@ -258,6 +258,8 @@ namespace {
 
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator)
 {
+    AssertLockHeld(cs_main);
+
     // Find the first block the caller has in the main chain
     for (const uint256& hash : locator.vHave) {
         BlockMap::iterator mi = mapBlockIndex.find(hash);
@@ -2679,6 +2681,8 @@ bool ResetBlockFailureFlags(CBlockIndex *pindex) {
 
 CBlockIndex* CChainState::AddToBlockIndex(const CBlockHeader& block, bool fSetAsProofOfstake)
 {
+    AssertLockHeld(cs_main);
+
     // Check for duplicate
     uint256 hash = block.GetHash();
     BlockMap::iterator it = mapBlockIndex.find(hash);
@@ -3529,6 +3533,8 @@ fs::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix)
 
 CBlockIndex * CChainState::InsertBlockIndex(const uint256& hash)
 {
+    AssertLockHeld(cs_main);
+
     if (hash.IsNull())
         return nullptr;
 
@@ -3665,6 +3671,8 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
 
 bool LoadChainTip(const CChainParams& chainparams)
 {
+    AssertLockHeld(cs_main);
+
     if (chainActive.Tip() && chainActive.Tip()->GetBlockHash() == pcoinsTip->GetBestBlock()) return true;
 
     if (pcoinsTip->GetBestBlock().IsNull() && mapBlockIndex.size() == 1) {
