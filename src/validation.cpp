@@ -231,6 +231,7 @@ uint256 hashAssumeValid;
 arith_uint256 nMinimumChainWork;
 
 CTxMemPool mempool;
+std::atomic_bool g_is_mempool_loaded{false};
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
