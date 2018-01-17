@@ -99,7 +99,6 @@ void ReceiveCoinsDialog::setModel(WalletModel *_model)
         } else {
             ui->useBech32->setCheckState(Qt::Unchecked);
         }
-
     }
 }
 
@@ -144,11 +143,11 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
     /* Generate new receiving address */
     OutputType address_type;
     if (ui->useBech32->isChecked()) {
-        address_type = OUTPUT_TYPE_BECH32;
+        address_type = OutputType::BECH32;
     } else {
-        address_type = model->getDefaultAddressType();
-        if (address_type == OUTPUT_TYPE_BECH32) {
-            address_type = OUTPUT_TYPE_P2SH_SEGWIT;
+        address_type = model->wallet().getDefaultAddressType();
+        if (address_type == OutputType::BECH32) {
+            address_type = OutputType::P2SH_SEGWIT;
         }
     }
     address = model->getAddressTableModel()->addRow(AddressTableModel::Receive, label, "", address_type);
