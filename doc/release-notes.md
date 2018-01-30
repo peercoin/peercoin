@@ -1,9 +1,9 @@
 Peercoin version 0.8.x is now available from:
 
-  <https://bitcoincore.org/bin/bitcoin-core-0.16.x/>
+  <https://bitcoincore.org/bin/bitcoin-core-*version*/>
 
-This is a new minor version release, with various bugfixes
-as well as updated translations.
+This is a new major version release, including new features, various bugfixes
+and performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
@@ -50,12 +50,6 @@ Notable changes
 ===============
 
 (to be filled in)
-
-0.16.x change log
-------------------
-
-(to be filled in)
-
 Credits
 =======
 
