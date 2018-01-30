@@ -81,7 +81,7 @@ Extra transactions to keep in memory for compact block reconstructions
 .HP
 \fB\-par=\fR<n>
 .IP
-Set the number of script verification threads (\fB\-2\fR to 16, 0 = auto, <0 =
+Set the number of script verification threads (\fB\-6\fR to 16, 0 = auto, <0 =
 leave that many cores free, default: 0)
 .HP
 \fB\-pid=\fR<file>
@@ -254,6 +254,17 @@ Tries to keep outbound traffic under the given target (in MiB per 24h),
 Wallet options:
 .HP
 \fB\-addresstype\fR
+.IP
+What type of addresses to use ("legacy", "p2sh\-segwit", or "bech32",
+default: "p2sh\-segwit")
+.HP
+\fB\-changetype\fR
+.IP
+What type of change to use ("legacy", "p2sh\-segwit", or "bech32").
+Default is same as \fB\-addresstype\fR, except when
+\fB\-addresstype\fR=\fI\,p2sh\-segwit\/\fR a native segwit output is used when
+sending to a native segwit address)
+.HP
 .IP
 What type of addresses to use ("legacy", "p2sh\-segwit", or "bech32",
 default: "p2sh\-segwit")
