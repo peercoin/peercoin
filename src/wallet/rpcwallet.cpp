@@ -1207,11 +1207,6 @@ UniValue addmultisigaddress(const JSONRPCRequest& request)
     CTxDestination dest = pwallet->AddAndGetDestinationForScript(inner, output_type);
     pwallet->SetAddressBook(dest, strAccount, "send");
 
-    // Return old style interface
-    if (IsDeprecatedRPCEnabled("addmultisigaddress")) {
-        return EncodeDestination(dest);
-    }
-
     UniValue result(UniValue::VOBJ);
     result.pushKV("address", EncodeDestination(dest));
     result.pushKV("redeemScript", HexStr(inner.begin(), inner.end()));
