@@ -262,11 +262,7 @@ UniValue getmininginfo(const JSONRPCRequest& request)
     obj.push_back(Pair("networkghps",      getnetworkghps(request)));
     obj.push_back(Pair("pooledtx",         (uint64_t)mempool.size()));
     obj.push_back(Pair("chain",            Params().NetworkIDString()));
-    if (IsDeprecatedRPCEnabled("getmininginfo")) {
-        obj.push_back(Pair("errors",       GetWarnings("statusbar")));
-    } else {
-        obj.push_back(Pair("warnings",     GetWarnings("statusbar")));
-    }
+    obj.push_back(Pair("warnings",         GetWarnings("statusbar")));
     return obj;
 }
 
