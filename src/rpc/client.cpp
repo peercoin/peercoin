@@ -113,7 +113,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "verifychain", 1, "nblocks" },
     { "keypoolrefill", 0, "newsize" },
     { "getrawmempool", 0, "verbose" },
-    { "estimatefee", 0, "nblocks" },
     { "estimatesmartfee", 0, "conf_target" },
     { "setban", 2, "bantime" },
     { "setban", 3, "absolute" },
