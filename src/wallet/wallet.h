@@ -42,6 +42,7 @@ extern bool bSpendZeroConfChange;
 extern bool fWalletUnlockMintOnly;
 extern bool g_wallet_allow_fallback_fee;
 
+//! Default for -keypool
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 static const CAmount MIN_CHANGE = MIN_TXOUT_AMOUNT;
 //! Default for -spendzeroconfchange
@@ -81,18 +82,15 @@ enum WalletFeature
     FEATURE_LATEST = FEATURE_COMPRPUBKEY // HD is optional, use FEATURE_COMPRPUBKEY as latest version
 };
 
-enum OutputType : int
-{
-    OUTPUT_TYPE_NONE,
-    OUTPUT_TYPE_LEGACY,
-    OUTPUT_TYPE_P2SH_SEGWIT,
-    OUTPUT_TYPE_BECH32,
-
-    OUTPUT_TYPE_DEFAULT = OUTPUT_TYPE_LEGACY
+enum class OutputType {
+    NONE,
+    LEGACY,
+    P2SH_SEGWIT,
+    BECH32,
 };
 
-extern OutputType g_address_type;
-extern OutputType g_change_type;
+//! Default for -addresstype
+constexpr OutputType DEFAULT_ADDRESS_TYPE{OutputType::BECH32};
 
 
 /** A key pool entry */
@@ -974,6 +972,8 @@ public:
     bool DummySignTx(CMutableTransaction &txNew, const std::vector<CTxOut> &txouts) const;
     bool DummySignInput(CTxIn &tx_in, const CTxOut &txout) const;
 
+    OutputType m_default_address_type{DEFAULT_ADDRESS_TYPE};
+    OutputType m_default_change_type{OutputType::NONE}; // Default to OutputType::NONE if not set by -changetype
     bool NewKeyPool();
     size_t KeypoolCountExternalKeys();
     bool TopUpKeyPool(unsigned int kpSize = 0);
@@ -1203,7 +1203,7 @@ public:
     }
 };
 
-OutputType ParseOutputType(const std::string& str, OutputType default_type = OUTPUT_TYPE_DEFAULT);
+OutputType ParseOutputType(const std::string& str, OutputType default_type);
 const std::string& FormatOutputType(OutputType type);
 
 /**
