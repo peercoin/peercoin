@@ -49,7 +49,13 @@ frequently tested on them.
 Notable changes
 ===============
 
-(to be filled in)
+RPC changes
+------------
+
+### Low-level changes
+
+- The `fundrawtransaction` rpc will reject the previously deprecated `reserveChangeKey` option.
+
 Credits
 =======
 
