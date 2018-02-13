@@ -42,6 +42,7 @@ WalletModel::WalletModel(const PlatformStyle *platformStyle, CWallet *_wallet, O
     recentRequestsTableModel(0),
     cachedBalance(0), cachedStake(0),
     cachedUnconfirmedBalance(0), cachedImmatureBalance(0),
+    cachedWatchOnlyBalance{0}, cachedWatchUnconfBalance{0}, cachedWatchImmatureBalance{0},
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0)
 {
