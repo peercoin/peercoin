@@ -374,6 +374,9 @@ std::string EntryDescriptionString()
            "    \"wtxid\" : hash,         (string) hash of serialized transaction, including witness data\n"
            "    \"depends\" : [           (array) unconfirmed transactions used as inputs for this transaction\n"
            "        \"transactionid\",    (string) parent transaction id\n"
+           "       ... ]\n"
+           "    \"spentby\" : [           (array) unconfirmed transactions spending outputs from this transaction\n"
+           "        \"transactionid\",    (string) child transaction id\n"
            "       ... ]\n";
 }
 
@@ -408,6 +411,15 @@ void entryToJSON(UniValue &info, const CTxMemPoolEntry &e)
     }
 
     info.pushKV("depends", depends);
+
+    UniValue spent(UniValue::VARR);
+    const CTxMemPool::txiter &it = mempool.mapTx.find(tx.GetHash());
+    const CTxMemPool::setEntries &setChildren = mempool.GetMemPoolChildren(it);
+    for (const CTxMemPool::txiter &childiter : setChildren) {
+        spent.push_back(childiter->GetTx().GetHash().ToString());
+    }
+
+    info.pushKV("spentby", spent);
 }
 
 UniValue mempoolToJSON(bool fVerbose)
