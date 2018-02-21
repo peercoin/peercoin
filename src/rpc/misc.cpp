@@ -101,7 +101,7 @@ UniValue createmultisig(const JSONRPCRequest& request)
             "transition to using addmultisigaddress to create multisig addresses with addresses known\n"
             "to the wallet before upgrading to v0.9. To use the deprecated functionality, start peercoind with -deprecatedrpc=createmultisig\n"
             "\nArguments:\n"
-            "1. nrequired                    (numeric, required) The number of required signatures out of the n keys or addresses.\n"
+            "1. nrequired                    (numeric, required) The number of required signatures out of the n keys.\n"
             "2. \"keys\"                       (string, required) A json array of hex-encoded public keys\n"
             "     [\n"
             "       \"key\"                    (string) The hex-encoded public key\n"
