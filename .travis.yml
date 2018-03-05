@@ -19,6 +19,7 @@ matrix:
           - docker build -f scripts/docker/debian/Dockerfile-jessie .
       - os: linux
         sudo: required
+  ccache: true
         env:
           - V=ubuntu
         before_install:
