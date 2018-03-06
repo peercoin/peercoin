@@ -574,6 +574,7 @@ void ThreadImport(std::vector<fs::path> vImportFiles)
 {
     const CChainParams& chainparams = Params();
     RenameThread("peercoin-loadblk");
+    ScheduleBatchPriority();
 
     {
     CImportingNow imp;
