@@ -59,15 +59,6 @@ bool fWalletUnlockMintOnly = false;
  * @{
  */
 
-struct CompareValueOnly
-{
-    bool operator()(const CInputCoin& t1,
-                    const CInputCoin& t2) const
-    {
-        return t1.txout.nValue < t2.txout.nValue;
-    }
-};
-
 std::string COutput::ToString() const
 {
     return strprintf("COutput(%s, %d, %d) [%s]", tx->GetHash().ToString(), i, nDepth, FormatMoney(tx->tx->vout[i].nValue));
