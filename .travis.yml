@@ -21,13 +21,14 @@ matrix:
         sudo: required
   ccache: true
 git:
-  depth: false  # full clone for git subtree check, this works around issue #12388
+  depth: 1
         env:
           - V=ubuntu
         before_install:
           - ./scripts/travis-uninstall-packages.sh
           - ./scripts/dependencies-ubuntu.sh
         install: true
+    - if [ "$CHECK_DOC" = 1 ]; then git fetch --unshallow; fi
         script:
           - ./scripts/install-ubuntu.sh
       - os: linux
