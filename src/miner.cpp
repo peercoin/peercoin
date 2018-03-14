@@ -30,7 +30,6 @@
 #include <warnings.h>
 
 #include <algorithm>
-#include <memory>
 #include <queue>
 #include <utility>
 
