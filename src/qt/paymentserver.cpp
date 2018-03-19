@@ -405,7 +405,12 @@ void PaymentServer::handleURIOrFile(const QString& s)
         return;
     }
 
-    if (s.startsWith(BITCOIN_IPC_PREFIX, Qt::CaseInsensitive)) // peercoin: URI
+    if (s.startsWith("peercoin://", Qt::CaseInsensitive))
+    {
+        Q_EMIT message(tr("URI handling"), tr("'peercoin://' is not a valid URI. Use 'peercoin:' instead."),
+            CClientUIInterface::MSG_ERROR);
+    }
+    else if (s.startsWith(BITCOIN_IPC_PREFIX, Qt::CaseInsensitive)) // peercoin: URI
     {
 #if QT_VERSION < 0x050000
         QUrl uri(s);
