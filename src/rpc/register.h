@@ -29,4 +29,4 @@ static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
     RegisterRawTransactionRPCCommands(t);
 }
 
-#endif
+#endif // BITCOIN_RPC_REGISTER_H
