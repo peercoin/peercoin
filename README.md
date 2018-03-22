@@ -16,7 +16,6 @@ Peercoin Official Development Repo
 * Help: 
 [Forum](https://talk.peercoin.net),
 [Intro & Important Links](https://talk.peercoin.net/t/what-is-peercoin-intro-important-links/2889)
-
 Testing
 -------
 
