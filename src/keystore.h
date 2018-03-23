@@ -18,9 +18,6 @@
 /** A virtual base class for key stores */
 class CKeyStore : public SigningProvider
 {
-protected:
-    mutable CCriticalSection cs_KeyStore;
-
 public:
     //! Add a key to the store.
     virtual bool AddKeyPubKey(const CKey &key, const CPubKey &pubkey) =0;
@@ -50,6 +47,8 @@ typedef std::set<CScript> WatchOnlySet;
 class CBasicKeyStore : public CKeyStore
 {
 protected:
+    mutable CCriticalSection cs_KeyStore;
+
     KeyMap mapKeys;
     WatchKeyMap mapWatchKeys;
     ScriptMap mapScripts;
