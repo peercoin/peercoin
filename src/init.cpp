@@ -185,9 +185,7 @@ void Shutdown()
     StopREST();
     StopRPC();
     StopHTTPServer();
-    if (g_wallet_init_interface) {
-        g_wallet_init_interface->Flush();
-    }
+    g_wallet_init_interface->Flush();
     StopMapPort();
 
     // Because these depend on each-other, we make sure that neither can be
@@ -233,9 +231,7 @@ void Shutdown()
         pcoinsdbview.reset();
         pblocktree.reset();
     }
-    if (g_wallet_init_interface) {
-        g_wallet_init_interface->Stop();
-    }
+    g_wallet_init_interface->Stop();
 
 #if ENABLE_ZMQ
     if (pzmqNotificationInterface) {
@@ -255,9 +251,7 @@ void Shutdown()
     UnregisterAllValidationInterfaces();
     GetMainSignals().UnregisterBackgroundSignalScheduler();
     GetMainSignals().UnregisterWithMempoolSignals(mempool);
-    if (g_wallet_init_interface) {
-        g_wallet_init_interface->Close();
-    }
+    g_wallet_init_interface->Close();
     g_wallet_init_interface.reset();
     globalVerifyHandle.reset();
     ECC_Stop();
@@ -408,9 +402,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-whitelist=<IP address or network>", _("Whitelist peers connecting from the given IP address (e.g. 1.2.3.4) or CIDR notated network (e.g. 1.2.3.0/24). Can be specified multiple times.") +
         " " + _("Whitelisted peers cannot be DoS banned and their transactions are always relayed, even if they are already in the mempool, useful e.g. for a gateway"));
 
-    if (g_wallet_init_interface) {
-        strUsage += g_wallet_init_interface->GetHelpString(showDebug);
-    }
+    strUsage += g_wallet_init_interface->GetHelpString(showDebug);
 
 #if ENABLE_ZMQ
     strUsage += HelpMessageGroup(_("ZeroMQ notification options:"));
@@ -975,7 +967,7 @@ bool AppInitParameterInteraction()
         return InitError(strprintf("acceptnonstdtxn is not currently supported for %s chain", chainparams.NetworkIDString()));
     nBytesPerSigOp = gArgs.GetArg("-bytespersigop", nBytesPerSigOp);
 
-    if (g_wallet_init_interface && !g_wallet_init_interface->ParameterInteraction()) return false;
+    if (!g_wallet_init_interface->ParameterInteraction()) return false;
 
     fIsBareMultisigStd = gArgs.GetBoolArg("-permitbaremultisig", DEFAULT_PERMIT_BAREMULTISIG);
     fAcceptDatacarrier = gArgs.GetBoolArg("-datacarrier", DEFAULT_ACCEPT_DATACARRIER);
@@ -1112,9 +1104,7 @@ bool AppInitMain()
      * available in the GUI RPC console even if external calls are disabled.
      */
     RegisterAllCoreRPCCommands(tableRPC);
-    if (g_wallet_init_interface) {
-        g_wallet_init_interface->RegisterRPC(tableRPC);
-    }
+    g_wallet_init_interface->RegisterRPC(tableRPC);
 
     /* Start the RPC server already.  It will be started in "warmup" mode
      * and not really process calls already (but it will signify connections
@@ -1131,7 +1121,7 @@ bool AppInitMain()
     int64_t nStart;
 
     // ********************************************************* Step 5: verify wallet database integrity
-    if (g_wallet_init_interface && !g_wallet_init_interface->Verify()) return false;
+    if (!g_wallet_init_interface->Verify()) return false;
 
     // ********************************************************* Step 6: network initialization
     // Note that we absolutely cannot open any actual connections
@@ -1437,7 +1427,7 @@ bool AppInitMain()
     }
 
     // ********************************************************* Step 8: load wallet
-    if (g_wallet_init_interface && !g_wallet_init_interface->Open()) return false;
+    if (!g_wallet_init_interface->Open()) return false;
 
     // ********************************************************* Step 9: data directory maintenance
 
@@ -1567,10 +1557,8 @@ bool AppInitMain()
     SetRPCWarmupFinished();
     uiInterface.InitMessage(_("Done loading"));
 
-    if (g_wallet_init_interface) {
-        g_wallet_init_interface->Start(scheduler);
+    g_wallet_init_interface->Start(scheduler);
         if (gArgs.GetBoolArg("-stakegen", true))
             MintStake(threadGroup);
-    }
     return true;
 }
