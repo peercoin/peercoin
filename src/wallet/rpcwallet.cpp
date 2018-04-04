@@ -2914,7 +2914,7 @@ static UniValue getwalletinfo(const JSONRPCRequest& request)
             "  \"unlocked_until\": ttt,           (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
             "  \"unlocked_minting_only\": xxx,    (bool) whether we have unlocked keys for minting only\n"
             "  \"paytxfee\": x.xxxx,              (numeric) the transaction fee configuration, set in " + CURRENCY_UNIT + "/kB\n"
-            "  \"hdseedid\": \"<hash160>\"     (string, optional) the Hash160 of the HD master pubkey (only present when HD is enabled)\n"
+            "  \"hdseedid\": \"<hash160>\"          (string, optional) the Hash160 of the HD seed (only present when HD is enabled)\n"
             "}\n"
             "\nExamples:\n"
             + HelpExampleCli("getwalletinfo", "")
@@ -3968,7 +3968,7 @@ UniValue getaddressinfo(const JSONRPCRequest& request)
             "  \"account\" : \"account\"         (string) DEPRECATED. This field will be removed in V0.18. To see this deprecated field, start bitcoind with -deprecatedrpc=accounts. The account associated with the address, \"\" is the default account\n"
             "  \"timestamp\" : timestamp,      (number, optional) The creation time of the key if available in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"hdkeypath\" : \"keypath\"       (string, optional) The HD keypath if the key is HD and available\n"
-            "  \"hdseedid\" : \"<hash160>\" (string, optional) The Hash160 of the HD master pubkey\n"
+            "  \"hdseedid\" : \"<hash160>\"      (string, optional) The Hash160 of the HD seed\n"
             "  \"labels\"                      (object) Array of labels associated with the address.\n"
             "    [\n"
             "      { (json object of label data)\n"
