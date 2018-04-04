@@ -31,7 +31,7 @@ outgoing connections be anonymized, but more is possible.
 
 In a typical situation, this suffices to run behind a Tor proxy:
 
-	./peercoin -proxy=127.0.0.1:9050
+	./peercoind -proxy=127.0.0.1:9050
 
 
 2. Run a peercoin hidden server
@@ -86,7 +86,7 @@ and open port 8333 on your firewall (or use -upnp).
 If you only want to use Tor to reach onion addresses, but not use it as a proxy
 for normal IPv4/IPv6 communication, use:
 
-	./peercoin -onion=127.0.0.1:9050 -externalip=57qr3yd1nyntf5k.onion -discover
+	./peercoind -onion=127.0.0.1:9050 -externalip=57qr3yd1nyntf5k.onion -discover
 
 3. Automatically listen on Tor
 --------------------------------
