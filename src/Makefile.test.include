@@ -93,7 +93,7 @@ BITCOIN_TESTS += \
   wallet/test/wallet_test_fixture.h \
   wallet/test/accounting_tests.cpp \
   wallet/test/wallet_tests.cpp \
-  wallet/test/crypto_tests.cpp \
+  wallet/test/wallet_crypto_tests.cpp \
   wallet/test/coinselector_tests.cpp
 endif
 
