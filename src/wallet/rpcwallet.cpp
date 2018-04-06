@@ -33,6 +33,8 @@
 
 #include <univalue.h>
 
+#include <functional>
+
 #include <kernelrecord.h>
 #include <miner.h>
 #include <boost/lexical_cast.hpp>
@@ -2386,7 +2388,7 @@ UniValue walletpassphrase(const JSONRPCRequest& request)
     pwallet->TopUpKeyPool();
 
     pwallet->nRelockTime = GetTime() + nSleepTime;
-    RPCRunLater(strprintf("lockwallet(%s)", pwallet->GetName()), boost::bind(LockWallet, pwallet), nSleepTime);
+    RPCRunLater(strprintf("lockwallet(%s)", pwallet->GetName()), std::bind(LockWallet, pwallet), nSleepTime);
 
     // peercoin: if user OS account compromised prevent trivial sendmoney commands
     if (request.params.size() > 2)
