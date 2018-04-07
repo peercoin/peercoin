@@ -140,16 +140,11 @@ bool WalletInit::ParameterInteraction() const
         return InitError(_("Rescans are not possible in pruned mode. You will need to use -reindex which will download the whole blockchain again."));
 
     if (gArgs.IsArgSet("-reservebalance"))
-
-    g_wallet_allow_fallback_fee = Params().IsFallbackFeeEnabled();
-        g_wallet_allow_fallback_fee = nFeePerK != 0; //disable fallback fee in case value was set to 0, enable if non-null value
     {
         CAmount nReserveBalance = 0;
         if (!ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
             return InitError(strprintf(_("Invalid amount for -reservebalance=<amount>: '%s'"), gArgs.GetArg("-reservebalance", "")));
     }
-    nTxConfirmTarget = gArgs.GetArg("-txconfirmtarget", DEFAULT_TX_CONFIRM_TARGET);
-    bSpendZeroConfChange = gArgs.GetBoolArg("-spendzeroconfchange", DEFAULT_SPEND_ZEROCONF_CHANGE);
 
     return true;
 }

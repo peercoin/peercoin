@@ -191,7 +191,7 @@ void SendCoinsDialog::setModel(WalletModel *_model)
             settings.remove("nSmartFeeSliderPosition");
         }
         if (settings.value("nConfTarget").toInt() == 0)
-            ui->confTargetSelector->setCurrentIndex(getIndexForConfTarget(model->node().getTxConfirmTarget()));
+            ui->confTargetSelector->setCurrentIndex(getIndexForConfTarget(model->wallet().getConfirmTarget()));
         else
             ui->confTargetSelector->setCurrentIndex(getIndexForConfTarget(settings.value("nConfTarget").toInt()));
         */
@@ -620,6 +620,11 @@ void SendCoinsDialog::useAvailableBalance(SendCoinsEntry* entry)
 }
 
 /*
+void SendCoinsDialog::setMinimumFee()
+{
+    ui->customFee->setValue(model->wallet().getRequiredFee(1000));
+}
+
 void SendCoinsDialog::updateFeeSectionControls()
 {
     ui->confTargetSelector      ->setEnabled(ui->radioSmartFee->isChecked());
@@ -630,6 +635,7 @@ void SendCoinsDialog::updateFeeSectionControls()
     ui->checkBoxMinimumFee      ->setEnabled(ui->radioCustomFee->isChecked());
     ui->labelMinFeeWarning      ->setEnabled(ui->radioCustomFee->isChecked());
     ui->labelCustomPerKilobyte  ->setEnabled(ui->radioCustomFee->isChecked() && !ui->checkBoxMinimumFee->isChecked());
+    ui->customFee               ->setEnabled(ui->radioCustomFee->isChecked() && !ui->checkBoxMinimumFee->isChecked());
 }
 
 void SendCoinsDialog::updateFeeMinimizedLabel()
@@ -640,7 +646,7 @@ void SendCoinsDialog::updateFeeMinimizedLabel()
     if (ui->radioSmartFee->isChecked())
         ui->labelFeeMinimized->setText(ui->labelSmartFee->text());
     else {
-        ui->labelFeeMinimized->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), MIN_TX_FEE) + "/kB");
+        ui->labelFeeMinimized->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), ui->customFee->value()) + "/kB");
     }
 }
 
@@ -648,15 +654,21 @@ void SendCoinsDialog::updateMinFeeLabel()
 {
     if (model && model->getOptionsModel())
         ui->checkBoxMinimumFee->setText(tr("Pay only the required fee of %1").arg(
-            BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), GetMinFee(1000, GetAdjustedTime())) + "/kB")
+            BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), model->wallet().getRequiredFee(1000)) + "/kB")
         );
 }
 
 void SendCoinsDialog::updateCoinControlState(CCoinControl& ctrl)
 {
+    if (ui->radioCustomFee->isChecked()) {
+        ctrl.m_feerate = CFeeRate(ui->customFee->value());
+    } else {
+        ctrl.m_feerate.reset();
+    }
     // Avoid using global defaults when sending money from the GUI
     // Either custom fee will be used or if not selected, the confirmation target from dropdown box
     ctrl.m_confirm_target = getConfTargetForIndex(ui->confTargetSelector->currentIndex());
+    ctrl.m_signal_bip125_rbf = ui->optInRBF->isChecked();
 }
 
 void SendCoinsDialog::updateSmartFeeLabel()
@@ -665,16 +677,28 @@ void SendCoinsDialog::updateSmartFeeLabel()
         return;
     CCoinControl coin_control;
     updateCoinControlState(coin_control);
+    coin_control.m_feerate.reset(); // Explicitly use only fee estimation rate for smart fee labels
+    int returned_target;
+    FeeReason reason;
+    CFeeRate feeRate = CFeeRate(model->wallet().getMinimumFee(1000, coin_control, &returned_target, &reason));
 
-    ui->labelSmartFee->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), GetMinFee(1000, GetAdjustedTime())) + "/kB");
+    ui->labelSmartFee->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), feeRate.GetFeePerK()) + "/kB");
 
-    ui->labelSmartFee2->show(); // (Smart fee not initialized yet. This usually takes a few blocks...)
-    ui->labelFeeEstimation->setText("");
-    ui->fallbackFeeWarningLabel->setVisible(true);
-    int lightness = ui->fallbackFeeWarningLabel->palette().color(QPalette::WindowText).lightness();
-    QColor warning_colour(255 - (lightness / 5), 176 - (lightness / 3), 48 - (lightness / 14));
-    ui->fallbackFeeWarningLabel->setStyleSheet("QLabel { color: " + warning_colour.name() + "; }");
-    ui->fallbackFeeWarningLabel->setIndent(QFontMetrics(ui->fallbackFeeWarningLabel->font()).width("x"));
+    if (reason == FeeReason::FALLBACK) {
+        ui->labelSmartFee2->show(); // (Smart fee not initialized yet. This usually takes a few blocks...)
+        ui->labelFeeEstimation->setText("");
+        ui->fallbackFeeWarningLabel->setVisible(true);
+        int lightness = ui->fallbackFeeWarningLabel->palette().color(QPalette::WindowText).lightness();
+        QColor warning_colour(255 - (lightness / 5), 176 - (lightness / 3), 48 - (lightness / 14));
+        ui->fallbackFeeWarningLabel->setStyleSheet("QLabel { color: " + warning_colour.name() + "; }");
+        ui->fallbackFeeWarningLabel->setIndent(QFontMetrics(ui->fallbackFeeWarningLabel->font()).width("x"));
+    }
+    else
+    {
+        ui->labelSmartFee2->hide();
+        ui->labelFeeEstimation->setText(tr("Estimated to begin confirmation within %n block(s).", "", returned_target));
+        ui->fallbackFeeWarningLabel->setVisible(false);
+    }
 
     updateFeeMinimizedLabel();
 }

@@ -37,14 +37,7 @@ bool HasWallets();
 std::vector<CWallet*> GetWallets();
 CWallet* GetWallet(const std::string& name);
 
-/**
- * Settings
- */
-extern unsigned int nTxConfirmTarget;
-extern bool bSpendZeroConfChange;
 extern bool fWalletUnlockMintOnly;
-extern bool g_wallet_allow_fallback_fee;
-
 //! Default for -keypool
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 static const CAmount MIN_CHANGE = MIN_TXOUT_AMOUNT;

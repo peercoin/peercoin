@@ -2982,10 +2982,10 @@ UniValue getwalletinfo(const JSONRPCRequest& request)
     }
     if (pwallet->IsCrypted()) {
         obj.pushKV("unlocked_until", pwallet->nRelockTime);
-        obj.push_back(Pair("unlocked_minting_only", fWalletUnlockMintOnly));
+        obj.pushKV("unlocked_minting_only", fWalletUnlockMintOnly);
     }
     if (!masterKeyID.IsNull())
-         obj.pushKV("hdmasterkeyid", masterKeyID.GetHex());
+        obj.pushKV("hdmasterkeyid", masterKeyID.GetHex());
     return obj;
 }
 
