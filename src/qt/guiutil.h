@@ -20,7 +20,7 @@
 class QValidatedLineEdit;
 class SendCoinsRecipient;
 
-namespace interface
+namespace interfaces
 {
     class Node;
 }
