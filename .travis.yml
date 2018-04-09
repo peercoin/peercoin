@@ -22,6 +22,10 @@ matrix:
   ccache: true
         env:
           - V=ubuntu
+# 32-bit + dash
+    - HOST=i686-pc-linux-gnu PACKAGES="g++-multilib python3-zmq" DEP_OPTS="NO_QT=1" RUN_TESTS=true GOAL="install" BITCOIN_CONFIG="--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++" USE_SHELL="/bin/dash"
+# Qt4 & system libs
+    - HOST=x86_64-unknown-linux-gnu PACKAGES="python3-zmq qt4-dev-tools libssl-dev libevent-dev bsdmainutils libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libdb5.1++-dev libminiupnpc-dev libzmq3-dev libprotobuf-dev protobuf-compiler libqrencode-dev xvfb" NO_DEPENDS=1 NEED_XVFB=1 RUN_TESTS=true GOAL="install" BITCOIN_CONFIG="--enable-zmq --with-incompatible-bdb --enable-glibc-back-compat --enable-reduce-exports --with-gui=qt4 CPPFLAGS=-DDEBUG_LOCKORDER"
         before_install:
           - ./scripts/travis-uninstall-packages.sh
           - ./scripts/dependencies-ubuntu.sh
