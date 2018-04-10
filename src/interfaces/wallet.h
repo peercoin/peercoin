@@ -92,8 +92,9 @@ public:
 
     //! Look up address in wallet, return whether exists.
     virtual bool getAddress(const CTxDestination& dest,
-        std::string* name = nullptr,
-        isminetype* is_mine = nullptr) = 0;
+        std::string* name,
+        isminetype* is_mine,
+        std::string* purpose) = 0;
 
     //! Add dest data.
     virtual bool addDestData(const CTxDestination& dest, const std::string& key, const std::string& value) = 0;
