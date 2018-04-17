@@ -36,7 +36,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/foreach.hpp>
 
-std::vector<CWalletRef> vpwallets;
+std::vector<CWallet*> vpwallets;
 unsigned int nTxConfirmTarget = DEFAULT_TX_CONFIRM_TARGET;
 bool bSpendZeroConfChange = DEFAULT_SPEND_ZEROCONF_CHANGE;
 bool g_wallet_allow_fallback_fee = true; //<! will be defined via chainparams
