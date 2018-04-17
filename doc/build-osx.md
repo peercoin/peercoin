@@ -43,7 +43,7 @@ Build Peercoin Core
 
 1. Clone the peercoin source code and cd into `peercoin`
 
-        git clone https://github.com/peercoin/peercoin.git
+        git clone https://github.com/peercoin/peercoin
         cd peercoin
 
 2.  Build peercoin-core:
@@ -69,7 +69,7 @@ Running
 
 Peercoin Core is now available at `./src/peercoind`
 
-Before running, it's recommended you create an RPC configuration file.
+Before running, it's recommended that you create an RPC configuration file.
 
     echo -e "rpcuser=peercoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
 

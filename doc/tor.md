@@ -8,13 +8,13 @@ configure Tor.
 
 ## 1. Run peercoin behind a Tor proxy
 
-The first step is running Peercoin behind a Tor proxy. This will already make all
-outgoing connections be anonymized, but more is possible.
+The first step is running Peercoin behind a Tor proxy. This will already anonymize all
+outgoing connections, but more is possible.
 
 	-proxy=ip:port  Set the proxy server. If SOCKS5 is selected (default), this proxy
 	                server will be used to try to reach .onion addresses as well.
 
-	-onion=ip:port  Set the proxy server to use for tor hidden services. You do not
+	-onion=ip:port  Set the proxy server to use for Tor hidden services. You do not
 	                need to set this if it's the same as -proxy. You can use -noonion
 	                to explicitly disable access to hidden service.
 
@@ -48,11 +48,11 @@ your bitcoind's P2P listen port (8333 by default).
 
 	-externalip=X   You can tell bitcoin about its publicly reachable address using
 	                this option, and this can be a .onion address. Given the above
-	                configuration, you can find your onion address in
-	                /var/lib/tor/bitcoin-service/hostname. Onion addresses are given
-	                preference for your node to advertise itself with, for connections
+	                configuration, you can find your .onion address in
+	                /var/lib/tor/bitcoin-service/hostname. For connections
 	                coming from unroutable addresses (such as 127.0.0.1, where the
-	                Tor proxy typically runs).
+	                Tor proxy typically runs), .onion addresses are given
+	                preference for your node to advertise itself with.
 
 	-listen         You'll need to enable listening for incoming connections, as this
 	                is off by default behind a proxy.
@@ -68,7 +68,7 @@ In a typical situation, where you're only reachable via Tor, this should suffice
 
 	./peercoind -proxy=127.0.0.1:9050 -externalip=57qr3yd1nyntf5k.onion -listen
 
-(obviously, replace the Onion address with your own). It should be noted that you still
+(obviously, replace the .onion address with your own). It should be noted that you still
 listen on all devices and another node could establish a clearnet connection, when knowing
 your address. To mitigate this, additionally bind the address of your Tor proxy:
 
@@ -81,7 +81,7 @@ as well, use `discover` instead:
 
 and open port 8333 on your firewall (or use -upnp).
 
-If you only want to use Tor to reach onion addresses, but not use it as a proxy
+If you only want to use Tor to reach .onion addresses, but not use it as a proxy
 for normal IPv4/IPv6 communication, use:
 
 	./peercoind -onion=127.0.0.1:9050 -externalip=57qr3yd1nyntf5k.onion -discover
@@ -101,15 +101,15 @@ requires a Tor connection to work. It can be explicitly disabled with `-listenon
 and, if not disabled, configured using the `-torcontrol` and `-torpassword` settings.
 To show verbose debugging information, pass `-debug=tor`.
 
-Connecting to Tor's control socket API requires one of two authentication methods to be 
+Connecting to Tor's control socket API requires one of two authentication methods to be
 configured. For cookie authentication the user running peercoind must have write access 
-to the `CookieAuthFile` specified in Tor configuration. In some cases this is 
-preconfigured and the creation of a hidden service is automatic. If permission problems 
-are seen with `-debug=tor` they can be resolved by adding both the user running tor and 
+to the `CookieAuthFile` specified in Tor configuration. In some cases, this is
+preconfigured and the creation of a hidden service is automatic. If permission problems
+are seen with `-debug=tor` they can be resolved by adding both the user running Tor and
 the user running peercoind to the same group and setting permissions appropriately. On 
 Debian-based systems the user running peercoind can be added to the debian-tor group, 
-which has the appropriate permissions. An alternative authentication method is the use 
-of the `-torpassword` flag and a `hash-password` which can be enabled and specified in 
+which has the appropriate permissions. An alternative authentication method is the use
+of the `-torpassword` flag and a `hash-password` which can be enabled and specified in
 Tor configuration.
 
 ## 4. Privacy recommendations
