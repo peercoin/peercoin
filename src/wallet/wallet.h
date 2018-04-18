@@ -1080,6 +1080,9 @@ public:
     /* Mark a transaction (and it in-wallet descendants) as abandoned so its inputs may be respent. */
     bool AbandonTransaction(const uint256& hashTx);
 
+    //! Verify wallet naming and perform salvage on the wallet if required
+    static bool Verify(std::string wallet_file, bool salvage_wallet);
+
     /* Initializes the wallet, returns a new CWallet instance or a null pointer in case of an error */
     static CWallet* CreateWalletFromFile(const std::string& name, const fs::path& path);
 
