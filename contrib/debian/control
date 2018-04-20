@@ -24,7 +24,8 @@ Build-Depends: debhelper,
  libqrencode-dev,
  libprotobuf-dev, protobuf-compiler,
  python,
- libzmq3-dev
+ libzmq3-dev,
+ dh-systemd
 Standards-Version: 3.9.2
 Homepage: https://www.peercoin.net/
 Vcs-Git: git://github.com/peercoin/peercoin.git
@@ -32,7 +33,7 @@ Vcs-Browser: https://github.com/peercoin/peercoin
 
 Package: peercoind
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, adduser
 Description: peer-to-peer network based digital currency - daemon
  Peercoin is a crypto-currency project forked from Bitcoin with aim to achieve
  energy-efficiency and keep as much as possible the original Bitcoin's
