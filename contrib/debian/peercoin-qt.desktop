@@ -9,4 +9,3 @@ Type=Application
 Icon=/usr/share/pixmaps/peercoin128.png
 MimeType=x-scheme-handler/peercoin;
 Categories=Office;Finance;P2P;Network;Qt;
-StartupWMClass=Peercoin-qt
