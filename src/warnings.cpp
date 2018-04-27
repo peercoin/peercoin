@@ -44,7 +44,6 @@ std::string GetWarnings(const std::string& strFor)
 {
     int nPriority = 0;
     std::string strStatusBar;
-    std::string strRPC;
     std::string strGUI;
     const std::string uiAlertSeperator = "<hr />";
 
@@ -59,7 +58,7 @@ std::string GetWarnings(const std::string& strFor)
     if (strMintWarning != "")
     {
         nPriority = 0;
-        strStatusBar = strRPC = strMintWarning;
+        strStatusBar = strMintWarning;
         strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _(strMintWarning.c_str());
     }
 
@@ -69,7 +68,7 @@ std::string GetWarnings(const std::string& strFor)
     if (strCheckpointWarning != "")
     {
         nPriority = 900;
-        strStatusBar = strRPC = strCheckpointWarning;
+        strStatusBar = strCheckpointWarning;
         strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _(strMintWarning.c_str());
     }
 #endif
@@ -85,13 +84,13 @@ std::string GetWarnings(const std::string& strFor)
     if (fLargeWorkForkFound)
     {
         nPriority = 2000;
-        strStatusBar = strRPC = "Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.";
+        strStatusBar = "Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.";
         strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.");
     }
     else if (fLargeWorkInvalidChainFound)
     {
         nPriority = 2000;
-        strStatusBar = strRPC = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
+        strStatusBar = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
         strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
     }
 #ifdef ENABLE_CHECKPOINTS
@@ -99,7 +98,7 @@ std::string GetWarnings(const std::string& strFor)
     if (hashInvalidCheckpoint != uint256())
     {
         nPriority = 3000;
-        strStatusBar = strRPC = "WARNING: Inconsistent checkpoint found! Stop enforcing checkpoints and notify developers to resolve the issue.";
+        strStatusBar = "WARNING: Inconsistent checkpoint found! Stop enforcing checkpoints and notify developers to resolve the issue.";
         strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers of the issue.");
     }
 #endif
@@ -122,8 +121,6 @@ std::string GetWarnings(const std::string& strFor)
         return strGUI;
     else if (strFor == "statusbar")
         return strStatusBar;
-    else if (strFor == "rpc")
-        return strRPC;
     assert(!"GetWarnings(): invalid parameter");
     return "error";
 }
