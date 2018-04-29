@@ -11,10 +11,10 @@
 #include <checkpointsync.h>
 
 CCriticalSection cs_warnings;
-std::string strMiscWarning;
+std::string strMiscWarning GUARDED_BY(cs_warnings);
 std::string strMintWarning;
-bool fLargeWorkForkFound = false;
-bool fLargeWorkInvalidChainFound = false;
+bool fLargeWorkForkFound GUARDED_BY(cs_warnings) = false;
+bool fLargeWorkInvalidChainFound GUARDED_BY(cs_warnings) = false;
 
 void SetMiscWarning(const std::string& strWarning)
 {
