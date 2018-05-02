@@ -36,7 +36,7 @@
 #include <univalue.h>
 
 
-void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
+static void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
 {
     // Call into TxToUniv() in bitcoin-common to decode the transaction hex.
     //
@@ -62,7 +62,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
     }
 }
 
-UniValue getrawtransaction(const JSONRPCRequest& request)
+static UniValue getrawtransaction(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 3)
         throw std::runtime_error(
@@ -202,7 +202,7 @@ UniValue getrawtransaction(const JSONRPCRequest& request)
     return result;
 }
 
-UniValue gettxoutproof(const JSONRPCRequest& request)
+static UniValue gettxoutproof(const JSONRPCRequest& request)
 {
     if (request.fHelp || (request.params.size() != 1 && request.params.size() != 2))
         throw std::runtime_error(
@@ -296,7 +296,7 @@ UniValue gettxoutproof(const JSONRPCRequest& request)
     return strHex;
 }
 
-UniValue verifytxoutproof(const JSONRPCRequest& request)
+static UniValue verifytxoutproof(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
@@ -337,7 +337,7 @@ UniValue verifytxoutproof(const JSONRPCRequest& request)
     return res;
 }
 
-UniValue createrawtransaction(const JSONRPCRequest& request)
+static UniValue createrawtransaction(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 2 || request.params.size() > 3)
         throw std::runtime_error(
@@ -487,7 +487,7 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
     return EncodeHexTx(rawTx);
 }
 
-UniValue decoderawtransaction(const JSONRPCRequest& request)
+static UniValue decoderawtransaction(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw std::runtime_error(
@@ -563,7 +563,7 @@ UniValue decoderawtransaction(const JSONRPCRequest& request)
     return result;
 }
 
-UniValue decodescript(const JSONRPCRequest& request)
+static UniValue decodescript(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
@@ -661,7 +661,7 @@ static void TxInErrorToJSON(const CTxIn& txin, UniValue& vErrorsRet, const std::
     vErrorsRet.push_back(entry);
 }
 
-UniValue combinerawtransaction(const JSONRPCRequest& request)
+static UniValue combinerawtransaction(const JSONRPCRequest& request)
 {
 
     if (request.fHelp || request.params.size() != 1)
@@ -905,7 +905,7 @@ UniValue SignTransaction(CMutableTransaction& mtx, const UniValue& prevTxsUnival
     return result;
 }
 
-UniValue signrawtransactionwithkey(const JSONRPCRequest& request)
+static UniValue signrawtransactionwithkey(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 2 || request.params.size() > 4)
         throw std::runtime_error(
@@ -1083,7 +1083,7 @@ UniValue signrawtransaction(const JSONRPCRequest& request)
     }
 }
 
-UniValue sendrawtransaction(const JSONRPCRequest& request)
+static UniValue sendrawtransaction(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw std::runtime_error(
@@ -1172,7 +1172,7 @@ UniValue sendrawtransaction(const JSONRPCRequest& request)
     return hashTx.GetHex();
 }
 
-UniValue testmempoolaccept(const JSONRPCRequest& request)
+static UniValue testmempoolaccept(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2) {
         throw std::runtime_error(

@@ -154,7 +154,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     return result;
 }
 
-UniValue getblockcount(const JSONRPCRequest& request)
+static UniValue getblockcount(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
@@ -171,7 +171,7 @@ UniValue getblockcount(const JSONRPCRequest& request)
     return chainActive.Height();
 }
 
-UniValue getbestblockhash(const JSONRPCRequest& request)
+static UniValue getbestblockhash(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
@@ -198,7 +198,7 @@ void RPCNotifyBlockChange(bool ibd, const CBlockIndex * pindex)
     cond_blockchange.notify_all();
 }
 
-UniValue waitfornewblock(const JSONRPCRequest& request)
+static UniValue waitfornewblock(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 1)
         throw std::runtime_error(
@@ -236,7 +236,7 @@ UniValue waitfornewblock(const JSONRPCRequest& request)
     return ret;
 }
 
-UniValue waitforblock(const JSONRPCRequest& request)
+static UniValue waitforblock(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw std::runtime_error(
@@ -278,7 +278,7 @@ UniValue waitforblock(const JSONRPCRequest& request)
     return ret;
 }
 
-UniValue waitforblockheight(const JSONRPCRequest& request)
+static UniValue waitforblockheight(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw std::runtime_error(
@@ -320,7 +320,7 @@ UniValue waitforblockheight(const JSONRPCRequest& request)
     return ret;
 }
 
-UniValue syncwithvalidationinterfacequeue(const JSONRPCRequest& request)
+static UniValue syncwithvalidationinterfacequeue(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 0) {
         throw std::runtime_error(
@@ -335,7 +335,7 @@ UniValue syncwithvalidationinterfacequeue(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue getdifficulty(const JSONRPCRequest& request)
+static UniValue getdifficulty(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
@@ -356,7 +356,7 @@ UniValue getdifficulty(const JSONRPCRequest& request)
     return obj;
 }
 
-std::string EntryDescriptionString()
+static std::string EntryDescriptionString()
 {
     return "    \"size\" : n,             (numeric) virtual transaction size as defined in BIP 141. This is different from actual serialized size for witness transactions as witness data is discounted.\n"
            "    \"fee\" : n,              (numeric) transaction fee in " + CURRENCY_UNIT + " (DEPRECATED)\n"
@@ -384,7 +384,7 @@ std::string EntryDescriptionString()
            "       ... ]\n";
 }
 
-void entryToJSON(UniValue &info, const CTxMemPoolEntry &e)
+static void entryToJSON(UniValue &info, const CTxMemPoolEntry &e)
 {
     AssertLockHeld(mempool.cs);
 
@@ -461,7 +461,7 @@ UniValue mempoolToJSON(bool fVerbose)
     }
 }
 
-UniValue getrawmempool(const JSONRPCRequest& request)
+static UniValue getrawmempool(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 1)
         throw std::runtime_error(
@@ -493,7 +493,7 @@ UniValue getrawmempool(const JSONRPCRequest& request)
     return mempoolToJSON(fVerbose);
 }
 
-UniValue getmempoolancestors(const JSONRPCRequest& request)
+static UniValue getmempoolancestors(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2) {
         throw std::runtime_error(
@@ -557,7 +557,7 @@ UniValue getmempoolancestors(const JSONRPCRequest& request)
     }
 }
 
-UniValue getmempooldescendants(const JSONRPCRequest& request)
+static UniValue getmempooldescendants(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2) {
         throw std::runtime_error(
@@ -621,7 +621,7 @@ UniValue getmempooldescendants(const JSONRPCRequest& request)
     }
 }
 
-UniValue getmempoolentry(const JSONRPCRequest& request)
+static UniValue getmempoolentry(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1) {
         throw std::runtime_error(
@@ -654,7 +654,7 @@ UniValue getmempoolentry(const JSONRPCRequest& request)
     return info;
 }
 
-UniValue getblockhash(const JSONRPCRequest& request)
+static UniValue getblockhash(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
@@ -679,7 +679,7 @@ UniValue getblockhash(const JSONRPCRequest& request)
     return pblockindex->GetBlockHash().GetHex();
 }
 
-UniValue getblockheader(const JSONRPCRequest& request)
+static UniValue getblockheader(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw std::runtime_error(
@@ -739,7 +739,7 @@ UniValue getblockheader(const JSONRPCRequest& request)
     return blockheaderToJSON(pblockindex);
 }
 
-UniValue getblock(const JSONRPCRequest& request)
+static UniValue getblock(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw std::runtime_error(
@@ -899,7 +899,7 @@ static bool GetUTXOStats(CCoinsView *view, CCoinsStats &stats)
     return true;
 }
 
-UniValue gettxoutsetinfo(const JSONRPCRequest& request)
+static UniValue gettxoutsetinfo(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
@@ -1020,7 +1020,7 @@ UniValue gettxout(const JSONRPCRequest& request)
     return ret;
 }
 
-UniValue verifychain(const JSONRPCRequest& request)
+static UniValue verifychain(const JSONRPCRequest& request)
 {
     int nCheckLevel = gArgs.GetArg("-checklevel", DEFAULT_CHECKLEVEL);
     int nCheckDepth = gArgs.GetArg("-checkblocks", DEFAULT_CHECKBLOCKS);
@@ -1148,7 +1148,7 @@ struct CompareBlocksByHeight
     }
 };
 
-UniValue getchaintips(const JSONRPCRequest& request)
+static UniValue getchaintips(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
@@ -1263,7 +1263,7 @@ UniValue mempoolInfoToJSON()
     return ret;
 }
 
-UniValue getmempoolinfo(const JSONRPCRequest& request)
+static UniValue getmempoolinfo(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
@@ -1285,7 +1285,7 @@ UniValue getmempoolinfo(const JSONRPCRequest& request)
     return mempoolInfoToJSON();
 }
 
-UniValue preciousblock(const JSONRPCRequest& request)
+static UniValue preciousblock(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
@@ -1323,7 +1323,7 @@ UniValue preciousblock(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue invalidateblock(const JSONRPCRequest& request)
+static UniValue invalidateblock(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
@@ -1362,7 +1362,7 @@ UniValue invalidateblock(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue reconsiderblock(const JSONRPCRequest& request)
+static UniValue reconsiderblock(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
@@ -1400,7 +1400,7 @@ UniValue reconsiderblock(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue getchaintxstats(const JSONRPCRequest& request)
+static UniValue getchaintxstats(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 2)
         throw std::runtime_error(
@@ -1474,7 +1474,7 @@ UniValue getchaintxstats(const JSONRPCRequest& request)
     return ret;
 }
 
-UniValue savemempool(const JSONRPCRequest& request)
+static UniValue savemempool(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0) {
         throw std::runtime_error(
