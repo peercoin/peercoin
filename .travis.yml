@@ -20,6 +20,9 @@ matrix:
       - os: linux
         sudo: required
   ccache: true
+stages:
+  - check_doc
+  - test
         env:
           - V=ubuntu
 # 32-bit + dash
@@ -30,7 +33,6 @@ matrix:
           - ./scripts/travis-uninstall-packages.sh
           - ./scripts/dependencies-ubuntu.sh
         install: true
-    - if [ "$CHECK_DOC" = 1 ]; then git fetch --unshallow; fi
         script:
           - ./scripts/install-ubuntu.sh
       - os: linux
