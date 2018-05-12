@@ -21,7 +21,7 @@ matrix:
         sudo: required
   ccache: true
 stages:
-  - check_doc
+  - lint
   - test
         env:
           - V=ubuntu
