@@ -91,7 +91,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3_Main">
+        <layout class="QHBoxLayout" name="horizontalLayout_Main_VerifyLabel">
          <item>
           <widget class="QLabel" name="threadsScriptVerifLabel">
            <property name="text">
@@ -113,7 +113,7 @@
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_3_Main">
+          <spacer name="horizontalSpacer_Main_Threads">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
