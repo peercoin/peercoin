@@ -20,6 +20,7 @@ QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
     unitlist.append(BTC);
     unitlist.append(mBTC);
     unitlist.append(uBTC);
+    unitlist.append(SAT);
     return unitlist;
 }
 
@@ -30,6 +31,7 @@ bool BitcoinUnits::valid(int unit)
     case BTC:
     case mBTC:
     case uBTC:
+    case SAT:
         return true;
     default:
         return false;
@@ -43,6 +45,7 @@ QString BitcoinUnits::longName(int unit)
     case BTC: return QString("PPC");
     case mBTC: return QString("mPPC");
     case uBTC: return QString::fromUtf8("μPPC");
+    case SAT: return QString("Satoshi (sat)");
     default: return QString("???");
     }
 }
@@ -52,7 +55,8 @@ QString BitcoinUnits::shortName(int unit)
     switch(unit)
     {
     case uBTC: return QString::fromUtf8("bits");
-    default:   return longName(unit);
+    case SAT: return QString("sat");
+    default: return longName(unit);
     }
 }
 
@@ -63,6 +67,7 @@ QString BitcoinUnits::description(int unit)
     case BTC: return QString("Peercoins");
     case mBTC: return QString("Milli-Peercoins (1 / 1" THIN_SP_UTF8 "000)");
     case uBTC: return QString("Micro-Peercoins (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case SAT: return QString("Satoshi (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     default: return QString("???");
     }
 }
@@ -74,6 +79,7 @@ qint64 BitcoinUnits::factor(int unit)
     case BTC:  return 1000000;
     case mBTC: return 1000;
     case uBTC: return 1;
+    case SAT:  return 1;
     default:   return 1000000;
     }
 }
@@ -85,6 +91,7 @@ int BitcoinUnits::decimals(int unit)
     case BTC: return 6;
     case mBTC: return 3;
     case uBTC: return 0;
+    case SAT: return 0;
     default: return 0;
     }
 }
