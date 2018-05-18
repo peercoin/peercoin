@@ -2634,7 +2634,7 @@ bool CWallet::SignTransaction(CMutableTransaction &tx)
 
     // sign the new tx
     int nIn = 0;
-    for (const auto& input : tx.vin) {
+    for (auto& input : tx.vin) {
         std::map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(input.prevout.hash);
         if(mi == mapWallet.end() || input.prevout.n >= mi->second.tx->vout.size()) {
             return false;
@@ -2645,7 +2645,7 @@ bool CWallet::SignTransaction(CMutableTransaction &tx)
         if (!ProduceSignature(*this, MutableTransactionSignatureCreator(&tx, nIn, amount, SIGHASH_ALL), scriptPubKey, sigdata)) {
             return false;
         }
-        UpdateTransaction(tx, nIn, sigdata);
+        UpdateInput(input, sigdata);
         nIn++;
     }
     return true;
@@ -3036,7 +3036,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                     strFailReason = _("Signing transaction failed");
                     return false;
                 } else {
-                    UpdateTransaction(txNew, nIn, sigdata);
+                    UpdateInput(txNew.vin.at(nIn), sigdata);
                 }
 
                 nIn++;

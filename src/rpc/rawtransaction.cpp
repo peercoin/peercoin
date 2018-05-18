@@ -742,7 +742,7 @@ static UniValue combinerawtransaction(const JSONRPCRequest& request)
             }
         }
 
-        UpdateTransaction(mergedTx, i, sigdata);
+        UpdateInput(txin, sigdata);
     }
 
     return EncodeHexTx(mergedTx);
@@ -876,7 +876,7 @@ UniValue SignTransaction(CMutableTransaction& mtx, const UniValue& prevTxsUnival
         }
         sigdata = CombineSignatures(prevPubKey, TransactionSignatureChecker(&txConst, i, amount), sigdata, DataFromTransaction(mtx, i));
 
-        UpdateTransaction(mtx, i, sigdata);
+        UpdateInput(txin, sigdata);
 
         // amount must be specified for valid segwit signature
         if (amount == MAX_MONEY && !txin.scriptWitness.IsNull()) {
