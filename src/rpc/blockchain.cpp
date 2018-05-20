@@ -6,7 +6,6 @@
 #include <rpc/blockchain.h>
 
 #include <amount.h>
-#include <chain.h>
 #include <chainparams.h>
 #include <checkpoints.h>
 #include <coins.h>
@@ -52,25 +51,16 @@ static std::mutex cs_blockchange;
 static std::condition_variable cond_blockchange;
 static CUpdatedBlock latestblock;
 
-/* Calculate the difficulty for a given block index,
- * or the block index of the given chain.
+/* Calculate the difficulty for a given block index.
  */
-double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex)
+double GetDifficulty(const CBlockIndex* blockindex)
 {
     if (blockindex == nullptr)
     {
-        if (chain.Tip() == nullptr)
-            return 1.0;
-        else
-            blockindex = GetLastBlockIndex(chain.Tip(), false);
+        return 1.0;
     }
 
     return blockindex->GetBlockDifficulty();
-}
-
-double GetDifficulty(const CBlockIndex* blockindex)
-{
-    return GetDifficulty(chainActive, blockindex);
 }
 
 UniValue blockheaderToJSON(const CBlockIndex* blockindex)
@@ -1133,7 +1123,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.pushKV("blocks",                (int)chainActive.Height());
     obj.pushKV("headers",               pindexBestHeader ? pindexBestHeader->nHeight : -1);
     obj.pushKV("bestblockhash",         chainActive.Tip()->GetBlockHash().GetHex());
-    obj.pushKV("difficulty",            (double)GetDifficulty());
+    obj.pushKV("difficulty",            (double)GetDifficulty(chainActive.Tip()));
     obj.pushKV("mediantime",            (int64_t)chainActive.Tip()->GetMedianTimePast());
     obj.pushKV("verificationprogress",  GuessVerificationProgress(Params().TxData(), chainActive.Tip()));
     obj.pushKV("initialblockdownload",  IsInitialBlockDownload());

@@ -257,7 +257,7 @@ static UniValue getmininginfo(const JSONRPCRequest& request)
     obj.pushKV("blocks",           (int)chainActive.Height());
     obj.pushKV("currentblockweight", (uint64_t)nLastBlockWeight);
     obj.pushKV("currentblocktx",   (uint64_t)nLastBlockTx);
-    obj.pushKV("difficulty",       (double)GetDifficulty());
+    obj.pushKV("difficulty",       (double)GetDifficulty(chainActive.Tip()));
     obj.pushKV("networkhashps",    getnetworkhashps(request));
     obj.pushKV("networkghps",      getnetworkghps(request));
     obj.pushKV("chain",            Params().NetworkIDString());

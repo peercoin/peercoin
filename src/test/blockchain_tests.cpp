@@ -1,9 +1,9 @@
 #include <boost/test/unit_test.hpp>
 
-#include <stdlib.h>
+#include "stdlib.h"
 
-#include <rpc/blockchain.h>
-#include <test/test_bitcoin.h>
+#include "rpc/blockchain.h"
+#include "test/test_bitcoin.h"
 
 /* Equality between doubles is imprecise. Comparison should be done
  * with a small threshold of tolerance, rather than exact equality.
@@ -22,14 +22,6 @@ static CBlockIndex* CreateBlockIndexWithNbits(uint32_t nbits)
     return block_index;
 }
 
-static CChain CreateChainWithNbits(uint32_t nbits)
-{
-    CBlockIndex* block_index = CreateBlockIndexWithNbits(nbits);
-    CChain chain;
-    chain.SetTip(block_index);
-    return chain;
-}
-
 static void RejectDifficultyMismatch(double difficulty, double expected_difficulty) {
      BOOST_CHECK_MESSAGE(
         DoubleEquals(difficulty, expected_difficulty, 0.00001),
@@ -43,11 +35,6 @@ static void RejectDifficultyMismatch(double difficulty, double expected_difficul
 static void TestDifficulty(uint32_t nbits, double expected_difficulty)
 {
     CBlockIndex* block_index = CreateBlockIndexWithNbits(nbits);
-    /* Since we are passing in block index explicitly,
-     * there is no need to set up anything within the chain itself.
-     */
-    CChain chain;
-
     double difficulty = GetDifficulty(block_index);
     delete block_index;
 
@@ -79,6 +66,13 @@ BOOST_AUTO_TEST_CASE(get_difficulty_for_high_target)
 BOOST_AUTO_TEST_CASE(get_difficulty_for_very_high_target)
 {
     TestDifficulty(0x12345678, 5913134931067755359633408.0);
+}
+
+// Verify that difficulty is 1.0 for an empty chain.
+BOOST_AUTO_TEST_CASE(get_difficulty_for_null_tip)
+{
+    double difficulty = GetDifficulty(nullptr);
+    RejectDifficultyMismatch(difficulty, 1.0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
