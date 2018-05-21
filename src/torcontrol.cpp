@@ -773,4 +773,3 @@ void StopTorControl()
         gBase = nullptr;
     }
 }
-

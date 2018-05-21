@@ -7,6 +7,14 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <map>
+#include <string>
+#include <utility>
+
+
+std::pair<std::string, std::string> SplitTorReplyLine(const std::string& s);
+std::map<std::string, std::string> ParseTorReplyMapping(const std::string& s);
+
 std::pair<std::string, std::string> SplitTorReplyLine(const std::string& s);
 std::map<std::string, std::string> ParseTorReplyMapping(const std::string& s);
 
