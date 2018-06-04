@@ -21,7 +21,7 @@ Unpack the files into a directory and run:
 
 Unpack the files into a directory, and then run peercoin-qt.exe.
 
-### OS X
+### macOS
 
 Drag Peercoin to your applications folder, and then run Peercoin.
 
@@ -37,7 +37,7 @@ Building
 The following are developer notes on how to build Peercoin on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [Dependencies](dependencies.md)
-- [OS X Build Notes](build-osx.md)
+- [macOS Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
 - [Windows Build Notes](build-windows.md)
 - [OpenBSD Build Notes](build-openbsd.md)

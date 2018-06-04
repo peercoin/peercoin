@@ -15,7 +15,7 @@ Service User
 
 All three Linux startup configurations assume the existence of a "peercoin" user
 and group.  They must be created before attempting to use these scripts.
-The OS X configuration assumes peercoind will be set up for the current user.
+The macOS configuration assumes peercoind will be set up for the current user.
 
 Configuration
 ---------------------------------
@@ -65,7 +65,7 @@ reasons to make the configuration file and data directory only readable by the
 peercoin user and group.  Access to peercoin-cli and other peercoind rpc clients
 can then be controlled by group membership.
 
-### Mac OS X
+### macOS
 
 Binary:              `/usr/local/bin/peercoind`  
 Configuration file:  `~/Library/Application Support/Peercoin/peercoin.conf`  
@@ -111,7 +111,7 @@ Using this script, you can adjust the path and flags to the peercoind program by
 setting the PEERCOIND and FLAGS environment variables in the file
 /etc/sysconfig/peercoind. You can also use the DAEMONOPTS environment variable here.
 
-### Mac OS X
+### macOS
 
 Copy org.peercoin.peercoind.plist into ~/Library/LaunchAgents. Load the launch agent by
 running `launchctl load ~/Library/LaunchAgents/org.peercoin.peercoind.plist`.
