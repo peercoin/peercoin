@@ -72,6 +72,7 @@ public:
         functionality.
     */
     bool addWallet(WalletModel *walletModel);
+    bool removeWallet(WalletModel* walletModel);
     void removeAllWallets();
 #endif // ENABLE_WALLET
     bool enableWallet;
@@ -129,8 +130,10 @@ private:
     QAction *showHelpMessageAction;
     QAction *openChatroomAction;
     QAction *openForumAction;
+    QAction *m_wallet_selector_label_action = nullptr;
+    QAction *m_wallet_selector_action = nullptr;
 
-    QLabel *m_wallet_selector_label;
+    QLabel *m_wallet_selector_label = nullptr;
     QComboBox *m_wallet_selector;
 
     QSystemTrayIcon *trayIcon;
