@@ -3797,7 +3797,7 @@ bool CVerifyDB::VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview,
             reportDone = percentageDone/10;
         }
         uiInterface.ShowProgress(_("Verifying blocks..."), percentageDone, false);
-        if (pindex->nHeight < chainActive.Height()-nCheckDepth)
+        if (pindex->nHeight <= chainActive.Height()-nCheckDepth)
             break;
         CBlock block;
         // check level 0: read from disk
