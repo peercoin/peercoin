@@ -123,7 +123,6 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
             txs.push_back(tx->GetHash().GetHex());
     }
     result.pushKV("tx", txs);
-    result.pushKV("nTx", (uint64_t)blockindex->nTx);
     result.pushKV("time", block.GetBlockTime());
     result.pushKV("mediantime", (int64_t)blockindex->GetMedianTimePast());
     result.pushKV("nonce", (uint64_t)block.nNonce);
@@ -131,6 +130,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     result.pushKV("difficulty", GetDifficulty(blockindex));
     result.pushKV("mint", ValueFromAmount(blockindex->nMint));
     result.pushKV("chainwork", blockindex->nChainTrust.GetHex());
+    result.pushKV("nTx", (uint64_t)blockindex->nTx);
 
     if (blockindex->pprev)
         result.pushKV("previousblockhash", blockindex->pprev->GetBlockHash().GetHex());
