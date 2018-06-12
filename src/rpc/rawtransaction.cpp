@@ -322,12 +322,12 @@ static UniValue verifytxoutproof(const JSONRPCRequest& request)
     LOCK(cs_main);
 
     const CBlockIndex* pindex = LookupBlockIndex(merkleBlock.header.GetHash());
-    if (!pindex || !chainActive.Contains(pindex)) {
+    if (!pindex || !chainActive.Contains(pindex) || pindex->nTx == 0) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found in chain");
     }
 
     // Check if proof is valid, only add results if so
-    if (mapBlockIndex[merkleBlock.header.GetHash()]->nTx == merkleBlock.txn.GetNumTransactions()) {
+    if (pindex->nTx == merkleBlock.txn.GetNumTransactions()) {
         for (const uint256& hash : vMatch) {
             res.push_back(hash.GetHex());
         }
