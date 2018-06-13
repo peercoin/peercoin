@@ -166,8 +166,8 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "echojson", 9, "arg9" },
     { "rescanblockchain", 0, "start_height"},
     { "rescanblockchain", 1, "stop_height"},
-
-    // ppcoin:
+    { "createwallet", 1, "disable_private_keys"},
+    // peercoin:
     { "sendalert", 2, "minver"},
     { "sendalert", 3, "maxver"},
     { "sendalert", 4, "priority"},
