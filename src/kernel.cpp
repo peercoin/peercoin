@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,18 +12,18 @@
 using namespace std;
 
 // Protocol switch time of v0.3 kernel protocol
-unsigned int nProtocolV03SwitchTime     = 1363800000;
+unsigned int nProtocolV03SwitchTime     = 1435808381;
 unsigned int nProtocolV03TestSwitchTime = 1359781000;
 // Protocol switch time of v0.4 kernel protocol
-unsigned int nProtocolV04SwitchTime     = 1399300000;
+unsigned int nProtocolV04SwitchTime     = 1436585981;
 unsigned int nProtocolV04TestSwitchTime = 1395700000;
 // Protocol switch time of v0.5 kernel protocol
-unsigned int nProtocolV05SwitchTime     = 1461700000;
-unsigned int nProtocolV05TestSwitchTime = 1447700000;
+unsigned int nProtocolV05SwitchTime     = 1530889200;
+unsigned int nProtocolV05TestSwitchTime = 1527703200;
 // Protocol switch time of v0.6 kernel protocol
 // supermajority hardfork: actual fork will happen later than switch time
-const unsigned int nProtocolV06SwitchTime     = 1513050000; // Tue 12 Dec 03:40:00 UTC 2017
-const unsigned int nProtocolV06TestSwitchTime = 1508198400; // Tue 17 Oct 00:00:00 UTC 2017
+unsigned int nProtocolV06SwitchTime     = 1530889200;
+unsigned int nProtocolV06TestSwitchTime = 1527703200;
 
 
 // Modifier interval: time to elapse before new modifier is computed
@@ -33,11 +34,9 @@ unsigned int nModifierInterval = MODIFIER_INTERVAL;
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
     boost::assign::map_list_of
     ( 0, 0x0e00670bu )
-    ( 19080, 0xad4e4d29u )
-    ( 30583, 0xdc7bf136u )
-    ( 99999, 0xf555cfd2u )
-    (219999, 0x91b7444du )
-    (336000, 0x6c3c8048u )
+    ( 11800, 0x03c7a0b31u )
+    ( 35893, 0x0e49ce206u )
+    ( 790740, 0x9d1fdff4u )
     ;
 
 // Whether the given coinstake is subject to new v0.3 protocol
@@ -60,20 +59,9 @@ bool IsProtocolV05(unsigned int nTimeTx)
 
 // Whether a given block is subject to new v0.6 protocol
 // Test against previous block index! (always available)
-bool IsProtocolV06(const CBlockIndex* pindexPrev)
+bool IsProtocolV06(unsigned int nTimeTx)
 {
-  if (pindexPrev->nTime < (fTestNet? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime))
-    return false;
-
-  // if 900 of the last 1,000 blocks are version 2 or greater (90/100 if testnet):
-  // Soft-forking PoS can be dangerous if the super majority is too low
-  // The stake majority will decrease after the fork
-  // since only coindays of updated nodes will get destroyed.
-  if ((!fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 900, 1000)) ||
-      (fTestNet && CBlockIndex::IsSuperMajority(2, pindexPrev, 90, 100)))
-    return true;
-
-  return false;
+    return (nTimeTx >= (fTestNet? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime));
 }
 
 // Get the last stake modifier and its generation time from a given block
@@ -164,7 +152,7 @@ static bool SelectBlockFromCandidates(
 // selected block of a given block group in the past.
 // The selection of a block is based on a hash of the block's proof-hash and
 // the previous stake modifier.
-// Stake modifier is recomputed at a fixed time interval instead of every 
+// Stake modifier is recomputed at a fixed time interval instead of every
 // block. This is to make it difficult for an attacker to gain control of
 // additional bits in the stake modifier, even after generating a chain of
 // blocks.
@@ -302,7 +290,7 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64& nStakeModifi
         else
             return false;
     }
-    // loop to find the stake modifier earlier by 
+    // loop to find the stake modifier earlier by
     // (nStakeMinAge minus a selection interval)
     while (nStakeModifierTime + nStakeMinAge - nStakeModifierSelectionInterval >(int64) nTimeTx)
     {
@@ -371,7 +359,7 @@ static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, 
 // this ensures that the chance of getting a coinstake is proportional to the
 // amount of coin age one owns.
 // The reason this hash is chosen is the following:
-//   nStakeModifier: 
+//   nStakeModifier:
 //       (v0.5) uses dynamic stake modifier around 21 days before the kernel,
 //              versus static stake modifier about 9 days after the staked
 //              coin (txPrev) used in v0.3
@@ -380,7 +368,7 @@ static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, 
 //       (v0.2) nBits (deprecated): encodes all past block timestamps
 //   txPrev.block.nTime: prevent nodes from guessing a good timestamp to
 //                       generate transaction for future advantage
-//   txPrev.offset: offset of txPrev inside block, to reduce the chance of 
+//   txPrev.offset: offset of txPrev inside block, to reduce the chance of
 //                  nodes generating coinstake at the same time
 //   txPrev.nTime: reduce the chance of nodes generating coinstake at the same
 //                 time
@@ -447,7 +435,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlockHeader& blockFrom, uns
     {
         if (IsProtocolV03(nTimeTx))
             printf("CheckStakeKernelHash() : using modifier 0x%016" PRI64x" at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
-                nStakeModifier, nStakeModifierHeight, 
+                nStakeModifier, nStakeModifierHeight,
                 DateTimeStrFormat(nStakeModifierTime).c_str(),
                 mapBlockIndex[blockFrom.GetHash()]->nHeight,
                 DateTimeStrFormat(blockFrom.GetBlockTime()).c_str());

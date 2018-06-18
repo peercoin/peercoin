@@ -1,19 +1,25 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="fa" version="2.0">
-<defaultcodec>UTF-8</defaultcodec>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="fa">
 <context>
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About Peercoin</source>
-        <translation>در مورد Peercoin</translation>
+        <source>About Sprouts</source>
+        <translation>در مورد Sprouts</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;Peercoin&lt;/b&gt; version</source>
-        <translation>نسخه Peercoin</translation>
+        <source>&lt;b&gt;Sprouts&lt;/b&gt; version</source>
+        <translation>نسخه Sprouts</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+41"/>
+        <source>Copyright &amp;copy; 2011-YYYY Sprouts Developers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
         <source>
 This is experimental software.
 
@@ -25,12 +31,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../aboutdialog.cpp" line="+14"/>
         <source>Copyright</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>The Peercoin developers</source>
-        <translation type="unfinished"/>
+        <source>Sprouts Developers</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -61,9 +67,9 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>آدرس جدید</translation>
     </message>
     <message>
-        <location filename="../addressbookpage.cpp" line="+63"/>
-        <source>These are your Peercoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>این آدرسها، آدرسهای peercoin شما برای دریافت وجوه هستند. شما ممکن است آدرسهای متفاوت را به هر گیرنده اختصاص دهید که بتوانید مواردی که پرداخت می کنید را پیگیری نمایید</translation>
+        <location filename="../addressbookpage.cpp" line="+67"/>
+        <source>These are your Sprouts addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <translation>این آدرسها، آدرسهای sprouts شما برای دریافت وجوه هستند. شما ممکن است آدرسهای متفاوت را به هر گیرنده اختصاص دهید که بتوانید مواردی که پرداخت می کنید را پیگیری نمایید</translation>
     </message>
     <message>
         <location filename="../forms/addressbookpage.ui" line="+14"/>
@@ -77,8 +83,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+11"/>
-        <source>Sign a message to prove you own a Peercoin address</source>
-        <translation>پیام را برای اثبات آدرس Peercoin خود امضا کنید</translation>
+        <source>Sign a message to prove you own a Sprouts address</source>
+        <translation>پیام را برای اثبات آدرس Sprouts خود امضا کنید</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -98,12 +104,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+3"/>
         <source>&amp;Export</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-44"/>
-        <source>Verify a message to ensure it was signed with a specified Peercoin address</source>
-        <translation>یک پیام را برای حصول اطمینان از ورود به سیستم با آدرس peercoin مشخص، شناسایی کنید</translation>
+        <source>Verify a message to ensure it was signed with a specified Sprouts address</source>
+        <translation>یک پیام را برای حصول اطمینان از ورود به سیستم با آدرس sprouts مشخص، شناسایی کنید</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -117,8 +123,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location filename="../addressbookpage.cpp" line="-5"/>
-        <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation type="unfinished"/>
+        <source>These are your Sprouts addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
@@ -133,10 +139,10 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+1"/>
         <source>Send &amp;Coins</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+260"/>
+        <location line="+266"/>
         <source>Export Address Book Data</source>
         <translation>آدرس انتخاب شده در سیستم تخته رسم گیره دار کپی کنید</translation>
     </message>
@@ -244,8 +250,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+1"/>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PEERCOINS&lt;/b&gt;!</source>
-        <translation>هشدار: اگر wallet رمزگذاری شود و شما passphrase را گم کنید شما همه اطلاعات peercoin را از دست خواهید داد.</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR SPROUTSS&lt;/b&gt;!</source>
+        <translation>هشدار: اگر wallet رمزگذاری شود و شما passphrase را گم کنید شما همه اطلاعات sprouts را از دست خواهید داد.</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -255,7 +261,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+15"/>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+100"/>
@@ -271,8 +277,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-56"/>
-        <source>Peercoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your peercoins from being stolen by malware infecting your computer.</source>
-        <translation>Peercoin هم اکنون بسته می‌شود تا فرایند رمزگذاری را تمام کند. به خاطر داشته باشید که رمزگذاری کیف پولتان نمی‌تواند به طور کامل بیتیکون‌های شما را در برابر دزدیده شدن توسط بدافزارهایی که رایانه شما را آلوده می‌کنند، محافظت نماید.</translation>
+        <source>Sprouts will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your sproutss from being stolen by malware infecting your computer.</source>
+        <translation>Sprouts هم اکنون بسته می‌شود تا فرایند رمزگذاری را تمام کند. به خاطر داشته باشید که رمزگذاری کیف پولتان نمی‌تواند به طور کامل بیتیکون‌های شما را در برابر دزدیده شدن توسط بدافزارهایی که رایانه شما را آلوده می‌کنند، محافظت نماید.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -319,17 +325,17 @@ This product includes software developed by the OpenSSL Project for use in the O
 <context>
     <name>BitcoinGUI</name>
     <message>
-        <location filename="../bitcoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+264"/>
         <source>Sign &amp;message...</source>
         <translation>امضا و پیام</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+302"/>
         <source>Synchronizing with network...</source>
         <translation>همگام سازی با شبکه ...</translation>
     </message>
     <message>
-        <location line="-349"/>
+        <location line="-388"/>
         <source>&amp;Overview</source>
         <translation>بررسی اجمالی</translation>
     </message>
@@ -349,17 +355,17 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>نمایش تاریخ معاملات</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+14"/>
         <source>Edit the list of stored addresses and labels</source>
         <translation>ویرایش لیست آدرسها و بر چسب های ذخیره ای</translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="-21"/>
         <source>Show the list of addresses for receiving payments</source>
         <translation>نمایش لیست آدرس ها برای در یافت پر داخت ها</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+45"/>
         <source>E&amp;xit</source>
         <translation>خروج</translation>
     </message>
@@ -370,7 +376,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+4"/>
-        <source>Show information about Peercoin</source>
+        <source>Show information about Sprouts</source>
         <translation>نمایش اطلاعات در مورد بیتکویین</translation>
     </message>
     <message>
@@ -394,7 +400,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>رمزگذاری wallet</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>&amp;Backup Wallet...</source>
         <translation>پشتیبان گیری از wallet</translation>
     </message>
@@ -404,27 +410,27 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>تغییر Passphrase</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="+307"/>
         <source>Importing blocks from disk...</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Reindexing blocks on disk...</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-347"/>
-        <source>Send coins to a Peercoin address</source>
+        <location line="-386"/>
+        <source>Send coins to a Sprouts address</source>
         <translation>سکه ها را به آدرس bitocin ارسال کن</translation>
     </message>
     <message>
-        <location line="+49"/>
-        <source>Modify configuration options for Peercoin</source>
-        <translation>انتخابهای پیکربندی را برای peercoin اصلاح کن</translation>
+        <location line="+63"/>
+        <source>Modify configuration options for Sprouts</source>
+        <translation>انتخابهای پیکربندی را برای sprouts اصلاح کن</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Backup wallet to another location</source>
         <translation>نسخه پیشتیبان wallet  را به محل دیگر انتقال دهید</translation>
     </message>
@@ -449,35 +455,50 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>بازبینی پیام</translation>
     </message>
     <message>
-        <location line="-165"/>
-        <location line="+530"/>
-        <source>Peercoin</source>
+        <location line="-189"/>
+        <location line="+576"/>
+        <source>Sprouts</source>
         <translation>یت کویین </translation>
     </message>
     <message>
-        <location line="-530"/>
+        <location line="-576"/>
         <source>Wallet</source>
         <translation>wallet</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+108"/>
         <source>&amp;Send</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
         <source>&amp;Receive</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+14"/>
+        <source>&amp;Minting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show your minting capacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>&amp;Addresses</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Multisig</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+22"/>
-        <source>&amp;About Peercoin</source>
-        <translation>در مورد peercoin</translation>
+        <source>&amp;About Sprouts</source>
+        <translation>در مورد sprouts</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -487,123 +508,141 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+1"/>
         <source>Show or hide the main Window</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Encrypt the private keys that belong to your wallet</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Sign messages with your Peercoin addresses to prove you own them</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Verify messages to ensure they were signed with specified Peercoin addresses</source>
-        <translation type="unfinished"/>
+        <source>&amp;Decrypt Wallet for Minting Only</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+1"/>
+        <source>Decrypt wallet only for minting. Sending coins will still require the password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Sign messages with your Sprouts addresses to prove you own them</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Verify messages to ensure they were signed with specified Sprouts addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
         <source>&amp;File</source>
         <translation>فایل</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>&amp;Settings</source>
         <translation>تنظیمات</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>&amp;Help</source>
         <translation>کمک</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Tabs toolbar</source>
         <translation>نوار ابزار زبانه ها</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+22"/>
         <location line="+10"/>
         <source>[testnet]</source>
         <translation>آزمایش شبکه</translation>
     </message>
     <message>
         <location line="+47"/>
-        <source>Peercoin client</source>
-        <translation>مشتری Peercoin</translation>
+        <source>Sprouts client</source>
+        <translation>مشتری Sprouts</translation>
     </message>
     <message numerus="yes">
-        <location line="+141"/>
-        <source>%n active connection(s) to Peercoin network</source>
-        <translation><numerusform>در صد ارتباطات فعال بیتکویین با شبکه %n</numerusform></translation>
+        <location line="+152"/>
+        <source>%n active connection(s) to Sprouts network</source>
+        <translation>
+            <numerusform>در صد ارتباطات فعال بیتکویین با شبکه %n</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+22"/>
         <source>No block source available...</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Processed %1 of %2 (estimated) blocks of transaction history.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Processed %1 blocks of transaction history.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
         <location line="+20"/>
         <source>%n hour(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n day(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n week(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 behind</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Last received block was generated %1 ago.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Transactions after this will not yet be visible.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Error</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">خطا</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Warning</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">هشدار</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Information</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+70"/>
         <source>You can send this transaction for a fee of %1, which is burned and prevents spamming of the network. Do you want to pay the fee?</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-140"/>
@@ -651,31 +690,297 @@ Address: %4
     <message>
         <location line="-23"/>
         <location line="+23"/>
-        <source>URI can not be parsed! This can be caused by an invalid Peercoin address or malformed URI parameters.</source>
-        <translation>URI قابل تحلیل نیست. این خطا ممکن است به دلیل ادرس PEERCOIN اشتباه یا پارامترهای اشتباه URI رخ داده باشد</translation>
+        <source>URI can not be parsed! This can be caused by an invalid Sprouts address or malformed URI parameters.</source>
+        <translation>URI قابل تحلیل نیست. این خطا ممکن است به دلیل ادرس SPROUTS اشتباه یا پارامترهای اشتباه URI رخ داده باشد</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
         <translation>زمایش شبکهه</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+0"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked for block minting only&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>زمایش شبکه</translation>
     </message>
     <message>
-        <location filename="../bitcoin.cpp" line="+111"/>
-        <source>A fatal error occurred. Peercoin can no longer continue safely and will quit.</source>
-        <translation>خطا روی داده است. Peercoin نمی تواند بدون مشکل ادامه دهد و باید بسته شود</translation>
+        <location filename="../bitcoin.cpp" line="+115"/>
+        <source>A fatal error occurred. Sprouts can no longer continue safely and will quit.</source>
+        <translation>خطا روی داده است. Sprouts نمی تواند بدون مشکل ادامه دهد و باید بسته شود</translation>
     </message>
 </context>
 <context>
     <name>ClientModel</name>
     <message>
-        <location filename="../clientmodel.cpp" line="+104"/>
+        <location filename="../clientmodel.cpp" line="+106"/>
         <source>Network Alert</source>
         <translation>پیام شبکه</translation>
+    </message>
+</context>
+<context>
+    <name>CoinControlDialog</name>
+    <message>
+        <location filename="../forms/coincontroldialog.ui" line="+14"/>
+        <source>Coin Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Quantity:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <location line="+35"/>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>Bytes:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Amount:</source>
+        <translation type="unfinished">مقدار:</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <location line="+86"/>
+        <location line="+92"/>
+        <location line="+41"/>
+        <source>0.00 BTC</source>
+        <translation type="unfinished">123.456 بتس {0.00 ?}</translation>
+    </message>
+    <message>
+        <location line="-203"/>
+        <source>Priority:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Low Output:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location filename="../coincontroldialog.cpp" line="+604"/>
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>After Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Change:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+69"/>
+        <source>(un)select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Tree mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>List mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Amount</source>
+        <translation type="unfinished">مبلغ</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Confirmations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Confirmed</source>
+        <translation type="unfinished">تایید شده</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Coin days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Priority</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../coincontroldialog.cpp" line="-568"/>
+        <source>Copy address</source>
+        <translation type="unfinished">کپی آدرس </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy label</source>
+        <translation type="unfinished">کپی بر چسب</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+26"/>
+        <source>Copy amount</source>
+        <translation type="unfinished">روگرفت مقدار</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>Copy transaction ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Copy quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy after fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy priority</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy low output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+320"/>
+        <source>highest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>high</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>medium-high</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>medium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>low-medium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>lowest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+205"/>
+        <source>DUST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>This label turns red, if the transaction size is bigger than 10000 bytes.
+
+ Can vary +/- 1 Byte per input.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Transactions with higher priority get more likely into a block.
+
+This label turns red, if the priority is smaller than &quot;medium&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This label turns red, if any recipient receives an amount smaller than %1.
+
+ This means the transaction will be rejected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>If the change is smaller than %1 it will be added to the fees.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <location line="+64"/>
+        <source>(no label)</source>
+        <translation type="unfinished">بدون برچسب</translation>
+    </message>
+    <message>
+        <location line="-7"/>
+        <source>change from %1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>(change)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -732,8 +1037,8 @@ Address: %4
     </message>
     <message>
         <location line="-5"/>
-        <source>The entered address &quot;%1&quot; is not a valid Peercoin address.</source>
-        <translation>آدرس وارد شده %1 یک ادرس صحیح peercoin نیست</translation>
+        <source>The entered address &quot;%1&quot; is not a valid Sprouts address.</source>
+        <translation>آدرس وارد شده %1 یک ادرس صحیح sprouts نیست</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -749,10 +1054,10 @@ Address: %4
 <context>
     <name>GUIUtil::HelpMessageBox</name>
     <message>
-        <location filename="../guiutil.cpp" line="+424"/>
+        <location filename="../guiutil.cpp" line="+441"/>
         <location line="+12"/>
-        <source>Peercoin-Qt</source>
-        <translation>Peercoin-Qt</translation>
+        <source>Sprouts-Qt</source>
+        <translation>Sprouts-Qt</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -791,6 +1096,527 @@ Address: %4
     </message>
 </context>
 <context>
+    <name>MintingTableModel</name>
+    <message>
+        <location filename="../mintingtablemodel.cpp" line="+244"/>
+        <source>Transaction</source>
+        <translation type="unfinished">تراکنش</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Age</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>CoinDay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>MintProbability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+82"/>
+        <source>minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You have %1 chance to find a POS block if you mint %2 %3 at current difficulty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+120"/>
+        <source>Destination address of the output.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Original transaction id.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Age of the transaction in days.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Balance of the output.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Coin age in the output.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Chance to mint a block within given time interval.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MintingView</name>
+    <message>
+        <location filename="../mintingview.cpp" line="+34"/>
+        <source>transaction is too young</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>transaction is mature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>transaction  has reached maximum probability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Display minting probability within : </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>24 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>5 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>10 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>30 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>90 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Copy address</source>
+        <translation type="unfinished">کپی آدرس </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy transaction id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+83"/>
+        <source>Export Minting Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Comma separated file (*.csv)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Transaction</source>
+        <translation type="unfinished">تراکنش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Age</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>CoinDay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MintingProbability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Error exporting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Could not write to file %1.</source>
+        <translation type="unfinished">تا فایل %1 نمی شود نوشت</translation>
+    </message>
+</context>
+<context>
+    <name>MultisigAddressEntry</name>
+    <message>
+        <location filename="../forms/multisigaddressentry.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished">تراز</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Public &amp;key:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>The public key of an address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Enter a public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Paste public key from clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Remove this public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>&amp;Address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+42"/>
+        <source>Address associated to the public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-39"/>
+        <source>Enter one of your addresses to get its public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Choose address from address book</source>
+        <translation type="unfinished">اآدرسن ازدفتر آدرس انتخاب کنید</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+A</source>
+        <translation type="unfinished">Alt+A</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Label:</source>
+        <translation type="unfinished">برچسب:</translation>
+    </message>
+</context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <location filename="../forms/multisigdialog.ui" line="+14"/>
+        <source>Multisig</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&amp;Create Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>Add a member to the signing pool</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;Add public key...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Remove all public key fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Required signatures:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Enter a number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>/ 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Create multisig address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Multisig address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Copy the multisig address to the system clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Redeem script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Copy the redeem script to the system clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>The redeem script will be required to spend the funds sent to the multisig address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save redeem script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Add the multisig address to your personal addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Add address to wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&amp;Spend Funds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Inputs</source>
+        <translation type="unfinished">درونداد</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Inputs amount:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+119"/>
+        <location line="+41"/>
+        <source>123.456</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-150"/>
+        <location line="+119"/>
+        <location line="+38"/>
+        <source>SPRTS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-146"/>
+        <source>Add input...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Outputs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Outputs amount:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Add output...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Create transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Enter a raw transaction or create a new one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Paste address from clipboard</source>
+        <translation type="unfinished">آدرس از تخته رسم گیره دار پست کنید </translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Sign transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+86"/>
+        <source>Send transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../multisigdialog.cpp" line="+362"/>
+        <source>The transaction fee might be too small.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The transaction fee might be too big. Don&apos;t forget to add an output for the change address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+106"/>
+        <source>The transaction signature is complete.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The transaction is NOT completely signed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+6"/>
+        <source>Confirm sending transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>The fee of the transaction (%1 SPRTS) is smaller than the expected fee (%2 SPRTS). Do you want to send the transaction anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The fee of the transaction (%1 SPRTS) is bigger than the expected fee (%2 SPRTS). Do you want to send the transaction anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>The transaction is sent to sprouts network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MultisigInputEntry</name>
+    <message>
+        <location filename="../forms/multisiginputentry.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished">تراز</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Enter a transaction id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Transaction id:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Transaction output:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Redeem script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Enter the redeem script of the address in the transaction output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Alt+A</source>
+        <translation type="unfinished">Alt+A</translation>
+    </message>
+</context>
+<context>
     <name>OptionsDialog</name>
     <message>
         <location filename="../forms/optionsdialog.ui" line="+14"/>
@@ -804,43 +1630,33 @@ Address: %4
     </message>
     <message>
         <location line="+6"/>
-        <source>Mandatory network transaction fee per kB transferred. Most transactions are 1 kB and incur a 0.01 PPC fee. Note: transfer size may increase depending on the number of input transactions required to be added together to fund the payment.</source>
-        <translation type="unfinished"/>
+        <source>Automatically start Sprouts after logging in to the system.</source>
+        <translation>در زمان ورود به سیستم به صورت خودکار sprouts را اجرا کن</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>Additional network &amp;fee</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Automatically start Peercoin after logging in to the system.</source>
-        <translation>در زمان ورود به سیستم به صورت خودکار peercoin را اجرا کن</translation>
-    </message>
-    <message>
-        <location line="+46"/>
+        <location line="+10"/>
         <source>Check this box to follow the centrally issued checkpoints.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>&amp;Start Peercoin on system login</source>
-        <translation>اجرای peercoin در زمان ورود به سیستم</translation>
+        <location line="-7"/>
+        <source>&amp;Start Sprouts on system login</source>
+        <translation>اجرای sprouts در زمان ورود به سیستم</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Enforce checkpoints</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Reset all client options to default.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Reset Options</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
@@ -849,7 +1665,7 @@ Address: %4
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically open the Peercoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <source>Automatically open the Sprouts client port on the router. This only works when your router supports UPnP and it is enabled.</source>
         <translation>اتوماتیک باز کردن بندر بیتکویین در روتر . این فقط در مواردی می باشد که روتر با کمک یو پ ن پ کار می کند</translation>
     </message>
     <message>
@@ -859,8 +1675,8 @@ Address: %4
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the Peercoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>اتصال به شبکه PEERCOIN از طریق پراکسی ساکس (برای مثال وقتی از طریق نرم افزار TOR متصل می شوید)</translation>
+        <source>Connect to the Sprouts network through a SOCKS proxy (e.g. when connecting through Tor).</source>
+        <translation>اتصال به شبکه SPROUTS از طریق پراکسی ساکس (برای مثال وقتی از طریق نرم افزار TOR متصل می شوید)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -934,8 +1750,8 @@ Address: %4
     </message>
     <message>
         <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting Peercoin.</source>
-        <translation>زبان میانجی کاربر می تواند در اینجا تنظیم شود. این تنظیمات بعد از شروع دوباره RESTART در PEERCOIN اجرایی خواهند بود.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting Sprouts.</source>
+        <translation>زبان میانجی کاربر می تواند در اینجا تنظیم شود. این تنظیمات بعد از شروع دوباره RESTART در SPROUTS اجرایی خواهند بود.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -949,13 +1765,33 @@ Address: %4
     </message>
     <message>
         <location line="+9"/>
-        <source>Whether to show Peercoin addresses in the transaction list or not.</source>
+        <source>Whether to show Sprouts addresses in the transaction list or not.</source>
         <translation>تا آدرسهای bITCOIN در فهرست تراکنش نمایش داده شوند یا نشوند.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Display addresses in transaction list</source>
         <translation>نمایش آدرسها در فهرست تراکنش</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Whether to show coin control features or not.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Display coin &amp;control features (experts only!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Whether to show MOYATASU in overview or not.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Display MOYATASU in overview</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+71"/>
@@ -973,24 +1809,24 @@ Address: %4
         <translation>انجام</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.cpp" line="+53"/>
+        <location filename="../optionsdialog.cpp" line="+57"/>
         <source>default</source>
         <translation>پیش فرض</translation>
     </message>
     <message>
-        <location line="+130"/>
+        <location line="+126"/>
         <source>Confirm options reset</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Some settings may require a client restart to take effect.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Do you want to proceed?</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+42"/>
@@ -1001,11 +1837,11 @@ Address: %4
     <message>
         <location line="-9"/>
         <location line="+9"/>
-        <source>This setting will take effect after restarting Peercoin.</source>
-        <translation>این تنظیمات پس از اجرای دوباره Peercoin اعمال می شوند</translation>
+        <source>This setting will take effect after restarting Sprouts.</source>
+        <translation>این تنظیمات پس از اجرای دوباره Sprouts اعمال می شوند</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+20"/>
         <source>The supplied proxy address is invalid.</source>
         <translation>آدرس پراکسی داده شده صحیح نیست</translation>
     </message>
@@ -1018,53 +1854,87 @@ Address: %4
         <translation>تراز</translation>
     </message>
     <message>
-        <location line="+50"/>
-        <location line="+166"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Peercoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>اطلاعات نمایش داده شده روزآمد نیستند.wallet  شما به صورت خودکار با شبکه peercoin بعد از برقراری اتصال روزآمد می شود اما این فرایند هنوز کامل نشده است.</translation>
+        <location line="+37"/>
+        <source>Balances:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-124"/>
-        <source>Balance:</source>
-        <translation>راز:</translation>
+        <location line="+7"/>
+        <location line="+245"/>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Sprouts network after a connection is established, but this process has not completed yet.</source>
+        <translation>اطلاعات نمایش داده شده روزآمد نیستند.wallet  شما به صورت خودکار با شبکه sprouts بعد از برقراری اتصال روزآمد می شود اما این فرایند هنوز کامل نشده است.</translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Unconfirmed:</source>
-        <translation>تایید نشده</translation>
+        <location line="-199"/>
+        <source>Available:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-78"/>
-        <source>Wallet</source>
-        <translation>wallet</translation>
-    </message>
-    <message>
-        <location line="+107"/>
-        <source>Immature:</source>
-        <translation>نابالغ</translation>
+        <location line="+64"/>
+        <source>Maturing:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
+        <source>Total of newly minted or mined coins that are too young to be spent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Total:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Total amount in your wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>Recent transactions:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Balance:</source>
+        <translation type="vanished">راز:</translation>
+    </message>
+    <message>
+        <source>Unconfirmed:</source>
+        <translation type="vanished">تایید نشده</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation type="vanished">wallet</translation>
+    </message>
+    <message>
+        <source>Immature:</source>
+        <translation type="vanished">نابالغ</translation>
+    </message>
+    <message>
         <source>Mined balance that has not yet matured</source>
-        <translation>بالانس/تتمه حساب استخراج شده، نابالغ است /تکمیل نشده است</translation>
+        <translation type="vanished">بالانس/تتمه حساب استخراج شده، نابالغ است /تکمیل نشده است</translation>
     </message>
     <message>
-        <location line="+46"/>
         <source>&lt;b&gt;Recent transactions&lt;/b&gt;</source>
-        <translation>اخرین معاملات&amp;lt</translation>
+        <translation type="vanished">اخرین معاملات&amp;lt</translation>
     </message>
     <message>
-        <location line="-101"/>
+        <location line="-176"/>
         <source>Your current balance</source>
         <translation>تزار جاری شما</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+16"/>
+        <source>Pending:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</source>
         <translation>تعداد معاملات که تایید شده ولی هنوز در تزار جاری شما بر شمار نرفته است</translation>
     </message>
     <message>
-        <location filename="../overviewpage.cpp" line="+116"/>
+        <location filename="../overviewpage.cpp" line="+117"/>
         <location line="+1"/>
         <source>out of sync</source>
         <translation>روزآمد نشده</translation>
@@ -1073,9 +1943,9 @@ Address: %4
 <context>
     <name>PaymentServer</name>
     <message>
-        <location filename="../paymentserver.cpp" line="+107"/>
-        <source>Cannot start peercoin: click-to-pay handler</source>
-        <translation type="unfinished"/>
+        <location filename="../paymentserver.cpp" line="+108"/>
+        <source>Cannot start sprouts: click-to-pay handler</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1111,7 +1981,7 @@ Address: %4
         <translation>&amp;ذخیره به عنوان...</translation>
     </message>
     <message>
-        <location filename="../qrcodedialog.cpp" line="+62"/>
+        <location filename="../qrcodedialog.cpp" line="+64"/>
         <source>Error encoding URI into QR Code.</source>
         <translation>خطا در زمان رمزدار کردن URI در کد QR</translation>
     </message>
@@ -1153,7 +2023,7 @@ Address: %4
         <location line="+53"/>
         <location line="+23"/>
         <location line="+23"/>
-        <location filename="../rpcconsole.cpp" line="+339"/>
+        <location filename="../rpcconsole.cpp" line="+343"/>
         <source>N/A</source>
         <translation>-</translation>
     </message>
@@ -1224,8 +2094,8 @@ Address: %4
     </message>
     <message>
         <location line="+7"/>
-        <source>Show the Peercoin-Qt help message to get a list with possible Peercoin command-line options.</source>
-        <translation>پیام راهنمای Peercoin-Qt  را برای گرفتن فهرست گزینه های command-line نشان بده</translation>
+        <source>Show the Sprouts-Qt help message to get a list with possible Sprouts command-line options.</source>
+        <translation>پیام راهنمای Sprouts-Qt  را برای گرفتن فهرست گزینه های command-line نشان بده</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1244,13 +2114,13 @@ Address: %4
     </message>
     <message>
         <location line="-104"/>
-        <source>Peercoin - Debug window</source>
-        <translation>صفحه اشکال زدایی Peercoin </translation>
+        <source>Sprouts - Debug window</source>
+        <translation>صفحه اشکال زدایی Sprouts </translation>
     </message>
     <message>
         <location line="+25"/>
-        <source>Peercoin Core</source>
-        <translation> هسته Peercoin </translation>
+        <source>Sprouts Core</source>
+        <translation> هسته Sprouts </translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1259,8 +2129,8 @@ Address: %4
     </message>
     <message>
         <location line="+7"/>
-        <source>Open the Peercoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>فایلِ لاگِ اشکال زدایی Peercoin  را از دایرکتوری جاری داده ها باز کنید. این عملیات ممکن است برای فایلهای لاگِ حجیم طولانی شود.</translation>
+        <source>Open the Sprouts debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>فایلِ لاگِ اشکال زدایی Sprouts  را از دایرکتوری جاری داده ها باز کنید. این عملیات ممکن است برای فایلهای لاگِ حجیم طولانی شود.</translation>
     </message>
     <message>
         <location line="+102"/>
@@ -1269,8 +2139,8 @@ Address: %4
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-30"/>
-        <source>Welcome to the Peercoin RPC console.</source>
-        <translation>به کنسول Peercoin RPC خوش آمدید</translation>
+        <source>Welcome to the Sprouts RPC console.</source>
+        <translation>به کنسول Sprouts RPC خوش آمدید</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1287,7 +2157,7 @@ Address: %4
     <name>SendCoinsDialog</name>
     <message>
         <location filename="../forms/sendcoinsdialog.ui" line="+14"/>
-        <location filename="../sendcoinsdialog.cpp" line="+124"/>
+        <location filename="../sendcoinsdialog.cpp" line="+180"/>
         <location line="+5"/>
         <location line="+5"/>
         <location line="+5"/>
@@ -1298,7 +2168,96 @@ Address: %4
         <translation>ارسال سکه ها</translation>
     </message>
     <message>
+        <location line="+76"/>
+        <source>Coin Control Features</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Inputs...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>automatically selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Insufficient funds!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+86"/>
+        <source>Quantity:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location line="+35"/>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>Bytes:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Amount:</source>
+        <translation type="unfinished">مقدار:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location line="+86"/>
+        <location line="+86"/>
+        <location line="+32"/>
+        <source>0.00 BTC</source>
+        <translation type="unfinished">123.456 بتس {0.00 ?}</translation>
+    </message>
+    <message>
+        <location line="-191"/>
+        <source>Priority:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>medium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Low Output:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>After Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+50"/>
+        <source>custom change address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+115"/>
         <source>Send to multiple recipients at once</source>
         <translation>ارسال چندین در یافت ها فورا</translation>
     </message>
@@ -1338,12 +2297,58 @@ Address: %4
         <translation>&amp;;ارسال</translation>
     </message>
     <message>
-        <location filename="../sendcoinsdialog.cpp" line="-59"/>
+        <location filename="../sendcoinsdialog.cpp" line="-175"/>
+        <source>Enter an address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Copy quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy amount</source>
+        <translation type="unfinished">روگرفت مقدار</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy after fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy priority</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy low output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+87"/>
+        <location line="+2"/>
         <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
         <translation>(%3) تا &lt;b&gt;%1&lt;/b&gt; درصد%2</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Confirm send coins</source>
         <translation>ارسال سکه ها تایید کنید</translation>
     </message>
@@ -1358,17 +2363,38 @@ Address: %4
         <translation>و</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+27"/>
         <source>The recipient address is not valid, please recheck.</source>
         <translation>آدرس گیرنده نادرست است، لطفا دوباره بررسی کنید.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>The amount to pay must be larger than 0.</source>
-        <translation>مبلغ پر داخت باید از 0 بیشتر باشد </translation>
+        <source>The amount to pay must be at least one cent (0.01).</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+303"/>
+        <source>Warning: Invalid Sprouts address.
+A standard change address will be used instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Warning: Unknown change address.
+A standard change address will be used instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>(no label)</source>
+        <translation type="unfinished">بدون برچسب</translation>
+    </message>
+    <message>
+        <source>The amount to pay must be larger than 0.</source>
+        <translation type="vanished">مبلغ پر داخت باید از 0 بیشتر باشد </translation>
+    </message>
+    <message>
+        <location line="-318"/>
         <source>The amount exceeds your balance.</source>
         <translation>میزان وجه از بالانس/تتمه حساب شما بیشتر است</translation>
     </message>
@@ -1385,7 +2411,7 @@ Address: %4
     <message>
         <location line="+5"/>
         <source>Error: Transaction creation failed!</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1411,12 +2437,7 @@ Address: %4
         <translation>به&amp;پر داخت :</translation>
     </message>
     <message>
-        <location line="+34"/>
-        <source>The address to send the payment to (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+60"/>
+        <location line="+94"/>
         <location filename="../sendcoinsentry.cpp" line="+26"/>
         <source>Enter a label for this address to add it to your address book</source>
         <translation>برای آدرس بر پسب وارد کنید که در دفتر آدرس اضافه شود</translation>
@@ -1427,7 +2448,12 @@ Address: %4
         <translation>&amp;بر چسب </translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+18"/>
+        <source>The address to send the payment to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Choose address from address book</source>
         <translation>اآدرسن ازدفتر آدرس انتخاب کنید</translation>
     </message>
@@ -1453,7 +2479,7 @@ Address: %4
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a Peercoin address</source>
+        <source>Enter a Sprouts address</source>
         <translation>آدرس بیتکویین وارد کنید</translation>
     </message>
 </context>
@@ -1509,7 +2535,7 @@ Address: %4
     <message>
         <location line="+7"/>
         <source>Signature</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+27"/>
@@ -1518,13 +2544,13 @@ Address: %4
     </message>
     <message>
         <location line="+21"/>
-        <source>Sign the message to prove you own this Peercoin address</source>
-        <translation>پیام را برای اثبات آدرس PEERCOIN خود امضا کنید</translation>
+        <source>Sign the message to prove you own this Sprouts address</source>
+        <translation>پیام را برای اثبات آدرس SPROUTS خود امضا کنید</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sign &amp;Message</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">امضا و پیام</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -1554,13 +2580,13 @@ Address: %4
     </message>
     <message>
         <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified Peercoin address</source>
-        <translation>پیام را برای اطمنان از ورود به سیستم با آدرس PEERCOIN مشخص خود،تایید کنید</translation>
+        <source>Verify the message to ensure it was signed with the specified Sprouts address</source>
+        <translation>پیام را برای اطمنان از ورود به سیستم با آدرس SPROUTS مشخص خود،تایید کنید</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Verify &amp;Message</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+14"/>
@@ -1570,7 +2596,7 @@ Address: %4
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a Peercoin address</source>
+        <source>Enter a Sprouts address</source>
         <translation>آدرس بیتکویین وارد کنید  (bijvoorbeeld: 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
@@ -1580,7 +2606,7 @@ Address: %4
     </message>
     <message>
         <location line="+3"/>
-        <source>Enter Peercoin signature</source>
+        <source>Enter Sprouts signature</source>
         <translation>امضای BITOCOIN خود را وارد کنید</translation>
     </message>
     <message>
@@ -1653,14 +2679,8 @@ Address: %4
 <context>
     <name>SplashScreen</name>
     <message>
-        <location filename="../splashscreen.cpp" line="+22"/>
-        <source>The Peercoin developers</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>[testnet]</source>
-        <translation>آزمایش شبکه</translation>
+        <translation type="vanished">آزمایش شبکه</translation>
     </message>
 </context>
 <context>
@@ -1693,8 +2713,10 @@ Address: %4
     <message numerus="yes">
         <location line="+7"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>انتشار از طریق n% گره
-انتشار از طریق %n  گره</numerusform></translation>
+        <translation>
+            <numerusform>انتشار از طریق n% گره
+انتشار از طریق %n  گره</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1740,15 +2762,17 @@ Address: %4
         <location line="+12"/>
         <location line="+45"/>
         <location line="+17"/>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Credit</source>
         <translation>بدهی </translation>
     </message>
     <message numerus="yes">
-        <location line="-102"/>
+        <location line="-104"/>
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>بلوغ در n% از بیشتر بلاکها
-بلوغ در %n از بیشتر بلاکها</numerusform></translation>
+        <translation>
+            <numerusform>بلوغ در n% از بیشتر بلاکها
+بلوغ در %n از بیشتر بلاکها</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1759,12 +2783,12 @@ Address: %4
         <location line="+44"/>
         <location line="+8"/>
         <location line="+15"/>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Debit</source>
         <translation>اعتبار</translation>
     </message>
     <message>
-        <location line="-39"/>
+        <location line="-41"/>
         <source>Transaction fee</source>
         <translation>هزینه تراکنش</translation>
     </message>
@@ -1790,8 +2814,17 @@ Address: %4
     </message>
     <message>
         <location line="+3"/>
+        <source>Generated coins must wait 520 blocks before they can be spent.  When you generated this block, it was broadcast to the network to be added to the block chain.  If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable.  This may occasionally happen if another node generates a block within a few seconds of yours.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Staked coins must wait 520 blocks before they can return to balance and be spent.  When you generated this proof-of-stake block, it was broadcast to the network to be added to the block chain.  If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be a valid stake.  This may occasionally happen if another node generates a proof-of-stake block within a few seconds of yours.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Generated coins must mature 120 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>سکه های ایجاد شده باید 120 بلاک را قبل از استفاده بالغ کنند. در هنگام ایجاد بلاک، آن بلاک در شبکه منتشر می شود تا به زنجیره بلاکها بپیوندد. اگر در زنجیره قرار نگیرد، پیام وضعیت به غیرقابل قبول تغییر می بپیابد و قابل استفاده نیست. این مورد معمولا زمانی پیش می آید که گره دیگری به طور همزمان بلاکی را با فاصل چند ثانیه ای از شما ایجاد کند.</translation>
+        <translation type="vanished">سکه های ایجاد شده باید 120 بلاک را قبل از استفاده بالغ کنند. در هنگام ایجاد بلاک، آن بلاک در شبکه منتشر می شود تا به زنجیره بلاکها بپیوندد. اگر در زنجیره قرار نگیرد، پیام وضعیت به غیرقابل قبول تغییر می بپیابد و قابل استفاده نیست. این مورد معمولا زمانی پیش می آید که گره دیگری به طور همزمان بلاکی را با فاصل چند ثانیه ای از شما ایجاد کند.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1824,14 +2857,16 @@ Address: %4
         <translation>نادرست</translation>
     </message>
     <message>
-        <location line="-209"/>
+        <location line="-211"/>
         <source>, has not been successfully broadcast yet</source>
         <translation>هنوز با مو فقیت ارسال نشده</translation>
     </message>
     <message numerus="yes">
         <location line="-35"/>
         <source>Open for %n more block(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
         <location line="+70"/>
@@ -1875,9 +2910,11 @@ Address: %4
         <translation>مبلغ</translation>
     </message>
     <message numerus="yes">
-        <location line="+57"/>
+        <location line="+63"/>
         <source>Open for %n more block(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1902,8 +2939,10 @@ Address: %4
     <message numerus="yes">
         <location line="+8"/>
         <source>Mined balance will be available when it matures in %n more block(s)</source>
-        <translation><numerusform>بالانس/تتمه حساب استخراج شده زمانی که %n از بیشتر بلاکها بالغ شدند در دسترس خواهد بود
-بالانس/تتمه حساب استخراج شده زمانی که n% از بیشتر بلاکها بالغ شدند در دسترس خواهد بود</numerusform></translation>
+        <translation>
+            <numerusform>بالانس/تتمه حساب استخراج شده زمانی که %n از بیشتر بلاکها بالغ شدند در دسترس خواهد بود
+بالانس/تتمه حساب استخراج شده زمانی که n% از بیشتر بلاکها بالغ شدند در دسترس خواهد بود</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1941,12 +2980,17 @@ Address: %4
         <translation>استخراج</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+2"/>
+        <source>Mint by stake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>(n/a)</source>
         <translation>(کاربرد ندارد)</translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+200"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>وضعیت معالمه . عرصه که تعداد تایید نشان می دهد</translation>
     </message>
@@ -2031,6 +3075,11 @@ Address: %4
     </message>
     <message>
         <location line="+1"/>
+        <source>Mint by stake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Other</source>
         <translation>یگر </translation>
     </message>
@@ -2062,7 +3111,7 @@ Address: %4
     <message>
         <location line="+1"/>
         <source>Copy transaction ID</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2075,7 +3124,12 @@ Address: %4
         <translation>جزئیات تراکنش را نمایش بده</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+1"/>
+        <source>Clear orphans</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Export Transaction Data</source>
         <translation>صادرات تاریخ معامله</translation>
     </message>
@@ -2130,7 +3184,7 @@ Address: %4
         <translation>تا فایل %1 نمی شود نوشت</translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+113"/>
         <source>Range:</source>
         <translation>&gt;محدوده</translation>
     </message>
@@ -2143,7 +3197,7 @@ Address: %4
 <context>
     <name>WalletModel</name>
     <message>
-        <location filename="../walletmodel.cpp" line="+193"/>
+        <location filename="../walletmodel.cpp" line="+213"/>
         <source>Send Coins</source>
         <translation>ارسال سکه ها</translation>
     </message>
@@ -2151,9 +3205,9 @@ Address: %4
 <context>
     <name>WalletView</name>
     <message>
-        <location filename="../walletview.cpp" line="+42"/>
+        <location filename="../walletview.cpp" line="+45"/>
         <source>&amp;Export</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2161,774 +3215,403 @@ Address: %4
         <translation>داده ها  نوارِ جاری را به فایل انتقال دهید</translation>
     </message>
     <message>
-        <location line="+193"/>
+        <location line="+253"/>
         <source>Backup Wallet</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Wallet Data (*.dat)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Backup Failed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>There was an error trying to save the wallet data to the new location.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Backup Successful</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The wallet data was successfully saved to the new location.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>bitcoin-core</name>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="+94"/>
-        <source>Peercoin version</source>
-        <translation>سخه بیتکویین</translation>
+        <source>Sprouts version</source>
+        <translation type="vanished">سخه بیتکویین</translation>
     </message>
     <message>
-        <location line="+102"/>
         <source>Usage:</source>
-        <translation>ستفاده :</translation>
+        <translation type="vanished">ستفاده :</translation>
     </message>
     <message>
-        <location line="-29"/>
-        <source>Send command to -server or peercoind</source>
-        <translation>ارسال فرمان به سرور یا باتکویین</translation>
+        <source>Send command to -server or sproutsd</source>
+        <translation type="vanished">ارسال فرمان به سرور یا باتکویین</translation>
     </message>
     <message>
-        <location line="-23"/>
         <source>List commands</source>
-        <translation>لیست فومان ها</translation>
+        <translation type="vanished">لیست فومان ها</translation>
     </message>
     <message>
-        <location line="-12"/>
         <source>Get help for a command</source>
-        <translation>کمک برای فرمان </translation>
+        <translation type="vanished">کمک برای فرمان </translation>
     </message>
     <message>
-        <location line="+24"/>
         <source>Options:</source>
-        <translation>تنظیمات</translation>
+        <translation type="vanished">تنظیمات</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Specify configuration file (default: peercoin.conf)</source>
-        <translation>(: peercoin.confپیش فرض: )فایل تنظیمی خاص </translation>
+        <source>Specify configuration file (default: sprouts.conf)</source>
+        <translation type="vanished">(: sprouts.confپیش فرض: )فایل تنظیمی خاص </translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Specify pid file (default: peercoind.pid)</source>
-        <translation>(peercoind.pidپیش فرض : ) فایل پید خاص</translation>
+        <source>Specify pid file (default: sproutsd.pid)</source>
+        <translation type="vanished">(sproutsd.pidپیش فرض : ) فایل پید خاص</translation>
     </message>
     <message>
-        <location line="-1"/>
         <source>Specify data directory</source>
-        <translation>دایرکتور اطلاعاتی خاص</translation>
+        <translation type="vanished">دایرکتور اطلاعاتی خاص</translation>
     </message>
     <message>
-        <location line="-9"/>
         <source>Set database cache size in megabytes (default: 25)</source>
-        <translation>سایز کَش بانک داده را بر حسب مگابایت تنظیم کنید (پیش فرض:25)</translation>
+        <translation type="vanished">سایز کَش بانک داده را بر حسب مگابایت تنظیم کنید (پیش فرض:25)</translation>
     </message>
     <message>
-        <location line="-28"/>
         <source>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</source>
-        <translation>برای اتصالات به &lt;port&gt; (پیش‌فرض: 8333 یا تست‌نت: 18333) گوش کنید</translation>
+        <translation type="vanished">برای اتصالات به &lt;port&gt; (پیش‌فرض: 8333 یا تست‌نت: 18333) گوش کنید</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>حداکثر &lt;n&gt; اتصال با همکاران برقرار داشته باشید (پیش‌فرض: 125)</translation>
+        <translation type="vanished">حداکثر &lt;n&gt; اتصال با همکاران برقرار داشته باشید (پیش‌فرض: 125)</translation>
     </message>
     <message>
-        <location line="-48"/>
         <source>Connect to a node to retrieve peer addresses, and disconnect</source>
-        <translation>اتصال به گره برای دریافت آدرسهای قرینه و قطع اتصال</translation>
+        <translation type="vanished">اتصال به گره برای دریافت آدرسهای قرینه و قطع اتصال</translation>
     </message>
     <message>
-        <location line="+82"/>
         <source>Specify your own public address</source>
-        <translation>آدرس عمومی خود را ذکر کنید</translation>
+        <translation type="vanished">آدرس عمومی خود را ذکر کنید</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>آستانه برای قطع ارتباط با همکاران بدرفتار (پیش‌فرض: 100)</translation>
+        <translation type="vanished">آستانه برای قطع ارتباط با همکاران بدرفتار (پیش‌فرض: 100)</translation>
     </message>
     <message>
-        <location line="-134"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>مدت زمان به ثانیه برای جلوگیری از همکاران بدرفتار برای اتصال دوباره (پیش‌فرض: 86400)</translation>
+        <translation type="vanished">مدت زمان به ثانیه برای جلوگیری از همکاران بدرفتار برای اتصال دوباره (پیش‌فرض: 86400)</translation>
     </message>
     <message>
-        <location line="-29"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation>در زمان تنظیم درگاه RPX %u در فهرست کردن %s اشکالی رخ داده است</translation>
+        <translation type="vanished">در زمان تنظیم درگاه RPX %u در فهرست کردن %s اشکالی رخ داده است</translation>
     </message>
     <message>
-        <location line="+27"/>
         <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8332 or testnet: 18332)</source>
-        <translation>( 8332پیش فرض :) &amp;lt;poort&amp;gt; JSON-RPC شنوایی برای ارتباطات</translation>
+        <translation type="vanished">( 8332پیش فرض :) &amp;lt;poort&amp;gt; JSON-RPC شنوایی برای ارتباطات</translation>
     </message>
     <message>
-        <location line="+37"/>
         <source>Accept command line and JSON-RPC commands</source>
-        <translation>JSON-RPC قابل فرمانها و</translation>
+        <translation type="vanished">JSON-RPC قابل فرمانها و</translation>
     </message>
     <message>
-        <location line="+76"/>
         <source>Run in the background as a daemon and accept commands</source>
-        <translation>اجرای در پس زمینه به عنوان شبح و قبول فرمان ها</translation>
+        <translation type="vanished">اجرای در پس زمینه به عنوان شبح و قبول فرمان ها</translation>
     </message>
     <message>
-        <location line="+37"/>
         <source>Use the test network</source>
-        <translation>استفاده شبکه آزمایش</translation>
+        <translation type="vanished">استفاده شبکه آزمایش</translation>
     </message>
     <message>
-        <location line="-112"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation>پذیرش اتصالات از بیرون (پیش فرض:1 بدون پراکسی یا اتصال)</translation>
+        <translation type="vanished">پذیرش اتصالات از بیرون (پیش فرض:1 بدون پراکسی یا اتصال)</translation>
     </message>
     <message>
-        <location line="-80"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
-%s
-It is recommended you use the following random password:
-rpcuser=peercoinrpc
-rpcpassword=%s
-(you do not need to remember this password)
-The username and password MUST NOT be the same.
-If the file does not exist, create it with owner-readable-only file permissions.
-It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;Peercoin Alert&quot; admin@foo.com
-</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Cannot obtain a lock on data directory %s. Peercoin is probably already running.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+11"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
-        <translation>حجم حداکثر تراکنشهای با/کم اهمیت را به بایت تنظیم کنید (پیش فرض:27000)</translation>
+        <translation type="vanished">حجم حداکثر تراکنشهای با/کم اهمیت را به بایت تنظیم کنید (پیش فرض:27000)</translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+5"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
-        <translation>هشدار:paytxfee  بسیار بالا تعریف شده است! این هزینه تراکنش است که باید در زمان ارسال تراکنش بپردازید</translation>
+        <translation type="vanished">هشدار:paytxfee  بسیار بالا تعریف شده است! این هزینه تراکنش است که باید در زمان ارسال تراکنش بپردازید</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Warning: Displayed transactions may not be correct! You may need to upgrade, or other nodes may need to upgrade.</source>
-        <translation>هشدار: تراکنش نمایش داده شده ممکن است صحیح نباشد! شما/یا یکی از گره ها به روزآمد سازی نیاز دارید </translation>
+        <translation type="vanished">هشدار: تراکنش نمایش داده شده ممکن است صحیح نباشد! شما/یا یکی از گره ها به روزآمد سازی نیاز دارید </translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Peercoin will not work properly.</source>
-        <translation>هشدار: لطفا زمان و تاریخ رایانه خود را تصحیح نمایید! اگر ساعت رایانه شما اشتباه باشد peercoin ممکن است صحیح کار نکند</translation>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Sprouts will not work properly.</source>
+        <translation type="vanished">هشدار: لطفا زمان و تاریخ رایانه خود را تصحیح نمایید! اگر ساعت رایانه شما اشتباه باشد sprouts ممکن است صحیح کار نکند</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Attempt to recover private keys from a corrupt wallet.dat</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Block creation options:</source>
-        <translation>بستن گزینه ایجاد</translation>
+        <translation type="vanished">بستن گزینه ایجاد</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Connect only to the specified node(s)</source>
-        <translation>تنها در گره (های) مشخص شده متصل شوید</translation>
+        <translation type="vanished">تنها در گره (های) مشخص شده متصل شوید</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Corrupted block database detected</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
-        <translation>آدرس آی.پی. خود را شناسایی کنید (پیش فرض:1 در زمان when listening وno -externalip)</translation>
+        <translation type="vanished">آدرس آی.پی. خود را شناسایی کنید (پیش فرض:1 در زمان when listening وno -externalip)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Do you want to rebuild the block database now?</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Error initializing block database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error initializing wallet database environment %s!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error loading block database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error opening block database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Error: Disk space is low!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error: Wallet locked, unable to create transaction!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error: system error: </source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation>شنیدن هر گونه درگاه انجام پذیر نیست. ازlisten=0  برای اینکار استفاده کیند.</translation>
+        <translation type="vanished">شنیدن هر گونه درگاه انجام پذیر نیست. ازlisten=0  برای اینکار استفاده کیند.</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Failed to read block info</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to read block</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to sync block index</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write block index</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write block info</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write block</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write file info</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write to coin database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write transaction index</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write undo data</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Find peers using DNS lookup (default: 1 unless -connect)</source>
-        <translation>قرینه ها را برای جستجوی DNS بیاب (پیش فرض: 1 مگر در زمان اتصال)</translation>
+        <translation type="vanished">قرینه ها را برای جستجوی DNS بیاب (پیش فرض: 1 مگر در زمان اتصال)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Generate coins (default: 0)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>How many blocks to check at startup (default: 288, 0 = all)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>How thorough the block verification is (0-4, default: 3)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Not enough file descriptors available.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Rebuild block chain index from current blk000??.dat files</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Set the number of threads to service RPC calls (default: 4)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+26"/>
-        <source>Verifying blocks...</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Verifying wallet...</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="-69"/>
-        <source>Imports blocks from external blk000??.dat file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="-76"/>
-        <source>Set the number of script verification threads (up to 16, 0 = auto, &lt;0 = leave that many cores free, default: 0)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+77"/>
-        <source>Information</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
-        <translation>آدرس نرم افزار تور غلط است %s</translation>
+        <translation type="vanished">آدرس نرم افزار تور غلط است %s</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Invalid amount for -minrelaytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Invalid amount for -mintxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Maintain a full transaction index (default: 0)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
-        <translation>حداکثر بافر دریافت شده بر اساس اتصال &lt;n&gt;*  1000 بایت  (پیش فرض:5000)</translation>
+        <translation type="vanished">حداکثر بافر دریافت شده بر اساس اتصال &lt;n&gt;*  1000 بایت  (پیش فرض:5000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
-        <translation>حداکثر بافر دریافت شده بر اساس اتصال &lt;n&gt;*  1000 بایت  (پیش فرض:1000)</translation>
+        <translation type="vanished">حداکثر بافر دریافت شده بر اساس اتصال &lt;n&gt;*  1000 بایت  (پیش فرض:1000)</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Only accept block chain matching built-in checkpoints (default: 1)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
-        <translation>تنها =به گره ها در شبکه متصا شوید  &lt;net&gt; (IPv4, IPv6 or Tor)</translation>
+        <translation type="vanished">تنها =به گره ها در شبکه متصا شوید  &lt;net&gt; (IPv4, IPv6 or Tor)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Output extra debugging information. Implies all other -debug* options</source>
-        <translation>برونداد اطلاعات اشکال زدایی اضافی. گزینه های اشکال زدایی دیگر رفع شدند</translation>
+        <translation type="vanished">برونداد اطلاعات اشکال زدایی اضافی. گزینه های اشکال زدایی دیگر رفع شدند</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Output extra network debugging information</source>
-        <translation>برونداد اطلاعات  اشکال زدایی اضافی برای شبکه</translation>
+        <translation type="vanished">برونداد اطلاعات  اشکال زدایی اضافی برای شبکه</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Prepend debug output with timestamp</source>
-        <translation>به خروجی اشکال‌زدایی برچسب زمان بزنید</translation>
+        <translation type="vanished">به خروجی اشکال‌زدایی برچسب زمان بزنید</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation>گزینه ssl (به ویکیpeercoin برای راهنمای راه اندازی ssl مراجعه شود)</translation>
+        <translation type="vanished">گزینه ssl (به ویکیsprouts برای راهنمای راه اندازی ssl مراجعه شود)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Select the version of socks proxy to use (4-5, default: 5)</source>
-        <translation>نسخه ای از پراکسی ساکس را برای استفاده انتخاب کنید (4-5 پیش فرض:5)</translation>
+        <translation type="vanished">نسخه ای از پراکسی ساکس را برای استفاده انتخاب کنید (4-5 پیش فرض:5)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Send trace/debug info to console instead of debug.log file</source>
-        <translation>اطلاعات ردگیری/اشکال‌زدایی را به جای فایل لاگ اشکال‌زدایی به کنسول بفرستید</translation>
+        <translation type="vanished">اطلاعات ردگیری/اشکال‌زدایی را به جای فایل لاگ اشکال‌زدایی به کنسول بفرستید</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Send trace/debug info to debugger</source>
-        <translation>اطلاعات ردگیری/اشکال‌زدایی را به اشکال‌زدا بفرستید</translation>
+        <translation type="vanished">اطلاعات ردگیری/اشکال‌زدایی را به اشکال‌زدا بفرستید</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Set maximum block size in bytes (default: 250000)</source>
-        <translation>حداکثر سایز بلاک بر اساس بایت تنظیم شود (پیش فرض: 250000)</translation>
+        <translation type="vanished">حداکثر سایز بلاک بر اساس بایت تنظیم شود (پیش فرض: 250000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set minimum block size in bytes (default: 0)</source>
-        <translation>حداقل سایز بلاک بر اساس بایت تنظیم شود (پیش فرض: 0)</translation>
+        <translation type="vanished">حداقل سایز بلاک بر اساس بایت تنظیم شود (پیش فرض: 0)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
-        <translation>فایل debug.log  را در startup مشتری کوچک کن (پیش فرض:1 اگر اشکال زدایی روی نداد)</translation>
+        <translation type="vanished">فایل debug.log  را در startup مشتری کوچک کن (پیش فرض:1 اگر اشکال زدایی روی نداد)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Signing transaction failed</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Specify connection timeout in milliseconds (default: 5000)</source>
-        <translation>(میلی ثانیه )فاصله ارتباط خاص</translation>
+        <translation type="vanished">(میلی ثانیه )فاصله ارتباط خاص</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>System error: </source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Transaction amount too small</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Transaction amounts must be positive</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Transaction too large</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
         <source>Use UPnP to map the listening port (default: 0)</source>
-        <translation>از UPnP  برای شناسایی درگاه شنیداری استفاده کنید (پیش فرض:0)</translation>
+        <translation type="vanished">از UPnP  برای شناسایی درگاه شنیداری استفاده کنید (پیش فرض:0)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
-        <translation>از UPnP  برای شناسایی درگاه شنیداری استفاده کنید (پیش فرض:1 در زمان شنیدن)</translation>
+        <translation type="vanished">از UPnP  برای شناسایی درگاه شنیداری استفاده کنید (پیش فرض:1 در زمان شنیدن)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
-        <translation>برای دستیابی به سرویس مخفیانه نرم افزار تور از پراکسی استفاده کنید (پیش فرض:same as -proxy)</translation>
+        <translation type="vanished">برای دستیابی به سرویس مخفیانه نرم افزار تور از پراکسی استفاده کنید (پیش فرض:same as -proxy)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Username for JSON-RPC connections</source>
-        <translation>JSON-RPC شناسه برای ارتباطات</translation>
+        <translation type="vanished">JSON-RPC شناسه برای ارتباطات</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Warning</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
-        <translation>هشدار: این نسخه قدیمی است، روزآمدسازی مورد نیاز است</translation>
+        <translation type="vanished">هشدار: این نسخه قدیمی است، روزآمدسازی مورد نیاز است</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>You need to rebuild the databases using -reindex to change -txindex</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>wallet.dat corrupt, salvage failed</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="-50"/>
         <source>Password for JSON-RPC connections</source>
-        <translation>JSON-RPC عبارت عبور برای ارتباطات</translation>
+        <translation type="vanished">JSON-RPC عبارت عبور برای ارتباطات</translation>
     </message>
     <message>
-        <location line="-67"/>
         <source>Allow JSON-RPC connections from specified IP address</source>
-        <translation>از آدرس آی پی خاص JSON-RPC قبول ارتباطات</translation>
+        <translation type="vanished">از آدرس آی پی خاص JSON-RPC قبول ارتباطات</translation>
     </message>
     <message>
-        <location line="+76"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation>(127.0.0.1پیش فرض: ) &amp;lt;ip&amp;gt; دادن فرمانها برای استفاده گره ها روی</translation>
+        <translation type="vanished">(127.0.0.1پیش فرض: ) &amp;lt;ip&amp;gt; دادن فرمانها برای استفاده گره ها روی</translation>
     </message>
     <message>
-        <location line="-120"/>
         <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
-        <translation>زمانی که بهترین بلاک تغییر کرد، دستور را اجرا کن (%s در cmd با block hash جایگزین شده است)</translation>
+        <translation type="vanished">زمانی که بهترین بلاک تغییر کرد، دستور را اجرا کن (%s در cmd با block hash جایگزین شده است)</translation>
     </message>
     <message>
-        <location line="+147"/>
         <source>Upgrade wallet to latest format</source>
-        <translation>wallet  را به جدیدترین فرمت روزآمد کنید</translation>
+        <translation type="vanished">wallet  را به جدیدترین فرمت روزآمد کنید</translation>
     </message>
     <message>
-        <location line="-21"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation> (100پیش فرض:)&amp;lt;n&amp;gt; گذاشتن اندازه کلید روی </translation>
+        <translation type="vanished"> (100پیش فرض:)&amp;lt;n&amp;gt; گذاشتن اندازه کلید روی </translation>
     </message>
     <message>
-        <location line="-12"/>
         <source>Rescan the block chain for missing wallet transactions</source>
-        <translation>اسکان مجدد زنجیر بلوکها برای گم والت معامله</translation>
+        <translation type="vanished">اسکان مجدد زنجیر بلوکها برای گم والت معامله</translation>
     </message>
     <message>
-        <location line="+35"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
-        <translation>JSON-RPCبرای ارتباطات   استفاده کنید OpenSSL (https)</translation>
+        <translation type="vanished">JSON-RPCبرای ارتباطات   استفاده کنید OpenSSL (https)</translation>
     </message>
     <message>
-        <location line="-26"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation> (server.certپیش فرض: )گواهی نامه سرور</translation>
+        <translation type="vanished"> (server.certپیش فرض: )گواهی نامه سرور</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Server private key (default: server.pem)</source>
-        <translation>(server.pemپیش فرض: ) کلید خصوصی سرور</translation>
+        <translation type="vanished">(server.pemپیش فرض: ) کلید خصوصی سرور</translation>
     </message>
     <message>
-        <location line="-151"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation>رمز های قابل قبول(  TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
+        <translation type="vanished">رمز های قابل قبول(  TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
-        <location line="+165"/>
         <source>This help message</source>
-        <translation>پیام کمکی</translation>
+        <translation type="vanished">پیام کمکی</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
-        <translation>امکان اتصال به %s از این رایانه وجود ندارد ( bind returned error %d, %s)</translation>
+        <translation type="vanished">امکان اتصال به %s از این رایانه وجود ندارد ( bind returned error %d, %s)</translation>
     </message>
     <message>
-        <location line="-91"/>
         <source>Connect through socks proxy</source>
-        <translation>اتصال از طریق پراکسی ساکس</translation>
+        <translation type="vanished">اتصال از طریق پراکسی ساکس</translation>
     </message>
     <message>
-        <location line="-10"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
-        <translation>به DNS اجازه بده تا برای addnode ، seednode و اتصال جستجو کند</translation>
+        <translation type="vanished">به DNS اجازه بده تا برای addnode ، seednode و اتصال جستجو کند</translation>
     </message>
     <message>
-        <location line="+55"/>
         <source>Loading addresses...</source>
-        <translation>بار گیری آدرس ها</translation>
+        <translation type="vanished">بار گیری آدرس ها</translation>
     </message>
     <message>
-        <location line="-35"/>
         <source>Error loading wallet.dat: Wallet corrupted</source>
-        <translation>خطا در بارگیری wallet.dat: کیف پول خراب شده است</translation>
+        <translation type="vanished">خطا در بارگیری wallet.dat: کیف پول خراب شده است</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Peercoin</source>
-        <translation>خطا در بارگیری wallet.dat: کیف پول به ویرایش جدیدتری از Peercoin نیاز دارد</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Sprouts</source>
+        <translation type="vanished">خطا در بارگیری wallet.dat: کیف پول به ویرایش جدیدتری از Sprouts نیاز دارد</translation>
     </message>
     <message>
-        <location line="+93"/>
-        <source>Wallet needed to be rewritten: restart Peercoin to complete</source>
-        <translation>سلام</translation>
+        <source>Wallet needed to be rewritten: restart Sprouts to complete</source>
+        <translation type="vanished">سلام</translation>
     </message>
     <message>
-        <location line="-95"/>
         <source>Error loading wallet.dat</source>
-        <translation>خطا در بارگیری wallet.dat</translation>
+        <translation type="vanished">خطا در بارگیری wallet.dat</translation>
     </message>
     <message>
-        <location line="+28"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
-        <translation>آدرس پراکسی اشتباه %s</translation>
+        <translation type="vanished">آدرس پراکسی اشتباه %s</translation>
     </message>
     <message>
-        <location line="+56"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
-        <translation>شبکه مشخص شده غیرقابل شناسایی در onlynet: &apos;%s&apos;</translation>
+        <translation type="vanished">شبکه مشخص شده غیرقابل شناسایی در onlynet: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="-1"/>
         <source>Unknown -socks proxy version requested: %i</source>
-        <translation>نسخه پراکسی ساکس غیرقابل شناسایی  درخواست شده است: %i</translation>
+        <translation type="vanished">نسخه پراکسی ساکس غیرقابل شناسایی  درخواست شده است: %i</translation>
     </message>
     <message>
-        <location line="-96"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
-        <translation>آدرس قابل اتصال- شناسایی نیست %s</translation>
+        <translation type="vanished">آدرس قابل اتصال- شناسایی نیست %s</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
-        <translation>آدرس خارجی قابل اتصال- شناسایی نیست %s</translation>
+        <translation type="vanished">آدرس خارجی قابل اتصال- شناسایی نیست %s</translation>
     </message>
     <message>
-        <location line="+44"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>میزان وجه اشتباه برای paytxfee=&lt;میزان وجه&gt;: %s</translation>
+        <translation type="vanished">میزان وجه اشتباه برای paytxfee=&lt;میزان وجه&gt;: %s</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Invalid amount</source>
-        <translation>میزان وجه اشتباه</translation>
+        <translation type="vanished">میزان وجه اشتباه</translation>
     </message>
     <message>
-        <location line="-6"/>
         <source>Insufficient funds</source>
-        <translation>بود جه نا کافی </translation>
+        <translation type="vanished">بود جه نا کافی </translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>Loading block index...</source>
-        <translation>بار گیری شاخص بلوک</translation>
+        <translation type="vanished">بار گیری شاخص بلوک</translation>
     </message>
     <message>
-        <location line="-57"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
-        <translation>به اتصال یک گره اضافه کنید و اتصال را باز نگاه دارید</translation>
+        <translation type="vanished">به اتصال یک گره اضافه کنید و اتصال را باز نگاه دارید</translation>
     </message>
     <message>
-        <location line="-25"/>
-        <source>Unable to bind to %s on this computer. Peercoin is probably already running.</source>
-        <translation>اتصال به %s از این رایانه امکان پذیر نیست. Peercoin احتمالا در حال اجراست.</translation>
+        <source>Unable to bind to %s on this computer. Sprouts is probably already running.</source>
+        <translation type="vanished">اتصال به %s از این رایانه امکان پذیر نیست. Sprouts احتمالا در حال اجراست.</translation>
     </message>
     <message>
-        <location line="+64"/>
         <source>Fee per KB to add to transactions you send</source>
-        <translation>پر داجت برای هر کیلو بیت برای اضافه به معامله ارسال</translation>
+        <translation type="vanished">پر داجت برای هر کیلو بیت برای اضافه به معامله ارسال</translation>
     </message>
     <message>
-        <location line="+19"/>
         <source>Loading wallet...</source>
-        <translation>بار گیری والت</translation>
+        <translation type="vanished">بار گیری والت</translation>
     </message>
     <message>
-        <location line="-52"/>
         <source>Cannot downgrade wallet</source>
-        <translation>امکان تنزل نسخه در wallet وجود ندارد</translation>
+        <translation type="vanished">امکان تنزل نسخه در wallet وجود ندارد</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Cannot write default address</source>
-        <translation>آدرس پیش فرض قابل ذخیره نیست</translation>
+        <translation type="vanished">آدرس پیش فرض قابل ذخیره نیست</translation>
     </message>
     <message>
-        <location line="+64"/>
         <source>Rescanning...</source>
-        <translation>اسکان مجدد</translation>
+        <translation type="vanished">اسکان مجدد</translation>
     </message>
     <message>
-        <location line="-57"/>
         <source>Done loading</source>
-        <translation>بار گیری انجام شده است</translation>
+        <translation type="vanished">بار گیری انجام شده است</translation>
     </message>
     <message>
-        <location line="+82"/>
         <source>To use the %s option</source>
-        <translation>برای استفاده از %s از انتخابات</translation>
+        <translation type="vanished">برای استفاده از %s از انتخابات</translation>
     </message>
     <message>
-        <location line="-74"/>
         <source>Error</source>
-        <translation>خطا</translation>
+        <translation type="vanished">خطا</translation>
     </message>
     <message>
-        <location line="-31"/>
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
-        <translation>%s، شما باید یک rpcpassword  را در فایل پیکربندی تنظیم کنید :⏎%s⏎ اگر فایل ایجاد نشد، یک فایل فقط متنی ایجاد کنید.
+        <translation type="vanished">%s، شما باید یک rpcpassword  را در فایل پیکربندی تنظیم کنید :⏎%s⏎ اگر فایل ایجاد نشد، یک فایل فقط متنی ایجاد کنید.
 </translation>
     </message>
 </context>

@@ -310,7 +310,7 @@ void RPCConsole::clear()
                 "b { color: #006060; } "
                 );
 
-    message(CMD_REPLY, (tr("Welcome to the Peercoin RPC console.") + "<br>" +
+    message(CMD_REPLY, (tr("Welcome to the Sprouts RPC console.") + "<br>" +
                         tr("Use up and down arrows to navigate history, and <b>Ctrl-L</b> to clear screen.") + "<br>" +
                         tr("Type <b>help</b> for an overview of available commands.")), true);
 }
@@ -320,7 +320,7 @@ void RPCConsole::message(int category, const QString &message, bool html)
     QTime time = QTime::currentTime();
     QString timeString = time.toString();
     QString out;
-    out += "<table><tr><td class=\"time\" width=\"70\">" + timeString + "</td>";
+    out += "<table><tr><td class=\"time\" width=\"65\">" + timeString + "</td>";
     out += "<td class=\"icon\" width=\"32\"><img src=\"" + categoryClass(category) + "\"></td>";
     out += "<td class=\"message " + categoryClass(category) + "\" valign=\"middle\">";
     if(html)

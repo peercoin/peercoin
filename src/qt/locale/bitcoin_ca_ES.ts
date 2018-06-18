@@ -1,19 +1,25 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ca_ES" version="2.0">
-<defaultcodec>UTF-8</defaultcodec>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="ca_ES">
 <context>
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About Peercoin</source>
-        <translation>Sobre Peercoin</translation>
+        <source>About Sprouts</source>
+        <translation>Sobre Sprouts</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;Peercoin&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;Peercoin&lt;/b&gt; versió</translation>
+        <source>&lt;b&gt;Sprouts&lt;/b&gt; version</source>
+        <translation>&lt;b&gt;Sprouts&lt;/b&gt; versió</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+41"/>
+        <source>Copyright &amp;copy; 2011-YYYY Sprouts Developers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
         <source>
 This is experimental software.
 
@@ -29,8 +35,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+0"/>
-        <source>The Peercoin developers</source>
-        <translation type="unfinished"/>
+        <source>Sprouts Developers</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -61,9 +67,9 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Nova adreça</translation>
     </message>
     <message>
-        <location filename="../addressbookpage.cpp" line="+63"/>
-        <source>These are your Peercoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>Aquestes són les teves adreces Peercoin per a rebre pagaments. Pot interesar-te proveïr diferents adreces a cadascun dels enviadors així pots identificar qui et va pagant.</translation>
+        <location filename="../addressbookpage.cpp" line="+67"/>
+        <source>These are your Sprouts addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <translation>Aquestes són les teves adreces Sprouts per a rebre pagaments. Pot interesar-te proveïr diferents adreces a cadascun dels enviadors així pots identificar qui et va pagant.</translation>
     </message>
     <message>
         <location filename="../forms/addressbookpage.ui" line="+14"/>
@@ -77,8 +83,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+11"/>
-        <source>Sign a message to prove you own a Peercoin address</source>
-        <translation>Signa el missatge per provar que ets propietari de l&apos;adreça Peercoin</translation>
+        <source>Sign a message to prove you own a Sprouts address</source>
+        <translation>Signa el missatge per provar que ets propietari de l&apos;adreça Sprouts</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -93,17 +99,17 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+27"/>
         <source>Export the data in the current tab to a file</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Export</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-44"/>
-        <source>Verify a message to ensure it was signed with a specified Peercoin address</source>
-        <translation>Verificar un missatge per asegurar-se que ha estat signat amb una adreça Peercoin específica</translation>
+        <source>Verify a message to ensure it was signed with a specified Sprouts address</source>
+        <translation>Verificar un missatge per asegurar-se que ha estat signat amb una adreça Sprouts específica</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -117,8 +123,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location filename="../addressbookpage.cpp" line="-5"/>
-        <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Aquestes són la seva adreça de Peercoin per enviar els pagaments. Sempre revisi la quantitat i l&apos;adreça del destinatari abans transferència de monedes.</translation>
+        <source>These are your Sprouts addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Aquestes són la seva adreça de Sprouts per enviar els pagaments. Sempre revisi la quantitat i l&apos;adreça del destinatari abans transferència de monedes.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -136,7 +142,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Enviar &amp;Monedes</translation>
     </message>
     <message>
-        <location line="+260"/>
+        <location line="+266"/>
         <source>Export Address Book Data</source>
         <translation>Exporta llibreta d&apos;adreces</translation>
     </message>
@@ -243,8 +249,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+1"/>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PEERCOINS&lt;/b&gt;!</source>
-        <translation>Advertència: Si encripteu el vostre moneder i perdeu la constrasenya, &lt;b&gt;PERDREU TOTS ELS VOSTRES PEERCOINS&lt;/b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR SPROUTSS&lt;/b&gt;!</source>
+        <translation>Advertència: Si encripteu el vostre moneder i perdeu la constrasenya, &lt;b&gt;PERDREU TOTS ELS VOSTRES SPROUTSS&lt;/b&gt;!</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -270,8 +276,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-56"/>
-        <source>Peercoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your peercoins from being stolen by malware infecting your computer.</source>
-        <translation>Peercoin es tancarà ara per acabar el procés d&apos;encriptació. Recorda que encriptar el teu moneder no protegeix completament els teus peercoins de ser robades per programari maliciós instal·lat al teu ordinador.</translation>
+        <source>Sprouts will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your sproutss from being stolen by malware infecting your computer.</source>
+        <translation>Sprouts es tancarà ara per acabar el procés d&apos;encriptació. Recorda que encriptar el teu moneder no protegeix completament els teus sproutss de ser robades per programari maliciós instal·lat al teu ordinador.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -318,17 +324,17 @@ This product includes software developed by the OpenSSL Project for use in the O
 <context>
     <name>BitcoinGUI</name>
     <message>
-        <location filename="../bitcoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+264"/>
         <source>Sign &amp;message...</source>
         <translation>Signar &amp;missatge...</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+302"/>
         <source>Synchronizing with network...</source>
         <translation>Sincronitzant amb la xarxa ...</translation>
     </message>
     <message>
-        <location line="-349"/>
+        <location line="-388"/>
         <source>&amp;Overview</source>
         <translation>&amp;Panorama general</translation>
     </message>
@@ -348,17 +354,17 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Cerca a l&apos;historial de transaccions</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+14"/>
         <source>Edit the list of stored addresses and labels</source>
         <translation>Edita la llista d&apos;adreces emmagatzemada i etiquetes</translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="-21"/>
         <source>Show the list of addresses for receiving payments</source>
         <translation>Mostra el llistat d&apos;adreces per rebre pagaments</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+45"/>
         <source>E&amp;xit</source>
         <translation>S&amp;ortir</translation>
     </message>
@@ -369,8 +375,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+4"/>
-        <source>Show information about Peercoin</source>
-        <translation>Mostra informació sobre Peercoin</translation>
+        <source>Show information about Sprouts</source>
+        <translation>Mostra informació sobre Sprouts</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -393,7 +399,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Xifrar moneder</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>&amp;Backup Wallet...</source>
         <translation>&amp;Realitzant copia de seguretat del moneder...</translation>
     </message>
@@ -403,7 +409,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Canviar contrasenya...</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="+307"/>
         <source>Importing blocks from disk...</source>
         <translation>Important blocs del disc..</translation>
     </message>
@@ -413,17 +419,17 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Re-indexant blocs al disc...</translation>
     </message>
     <message>
-        <location line="-347"/>
-        <source>Send coins to a Peercoin address</source>
-        <translation>Enviar monedes a una adreça Peercoin</translation>
+        <location line="-386"/>
+        <source>Send coins to a Sprouts address</source>
+        <translation>Enviar monedes a una adreça Sprouts</translation>
     </message>
     <message>
-        <location line="+49"/>
-        <source>Modify configuration options for Peercoin</source>
-        <translation>Modificar les opcions de configuració per peercoin</translation>
+        <location line="+63"/>
+        <source>Modify configuration options for Sprouts</source>
+        <translation>Modificar les opcions de configuració per sprouts</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Backup wallet to another location</source>
         <translation>Realitzar còpia de seguretat del moneder a un altre directori</translation>
     </message>
@@ -448,18 +454,18 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Verifica el missatge..</translation>
     </message>
     <message>
-        <location line="-165"/>
-        <location line="+530"/>
-        <source>Peercoin</source>
-        <translation>Peercoin</translation>
+        <location line="-189"/>
+        <location line="+576"/>
+        <source>Sprouts</source>
+        <translation>Sprouts</translation>
     </message>
     <message>
-        <location line="-530"/>
+        <location line="-576"/>
         <source>Wallet</source>
         <translation>Moneder</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+108"/>
         <source>&amp;Send</source>
         <translation>&amp;Enviar</translation>
     </message>
@@ -470,13 +476,28 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+14"/>
+        <source>&amp;Minting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show your minting capacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>&amp;Addresses</source>
         <translation>&amp;Adreces</translation>
     </message>
     <message>
+        <location line="+7"/>
+        <source>Multisig</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+22"/>
-        <source>&amp;About Peercoin</source>
-        <translation>&amp;Sobre Peercoin</translation>
+        <source>&amp;About Sprouts</source>
+        <translation>&amp;Sobre Sprouts</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -494,55 +515,68 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Xifrar les claus privades pertanyents al seu moneder</translation>
     </message>
     <message>
+        <location line="+2"/>
+        <source>&amp;Decrypt Wallet for Minting Only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Decrypt wallet only for minting. Sending coins will still require the password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+7"/>
-        <source>Sign messages with your Peercoin addresses to prove you own them</source>
-        <translation>Signa el missatges amb la seva adreça de Peercoin per provar que les poseeixes</translation>
+        <source>Sign messages with your Sprouts addresses to prove you own them</source>
+        <translation>Signa el missatges amb la seva adreça de Sprouts per provar que les poseeixes</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Verify messages to ensure they were signed with specified Peercoin addresses</source>
-        <translation>Verificar els missatges per assegurar-te que han estat signades amb una adreça Peercoin específica.</translation>
+        <source>Verify messages to ensure they were signed with specified Sprouts addresses</source>
+        <translation>Verificar els missatges per assegurar-te que han estat signades amb una adreça Sprouts específica.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+29"/>
         <source>&amp;File</source>
         <translation>&amp;Arxiu</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>&amp;Settings</source>
         <translation>&amp;Configuració</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>&amp;Help</source>
         <translation>&amp;Ajuda</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Tabs toolbar</source>
         <translation>Barra d&apos;eines de seccions</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+22"/>
         <location line="+10"/>
         <source>[testnet]</source>
         <translation>[testnet]</translation>
     </message>
     <message>
         <location line="+47"/>
-        <source>Peercoin client</source>
-        <translation>Client Peercoin</translation>
+        <source>Sprouts client</source>
+        <translation>Client Sprouts</translation>
     </message>
     <message numerus="yes">
-        <location line="+141"/>
-        <source>%n active connection(s) to Peercoin network</source>
-        <translation><numerusform>%n connexió activa a la xarxa Peercoin</numerusform><numerusform>%n connexions actives a la xarxa Peercoin</numerusform></translation>
+        <location line="+152"/>
+        <source>%n active connection(s) to Sprouts network</source>
+        <translation>
+            <numerusform>%n connexió activa a la xarxa Sprouts</numerusform>
+            <numerusform>%n connexions actives a la xarxa Sprouts</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+22"/>
         <source>No block source available...</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+12"/>
@@ -557,17 +591,26 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message numerus="yes">
         <location line="+20"/>
         <source>%n hour(s)</source>
-        <translation><numerusform>%n hora</numerusform><numerusform>%n hores</numerusform></translation>
+        <translation>
+            <numerusform>%n hora</numerusform>
+            <numerusform>%n hores</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n day(s)</source>
-        <translation><numerusform>%n dia</numerusform><numerusform>%n dies</numerusform></translation>
+        <translation>
+            <numerusform>%n dia</numerusform>
+            <numerusform>%n dies</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n week(s)</source>
-        <translation><numerusform>%n setmana</numerusform><numerusform>%n setmanes</numerusform></translation>
+        <translation>
+            <numerusform>%n setmana</numerusform>
+            <numerusform>%n setmanes</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+4"/>
@@ -602,7 +645,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+70"/>
         <source>You can send this transaction for a fee of %1, which is burned and prevents spamming of the network. Do you want to pay the fee?</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-140"/>
@@ -647,31 +690,297 @@ Address: %4
     <message>
         <location line="-23"/>
         <location line="+23"/>
-        <source>URI can not be parsed! This can be caused by an invalid Peercoin address or malformed URI parameters.</source>
-        <translation>la URI no pot ser processada! Això es pot ser causat per una adreça Peercoin invalida o paràmetres URI malformats.</translation>
+        <source>URI can not be parsed! This can be caused by an invalid Sprouts address or malformed URI parameters.</source>
+        <translation>la URI no pot ser processada! Això es pot ser causat per una adreça Sprouts invalida o paràmetres URI malformats.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
         <translation>El moneder està &lt;b&gt;encriptat&lt;/b&gt; i actualment &lt;b&gt;desbloquejat&lt;/b&gt;</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+0"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked for block minting only&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>El moneder està &lt;b&gt;encriptat&lt;/b&gt; i actualment &lt;b&gt;bloquejat&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../bitcoin.cpp" line="+111"/>
-        <source>A fatal error occurred. Peercoin can no longer continue safely and will quit.</source>
-        <translation>Ha tingut lloc un error fatal. Peercoin no pot continuar executant-se de manera segura i es tancará.</translation>
+        <location filename="../bitcoin.cpp" line="+115"/>
+        <source>A fatal error occurred. Sprouts can no longer continue safely and will quit.</source>
+        <translation>Ha tingut lloc un error fatal. Sprouts no pot continuar executant-se de manera segura i es tancará.</translation>
     </message>
 </context>
 <context>
     <name>ClientModel</name>
     <message>
-        <location filename="../clientmodel.cpp" line="+104"/>
+        <location filename="../clientmodel.cpp" line="+106"/>
         <source>Network Alert</source>
         <translation>Alerta de xarxa</translation>
+    </message>
+</context>
+<context>
+    <name>CoinControlDialog</name>
+    <message>
+        <location filename="../forms/coincontroldialog.ui" line="+14"/>
+        <source>Coin Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Quantity:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <location line="+35"/>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>Bytes:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Amount:</source>
+        <translation type="unfinished">Quantitat:</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <location line="+86"/>
+        <location line="+92"/>
+        <location line="+41"/>
+        <source>0.00 BTC</source>
+        <translation type="unfinished">123.456 BTC {0.00 ?}</translation>
+    </message>
+    <message>
+        <location line="-203"/>
+        <source>Priority:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Low Output:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location filename="../coincontroldialog.cpp" line="+604"/>
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>After Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Change:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+69"/>
+        <source>(un)select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Tree mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>List mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Amount</source>
+        <translation type="unfinished">Quantitat</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Date</source>
+        <translation type="unfinished">Data</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Confirmations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Confirmed</source>
+        <translation type="unfinished">Confirmat</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Coin days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Priority</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../coincontroldialog.cpp" line="-568"/>
+        <source>Copy address</source>
+        <translation type="unfinished">Copiar adreça </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy label</source>
+        <translation type="unfinished">Copiar etiqueta</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+26"/>
+        <source>Copy amount</source>
+        <translation type="unfinished">Copiar quantitat</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>Copy transaction ID</source>
+        <translation type="unfinished">Copiar ID de transacció</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Copy quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy after fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy priority</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy low output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+320"/>
+        <source>highest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>high</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>medium-high</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>medium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>low-medium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>lowest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+205"/>
+        <source>DUST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>This label turns red, if the transaction size is bigger than 10000 bytes.
+
+ Can vary +/- 1 Byte per input.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Transactions with higher priority get more likely into a block.
+
+This label turns red, if the priority is smaller than &quot;medium&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This label turns red, if any recipient receives an amount smaller than %1.
+
+ This means the transaction will be rejected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>If the change is smaller than %1 it will be added to the fees.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <location line="+64"/>
+        <source>(no label)</source>
+        <translation type="unfinished">(sense etiqueta)</translation>
+    </message>
+    <message>
+        <location line="-7"/>
+        <source>change from %1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>(change)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -728,8 +1037,8 @@ Address: %4
     </message>
     <message>
         <location line="-5"/>
-        <source>The entered address &quot;%1&quot; is not a valid Peercoin address.</source>
-        <translation>L&apos;adreça introduida &quot;%1&quot; no és una adreça Peercoin valida.</translation>
+        <source>The entered address &quot;%1&quot; is not a valid Sprouts address.</source>
+        <translation>L&apos;adreça introduida &quot;%1&quot; no és una adreça Sprouts valida.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -745,10 +1054,10 @@ Address: %4
 <context>
     <name>GUIUtil::HelpMessageBox</name>
     <message>
-        <location filename="../guiutil.cpp" line="+424"/>
+        <location filename="../guiutil.cpp" line="+441"/>
         <location line="+12"/>
-        <source>Peercoin-Qt</source>
-        <translation>Peercoin-Qt</translation>
+        <source>Sprouts-Qt</source>
+        <translation>Sprouts-Qt</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -787,6 +1096,527 @@ Address: %4
     </message>
 </context>
 <context>
+    <name>MintingTableModel</name>
+    <message>
+        <location filename="../mintingtablemodel.cpp" line="+244"/>
+        <source>Transaction</source>
+        <translation type="unfinished">Transacció</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Age</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>CoinDay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>MintProbability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+82"/>
+        <source>minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You have %1 chance to find a POS block if you mint %2 %3 at current difficulty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+120"/>
+        <source>Destination address of the output.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Original transaction id.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Age of the transaction in days.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Balance of the output.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Coin age in the output.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Chance to mint a block within given time interval.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MintingView</name>
+    <message>
+        <location filename="../mintingview.cpp" line="+34"/>
+        <source>transaction is too young</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>transaction is mature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>transaction  has reached maximum probability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Display minting probability within : </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>24 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>5 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>10 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>30 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>90 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Copy address</source>
+        <translation type="unfinished">Copiar adreça </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy transaction id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+83"/>
+        <source>Export Minting Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Comma separated file (*.csv)</source>
+        <translation type="unfinished">Arxiu de separació per comes (*.csv)</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Transaction</source>
+        <translation type="unfinished">Transacció</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Age</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>CoinDay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MintingProbability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Error exporting</source>
+        <translation type="unfinished">Error en l&apos;exportació</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Could not write to file %1.</source>
+        <translation type="unfinished">No s&apos;ha pogut escriure a l&apos;arxiu %1.</translation>
+    </message>
+</context>
+<context>
+    <name>MultisigAddressEntry</name>
+    <message>
+        <location filename="../forms/multisigaddressentry.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished">Formulari</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Public &amp;key:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>The public key of an address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Enter a public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Paste public key from clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Remove this public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>&amp;Address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+42"/>
+        <source>Address associated to the public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-39"/>
+        <source>Enter one of your addresses to get its public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Choose address from address book</source>
+        <translation type="unfinished">Escollir adreça del llibre d&apos;adreces</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+A</source>
+        <translation type="unfinished">Alta+A</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Label:</source>
+        <translation type="unfinished">Etiqueta:</translation>
+    </message>
+</context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <location filename="../forms/multisigdialog.ui" line="+14"/>
+        <source>Multisig</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&amp;Create Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>Add a member to the signing pool</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;Add public key...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Remove all public key fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Required signatures:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Enter a number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>/ 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Create multisig address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Multisig address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Copy the multisig address to the system clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Redeem script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Copy the redeem script to the system clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>The redeem script will be required to spend the funds sent to the multisig address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save redeem script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Add the multisig address to your personal addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Add address to wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&amp;Spend Funds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Inputs</source>
+        <translation type="unfinished">Entrades</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Inputs amount:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+119"/>
+        <location line="+41"/>
+        <source>123.456</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-150"/>
+        <location line="+119"/>
+        <location line="+38"/>
+        <source>SPRTS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-146"/>
+        <source>Add input...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Outputs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Outputs amount:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Add output...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Create transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Enter a raw transaction or create a new one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Paste address from clipboard</source>
+        <translation type="unfinished">Enganxar adreça del porta-retalls</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Sign transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+86"/>
+        <source>Send transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../multisigdialog.cpp" line="+362"/>
+        <source>The transaction fee might be too small.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The transaction fee might be too big. Don&apos;t forget to add an output for the change address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+106"/>
+        <source>The transaction signature is complete.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The transaction is NOT completely signed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+6"/>
+        <source>Confirm sending transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>The fee of the transaction (%1 SPRTS) is smaller than the expected fee (%2 SPRTS). Do you want to send the transaction anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The fee of the transaction (%1 SPRTS) is bigger than the expected fee (%2 SPRTS). Do you want to send the transaction anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>The transaction is sent to sprouts network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MultisigInputEntry</name>
+    <message>
+        <location filename="../forms/multisiginputentry.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished">Formulari</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Enter a transaction id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Transaction id:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Transaction output:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Redeem script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Enter the redeem script of the address in the transaction output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Alt+A</source>
+        <translation type="unfinished">Alta+A</translation>
+    </message>
+</context>
+<context>
     <name>OptionsDialog</name>
     <message>
         <location filename="../forms/optionsdialog.ui" line="+14"/>
@@ -800,31 +1630,21 @@ Address: %4
     </message>
     <message>
         <location line="+6"/>
-        <source>Mandatory network transaction fee per kB transferred. Most transactions are 1 kB and incur a 0.01 PPC fee. Note: transfer size may increase depending on the number of input transactions required to be added together to fund the payment.</source>
-        <translation type="unfinished"/>
+        <source>Automatically start Sprouts after logging in to the system.</source>
+        <translation>Iniciar automàticament Sprouts després de l&apos;inici de sessió del sistema.</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>Additional network &amp;fee</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Automatically start Peercoin after logging in to the system.</source>
-        <translation>Iniciar automàticament Peercoin després de l&apos;inici de sessió del sistema.</translation>
-    </message>
-    <message>
-        <location line="+46"/>
+        <location line="+10"/>
         <source>Check this box to follow the centrally issued checkpoints.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>&amp;Start Peercoin on system login</source>
-        <translation>&amp;Iniciar Peercoin al inici de sessió del sistema.</translation>
+        <location line="-7"/>
+        <source>&amp;Start Sprouts on system login</source>
+        <translation>&amp;Iniciar Sprouts al inici de sessió del sistema.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Enforce checkpoints</source>
         <translation type="unfinished"></translation>
     </message>
@@ -845,8 +1665,8 @@ Address: %4
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically open the Peercoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Obrir el port del client de Peercoin al router de forma automàtica. Això només funciona quan el teu router implementa UPnP i l&apos;opció està activada.</translation>
+        <source>Automatically open the Sprouts client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Obrir el port del client de Sprouts al router de forma automàtica. Això només funciona quan el teu router implementa UPnP i l&apos;opció està activada.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -855,8 +1675,8 @@ Address: %4
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the Peercoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>Connectar a la xarxa Peercoin a través de un SOCKS proxy (per exemple connectant a través de Tor).</translation>
+        <source>Connect to the Sprouts network through a SOCKS proxy (e.g. when connecting through Tor).</source>
+        <translation>Connectar a la xarxa Sprouts a través de un SOCKS proxy (per exemple connectant a través de Tor).</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -930,8 +1750,8 @@ Address: %4
     </message>
     <message>
         <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting Peercoin.</source>
-        <translation>Aquí pots definir el llenguatge de l&apos;aplicatiu. Aquesta configuració tindrà efecte un cop es reiniciï Peercoin.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting Sprouts.</source>
+        <translation>Aquí pots definir el llenguatge de l&apos;aplicatiu. Aquesta configuració tindrà efecte un cop es reiniciï Sprouts.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -945,13 +1765,33 @@ Address: %4
     </message>
     <message>
         <location line="+9"/>
-        <source>Whether to show Peercoin addresses in the transaction list or not.</source>
-        <translation>Mostrar adreces Peercoin als llistats de transaccions o no.</translation>
+        <source>Whether to show Sprouts addresses in the transaction list or not.</source>
+        <translation>Mostrar adreces Sprouts als llistats de transaccions o no.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Display addresses in transaction list</source>
         <translation>&amp;Mostrar adreces al llistat de transaccions</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Whether to show coin control features or not.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Display coin &amp;control features (experts only!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Whether to show MOYATASU in overview or not.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Display MOYATASU in overview</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+71"/>
@@ -969,12 +1809,12 @@ Address: %4
         <translation>&amp;Aplicar</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.cpp" line="+53"/>
+        <location filename="../optionsdialog.cpp" line="+57"/>
         <source>default</source>
         <translation>Per defecte</translation>
     </message>
     <message>
-        <location line="+130"/>
+        <location line="+126"/>
         <source>Confirm options reset</source>
         <translation>Confirmi el reestabliment de les opcions</translation>
     </message>
@@ -997,11 +1837,11 @@ Address: %4
     <message>
         <location line="-9"/>
         <location line="+9"/>
-        <source>This setting will take effect after restarting Peercoin.</source>
-        <translation>Aquesta configuració tindrà efecte un cop es reiniciï Peercoin.</translation>
+        <source>This setting will take effect after restarting Sprouts.</source>
+        <translation>Aquesta configuració tindrà efecte un cop es reiniciï Sprouts.</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+20"/>
         <source>The supplied proxy address is invalid.</source>
         <translation>L&apos;adreça proxy introduïda és invalida.</translation>
     </message>
@@ -1014,53 +1854,87 @@ Address: %4
         <translation>Formulari</translation>
     </message>
     <message>
-        <location line="+50"/>
-        <location line="+166"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Peercoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>La informació mostrada pot no estar al día. El teu moneder es sincronitza automàticament amb la xarxa Peercoin un cop s&apos;ha establert connexió, però aquest proces no s&apos;ha completat encara.</translation>
+        <location line="+37"/>
+        <source>Balances:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-124"/>
-        <source>Balance:</source>
-        <translation>Balanç:</translation>
+        <location line="+7"/>
+        <location line="+245"/>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Sprouts network after a connection is established, but this process has not completed yet.</source>
+        <translation>La informació mostrada pot no estar al día. El teu moneder es sincronitza automàticament amb la xarxa Sprouts un cop s&apos;ha establert connexió, però aquest proces no s&apos;ha completat encara.</translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Unconfirmed:</source>
-        <translation>Sense confirmar:</translation>
+        <location line="-199"/>
+        <source>Available:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-78"/>
-        <source>Wallet</source>
-        <translation>Moneder</translation>
-    </message>
-    <message>
-        <location line="+107"/>
-        <source>Immature:</source>
-        <translation>Immatur:</translation>
+        <location line="+64"/>
+        <source>Maturing:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
+        <source>Total of newly minted or mined coins that are too young to be spent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Total:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Total amount in your wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>Recent transactions:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Balance:</source>
+        <translation type="vanished">Balanç:</translation>
+    </message>
+    <message>
+        <source>Unconfirmed:</source>
+        <translation type="vanished">Sense confirmar:</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation type="vanished">Moneder</translation>
+    </message>
+    <message>
+        <source>Immature:</source>
+        <translation type="vanished">Immatur:</translation>
+    </message>
+    <message>
         <source>Mined balance that has not yet matured</source>
-        <translation>Balanç minat que encara no ha madurat</translation>
+        <translation type="vanished">Balanç minat que encara no ha madurat</translation>
     </message>
     <message>
-        <location line="+46"/>
         <source>&lt;b&gt;Recent transactions&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Transaccions recents&lt;/b&gt;</translation>
+        <translation type="vanished">&lt;b&gt;Transaccions recents&lt;/b&gt;</translation>
     </message>
     <message>
-        <location line="-101"/>
+        <location line="-176"/>
         <source>Your current balance</source>
         <translation>El seu balanç actual</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+16"/>
+        <source>Pending:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</source>
         <translation>Total de transaccions encara sense confirmar, que encara no es content en el balanç actual</translation>
     </message>
     <message>
-        <location filename="../overviewpage.cpp" line="+116"/>
+        <location filename="../overviewpage.cpp" line="+117"/>
         <location line="+1"/>
         <source>out of sync</source>
         <translation>Fora de sincronia</translation>
@@ -1069,9 +1943,9 @@ Address: %4
 <context>
     <name>PaymentServer</name>
     <message>
-        <location filename="../paymentserver.cpp" line="+107"/>
-        <source>Cannot start peercoin: click-to-pay handler</source>
-        <translation>No es pot iniciar peercoin: manejador clicla-per-pagar</translation>
+        <location filename="../paymentserver.cpp" line="+108"/>
+        <source>Cannot start sprouts: click-to-pay handler</source>
+        <translation>No es pot iniciar sprouts: manejador clicla-per-pagar</translation>
     </message>
 </context>
 <context>
@@ -1107,7 +1981,7 @@ Address: %4
         <translation>&amp;Desar com...</translation>
     </message>
     <message>
-        <location filename="../qrcodedialog.cpp" line="+62"/>
+        <location filename="../qrcodedialog.cpp" line="+64"/>
         <source>Error encoding URI into QR Code.</source>
         <translation>Error codificant la URI en un codi QR.</translation>
     </message>
@@ -1149,7 +2023,7 @@ Address: %4
         <location line="+53"/>
         <location line="+23"/>
         <location line="+23"/>
-        <location filename="../rpcconsole.cpp" line="+339"/>
+        <location filename="../rpcconsole.cpp" line="+343"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
@@ -1220,8 +2094,8 @@ Address: %4
     </message>
     <message>
         <location line="+7"/>
-        <source>Show the Peercoin-Qt help message to get a list with possible Peercoin command-line options.</source>
-        <translation>Mostrar el missatge d&apos;ajuda de Peercoin-Qt per a obtenir un llistat de possibles ordres per a la línia d&apos;ordres de Peercoin.</translation>
+        <source>Show the Sprouts-Qt help message to get a list with possible Sprouts command-line options.</source>
+        <translation>Mostrar el missatge d&apos;ajuda de Sprouts-Qt per a obtenir un llistat de possibles ordres per a la línia d&apos;ordres de Sprouts.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1240,13 +2114,13 @@ Address: %4
     </message>
     <message>
         <location line="-104"/>
-        <source>Peercoin - Debug window</source>
-        <translation>Peercoin -Finestra de debug</translation>
+        <source>Sprouts - Debug window</source>
+        <translation>Sprouts -Finestra de debug</translation>
     </message>
     <message>
         <location line="+25"/>
-        <source>Peercoin Core</source>
-        <translation>Nucli de Peercoin</translation>
+        <source>Sprouts Core</source>
+        <translation>Nucli de Sprouts</translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1255,8 +2129,8 @@ Address: %4
     </message>
     <message>
         <location line="+7"/>
-        <source>Open the Peercoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Obrir el dietari de debug de Peercoin del directori de dades actual. Aixó pot trigar uns quants segons per a dietàris grossos.</translation>
+        <source>Open the Sprouts debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Obrir el dietari de debug de Sprouts del directori de dades actual. Aixó pot trigar uns quants segons per a dietàris grossos.</translation>
     </message>
     <message>
         <location line="+102"/>
@@ -1265,8 +2139,8 @@ Address: %4
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-30"/>
-        <source>Welcome to the Peercoin RPC console.</source>
-        <translation>Benvingut a la consola RPC de Peercoin</translation>
+        <source>Welcome to the Sprouts RPC console.</source>
+        <translation>Benvingut a la consola RPC de Sprouts</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1283,7 +2157,7 @@ Address: %4
     <name>SendCoinsDialog</name>
     <message>
         <location filename="../forms/sendcoinsdialog.ui" line="+14"/>
-        <location filename="../sendcoinsdialog.cpp" line="+124"/>
+        <location filename="../sendcoinsdialog.cpp" line="+180"/>
         <location line="+5"/>
         <location line="+5"/>
         <location line="+5"/>
@@ -1294,7 +2168,96 @@ Address: %4
         <translation>Enviar monedes</translation>
     </message>
     <message>
+        <location line="+76"/>
+        <source>Coin Control Features</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Inputs...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>automatically selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Insufficient funds!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+86"/>
+        <source>Quantity:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location line="+35"/>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>Bytes:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Amount:</source>
+        <translation type="unfinished">Quantitat:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location line="+86"/>
+        <location line="+86"/>
+        <location line="+32"/>
+        <source>0.00 BTC</source>
+        <translation type="unfinished">123.456 BTC {0.00 ?}</translation>
+    </message>
+    <message>
+        <location line="-191"/>
+        <source>Priority:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>medium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Low Output:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>After Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+50"/>
+        <source>custom change address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+115"/>
         <source>Send to multiple recipients at once</source>
         <translation>Enviar a multiples destinataris al mateix temps</translation>
     </message>
@@ -1334,12 +2297,58 @@ Address: %4
         <translation>E&amp;nviar</translation>
     </message>
     <message>
-        <location filename="../sendcoinsdialog.cpp" line="-59"/>
+        <location filename="../sendcoinsdialog.cpp" line="-175"/>
+        <source>Enter an address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Copy quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy amount</source>
+        <translation type="unfinished">Copiar quantitat</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy after fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy priority</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy low output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+87"/>
+        <location line="+2"/>
         <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
         <translation>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Confirm send coins</source>
         <translation>Confirmar l&apos;enviament de monedes</translation>
     </message>
@@ -1354,17 +2363,38 @@ Address: %4
         <translation>i</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+27"/>
         <source>The recipient address is not valid, please recheck.</source>
         <translation>L&apos;adreça remetent no és vàlida, si us plau comprovi-la.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>The amount to pay must be larger than 0.</source>
-        <translation>La quantitat a pagar ha de ser major que 0.</translation>
+        <source>The amount to pay must be at least one cent (0.01).</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+303"/>
+        <source>Warning: Invalid Sprouts address.
+A standard change address will be used instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Warning: Unknown change address.
+A standard change address will be used instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>(no label)</source>
+        <translation type="unfinished">(sense etiqueta)</translation>
+    </message>
+    <message>
+        <source>The amount to pay must be larger than 0.</source>
+        <translation type="vanished">La quantitat a pagar ha de ser major que 0.</translation>
+    </message>
+    <message>
+        <location line="-318"/>
         <source>The amount exceeds your balance.</source>
         <translation>Import superi el saldo de la seva compte.</translation>
     </message>
@@ -1407,12 +2437,11 @@ Address: %4
         <translation>Pagar &amp;A:</translation>
     </message>
     <message>
-        <location line="+34"/>
         <source>The address to send the payment to (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>La adreça a on envia el pagament (per exemple: 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <translation type="vanished">La adreça a on envia el pagament (per exemple: 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+94"/>
         <location filename="../sendcoinsentry.cpp" line="+26"/>
         <source>Enter a label for this address to add it to your address book</source>
         <translation>Introdueixi una etiquera per a aquesta adreça per afegir-la a la llibreta d&apos;adreces</translation>
@@ -1423,7 +2452,12 @@ Address: %4
         <translation>&amp;Etiqueta:</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+18"/>
+        <source>The address to send the payment to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Choose address from address book</source>
         <translation>Escollir adreça del llibre d&apos;adreces</translation>
     </message>
@@ -1449,8 +2483,8 @@ Address: %4
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a Peercoin address</source>
-        <translation>Introdueixi una adreça de Peercoin</translation>
+        <source>Enter a Sprouts address</source>
+        <translation>Introdueixi una adreça de Sprouts</translation>
     </message>
 </context>
 <context>
@@ -1514,8 +2548,8 @@ Address: %4
     </message>
     <message>
         <location line="+21"/>
-        <source>Sign the message to prove you own this Peercoin address</source>
-        <translation>Signa el missatge per provar que ets propietari d&apos;aquesta adreça Peercoin</translation>
+        <source>Sign the message to prove you own this Sprouts address</source>
+        <translation>Signa el missatge per provar que ets propietari d&apos;aquesta adreça Sprouts</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1550,8 +2584,8 @@ Address: %4
     </message>
     <message>
         <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified Peercoin address</source>
-        <translation>Verificar el missatge per assegurar-se que ha estat signat amb una adreça Peercoin específica</translation>
+        <source>Verify the message to ensure it was signed with the specified Sprouts address</source>
+        <translation>Verificar el missatge per assegurar-se que ha estat signat amb una adreça Sprouts específica</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1566,8 +2600,8 @@ Address: %4
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a Peercoin address</source>
-        <translation>Introdueixi una adreça de Peercoin (per exemple 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <source>Enter a Sprouts address</source>
+        <translation>Introdueixi una adreça de Sprouts (per exemple 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -1576,8 +2610,8 @@ Address: %4
     </message>
     <message>
         <location line="+3"/>
-        <source>Enter Peercoin signature</source>
-        <translation>Introduïr una clau Peercoin</translation>
+        <source>Enter Sprouts signature</source>
+        <translation>Introduïr una clau Sprouts</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -1647,19 +2681,6 @@ Address: %4
     </message>
 </context>
 <context>
-    <name>SplashScreen</name>
-    <message>
-        <location filename="../splashscreen.cpp" line="+22"/>
-        <source>The Peercoin developers</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>[testnet]</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
     <name>TransactionDesc</name>
     <message>
         <location filename="../transactiondesc.cpp" line="+20"/>
@@ -1689,7 +2710,10 @@ Address: %4
     <message numerus="yes">
         <location line="+7"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>, difusió a través de %n node</numerusform><numerusform>, difusió a través de %n nodes</numerusform></translation>
+        <translation>
+            <numerusform>, difusió a través de %n node</numerusform>
+            <numerusform>, difusió a través de %n nodes</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1735,14 +2759,17 @@ Address: %4
         <location line="+12"/>
         <location line="+45"/>
         <location line="+17"/>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Credit</source>
         <translation>Crèdit</translation>
     </message>
     <message numerus="yes">
-        <location line="-102"/>
+        <location line="-104"/>
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>disponible en %n bloc més</numerusform><numerusform>disponibles en %n blocs més</numerusform></translation>
+        <translation>
+            <numerusform>disponible en %n bloc més</numerusform>
+            <numerusform>disponibles en %n blocs més</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1753,12 +2780,12 @@ Address: %4
         <location line="+44"/>
         <location line="+8"/>
         <location line="+15"/>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Debit</source>
         <translation>Dèbit</translation>
     </message>
     <message>
-        <location line="-39"/>
+        <location line="-41"/>
         <source>Transaction fee</source>
         <translation>Comissió de transacció</translation>
     </message>
@@ -1784,8 +2811,17 @@ Address: %4
     </message>
     <message>
         <location line="+3"/>
+        <source>Generated coins must wait 520 blocks before they can be spent.  When you generated this block, it was broadcast to the network to be added to the block chain.  If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable.  This may occasionally happen if another node generates a block within a few seconds of yours.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Staked coins must wait 520 blocks before they can return to balance and be spent.  When you generated this proof-of-stake block, it was broadcast to the network to be added to the block chain.  If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be a valid stake.  This may occasionally happen if another node generates a proof-of-stake block within a few seconds of yours.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Generated coins must mature 120 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Les monedes generades han de madurar 120 blocs abans de poder ser gastades. Quan has generat aquest bloc, aquest ha estat transmés a la xarxa per a ser afegit a la cadena de blocs. Si no arriba a ser acceptat a la cadena, el seu estat passará a &quot;no acceptat&quot; i no podrá ser gastat. Això pot ocòrrer ocasionalment si un altre node genera un bloc a pocs segons del teu.</translation>
+        <translation type="vanished">Les monedes generades han de madurar 120 blocs abans de poder ser gastades. Quan has generat aquest bloc, aquest ha estat transmés a la xarxa per a ser afegit a la cadena de blocs. Si no arriba a ser acceptat a la cadena, el seu estat passará a &quot;no acceptat&quot; i no podrá ser gastat. Això pot ocòrrer ocasionalment si un altre node genera un bloc a pocs segons del teu.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1818,14 +2854,17 @@ Address: %4
         <translation>fals</translation>
     </message>
     <message>
-        <location line="-209"/>
+        <location line="-211"/>
         <source>, has not been successfully broadcast yet</source>
         <translation>, encara no ha estat emès correctement</translation>
     </message>
     <message numerus="yes">
         <location line="-35"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Obre per %n bloc més</numerusform><numerusform>Obre per %n blocs més</numerusform></translation>
+        <translation>
+            <numerusform>Obre per %n bloc més</numerusform>
+            <numerusform>Obre per %n blocs més</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+70"/>
@@ -1869,9 +2908,12 @@ Address: %4
         <translation>Quantitat</translation>
     </message>
     <message numerus="yes">
-        <location line="+57"/>
+        <location line="+63"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Obre per %n bloc més</numerusform><numerusform>Obre per %n blocs més</numerusform></translation>
+        <translation>
+            <numerusform>Obre per %n bloc més</numerusform>
+            <numerusform>Obre per %n blocs més</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1896,7 +2938,10 @@ Address: %4
     <message numerus="yes">
         <location line="+8"/>
         <source>Mined balance will be available when it matures in %n more block(s)</source>
-        <translation><numerusform>El saldo recent minat estarà disponible quan venci el termini en %n bloc més</numerusform><numerusform>El saldo recent minat estarà disponible quan venci el termini en %n blocs més</numerusform></translation>
+        <translation>
+            <numerusform>El saldo recent minat estarà disponible quan venci el termini en %n bloc més</numerusform>
+            <numerusform>El saldo recent minat estarà disponible quan venci el termini en %n blocs més</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1934,12 +2979,17 @@ Address: %4
         <translation>Minat</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+2"/>
+        <source>Mint by stake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>(n/a)</source>
         <translation>(n/a)</translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+200"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>Estat de la transacció. Desplaça&apos;t per aquí sobre per mostrar el nombre de confirmacions.</translation>
     </message>
@@ -2024,6 +3074,11 @@ Address: %4
     </message>
     <message>
         <location line="+1"/>
+        <source>Mint by stake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Other</source>
         <translation>Altres</translation>
     </message>
@@ -2068,7 +3123,12 @@ Address: %4
         <translation>Mostra detalls de la transacció</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+1"/>
+        <source>Clear orphans</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Export Transaction Data</source>
         <translation>Exportar detalls de la transacció </translation>
     </message>
@@ -2123,7 +3183,7 @@ Address: %4
         <translation>No s&apos;ha pogut escriure a l&apos;arxiu %1.</translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+113"/>
         <source>Range:</source>
         <translation>Rang:</translation>
     </message>
@@ -2136,7 +3196,7 @@ Address: %4
 <context>
     <name>WalletModel</name>
     <message>
-        <location filename="../walletmodel.cpp" line="+193"/>
+        <location filename="../walletmodel.cpp" line="+213"/>
         <source>Send Coins</source>
         <translation>Enviar monedes</translation>
     </message>
@@ -2144,17 +3204,17 @@ Address: %4
 <context>
     <name>WalletView</name>
     <message>
-        <location filename="../walletview.cpp" line="+42"/>
+        <location filename="../walletview.cpp" line="+45"/>
         <source>&amp;Export</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Export the data in the current tab to a file</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+193"/>
+        <location line="+253"/>
         <source>Backup Wallet</source>
         <translation>Realitzar còpia de seguretat del moneder</translation>
     </message>
@@ -2187,741 +3247,560 @@ Address: %4
 <context>
     <name>bitcoin-core</name>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="+94"/>
-        <source>Peercoin version</source>
-        <translation>Versió de Peercoin</translation>
+        <source>Sprouts version</source>
+        <translation type="vanished">Versió de Sprouts</translation>
     </message>
     <message>
-        <location line="+102"/>
         <source>Usage:</source>
-        <translation>Ús:</translation>
+        <translation type="vanished">Ús:</translation>
     </message>
     <message>
-        <location line="-29"/>
-        <source>Send command to -server or peercoind</source>
-        <translation>Enviar comanda a -servidor o peercoind</translation>
+        <source>Send command to -server or sproutsd</source>
+        <translation type="vanished">Enviar comanda a -servidor o sproutsd</translation>
     </message>
     <message>
-        <location line="-23"/>
         <source>List commands</source>
-        <translation>Llista d&apos;ordres</translation>
+        <translation type="vanished">Llista d&apos;ordres</translation>
     </message>
     <message>
-        <location line="-12"/>
         <source>Get help for a command</source>
-        <translation>Obtenir ajuda per a un ordre.</translation>
+        <translation type="vanished">Obtenir ajuda per a un ordre.</translation>
     </message>
     <message>
-        <location line="+24"/>
         <source>Options:</source>
-        <translation>Opcions:</translation>
+        <translation type="vanished">Opcions:</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Specify configuration file (default: peercoin.conf)</source>
-        <translation>Especificat arxiu de configuració (per defecte: peercoin.conf)</translation>
+        <source>Specify configuration file (default: sprouts.conf)</source>
+        <translation type="vanished">Especificat arxiu de configuració (per defecte: sprouts.conf)</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Specify pid file (default: peercoind.pid)</source>
-        <translation>Especificar arxiu pid (per defecte: peercoind.pid)</translation>
+        <source>Specify pid file (default: sproutsd.pid)</source>
+        <translation type="vanished">Especificar arxiu pid (per defecte: sproutsd.pid)</translation>
     </message>
     <message>
-        <location line="-1"/>
         <source>Specify data directory</source>
-        <translation>Especificar directori de dades</translation>
+        <translation type="vanished">Especificar directori de dades</translation>
     </message>
     <message>
-        <location line="-9"/>
         <source>Set database cache size in megabytes (default: 25)</source>
-        <translation>Establir tamany de la memoria cau en megabytes (per defecte: 25)</translation>
+        <translation type="vanished">Establir tamany de la memoria cau en megabytes (per defecte: 25)</translation>
     </message>
     <message>
-        <location line="-28"/>
         <source>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</source>
-        <translation>Escoltar connexions a &lt;port&gt; (per defecte: 8333 o testnet: 18333)</translation>
+        <translation type="vanished">Escoltar connexions a &lt;port&gt; (per defecte: 8333 o testnet: 18333)</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Mantenir com a molt &lt;n&gt; connexions a peers (per defecte: 125)</translation>
+        <translation type="vanished">Mantenir com a molt &lt;n&gt; connexions a peers (per defecte: 125)</translation>
     </message>
     <message>
-        <location line="-48"/>
         <source>Connect to a node to retrieve peer addresses, and disconnect</source>
-        <translation>Connectar al node per obtenir les adreces de les connexions, i desconectar</translation>
+        <translation type="vanished">Connectar al node per obtenir les adreces de les connexions, i desconectar</translation>
     </message>
     <message>
-        <location line="+82"/>
         <source>Specify your own public address</source>
-        <translation>Especificar la teva adreça pública</translation>
+        <translation type="vanished">Especificar la teva adreça pública</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>Límit per a desconectar connexions errònies (per defecte: 100)</translation>
+        <translation type="vanished">Límit per a desconectar connexions errònies (per defecte: 100)</translation>
     </message>
     <message>
-        <location line="-134"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>Nombre de segons abans de reconectar amb connexions errònies (per defecte: 86400)</translation>
+        <translation type="vanished">Nombre de segons abans de reconectar amb connexions errònies (per defecte: 86400)</translation>
     </message>
     <message>
-        <location line="-29"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation>Ha sorgit un error al configurar el port RPC %u escoltant a IPv4: %s</translation>
+        <translation type="vanished">Ha sorgit un error al configurar el port RPC %u escoltant a IPv4: %s</translation>
     </message>
     <message>
-        <location line="+27"/>
         <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8332 or testnet: 18332)</source>
-        <translation>Escoltar connexions JSON-RPC al port &lt;port&gt; (per defecte: 8332 o testnet:18332)</translation>
+        <translation type="vanished">Escoltar connexions JSON-RPC al port &lt;port&gt; (per defecte: 8332 o testnet:18332)</translation>
     </message>
     <message>
-        <location line="+37"/>
         <source>Accept command line and JSON-RPC commands</source>
-        <translation>Acceptar línia d&apos;ordres i ordres JSON-RPC </translation>
+        <translation type="vanished">Acceptar línia d&apos;ordres i ordres JSON-RPC </translation>
     </message>
     <message>
-        <location line="+76"/>
         <source>Run in the background as a daemon and accept commands</source>
-        <translation>Executar en segon pla com a programa dimoni i acceptar ordres</translation>
+        <translation type="vanished">Executar en segon pla com a programa dimoni i acceptar ordres</translation>
     </message>
     <message>
-        <location line="+37"/>
         <source>Use the test network</source>
-        <translation>Usar la xarxa de prova</translation>
+        <translation type="vanished">Usar la xarxa de prova</translation>
     </message>
     <message>
-        <location line="-112"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation>Aceptar connexions d&apos;afora (per defecte: 1 si no -proxy o -connect)</translation>
+        <translation type="vanished">Aceptar connexions d&apos;afora (per defecte: 1 si no -proxy o -connect)</translation>
     </message>
     <message>
-        <location line="-80"/>
         <source>%s, you must set a rpcpassword in the configuration file:
 %s
 It is recommended you use the following random password:
-rpcuser=peercoinrpc
+rpcuser=sproutsrpc
 rpcpassword=%s
 (you do not need to remember this password)
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;Peercoin Alert&quot; admin@foo.com
+for example: alertnotify=echo %%s | mail -s &quot;Sprouts Alert&quot; admin@foo.com
 </source>
-        <translation>%s has de establir una contrasenya RPC a l&apos;arxiu de configuració:\n%s\nEs recomana que useu la següent constrasenya aleatòria:\nrpcuser=peercoinrpc\nrpcpassword=%s\n(no necesiteu recordar aquesta contrsenya)\nEl nom d&apos;usuari i contrasenya NO HAN de ser els mateixos.\nSi l&apos;arxiu no existeix, crea&apos;l amb els permisos d&apos;arxiu de només lectura per al propietari.\nTambé es recomana establir la notificació d&apos;alertes i així seràs notificat de les incidències;\nper exemple: alertnotify=echo %%s | mail -s &quot;Peercoin Alert&quot; admin@foo.com</translation>
+        <translation type="vanished">%s has de establir una contrasenya RPC a l&apos;arxiu de configuració:\n%s\nEs recomana que useu la següent constrasenya aleatòria:\nrpcuser=sproutsrpc\nrpcpassword=%s\n(no necesiteu recordar aquesta contrsenya)\nEl nom d&apos;usuari i contrasenya NO HAN de ser els mateixos.\nSi l&apos;arxiu no existeix, crea&apos;l amb els permisos d&apos;arxiu de només lectura per al propietari.\nTambé es recomana establir la notificació d&apos;alertes i així seràs notificat de les incidències;\nper exemple: alertnotify=echo %%s | mail -s &quot;Sprouts Alert&quot; admin@foo.com</translation>
     </message>
     <message>
-        <location line="+17"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation>Ha sorgit un error al configurar el port RPC %u escoltant a IPv6, retrocedint a IPv4: %s</translation>
+        <translation type="vanished">Ha sorgit un error al configurar el port RPC %u escoltant a IPv6, retrocedint a IPv4: %s</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>
-        <translation>Vincular a una adreça específica i sempre escoltar-hi. Utilitza la notació [host]:port per IPv6</translation>
+        <translation type="vanished">Vincular a una adreça específica i sempre escoltar-hi. Utilitza la notació [host]:port per IPv6</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Cannot obtain a lock on data directory %s. Peercoin is probably already running.</source>
-        <translation>No es pot bloquejar el directori de dades %s. Probablement Peercoin ja estigui en execució.</translation>
+        <source>Cannot obtain a lock on data directory %s. Sprouts is probably already running.</source>
+        <translation type="vanished">No es pot bloquejar el directori de dades %s. Probablement Sprouts ja estigui en execució.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Error: La transacció ha estat rebutjada. Això pot passar si alguna de les monedes del teu moneder ja s&apos;han gastat, com si haguesis usat una copia de l&apos;arxiu wallet.dat i s&apos;haguessin gastat monedes de la copia però sense marcar com gastades en aquest.</translation>
+        <translation type="vanished">Error: La transacció ha estat rebutjada. Això pot passar si alguna de les monedes del teu moneder ja s&apos;han gastat, com si haguesis usat una copia de l&apos;arxiu wallet.dat i s&apos;haguessin gastat monedes de la copia però sense marcar com gastades en aquest.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!</source>
-        <translation>Error: Aquesta transacció requereix una comissió d&apos;almenys %s degut al seu import, complexitat o per l&apos;ús de fons recentment rebuts!</translation>
+        <translation type="vanished">Error: Aquesta transacció requereix una comissió d&apos;almenys %s degut al seu import, complexitat o per l&apos;ús de fons recentment rebuts!</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
-        <translation>Executar ordre al rebre una alerta rellevant (%s al cmd es reemplaça per message)</translation>
+        <translation type="vanished">Executar ordre al rebre una alerta rellevant (%s al cmd es reemplaça per message)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
-        <translation>Executar una ordre quan una transacció del moneder canviï (%s in cmd es canvia per TxID)</translation>
+        <translation type="vanished">Executar una ordre quan una transacció del moneder canviï (%s in cmd es canvia per TxID)</translation>
     </message>
     <message>
-        <location line="+11"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
-        <translation>Establir una mida màxima de transaccions d&apos;alta prioritat/baixa comisió en bytes (per defecte: 27000)</translation>
+        <translation type="vanished">Establir una mida màxima de transaccions d&apos;alta prioritat/baixa comisió en bytes (per defecte: 27000)</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
-        <translation>Aquesta és una versió de pre-llançament - utilitza-la sota la teva responsabilitat - No usar per a minería o aplicacions de compra-venda</translation>
+        <translation type="vanished">Aquesta és una versió de pre-llançament - utilitza-la sota la teva responsabilitat - No usar per a minería o aplicacions de compra-venda</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
-        <translation>Advertència: el -paytxfee és molt elevat! Aquesta és la comissió de transacció que pagaràs quan enviis una transacció.</translation>
+        <translation type="vanished">Advertència: el -paytxfee és molt elevat! Aquesta és la comissió de transacció que pagaràs quan enviis una transacció.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Warning: Displayed transactions may not be correct! You may need to upgrade, or other nodes may need to upgrade.</source>
-        <translation>Advertència: Les transaccions mostrades poden no ser correctes! Pot esser que necessitis actualitzar, o bé que altres nodes ho necessitin.</translation>
+        <translation type="vanished">Advertència: Les transaccions mostrades poden no ser correctes! Pot esser que necessitis actualitzar, o bé que altres nodes ho necessitin.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Peercoin will not work properly.</source>
-        <translation>Advertència: Si us plau comprovi que la data i hora del seu computador siguin correctes! Si el seu rellotge està mal configurat, Peercoin no funcionará de manera apropiada.</translation>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Sprouts will not work properly.</source>
+        <translation type="vanished">Advertència: Si us plau comprovi que la data i hora del seu computador siguin correctes! Si el seu rellotge està mal configurat, Sprouts no funcionará de manera apropiada.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation>Advertència: Error llegint l&apos;arxiu wallet.dat!! Totes les claus es llegeixen correctament, però hi ha dades de transaccions o entrades del llibre d&apos;adreces absents o bé son incorrectes.</translation>
+        <translation type="vanished">Advertència: Error llegint l&apos;arxiu wallet.dat!! Totes les claus es llegeixen correctament, però hi ha dades de transaccions o entrades del llibre d&apos;adreces absents o bé son incorrectes.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation>Advertència: L&apos;arxiu wallet.dat és corrupte, dades rescatades! L&apos;arxiu wallet.dat original ha estat desat com wallet.{estampa_temporal}.bak al directori %s; si el teu balanç o transaccions son incorrectes hauries de restaurar-lo de un backup.</translation>
+        <translation type="vanished">Advertència: L&apos;arxiu wallet.dat és corrupte, dades rescatades! L&apos;arxiu wallet.dat original ha estat desat com wallet.{estampa_temporal}.bak al directori %s; si el teu balanç o transaccions son incorrectes hauries de restaurar-lo de un backup.</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>Attempt to recover private keys from a corrupt wallet.dat</source>
-        <translation>Intentar recuperar les claus privades d&apos;un arxiu wallet.dat corrupte</translation>
+        <translation type="vanished">Intentar recuperar les claus privades d&apos;un arxiu wallet.dat corrupte</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Block creation options:</source>
-        <translation>Opcions de la creació de blocs:</translation>
+        <translation type="vanished">Opcions de la creació de blocs:</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Connect only to the specified node(s)</source>
-        <translation>Connectar només al(s) node(s) especificats</translation>
+        <translation type="vanished">Connectar només al(s) node(s) especificats</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Corrupted block database detected</source>
-        <translation>S&apos;ha detectat una base de dades de blocs corrupta</translation>
+        <translation type="vanished">S&apos;ha detectat una base de dades de blocs corrupta</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
-        <translation>Descobrir la pròpia adreça IP (per defecte: 1 quan escoltant i no -externalip)</translation>
+        <translation type="vanished">Descobrir la pròpia adreça IP (per defecte: 1 quan escoltant i no -externalip)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Do you want to rebuild the block database now?</source>
-        <translation>Vols reconstruir la base de dades de blocs ara?</translation>
+        <translation type="vanished">Vols reconstruir la base de dades de blocs ara?</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Error initializing block database</source>
-        <translation>Error carregant la base de dades de blocs</translation>
+        <translation type="vanished">Error carregant la base de dades de blocs</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error initializing wallet database environment %s!</source>
-        <translation>Error inicialitzant l&apos;entorn de la base de dades del moneder %s!</translation>
+        <translation type="vanished">Error inicialitzant l&apos;entorn de la base de dades del moneder %s!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error loading block database</source>
-        <translation>Error carregant la base de dades del bloc</translation>
+        <translation type="vanished">Error carregant la base de dades del bloc</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Error opening block database</source>
-        <translation>Error obrint la base de dades de blocs</translation>
+        <translation type="vanished">Error obrint la base de dades de blocs</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Error: Disk space is low!</source>
-        <translation>Error: Espai al disc baix!</translation>
+        <translation type="vanished">Error: Espai al disc baix!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error: Wallet locked, unable to create transaction!</source>
-        <translation>Error: El moneder està blocat, no és possible crear la transacció!</translation>
+        <translation type="vanished">Error: El moneder està blocat, no és possible crear la transacció!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error: system error: </source>
-        <translation>Error: error de sistema:</translation>
+        <translation type="vanished">Error: error de sistema:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation>Error al escoltar a qualsevol port. Utilitza -listen=0 si vols això.</translation>
+        <translation type="vanished">Error al escoltar a qualsevol port. Utilitza -listen=0 si vols això.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to read block info</source>
-        <translation>Ha fallat la lectura de la informació del bloc</translation>
+        <translation type="vanished">Ha fallat la lectura de la informació del bloc</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to read block</source>
-        <translation>Ha fallat la lectura del bloc</translation>
+        <translation type="vanished">Ha fallat la lectura del bloc</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to sync block index</source>
-        <translation>Ha fallat la sincronització de l&apos;índex de bloc</translation>
+        <translation type="vanished">Ha fallat la sincronització de l&apos;índex de bloc</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write block index</source>
-        <translation>Ha fallat la escriptura de l&apos;índex de blocs</translation>
+        <translation type="vanished">Ha fallat la escriptura de l&apos;índex de blocs</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write block info</source>
-        <translation>Ha fallat la escriptura de la informació de bloc</translation>
+        <translation type="vanished">Ha fallat la escriptura de la informació de bloc</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write block</source>
-        <translation>Ha fallat l&apos;escriptura del bloc</translation>
+        <translation type="vanished">Ha fallat l&apos;escriptura del bloc</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write file info</source>
-        <translation>Ha fallat l&apos;escriptura de l&apos;arxiu info</translation>
+        <translation type="vanished">Ha fallat l&apos;escriptura de l&apos;arxiu info</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write to coin database</source>
-        <translation>Ha fallat l&apos;escriptura de la basse de dades de monedes</translation>
+        <translation type="vanished">Ha fallat l&apos;escriptura de la basse de dades de monedes</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write transaction index</source>
-        <translation>Ha fallat l&apos;escriptura de l&apos;índex de transaccions</translation>
+        <translation type="vanished">Ha fallat l&apos;escriptura de l&apos;índex de transaccions</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write undo data</source>
-        <translation>Ha fallat el desfer de dades</translation>
+        <translation type="vanished">Ha fallat el desfer de dades</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Find peers using DNS lookup (default: 1 unless -connect)</source>
-        <translation>Cerca punts de connexió usant rastreig de DNS (per defecte: 1 tret d&apos;usar -connect)</translation>
+        <translation type="vanished">Cerca punts de connexió usant rastreig de DNS (per defecte: 1 tret d&apos;usar -connect)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Generate coins (default: 0)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>How many blocks to check at startup (default: 288, 0 = all)</source>
-        <translation>Quants blocs s&apos;han de confirmar a l&apos;inici (per defecte: 288, 0 = tots)</translation>
+        <translation type="vanished">Quants blocs s&apos;han de confirmar a l&apos;inici (per defecte: 288, 0 = tots)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>How thorough the block verification is (0-4, default: 3)</source>
-        <translation>Com verificar el bloc (0-4, per defecte 3)</translation>
+        <translation type="vanished">Com verificar el bloc (0-4, per defecte 3)</translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>Not enough file descriptors available.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+8"/>
         <source>Rebuild block chain index from current blk000??.dat files</source>
-        <translation>Reconstruir l&apos;índex de la cadena de blocs dels arxius actuals blk000??.dat</translation>
+        <translation type="vanished">Reconstruir l&apos;índex de la cadena de blocs dels arxius actuals blk000??.dat</translation>
     </message>
     <message>
-        <location line="+16"/>
         <source>Set the number of threads to service RPC calls (default: 4)</source>
-        <translation>Estableix el nombre de fils per atendre trucades RPC (per defecte: 4)</translation>
+        <translation type="vanished">Estableix el nombre de fils per atendre trucades RPC (per defecte: 4)</translation>
     </message>
     <message>
-        <location line="+26"/>
         <source>Verifying blocks...</source>
-        <translation>Verificant blocs...</translation>
+        <translation type="vanished">Verificant blocs...</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Verifying wallet...</source>
-        <translation>Verificant moneder...</translation>
+        <translation type="vanished">Verificant moneder...</translation>
     </message>
     <message>
-        <location line="-69"/>
         <source>Imports blocks from external blk000??.dat file</source>
-        <translation>Importa blocs de un fitxer blk000??.dat extern</translation>
+        <translation type="vanished">Importa blocs de un fitxer blk000??.dat extern</translation>
     </message>
     <message>
-        <location line="-76"/>
-        <source>Set the number of script verification threads (up to 16, 0 = auto, &lt;0 = leave that many cores free, default: 0)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+77"/>
         <source>Information</source>
-        <translation>&amp;Informació</translation>
+        <translation type="vanished">&amp;Informació</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
-        <translation>Adreça -tor invàlida: &apos;%s&apos;</translation>
+        <translation type="vanished">Adreça -tor invàlida: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Invalid amount for -minrelaytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Invalid amount for -mintxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+8"/>
         <source>Maintain a full transaction index (default: 0)</source>
-        <translation>Mantenir tot l&apos;índex de transaccions (per defecte: 0)</translation>
+        <translation type="vanished">Mantenir tot l&apos;índex de transaccions (per defecte: 0)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
-        <translation>Mida màxima del buffer de recepció per a cada connexió, &lt;n&gt;*1000 bytes (default: 5000)</translation>
+        <translation type="vanished">Mida màxima del buffer de recepció per a cada connexió, &lt;n&gt;*1000 bytes (default: 5000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
-        <translation>Mida màxima del buffer d&apos;enviament per a cada connexió, &lt;n&gt;*1000 bytes (default: 5000)</translation>
+        <translation type="vanished">Mida màxima del buffer d&apos;enviament per a cada connexió, &lt;n&gt;*1000 bytes (default: 5000)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Only accept block chain matching built-in checkpoints (default: 1)</source>
-        <translation>Tan sols acceptar cadenes de blocs que coincideixin amb els punts de prova (per defecte: 1)</translation>
+        <translation type="vanished">Tan sols acceptar cadenes de blocs que coincideixin amb els punts de prova (per defecte: 1)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
-        <translation>Només connectar als nodes de la xarxa &lt;net&gt; (IPv4, IPv6 o Tor)</translation>
+        <translation type="vanished">Només connectar als nodes de la xarxa &lt;net&gt; (IPv4, IPv6 o Tor)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Output extra debugging information. Implies all other -debug* options</source>
-        <translation>Sortida de la informació extra de debugging. Implica totes les demés opcions -debug*</translation>
+        <translation type="vanished">Sortida de la informació extra de debugging. Implica totes les demés opcions -debug*</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Output extra network debugging information</source>
-        <translation>Sortida de la informació extra de debugging de xarxa.</translation>
+        <translation type="vanished">Sortida de la informació extra de debugging de xarxa.</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Prepend debug output with timestamp</source>
-        <translation>Anteposar estampa temporal a les dades de debug</translation>
+        <translation type="vanished">Anteposar estampa temporal a les dades de debug</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation>Opcions SSL: (veure la Wiki de Peercoin per a instruccions de configuració SSL)</translation>
+        <translation type="vanished">Opcions SSL: (veure la Wiki de Sprouts per a instruccions de configuració SSL)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Select the version of socks proxy to use (4-5, default: 5)</source>
-        <translation>Selecciona la versió de socks proxy a utilitzar (4-5, per defecte: 5)</translation>
+        <translation type="vanished">Selecciona la versió de socks proxy a utilitzar (4-5, per defecte: 5)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Send trace/debug info to console instead of debug.log file</source>
-        <translation>Enviar informació de traça/debug a la consola en comptes del arxiu debug.log</translation>
+        <translation type="vanished">Enviar informació de traça/debug a la consola en comptes del arxiu debug.log</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Send trace/debug info to debugger</source>
-        <translation>Enviar informació de traça/debug a un debugger</translation>
+        <translation type="vanished">Enviar informació de traça/debug a un debugger</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Set maximum block size in bytes (default: 250000)</source>
-        <translation>Establir una mida màxima de bloc en bytes (per defecte: 250000)</translation>
+        <translation type="vanished">Establir una mida màxima de bloc en bytes (per defecte: 250000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set minimum block size in bytes (default: 0)</source>
-        <translation>Establir una mida mínima de bloc en bytes (per defecte: 0)</translation>
+        <translation type="vanished">Establir una mida mínima de bloc en bytes (per defecte: 0)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
-        <translation>Reduir l&apos;arxiu debug.log al iniciar el client (per defecte 1 quan no -debug)</translation>
+        <translation type="vanished">Reduir l&apos;arxiu debug.log al iniciar el client (per defecte 1 quan no -debug)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Signing transaction failed</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Specify connection timeout in milliseconds (default: 5000)</source>
-        <translation>Especificar el temps limit per a un intent de connexió en milisegons (per defecte: 5000)</translation>
+        <translation type="vanished">Especificar el temps limit per a un intent de connexió en milisegons (per defecte: 5000)</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>System error: </source>
-        <translation>Error de sistema:</translation>
+        <translation type="vanished">Error de sistema:</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Transaction amount too small</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Transaction amounts must be positive</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Transaction too large</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
         <source>Use UPnP to map the listening port (default: 0)</source>
-        <translation>Utilitza UPnP per a mapejar els ports d&apos;escolta (per defecte: 0)</translation>
+        <translation type="vanished">Utilitza UPnP per a mapejar els ports d&apos;escolta (per defecte: 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
-        <translation>Utilitza UPnP per a mapejar els ports d&apos;escolta (per defecte: 1 quan s&apos;escolta)</translation>
+        <translation type="vanished">Utilitza UPnP per a mapejar els ports d&apos;escolta (per defecte: 1 quan s&apos;escolta)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
-        <translation>Utilitzar proxy per arribar als serveis tor amagats (per defecte: el mateix que -proxy)</translation>
+        <translation type="vanished">Utilitzar proxy per arribar als serveis tor amagats (per defecte: el mateix que -proxy)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Username for JSON-RPC connections</source>
-        <translation>Nom d&apos;usuari per a connexions JSON-RPC</translation>
+        <translation type="vanished">Nom d&apos;usuari per a connexions JSON-RPC</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Warning</source>
-        <translation>Avís</translation>
+        <translation type="vanished">Avís</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
-        <translation>Advertència: Aquetsa versió està obsoleta, és necessari actualitzar!</translation>
+        <translation type="vanished">Advertència: Aquetsa versió està obsoleta, és necessari actualitzar!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>You need to rebuild the databases using -reindex to change -txindex</source>
-        <translation>Necessiteu reconstruir les bases de dades usant -reindex per canviar -txindex</translation>
+        <translation type="vanished">Necessiteu reconstruir les bases de dades usant -reindex per canviar -txindex</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>wallet.dat corrupt, salvage failed</source>
-        <translation>L&apos;arxiu wallet.data és corrupte, el rescat de les dades ha fallat</translation>
+        <translation type="vanished">L&apos;arxiu wallet.data és corrupte, el rescat de les dades ha fallat</translation>
     </message>
     <message>
-        <location line="-50"/>
         <source>Password for JSON-RPC connections</source>
-        <translation>Contrasenya per a connexions JSON-RPC</translation>
+        <translation type="vanished">Contrasenya per a connexions JSON-RPC</translation>
     </message>
     <message>
-        <location line="-67"/>
         <source>Allow JSON-RPC connections from specified IP address</source>
-        <translation>Permetre connexions JSON-RPC d&apos;adreces IP específiques</translation>
+        <translation type="vanished">Permetre connexions JSON-RPC d&apos;adreces IP específiques</translation>
     </message>
     <message>
-        <location line="+76"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation>Enviar ordre al node en execució a &lt;ip&gt; (per defecte: 127.0.0.1)</translation>
+        <translation type="vanished">Enviar ordre al node en execució a &lt;ip&gt; (per defecte: 127.0.0.1)</translation>
     </message>
     <message>
-        <location line="-120"/>
         <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
-        <translation>Executar orde quan el millor bloc canviï (%s al cmd es reemplaça per un bloc de hash)</translation>
+        <translation type="vanished">Executar orde quan el millor bloc canviï (%s al cmd es reemplaça per un bloc de hash)</translation>
     </message>
     <message>
-        <location line="+147"/>
         <source>Upgrade wallet to latest format</source>
-        <translation>Actualitzar moneder a l&apos;últim format</translation>
+        <translation type="vanished">Actualitzar moneder a l&apos;últim format</translation>
     </message>
     <message>
-        <location line="-21"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation>Establir límit de nombre de claus a &lt;n&gt; (per defecte: 100)</translation>
+        <translation type="vanished">Establir límit de nombre de claus a &lt;n&gt; (per defecte: 100)</translation>
     </message>
     <message>
-        <location line="-12"/>
         <source>Rescan the block chain for missing wallet transactions</source>
-        <translation>Re-escanejar cadena de blocs en cerca de transaccions de moneder perdudes</translation>
+        <translation type="vanished">Re-escanejar cadena de blocs en cerca de transaccions de moneder perdudes</translation>
     </message>
     <message>
-        <location line="+35"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
-        <translation>Utilitzar OpenSSL (https) per a connexions JSON-RPC</translation>
+        <translation type="vanished">Utilitzar OpenSSL (https) per a connexions JSON-RPC</translation>
     </message>
     <message>
-        <location line="-26"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation>Arxiu del certificat de servidor (per defecte: server.cert)</translation>
+        <translation type="vanished">Arxiu del certificat de servidor (per defecte: server.cert)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Server private key (default: server.pem)</source>
-        <translation>Clau privada del servidor (per defecte: server.pem)</translation>
+        <translation type="vanished">Clau privada del servidor (per defecte: server.pem)</translation>
     </message>
     <message>
-        <location line="-151"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation>Xifrats acceptats (per defecte: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
+        <translation type="vanished">Xifrats acceptats (per defecte: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
-        <location line="+165"/>
         <source>This help message</source>
-        <translation>Aquest misatge d&apos;ajuda</translation>
+        <translation type="vanished">Aquest misatge d&apos;ajuda</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
-        <translation>Impossible d&apos;unir %s a aquest ordinador (s&apos;ha retornat l&apos;error %d, %s)</translation>
+        <translation type="vanished">Impossible d&apos;unir %s a aquest ordinador (s&apos;ha retornat l&apos;error %d, %s)</translation>
     </message>
     <message>
-        <location line="-91"/>
         <source>Connect through socks proxy</source>
-        <translation>Connectar a través de socks proxy</translation>
+        <translation type="vanished">Connectar a través de socks proxy</translation>
     </message>
     <message>
-        <location line="-10"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
-        <translation>Permetre consultes DNS per a -addnode, -seednode i -connect</translation>
+        <translation type="vanished">Permetre consultes DNS per a -addnode, -seednode i -connect</translation>
     </message>
     <message>
-        <location line="+55"/>
         <source>Loading addresses...</source>
-        <translation>Carregant adreces...</translation>
+        <translation type="vanished">Carregant adreces...</translation>
     </message>
     <message>
-        <location line="-35"/>
         <source>Error loading wallet.dat: Wallet corrupted</source>
-        <translation>Error carregant wallet.dat: Moneder corrupte</translation>
+        <translation type="vanished">Error carregant wallet.dat: Moneder corrupte</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Peercoin</source>
-        <translation>Error carregant wallet.dat: El moneder requereix una versió de Peercoin més moderna</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Sprouts</source>
+        <translation type="vanished">Error carregant wallet.dat: El moneder requereix una versió de Sprouts més moderna</translation>
     </message>
     <message>
-        <location line="+93"/>
-        <source>Wallet needed to be rewritten: restart Peercoin to complete</source>
-        <translation>El moneder necesita ser re-escrit: re-inicia Peercoin per a completar la tasca</translation>
+        <source>Wallet needed to be rewritten: restart Sprouts to complete</source>
+        <translation type="vanished">El moneder necesita ser re-escrit: re-inicia Sprouts per a completar la tasca</translation>
     </message>
     <message>
-        <location line="-95"/>
         <source>Error loading wallet.dat</source>
-        <translation>Error carregant wallet.dat</translation>
+        <translation type="vanished">Error carregant wallet.dat</translation>
     </message>
     <message>
-        <location line="+28"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
-        <translation>Adreça -proxy invalida: &apos;%s&apos;</translation>
+        <translation type="vanished">Adreça -proxy invalida: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+56"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
-        <translation>Xarxa desconeguda especificada a -onlynet: &apos;%s&apos;</translation>
+        <translation type="vanished">Xarxa desconeguda especificada a -onlynet: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="-1"/>
         <source>Unknown -socks proxy version requested: %i</source>
-        <translation>S&apos;ha demanat una versió desconeguda de -socks proxy: %i</translation>
+        <translation type="vanished">S&apos;ha demanat una versió desconeguda de -socks proxy: %i</translation>
     </message>
     <message>
-        <location line="-96"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
-        <translation>No es pot resoldre l&apos;adreça -bind: &apos;%s&apos;</translation>
+        <translation type="vanished">No es pot resoldre l&apos;adreça -bind: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
-        <translation>No es pot resoldre l&apos;adreça -externalip: &apos;%s&apos;</translation>
+        <translation type="vanished">No es pot resoldre l&apos;adreça -externalip: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+44"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>Quantitat invalida per a -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
+        <translation type="vanished">Quantitat invalida per a -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Invalid amount</source>
-        <translation>Quanitat invalida</translation>
+        <translation type="vanished">Quanitat invalida</translation>
     </message>
     <message>
-        <location line="-6"/>
         <source>Insufficient funds</source>
-        <translation>Balanç insuficient</translation>
+        <translation type="vanished">Balanç insuficient</translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>Loading block index...</source>
-        <translation>Carregant índex de blocs...</translation>
+        <translation type="vanished">Carregant índex de blocs...</translation>
     </message>
     <message>
-        <location line="-57"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
-        <translation>Afegir un node per a connectar&apos;s-hi i intentar mantenir la connexió oberta</translation>
+        <translation type="vanished">Afegir un node per a connectar&apos;s-hi i intentar mantenir la connexió oberta</translation>
     </message>
     <message>
-        <location line="-25"/>
-        <source>Unable to bind to %s on this computer. Peercoin is probably already running.</source>
-        <translation>Impossible d&apos;unir %s en aquest ordinador. Probablement Peercoin ja estigui en execució.</translation>
+        <source>Unable to bind to %s on this computer. Sprouts is probably already running.</source>
+        <translation type="vanished">Impossible d&apos;unir %s en aquest ordinador. Probablement Sprouts ja estigui en execució.</translation>
     </message>
     <message>
-        <location line="+64"/>
         <source>Fee per KB to add to transactions you send</source>
-        <translation>Comisió a afegir per cada  KB de transaccions que enviïs</translation>
+        <translation type="vanished">Comisió a afegir per cada  KB de transaccions que enviïs</translation>
     </message>
     <message>
-        <location line="+19"/>
         <source>Loading wallet...</source>
-        <translation>Carregant moneder...</translation>
+        <translation type="vanished">Carregant moneder...</translation>
     </message>
     <message>
-        <location line="-52"/>
         <source>Cannot downgrade wallet</source>
-        <translation>No es pot reduir la versió del moneder</translation>
+        <translation type="vanished">No es pot reduir la versió del moneder</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Cannot write default address</source>
-        <translation>No es pot escriure l&apos;adreça per defecte</translation>
+        <translation type="vanished">No es pot escriure l&apos;adreça per defecte</translation>
     </message>
     <message>
-        <location line="+64"/>
         <source>Rescanning...</source>
-        <translation>Re-escanejant...</translation>
+        <translation type="vanished">Re-escanejant...</translation>
     </message>
     <message>
-        <location line="-57"/>
         <source>Done loading</source>
-        <translation>Càrrega acabada</translation>
+        <translation type="vanished">Càrrega acabada</translation>
     </message>
     <message>
-        <location line="+82"/>
         <source>To use the %s option</source>
-        <translation>Utilitza la opció %s</translation>
+        <translation type="vanished">Utilitza la opció %s</translation>
     </message>
     <message>
-        <location line="-74"/>
         <source>Error</source>
-        <translation>Error</translation>
+        <translation type="vanished">Error</translation>
     </message>
     <message>
-        <location line="-31"/>
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
-        <translation>Has de configurar el rpcpassword=&lt;password&gt; a l&apos;arxiu de configuració:\n %s\n Si l&apos;arxiu no existeix, crea&apos;l amb els permís owner-readable-only.</translation>
+        <translation type="vanished">Has de configurar el rpcpassword=&lt;password&gt; a l&apos;arxiu de configuració:\n %s\n Si l&apos;arxiu no existeix, crea&apos;l amb els permís owner-readable-only.</translation>
     </message>
 </context>
 </TS>

@@ -1,5 +1,5 @@
 ---
-name: "peercoin-deps"
+name: "sprouts-deps"
 suites:
 - "precise"
 architectures:
@@ -129,5 +129,5 @@ script: |
   done
   #
   cd $STAGING
-  find include lib bin host | sort | zip -X@ $OUTDIR/peercoin-deps-linux${GBUILD_BITS}-gitian-r1.zip
+  find include lib bin host | sort | zip -X@ $OUTDIR/sprouts-deps-linux${GBUILD_BITS}-gitian-r1.zip
 

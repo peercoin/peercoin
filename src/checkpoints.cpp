@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -39,21 +40,22 @@ namespace Checkpoints
     static MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         ( 0, hashGenesisBlockOfficial )
-        ( 19080, uint256("0x000000000000bca54d9ac17881f94193fd6a270c1bb21c3bf0b37f588a40dbd7"))
-        ( 30583, uint256("0xd39d1481a7eecba48932ea5913be58ad3894c7ee6d5a8ba8abeb772c66a6696e"))
-        ( 99999, uint256("0x27fd5e1de16a4270eb8c68dee2754a64da6312c7c3a0e99a7e6776246be1ee3f"))
-        (219999, uint256("0xab0dad4b10d2370f009ed6df6effca1ba42f01d5070d6b30afeedf6463fbe7a2"))
-        (336000, uint256("0x4d261cef6e61a5ed8325e560f1d6e36f4698853a4c7134677f47a1d1d842bdf6"))
+        ( 5000, uint256("0x00000000000d83d18405ab72d0fbc2919058b74b87ab597f1eb8c2a71b4dab39"))
+        ( 11800, uint256("0xf83ca8051c90de8c62adaaa7e58df3e0ff178eab7cc38a041cac4e033a77fe1e"))
+        ( 35893, uint256("0x0000000000001cb66e8a93aac0d1d7a2991236f8f70ef75bc9733d208ad86739"))
+        ( 469553, uint256("0x000000000b504b0eab0bc36c5bd0cb89c7ec8350e9b1a87d886954e948988116"))
+        ( 777649, uint256("0x08bfc79a8fbbf34d7d3f1c840c71cbb04de1426792bc847b55d15e9799bebd10"))
+        ( 790740, uint256("0xb2caa7b91feade989dc22320a51393f92b463a264b7aff501e1689ef28f53942"))
         ;
     static const CCheckpointData data = {
         &mapCheckpoints,
-        1511962881, // * UNIX timestamp of last checkpoint block
-        1331659,   // * total number of transactions between genesis and last checkpoint
+        1524586921, // * UNIX timestamp of last checkpoint block
+        1511739,    // * total number of transactions between genesis and last checkpoint
                     //   (the tx=... number in the SetBestChain debug.log lines)
-        1000.0     // * estimated number of transactions per day after checkpoint
+        3000.0      // * estimated number of transactions per day after checkpoint
     };
 
-    static MapCheckpoints mapCheckpointsTestnet = 
+    static MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
         ( 0, hashGenesisBlockTestNet )
         ;

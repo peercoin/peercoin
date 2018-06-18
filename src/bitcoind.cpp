@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -48,12 +49,12 @@ bool AppInit(int argc, char* argv[])
         if (mapArgs.count("-?") || mapArgs.count("--help"))
         {
             // First part of help message is specific to bitcoind / RPC client
-            std::string strUsage = _("Peercoin version") + " " + FormatFullVersion() + "\n\n" +
+            std::string strUsage = _("Sprouts version") + " " + FormatFullVersion() + "\n\n" +
                 _("Usage:") + "\n" +
-                  "  peercoind [options]                     " + "\n" +
-                  "  peercoind [options] <command> [params]  " + _("Send command to -server or peercoind") + "\n" +
-                  "  peercoind [options] help                " + _("List commands") + "\n" +
-                  "  peercoind [options] help <command>      " + _("Get help for a command") + "\n";
+                  "  sproutsd [options]                     " + "\n" +
+                  "  sproutsd [options] <command> [params]  " + _("Send command to -server or sproutsd") + "\n" +
+                  "  sproutsd [options] help                " + _("List commands") + "\n" +
+                  "  sproutsd [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
             strUsage += "\n" + HelpMessageCli(false);
@@ -64,7 +65,7 @@ bool AppInit(int argc, char* argv[])
 
         // Command-line RPC
         for (int i = 1; i < argc; i++)
-            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "peercoin:") && !boost::algorithm::istarts_with(argv[i], "ppcoin:"))
+            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "sprouts:"))
                 fCommandLine = true;
 
         if (fCommandLine)

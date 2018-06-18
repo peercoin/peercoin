@@ -5,7 +5,7 @@ require File.expand_path('../boot', __FILE__)
 if ARGV.size < 1 or ARGV.size > 2
   puts "usage: $0 <image name> [<n>]"
   puts "Will display the log of the last (or nth last) container that used image <image name>"
-  puts "Example: $0 peercoinnet/a"
+  puts "Example: $0 sproutsnet/a"
   exit 1
 end
 

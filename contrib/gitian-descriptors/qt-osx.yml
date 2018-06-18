@@ -1,5 +1,5 @@
 ---
-name: "peercoin-qt"
+name: "sprouts-qt"
 suites:
 - "trusty"
 architectures:
@@ -22,7 +22,7 @@ reference_datetime: "2011-01-30 00:00:00"
 remotes: []
 files:
 - "qt-everywhere-opensource-src-5.5.0.tar.gz"
-- "peercoin-deps-osx-gitian-r1.tar.xz"
+- "sprouts-deps-osx-gitian-r1.tar.xz"
 - "osxcross.tar.xz"
 script: |
   # Integrity Check
@@ -55,7 +55,7 @@ script: |
   mkdir -p $INSTALLPREFIX $INSTALLPREFIX/host/bin $DEPSDIR $BUILDDIR
   #
   cd $DEPSDIR
-  tar xf $BUILDDIR/peercoin-deps-osx-gitian-r1.tar.xz
+  tar xf $BUILDDIR/sprouts-deps-osx-gitian-r1.tar.xz
   tar xf $BUILDDIR/osxcross.tar.xz
   cd $BUILDDIR
   tar xf $BUILDDIR/qt-everywhere-opensource-src-5.5.0.tar.gz

@@ -50,6 +50,7 @@ private slots:
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);
+    void updateDisplayBackgroundImage(bool fShow);
 };
 
 #endif // OVERVIEWPAGE_H

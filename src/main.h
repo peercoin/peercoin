@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_MAIN_H
@@ -32,6 +33,9 @@ class CCoinControl;
 
 struct CBlockIndexWorkComparator;
 
+static const unsigned int FORK_TIME_V06 = 1530889200;
+static const unsigned int FORK_TIME_V06_TESTNET = 1527703200;
+
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 /** Obsolete: maximum size for mined blocks */
@@ -60,29 +64,37 @@ static const unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
 static const unsigned int MEMPOOL_HEIGHT = 0x7FFFFFFF;
 /** No amount larger than this (in satoshi) is valid */
 static const int64 MAX_MONEY = 2000000000 * COIN;
-inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
+static const int64 MAX_MONEY_2 = 40000000000 * COIN;
+inline bool MoneyRange(int64 nValue)
+{
+    unsigned int forktime = fTestNet ? FORK_TIME_V06_TESTNET : FORK_TIME_V06;
+    return (nValue >= 0 && nValue <= (GetAdjustedTime() > forktime ? MAX_MONEY_2 : MAX_MONEY));
+}
 static const int64 MIN_TX_FEE = CENT;
 static const int64 MIN_RELAY_TX_FEE = CENT;
 static const int64 MAX_MINT_PROOF_OF_WORK = 9999 * COIN;
 static const int64 MIN_TXOUT_AMOUNT = MIN_TX_FEE;
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
-static const int COINBASE_MATURITY_PPC = 500;
+static const int COINBASE_MATURITY_SPRTS = 100;
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
-static const int STAKE_TARGET_SPACING = 10 * 60; // 10-minute block spacing 
-static const int STAKE_MIN_AGE = 60 * 60 * 24 * 30; // minimum age for coin age
-static const int STAKE_MAX_AGE = 60 * 60 * 24 * 90; // stake age of full weight
+static const int STAKE_TARGET_SPACING = static_cast<int>(2.5 * 60); // 2.5-minute block spacing
+static const int STAKE_MIN_AGE = 60 * 60 * 24 * 5; // minimum age for coin age 5 days
+static const int STAKE_MAX_AGE = 60 * 60 * 24 * 365 * 65; // stake age of full weight 65 years
 /** Maximum number of script-checking threads allowed */
 static const int MAX_SCRIPTCHECK_THREADS = 16;
+/** Initial Proof-of-Stake reward for v0.6 kernel protocol */
+static const int64 MAX_MINT_PROOF_OF_STAKE_V06 = 10000000 * COIN;
+
 #ifdef USE_UPNP
 static const int fHaveUPnP = true;
 #else
 static const int fHaveUPnP = false;
 #endif
 
-static const uint256 hashGenesisBlockOfficial("0x0000000032fe677166d54963b62a4677d8957e87c508eaa4fd7eb1c880cd27e3");
-static const uint256 hashGenesisBlockTestNet("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06");
+static const uint256 hashGenesisBlockOfficial("0x00000b8ada156793cd495e09bff9c662226ed3ed3784635295c084f7242b46df");
+static const uint256 hashGenesisBlockTestNet("0x0000089e83101a555ef84e1581f63498b06d74556e4ab4dc89dad7de05aca8f0");
 
-static const int64 nMaxClockDrift = 2 * 60 * 60;        // two hours
+static const int64 nMaxClockDrift = static_cast<int>(0.5 * 60 * 60);        // half hours
 
 extern CScript COINBASE_FLAGS;
 
@@ -196,7 +208,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 int64 GetProofOfWorkReward(unsigned int nBits);
-int64 GetProofOfStakeReward(int64 nCoinAge);
+int64 GetProofOfStakeReward(int64 nCoinAge, unsigned int nTimeTx);
 /** Calculate the minimum amount of work a received block needs, without knowing its direct parent */
 unsigned int ComputeMinWork(unsigned int nBase, int64 nTime);
 /** Get the number of active peers */
@@ -805,7 +817,7 @@ public:
     int nVersion;         // if the outpoint was the last unspent: its version
     bool fCoinStake;      // ppcoin: if the outpoint was the last unspent: whether it belonged to a coinstake
     unsigned int nTime;   // ppcoin: if the outpoint was the last unspent: its tx timestamp
-    
+
 
     CTxInUndo() : txout(), fCoinBase(false), nHeight(0), nVersion(0), fCoinStake(false), nTime(0) {}
     CTxInUndo(const CTxOut &txoutIn, bool fCoinBaseIn = false, unsigned int nHeightIn = 0, int nVersionIn = 0, bool fCoinStakeIn = false, unsigned int nTimeIn = 0) : txout(txoutIn), fCoinBase(fCoinBaseIn), nHeight(nHeightIn), nVersion(nVersionIn), fCoinStake(fCoinStakeIn), nTime(nTimeIn) { }
@@ -1801,7 +1813,7 @@ public:
 
     // ppcoin: money supply related block index fields
     int64 nMint;
-    int64 nMoneySupply;
+    uint64 nMoneySupply;
 
     // ppcoin: proof-of-stake related block index fields
     unsigned int nFlags;  // ppcoin: block index flags
@@ -2059,7 +2071,7 @@ public:
             pprev, pnext, nHeight,
             FormatMoney(nMint).c_str(), FormatMoney(nMoneySupply).c_str(),
             GeneratedStakeModifier() ? "MOD" : "-", GetStakeEntropyBit(), IsProofOfStake()? "PoS" : "PoW",
-            nStakeModifier, nStakeModifierChecksum, 
+            nStakeModifier, nStakeModifierChecksum,
             hashProofOfStake.ToString().c_str(),
             prevoutStake.ToString().c_str(), nStakeTime,
             hashMerkleRoot.ToString().c_str(),

@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1005,7 +1006,7 @@ static std::string FormatException(std::exception* pex, const char* pszThread)
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "peercoin";
+    const char* pszModule = "sprouts";
 #endif
     if (pex)
         return strprintf(
@@ -1054,13 +1055,13 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Peercoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Peercoin
-    // Mac: ~/Library/Application Support/Peercoin
-    // Unix: ~/.peercoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\SproutsHF
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\SproutsHF
+    // Mac: ~/Library/Application Support/SproutsHF
+    // Unix: ~/.sproutshf
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Peercoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "SproutsHF";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1072,10 +1073,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     fs::create_directory(pathRet);
-    return pathRet / "Peercoin";
+    return pathRet / "SproutsHF";
 #else
     // Unix
-    return pathRet / ".peercoin";
+    return pathRet / ".sproutshf";
 #endif
 #endif
 }
@@ -1083,13 +1084,13 @@ boost::filesystem::path GetDefaultDataDir()
 boost::filesystem::path GetOldDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\PPCoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\PPCoin
-    // Mac: ~/Library/Application Support/PPCoin
-    // Unix: ~/.ppcoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\SproutsHF
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\SproutsHF
+    // Mac: ~/Library/Application Support/SproutsHF
+    // Unix: ~/.sproutshf
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "PPCoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "SproutsHF";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1101,10 +1102,10 @@ boost::filesystem::path GetOldDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     fs::create_directory(pathRet);
-    return pathRet / "PPCoin";
+    return pathRet / "SproutsHF";
 #else
     // Unix
-    return pathRet / ".ppcoin";
+    return pathRet / ".sproutshf";
 #endif
 #endif
 }
@@ -1153,14 +1154,67 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
     return path;
 }
 
+string randomStrGen(int length) {
+    static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    string result;
+    result.resize(length);
+    for (int32_t i = 0; i < length; i++)
+        result[i] = charset[rand() % charset.length()];
+
+    return result;
+}
+
+void createConf()
+{
+    srand(static_cast<unsigned int>(time(NULL)));
+
+    ofstream pConf;
+#if BOOST_FILESYSTEM_VERSION >= 3
+    pConf.open(GetConfigFile().generic_string().c_str());
+#else
+    pConf.open(GetConfigFile().string().c_str());
+#endif
+    pConf << "rpcuser=user"
+            + randomStrGen(15)
+            + "\nrpcpassword="
+            + randomStrGen(15)
+            + "\nrpcallowip=192.168.1.0/24"
+            + "\ndaemon=1"
+            + "\nserver=1"
+            + "\ngen=0"
+            + "\n#to add extra nodes"
+            + "\naddnode=35.196.189.77:9901"
+            + "\naddnode=35.229.112.48:9901"
+            + "\naddnode=160.16.71.70:9901"
+            + "\naddnode=89.153.62.130:9901"
+            + "\naddnode=73.204.161.55:9901"
+            + "\naddnode=158.69.27.82:9901"
+            + "\naddnode=92.222.238.47:9901"
+            + "\naddnode=85.24.142.153:9901"
+            + "\naddnode=124.110.184.193:9901"
+            + "\naddnode=88.198.68.186:9901"
+            + "\naddnode=154.127.52.105:9901"
+            + "\naddnode=47.72.36.22:9901"
+            + "\naddnode=67.81.58.165:9901"
+            + "\naddnode=24.11.45.99:9901"
+            + "\naddnode=67.233.90.42:9901"
+            + "\naddnode=2405:6580:2900:1a00:4c8d:61ff:fe25:3baa:9901"
+            + "\naddnode=2405:6581:2280:1300:3ca5:b60:1f79:e120:9901"
+            + "\naddnode=126.67.250.17:9901"
+            + "\naddnode=122.133.247.246:9901"
+            + "\naddnode=2001:2e8:663:0:2:1:0:2f:9901";
+
+    pConf.close();
+}
+
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "peercoin.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "sprouts.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
 
     // Load old config file if present
     if (mapArgs.count("-conf") == 0 && !boost::filesystem::exists(pathConfigFile)) {
-        boost::filesystem::path pathOldConfigFile = GetDataDir(false) / "ppcoin.conf";
+        boost::filesystem::path pathOldConfigFile = GetDataDir(false) / "sprouts.conf";
         if (boost::filesystem::exists(pathOldConfigFile))
             pathConfigFile = pathOldConfigFile;
     }
@@ -1173,7 +1227,12 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
-        return; // No bitcoin.conf file is OK
+    {
+        createConf();
+        new(&streamConfig) boost::filesystem::ifstream(GetConfigFile());
+        if(!streamConfig.good())
+            return;
+    }
 
     // clear path cache after loading config file
     fCachedPath[0] = fCachedPath[1] = false;
@@ -1197,7 +1256,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "peercoind.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "sproutsd.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -1430,7 +1489,7 @@ void AddTimeData(const CNetAddr& ip, int64 nTime)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Peercoin will not work properly.");
+                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Sprouts will not work properly.");
                     strMiscWarning = strMessage;
                     printf("*** %s\n", strMessage.c_str());
                     uiInterface.ThreadSafeMessageBox(strMessage, "", CClientUIInterface::MSG_WARNING);
@@ -1489,7 +1548,7 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
     if (!comments.empty())
         ss << "(" << boost::algorithm::join(comments, "; ") << ")";
     ss << "/";
-    ss << "Peercoin:" << FormatVersion(PEERCOIN_VERSION);
+    ss << "Sprouts:" << FormatVersion(SPROUTS_VERSION);
     ss << "(" << CLIENT_BUILD << ")/";
     return ss.str();
 }

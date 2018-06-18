@@ -16,7 +16,7 @@ Given(/^a network with nodes? (.+) able to mint$/) do |node_names|
   node_names.each_with_index do |name, i|
     shift = (START_TIME - Time.now).to_i
     options = {
-      image: "peercoinnet/#{available_nodes[i]}",
+      image: "sproutsnet/#{available_nodes[i]}",
       links: @nodes.values.map(&:name),
       args: {
         debug: true,
@@ -47,7 +47,7 @@ Given(/^a node "(.*?)" connected only to node "(.*?)"$/) do |arg1, arg2|
   name = arg1
   shift = (Time.parse(other_node.info["time"]) - Time.now).to_i
   options = {
-    image: "peercoinnet/a",
+    image: "sproutsnet/a",
     links: [other_node.name],
     link_with_connect: true,
     args: {

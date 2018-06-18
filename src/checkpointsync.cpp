@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under conditional MIT/X11 software license,
 // see the accompanying file COPYING
 //
@@ -48,7 +49,7 @@
 // command 'getcheckpoint', where 'subscribemode' displays either 'enforce'
 // or 'advisory'. The 'enforce' mode of subscribemode means checkpoints are
 // enforced. The 'advisory' mode of subscribemode means checkpoints are not
-// enforced but a warning message would be displayed if the node is on a 
+// enforced but a warning message would be displayed if the node is on a
 // different blockchain fork from the checkpoint.
 //
 
@@ -202,7 +203,7 @@ bool AcceptPendingSyncCheckpoint()
     return false;
 }
 
-// Automatically select a suitable sync-checkpoint 
+// Automatically select a suitable sync-checkpoint
 uint256 AutoSelectSyncCheckpoint()
 {
     // Search backward for a block with specified depth policy
@@ -379,11 +380,14 @@ bool IsMatureSyncCheckpoint()
 // Is the sync-checkpoint too old?
 bool IsSyncCheckpointTooOld(unsigned int nSeconds)
 {
+    /* Disabled due to need for a central sync checkpoint server
     LOCK(cs_hashSyncCheckpoint);
     // sync-checkpoint should always be accepted block
     assert(mapBlockIndex.count(hashSyncCheckpoint));
     const CBlockIndex* pindexSync = mapBlockIndex[hashSyncCheckpoint];
     return (pindexSync->GetBlockTime() + nSeconds < GetAdjustedTime());
+    */
+    return false;
 }
 
 // ppcoin: find block wanted by given orphan block
@@ -533,4 +537,3 @@ Value enforcecheckpoint(const Array& params, bool fHelp)
     SetCheckpointEnforce(fEnforceCheckpoint);
     return Value::null;
 }
-

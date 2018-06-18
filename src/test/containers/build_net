@@ -6,7 +6,7 @@ shift = (Time.at(1345090000) - Time.now).to_i + 30 * 24 * 3600
 
 puts "Starting seed"
 seed = CoinContainer.new(
-  image: 'peercoin/seed',
+  image: 'sprouts/seed',
   args: {
     "timetravel" => shift,
   }
@@ -17,7 +17,7 @@ node_names = %w( a b c d e )
 puts "Starting #{node_names.size} nodes: #{node_names.inspect}"
 nodes = node_names.map do |name|
   CoinContainer.new(
-    image: 'peercoin/node',
+    image: 'sprouts/node',
     links: [seed.name],
     delete_at_exit: true,
     args: {
@@ -106,7 +106,7 @@ seed.shutdown
 
 nodes.each_with_index do |node, i|
     name = node_names[i]
-    image_name = "peercoinnet/#{name}"
+    image_name = "sproutsnet/#{name}"
     puts "Creating image #{image_name}"
     node.shutdown
     node.wait_for_shutdown

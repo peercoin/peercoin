@@ -1,8 +1,9 @@
 // Copyright (c) 2012-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under conditional MIT/X11 open source software license
 // see the accompanying file COPYING
-#ifndef PPCOIN_CHECKPOINTSYNC_H
-#define  PPCOIN_CHECKPOINTSYNC_H
+#ifndef SPROUTS_CHECKPOINTSYNC_H
+#define  SPROUTS_CHECKPOINTSYNC_H
 
 #include "net.h"
 #include "util.h"

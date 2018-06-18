@@ -101,6 +101,10 @@ double KernelRecord::getProbToMintWithinNMinutes(double difficulty, int minutes)
         p = pow(1 - getProbToMintStake(difficulty, timeOffset), 60 * m);
         prob *= p;
 
+        // Correspondence for infinity, not a number value
+        if(isinf(prob) || isnan(prob))
+            prob = 0;
+
         prob = 1 - prob;
         prevProbability = prob;
         prevDifficulty = difficulty;

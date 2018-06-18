@@ -1,25 +1,25 @@
-.TH PEERCOIND "1" "April 2018" "peercoind 0.6.3"
+.TH SPROUTSD "1" "January 2018" "sproutsd 0.6.2"
 .SH NAME
-peercoind \- peer-to-peer network based digital currency
+sproutsd \- peer-to-peer network based digital currency
 .SH SYNOPSIS
 .nf
-peercoind [options]
-peercoind [options] <command> [params] - Send command to peercoind
-peercoind [options] help - List commands
-peercoind [options] help <command> - Get help for a command
+sproutsd [options]
+sproutsd [options] <command> [params] - Send command to sproutsd
+sproutsd [options] help - List commands
+sproutsd [options] help <command> - Get help for a command
 .fi
 .SH DESCRIPTION
-This  manual page documents the peercoind program. Peercoin is a peer-to-peer digital currency. Peer-to-peer (P2P) means that there is no central authority to issue new money or keep track of transactions. Instead, these tasks are managed collectively by the nodes of the network. Advantages:
+This  manual page documents the sproutsd program. Sprouts is a peer-to-peer digital currency. Peer-to-peer (P2P) means that there is no central authority to issue new money or keep track of transactions. Instead, these tasks are managed collectively by the nodes of the network. Advantages:
 
-Peercoins can be sent easily through the Internet, without having to trust middlemen. Transactions are designed to be irreversible. Be safe from instability caused by fractional reserve banking and central banks. The limited inflation of the Peercoin system’s money supply is distributed evenly (by held coins) throughout the network, not monopolized by banks.
+Sproutss can be sent easily through the Internet, without having to trust middlemen. Transactions are designed to be irreversible. Be safe from instability caused by fractional reserve banking and central banks. The limited inflation of the Sprouts system’s money supply is distributed evenly (by held coins) throughout the network, not monopolized by banks.
 
 .SH OPTIONS
 .TP
 \fB\-conf=\fR<file>
-Specify configuration file (default: peercoin.conf)
+Specify configuration file (default: sprouts.conf)
 .TP
 \fB\-pid=\fR<file>
-Specify pid file (default: peercoind.pid)
+Specify pid file (default: sproutsd.pid)
 .TP
 \fB\-gen\fR
 Generate coins
@@ -34,7 +34,7 @@ Start minimized - only applicable to the GUI version
 Show splash screen on startup - only applicable to the GUI version
 .TP
 \fB\-datadir=\fR<dir>
-Specify data directory (default: $HOME/.peercoin)
+Specify data directory (default: $HOME/.sprouts)
 .TP
 \fB\-dbcache=\fR<n>
 Set database cache size in megabytes (default: 25)
@@ -154,7 +154,7 @@ This help message
 .TP
 \fBaddmultisigaddress 'nrequired' '["key","key",...]' ['account']\fR
 Add a nrequired-to-sign multisignature address to the wallet.
-Each key is a peercoin address or hex-encoded public key.
+Each key is a sprouts address or hex-encoded public key.
 If ['account'] is specified, assign address to ['account'].
 .TP
 \fBbackupwallet 'destination'\fR
@@ -163,20 +163,20 @@ Safely copies *wallet.dat* to 'destination', which can be a directory or a path 
 \fBcheckwallet\FR
 Check wallet for integrity.
 .TP
-\fBdumpprivkey 'peercoinaddress'\fR
-Reveals the private key corresponding to 'peercoinaddress'.
+\fBdumpprivkey 'sproutsaddress'\fR
+Reveals the private key corresponding to 'sproutsaddress'.
 .TP
 \fBencryptwallet 'passphrase'\fR
 Encrypts the wallet with 'passphrase'.
 .TP
-\fBgetaccount 'peercoinaddress'\fR
+\fBgetaccount 'sproutsaddress'\fR
 Returns the account associated with the given address.
 .TP
-\fBsetaccount 'peercoinaddress' ['account']\fR
+\fBsetaccount 'sproutsaddress' ['account']\fR
 Sets the ['account'] associated with the given address. ['account'] may be omitted to remove an address from ['account'].
 .TP
 \fBgetaccountaddress 'account'\fR
-Returns a new peercoin address for 'account'.
+Returns a new sprouts address for 'account'.
 .TP
 \fBgetaddressesbyaccount 'account'\fR
 Returns the list of addresses associated with the given 'account'.
@@ -224,7 +224,7 @@ Returns the number of connections to other nodes.
 Returns the proof-of-work difficulty as a multiple of the minimum difficulty.
 .TP
 \fBgetgenerate\fR
-Returns boolean true if server is trying to generate peercoins, false otherwise.
+Returns boolean true if server is trying to generate sproutss, false otherwise.
 .TP
 \fBsetgenerate 'generate' ['genproclimit']\fR
 Generation is limited to ['genproclimit'] processors, -1 is unlimited.
@@ -242,13 +242,13 @@ Returns an object containing mining-related information.
 Returns a recent Ghash/second network mining estimate.
 .TP
 \fBgetnewaddress 'account'\fR
-Returns a new peercoin address for receiving payments. If 'account' is specified (recommended), it is added to the address book so payments received with the address will be credited to 'account'.
+Returns a new sprouts address for receiving payments. If 'account' is specified (recommended), it is added to the address book so payments received with the address will be credited to 'account'.
 .TP
 \fBgetreceivedbyaccount 'account' ['minconf=1']\fR
 Returns the total amount received by addresses associated with 'account' in transactions with at least ['minconf'] confirmations.
 .TP
-\fBgetreceivedbyaddress 'peercoinaddress' ['minconf=1']\fR
-Returns the total amount received by 'peercoinaddress' in transactions with at least ['minconf'] confirmations.
+\fBgetreceivedbyaddress 'sproutsaddress' ['minconf=1']\fR
+Returns the total amount received by 'sproutsaddress' in transactions with at least ['minconf'] confirmations.
 .TP
 \fBgettransaction 'txid'\fR
 Returns information about a specific transaction, given hexadecimal transaction ID.
@@ -264,7 +264,7 @@ If 'data' is specified, tries to solve the block and returns true if it was succ
 \fBhelp ['command']\fR
 List commands, or get help for a command.
 .TP
-\fBimportprivkey 'peercoinprivkey' ['label']\fR
+\fBimportprivkey 'sproutsprivkey' ['label']\fR
 Adds a private key (as returned by dumpprivkey) to your wallet.
 .TP
 \fBkeypoolrefill\fR
@@ -329,45 +329,45 @@ If no parameters provided current setting is printed.
   ['cancelupto'] cancels all alert id's up to this number
 Returns true or false.
 .TP
-\fBsendfrom <'account'> <'topeercoinaddress'> <'amount'> ['minconf=1'] ['comment'] ['comment-to']\fR
-Sends amount from account's balance to 'topeercoinaddress'. This method will fail if there is less than amount peercoins with ['minconf'] confirmations in the account's balance (unless account is the empty-string-named default account; it behaves like the *sendtoaddress* method). Returns transaction ID on success.
+\fBsendfrom <'account'> <'tosproutsaddress'> <'amount'> ['minconf=1'] ['comment'] ['comment-to']\fR
+Sends amount from account's balance to 'tosproutsaddress'. This method will fail if there is less than amount sproutss with ['minconf'] confirmations in the account's balance (unless account is the empty-string-named default account; it behaves like the *sendtoaddress* method). Returns transaction ID on success.
 .TP
 \fBsendmany 'fromaccount' {'address':'amount',...} ['minconf=1'] ['comment']\fR
 amounts are double-precision floating point numbers
 .TP
-\fBsendtoaddress 'peercoinaddress' 'amount' ['comment'] ['comment-to']\fR
-Sends amount from the server's available balance to 'peercoinaddress'. amount is a real and is rounded to the nearest 0.01. Returns transaction id on success.
+\fBsendtoaddress 'sproutsaddress' 'amount' ['comment'] ['comment-to']\fR
+Sends amount from the server's available balance to 'sproutsaddress'. amount is a real and is rounded to the nearest 0.01. Returns transaction id on success.
 .TP
 \fBsettxfee 'amount'\fR
 'amount' is a real and is rounded to 0.01 (cent)
 Minimum and default transaction fee per KB is 1 cent
 .TP
-\fBsignmessage 'peercoinaddress' 'message'\fR
+\fBsignmessage 'sproutsaddress' 'message'\fR
 Sign a message with the private key of an address
 .TP
 \fBstop\fR
-Stops the peercoin server.
+Stops the sprouts server.
 .TP
 \fBsubmitblock 'hex data' [optional-params-obj]\fR
 [optional-params-obj] parameter is currently ignored.
 Attempts to submit new block to network.
 See https://en.bitcoin.it/wiki/BIP_0022 for full specification.
 .TP
-\fBvalidateaddress 'peercoinaddress'\fR
-Checks that 'peercoinaddress' looks like a proper peercoin address. Returns an object containing:
+\fBvalidateaddress 'sproutsaddress'\fR
+Checks that 'sproutsaddress' looks like a proper sprouts address. Returns an object containing:
 
     "isvalid" : true or false.
     "ismine"  : true if the address is in the server's wallet.
-    "address" : peercoinaddress.
+    "address" : sproutsaddress.
 
     *note: ismine and address are only returned if the address is valid.
 .TP
-\fBverifymessage 'peercoinaddress' 'signature' 'message'
+\fBverifymessage 'sproutsaddress' 'signature' 'message'
 Verify a signed message
 .TP
 
 .SH "SEE ALSO"
-peercoin.conf(5)
+sprouts.conf(5)
 .SH AUTHOR
 This manual page was written by Micah Anderson <micah@debian.org> for the Debian system (but may be used by others). Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 or any later version published by the Free Software Foundation.
 

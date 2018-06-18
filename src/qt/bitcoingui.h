@@ -109,8 +109,6 @@ private:
     QAction *changePassphraseAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
-    QAction *openChatroomAction;
-    QAction *openForumAction;
 
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
@@ -195,10 +193,6 @@ private slots:
     void optionsClicked();
     /** Show about dialog */
     void aboutClicked();
-
-    // Open chatroom / forum URL in the system's browser.
-    void openChatroom();
-    void openForum();
 
 #ifndef Q_OS_MAC
     /** Handle tray icon clicked */

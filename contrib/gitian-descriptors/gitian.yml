@@ -1,5 +1,5 @@
 ---
-name: "peercoin"
+name: "sprouts"
 suites:
 - "lucid"
 architectures:
@@ -25,8 +25,8 @@ packages:
 - "faketime"
 reference_datetime: "2011-01-30 00:00:00"
 remotes:
-- "url": "https://github.com/peercoin/peercoin.git"
-  "dir": "peercoin"
+- "url": "https://github.com/sprouts/sprouts.git"
+  "dir": "sprouts"
 files:
 - "miniupnpc-1.6.tar.gz"
 - "qrencode-3.2.0.tar.bz2"
@@ -46,7 +46,7 @@ script: |
   make $MAKEOPTS install
   cd ..
   #
-  cd peercoin
+  cd sprouts
   export TAR_OPTIONS=--mtime=`echo $REFERENCE_DATETIME | awk '{ print $1 }'`
   ./autogen.sh
   ./configure --disable-debug --prefix=$STAGING --bindir=$OUTDIR --disable-maintainer-mode --disable-dependency-tracking PKG_CONFIG_PATH="$STAGING/lib/pkgconfig" CPPFLAGS="-I$STAGING/include" LDFLAGS="-L$STAGING/lib" CXXFLAGS="-frandom-seed=bitcoin"

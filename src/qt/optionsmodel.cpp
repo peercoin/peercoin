@@ -52,6 +52,7 @@ void OptionsModel::Init()
     fMinimizeToTray = settings.value("fMinimizeToTray", false).toBool();
     fMinimizeOnClose = settings.value("fMinimizeOnClose", false).toBool();
     fCoinControlFeatures = settings.value("fCoinControlFeatures", false).toBool();
+    bBackgroundImage = settings.value("bBackgroundImage", false).toBool();
     language = settings.value("language", "").toString();
     fCheckpointEnforce = settings.value("fCheckpointEnforce", true).toBool();
 
@@ -202,6 +203,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return QVariant(bDisplayAddresses);
         case CoinControlFeatures:
             return QVariant(fCoinControlFeatures);
+        case BackgroundImage:
+            return QVariant(bBackgroundImage);
         case Language:
             return settings.value("language", "");
         case CheckpointEnforce:
@@ -287,6 +290,11 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             fCoinControlFeatures = value.toBool();
             settings.setValue("fCoinControlFeatures", fCoinControlFeatures);
             emit coinControlFeaturesChanged(fCoinControlFeatures);
+            break;
+        case BackgroundImage:
+            bBackgroundImage = value.toBool();
+            settings.setValue("bBackgroundImage", bBackgroundImage);
+            emit displayBackgroundImageChanged(bBackgroundImage);
             break;
         case CheckpointEnforce:
             fCheckpointEnforce = value.toBool();

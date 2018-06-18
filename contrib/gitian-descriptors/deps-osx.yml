@@ -1,5 +1,5 @@
 ---
-name: "peercoin-deps"
+name: "sprouts-deps"
 suites:
 - "trusty"
 architectures:
@@ -154,4 +154,4 @@ script: |
   done
   
   cd $INSTALLPREFIX
-  find include lib | sort | tar --no-recursion -cJf $OUTDIR/peercoin-deps-osx-gitian-r1.tar.xz -T -
+  find include lib | sort | tar --no-recursion -cJf $OUTDIR/sprouts-deps-osx-gitian-r1.tar.xz -T -

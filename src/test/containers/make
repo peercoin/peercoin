@@ -3,4 +3,4 @@
 cd $(dirname $0)/../..
 
 set -x
-docker run -v $PWD/..:/code -w /code/src peercoin/devel make -f makefile.unix CXXFLAGS="-O2 -DTESTING" DEBUGFLAGS=-ggdb USE_UPNP=- "$@"
+docker run -v $PWD/..:/code -w /code/src sprouts/devel make -f makefile.unix CXXFLAGS="-O2 -DTESTING" DEBUGFLAGS=-ggdb USE_UPNP=- "$@"

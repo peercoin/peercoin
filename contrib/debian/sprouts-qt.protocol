@@ -1,6 +1,6 @@
 [Protocol]
-exec=peercoin-qt '%u'
-protocol=peercoin
+exec=sprouts-qt '%u'
+protocol=sprouts
 input=none
 output=none
 helper=true

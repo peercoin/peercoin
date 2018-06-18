@@ -1,8 +1,8 @@
 #!/usr/bin/make -f
 # -*- mode: makefile; coding: utf-8 -*-
 
-DEB_INSTALL_EXAMPLES_peercoind += debian/examples/*
-DEB_INSTALL_MANPAGES_peercoind += debian/manpages/*
+DEB_INSTALL_EXAMPLES_sproutsd += debian/examples/*
+DEB_INSTALL_MANPAGES_sproutsd += debian/manpages/*
 
 %:
 	dh $@ --parallel

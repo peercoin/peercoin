@@ -1,4 +1,4 @@
-Peercoin 0.6.3 BETA
+Peercoin 0.6.2 BETA
 
 Copyright (c) 2011-2018 Peercoin Developers
 Distributed under the MIT/X11 software license, see the accompanying
@@ -19,10 +19,10 @@ help further advance the field of crypto-currency.
 Setup
 -----
 Unpack the files into a directory and run:
- bin/32/peercoin-qt (GUI, 32-bit)
- bin/32/peercoind (headless, 32-bit)
- bin/64/peercoin-qt (GUI, 64-bit)
- bin/64/peercoind (headless, 64-bit)
+ bin/32/sprouts-qt (GUI, 32-bit)
+ bin/32/sproutsd (headless, 32-bit)
+ bin/64/sprouts-qt (GUI, 64-bit)
+ bin/64/sproutsd (headless, 64-bit)
 
 The software automatically finds other nodes to connect to.  You can
 enable Universal Plug and Play (UPnP) with your router/firewall
@@ -35,18 +35,18 @@ Upgrade
 -------
 All your existing coins/transactions should be intact with the upgrade.
 To upgrade from 0.5, first backup wallet
-peercoind backupwallet <destination_backup_file>
-Then shutdown peercoind by
-peercoind stop
+sproutsd backupwallet <destination_backup_file>
+Then shutdown sproutsd by
+sproutsd stop
 Uninstall v0.5 client, download and install v0.6 client.
 Remove all files and subdirectory in your wallet directory EXCEPT FOR
-wallet.dat (wallet file) and peercoin.conf (configuration file).
-Start up the new peercoind (0.6).
+wallet.dat (wallet file) and sprouts.conf (configuration file).
+Start up the new sproutsd (0.6).
 For this upgrade blockchain re-download is required.
 
 
 See the documentation/wiki at github:
-  http://github.com/peercoin/peercoin
+  http://github.com/sprouts/sprouts
 for help and more information.
 
 

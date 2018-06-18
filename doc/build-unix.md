@@ -5,15 +5,15 @@ file COPYING or http://www.opensource.org/licenses/mit-license.php.
 This product includes software developed by the OpenSSL Project for use in the [OpenSSL Toolkit](http://www.openssl.org/). This product includes
 cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cryptsoft.com)), and UPnP software written by Thomas Bernard.
 
-UNIX BUILD NOTES FOR PEERCOIN
+UNIX BUILD NOTES FOR SPROUTS
 ====================
 
 To build in Terminal on Debian based Linux
 ---------------------
 
-	git clone https://github.com/peercoin/peercoin
-	cd peercoin
-	git checkout v0.6.3ppc
+	git clone https://github.com/sprouts/sprouts
+	cd sprouts
+	git checkout v0.6.2ppc
 	./contrib/vagrant/install.sh
 
 
@@ -27,7 +27,7 @@ To Build
 	./configure
 	make
 
-This will build Peercoin-Qt as well if the dependencies are met.
+This will build Sprouts-Qt as well if the dependencies are met.
 See [readme-qt.md](readme-qt.md) for more information.
 
 Dependencies
@@ -96,7 +96,7 @@ Optional:
 Dependency Build Instructions: Gentoo
 -------------------------------------
 
-Note: Currently, there is no peercoin ebuild available in overlay 
+Note: Currently, there is no sprouts ebuild available in overlay 
 
 	emerge -av1 --noreplace dev-libs/boost dev-libs/glib dev-libs/openssl sys-libs/db:4.8
 
@@ -104,15 +104,15 @@ Note: If you like to have UPnP support, you need to install net-libs/miniupnpc.
  
 Take the following steps to build (no UPnP support):
 
-	cd ${PEERCOIN_DIR}
+	cd ${SPROUTS_DIR}
 	./autogen.sh
 	./configure --without-miniupnpc CXXFLAGS="-i/usr/include/db4.8"
-	strip src/peercoind
+	strip src/sproutsd
 
 
 Notes
 -----
-The release is built with GCC and then "strip peercoind" to strip the debug
+The release is built with GCC and then "strip sproutsd" to strip the debug
 symbols, which reduces the executable size by about 90%.
 
 
