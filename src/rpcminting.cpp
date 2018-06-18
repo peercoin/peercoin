@@ -2,8 +2,10 @@
 
 #include "main.h"
 #include "init.h"
+#include "util.h"
 #include "rpcserver.h"
 #include "kernelrecord.h"
+#include "bignum.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -43,7 +45,8 @@ Value listminting(const Array& params, bool fHelp)
                 }
 
                 string strTime = boost::lexical_cast<std::string>(kr.nTime);
-                string strAmount = boost::lexical_cast<std::string>(kr.nValue);
+                //string strAmount = boost::lexical_cast<std::string>(CBigNum(kr.nValue) / COIN);
+                string strAmount = boost::lexical_cast<std::string>((double)kr.nValue / (double)COIN);
                 string strAge = boost::lexical_cast<std::string>(kr.getAge());
                 string strCoinAge = boost::lexical_cast<std::string>(kr.coinAge);
 
@@ -71,8 +74,9 @@ Value listminting(const Array& params, bool fHelp)
                 obj.push_back(Pair("age-in-day",                strAge));
                 obj.push_back(Pair("coin-day-weight",           strCoinAge));
                 obj.push_back(Pair("proof-of-stake-difficulty", difficulty));
-                obj.push_back(Pair("minting-probability-10min", kr.getProbToMintWithinNMinutes(difficulty, 10)));
                 obj.push_back(Pair("minting-probability-24h",   kr.getProbToMintWithinNMinutes(difficulty, 60*24)));
+                obj.push_back(Pair("minting-probability-5d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*5)));
+                obj.push_back(Pair("minting-probability-10d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*10)));
                 obj.push_back(Pair("minting-probability-30d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*30)));
                 obj.push_back(Pair("minting-probability-90d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*90)));
                 obj.push_back(Pair("search-interval-in-sec",    searchInterval));

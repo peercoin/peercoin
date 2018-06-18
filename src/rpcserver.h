@@ -83,6 +83,7 @@ extern CReserveKey* pMiningKey;
 extern int64 nWalletUnlockTime;
 extern int64 AmountFromValue(const json_spirit::Value& value);
 extern json_spirit::Value ValueFromAmount(int64 amount);
+extern json_spirit::Value ValueFromAmountUint(uint64 amount);
 extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
 extern std::string HexBits(unsigned int nBits);
 extern std::string HelpRequiringPassphrase();

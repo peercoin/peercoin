@@ -1,0 +1,6 @@
+usr/local/bin/sprouts-qt usr/bin
+share/pixmaps/sprouts32.xpm usr/share/pixmaps
+share/pixmaps/sprouts16.xpm usr/share/pixmaps
+share/pixmaps/sprouts128.png usr/share/pixmaps
+debian/sprouts-qt.desktop usr/share/applications
+debian/sprouts-qt.protocol usr/share/kde4/services/

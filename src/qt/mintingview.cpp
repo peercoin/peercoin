@@ -60,8 +60,9 @@ MintingView::MintingView(QWidget *parent) :
 
     QLabel *mintingLabel = new QLabel(tr("Display minting probability within : "));
     mintingCombo = new QComboBox();
-    mintingCombo->addItem(tr("10 min"), Minting10min);
     mintingCombo->addItem(tr("24 hours"), Minting1day);
+    mintingCombo->addItem(tr("5 days"), Minting5days);
+    mintingCombo->addItem(tr("10 days"), Minting10days);
     mintingCombo->addItem(tr("30 days"), Minting30days);
     mintingCombo->addItem(tr("90 days"), Minting90days);
     mintingCombo->setFixedWidth(120);
@@ -154,11 +155,14 @@ void MintingView::chooseMintingInterval(int idx)
     int interval = 10;
     switch(mintingCombo->itemData(idx).toInt())
     {
-        case Minting10min:
-            interval = 10;
-            break;
         case Minting1day:
             interval = 60*24;
+            break;
+        case Minting5days:
+            interval = 60*24*5;
+            break;
+        case Minting10days:
+            interval = 60*24*10;
             break;
         case Minting30days:
             interval = 60*24*30;

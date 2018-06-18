@@ -40,4 +40,4 @@ You can use src/test/containers/show_log to display the log of the last containe
 
 When you're done working, you should remove all containers with:
 
-    src/test/containers/remove_peercoin_containers
+    src/test/containers/remove_sprouts_containers

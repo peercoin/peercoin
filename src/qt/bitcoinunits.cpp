@@ -34,9 +34,9 @@ QString BitcoinUnits::name(int unit)
 {
     switch(unit)
     {
-    case BTC: return QString("PPC");
-    case mBTC: return QString("mPPC");
-    case uBTC: return QString::fromUtf8("μPPC");
+    case BTC: return QString("SPRTS");
+    case mBTC: return QString("mSPRTS");
+    case uBTC: return QString::fromUtf8("μSPRTS");
     default: return QString("???");
     }
 }
@@ -45,9 +45,9 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
-    case BTC: return QString("Peercoins");
-    case mBTC: return QString("Milli-Peercoins (1 / 1,000)");
-    case uBTC: return QString("Micro-Peercoins (1 / 1,000,000)");
+    case BTC: return QString("Sprouts");
+    case mBTC: return QString("Milli-Sprouts (1 / 1,000)");
+    case uBTC: return QString("Micro-Sprouts (1 / 1,000,000)");
     default: return QString("???");
     }
 }
@@ -67,9 +67,9 @@ int BitcoinUnits::amountDigits(int unit)
 {
     switch(unit)
     {
-    case BTC: return 10; // 21,000,000 (# digits, without commas)
-    case mBTC: return 13; // 21,000,000,000
-    case uBTC: return 16; // 21,000,000,000,000
+    case BTC: return 11; // 21,000,000 (# digits, without commas)
+    case mBTC: return 14; // 21,000,000,000
+    case uBTC: return 17; // 21,000,000,000,000
     default: return 0;
     }
 }

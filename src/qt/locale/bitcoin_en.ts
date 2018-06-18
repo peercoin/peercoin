@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="en">
-<defaultcodec>UTF-8</defaultcodec>
+<TS version="2.1" language="en">
 <context>
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About Peercoin</source>
-        <translation>About Peercoin</translation>
+        <source>About Sprouts</source>
+        <translation>About Sprouts</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;Peercoin&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;Peercoin&lt;/b&gt; version</translation>
+        <source>&lt;b&gt;Sprouts&lt;/b&gt; version</source>
+        <translation>&lt;b&gt;Sprouts&lt;/b&gt; version</translation>
     </message>
     <message>
         <location line="+41"/>
-        <source>Copyright &amp;copy; 2011-YYYY Peercoin Developers</source>
+        <source>Copyright &amp;copy; 2011-YYYY Sprouts Developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -41,7 +40,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+0"/>
-        <source>Peercoin Developers</source>
+        <source>Sprouts Developers</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -73,9 +72,9 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;New Address</translation>
     </message>
     <message>
-        <location filename="../addressbookpage.cpp" line="+63"/>
-        <source>These are your Peercoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>These are your Peercoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</translation>
+        <location filename="../addressbookpage.cpp" line="+67"/>
+        <source>These are your Sprouts addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <translation>These are your Sprouts addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</translation>
     </message>
     <message>
         <location filename="../forms/addressbookpage.ui" line="+14"/>
@@ -89,8 +88,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+11"/>
-        <source>Sign a message to prove you own a Peercoin address</source>
-        <translation>Sign a message to prove you own a Peercoin address</translation>
+        <source>Sign a message to prove you own a Sprouts address</source>
+        <translation>Sign a message to prove you own a Sprouts address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -114,8 +113,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-44"/>
-        <source>Verify a message to ensure it was signed with a specified Peercoin address</source>
-        <translation>Verify a message to ensure it was signed with a specified Peercoin address</translation>
+        <source>Verify a message to ensure it was signed with a specified Sprouts address</source>
+        <translation>Verify a message to ensure it was signed with a specified Sprouts address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -129,8 +128,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location filename="../addressbookpage.cpp" line="-5"/>
-        <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
+        <source>These are your Sprouts addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>These are your Sprouts addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -255,8 +254,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+1"/>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PEERCOINS&lt;/b&gt;!</source>
-        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PEERCOINS&lt;/b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR SPROUTSS&lt;/b&gt;!</source>
+        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR SPROUTSS&lt;/b&gt;!</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -282,8 +281,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-56"/>
-        <source>Peercoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your peercoins from being stolen by malware infecting your computer.</source>
-        <translation>Peercoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your peercoins from being stolen by malware infecting your computer.</translation>
+        <source>Sprouts will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your sproutss from being stolen by malware infecting your computer.</source>
+        <translation>Sprouts will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your sproutss from being stolen by malware infecting your computer.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -330,17 +329,17 @@ This product includes software developed by the OpenSSL Project for use in the O
 <context>
     <name>BitcoinGUI</name>
     <message>
-        <location filename="../bitcoingui.cpp" line="+258"/>
+        <location filename="../bitcoingui.cpp" line="+264"/>
         <source>Sign &amp;message...</source>
         <translation>Sign &amp;message...</translation>
     </message>
     <message>
-        <location line="+313"/>
+        <location line="+302"/>
         <source>Synchronizing with network...</source>
         <translation>Synchronizing with network...</translation>
     </message>
     <message>
-        <location line="-394"/>
+        <location line="-388"/>
         <source>&amp;Overview</source>
         <translation>&amp;Overview</translation>
     </message>
@@ -370,7 +369,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Show the list of addresses for receiving payments</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+45"/>
         <source>E&amp;xit</source>
         <translation>E&amp;xit</translation>
     </message>
@@ -381,8 +380,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+4"/>
-        <source>Show information about Peercoin</source>
-        <translation>Show information about Peercoin</translation>
+        <source>Show information about Sprouts</source>
+        <translation>Show information about Sprouts</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -415,7 +414,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Change Passphrase...</translation>
     </message>
     <message>
-        <location line="+318"/>
+        <location line="+307"/>
         <source>Importing blocks from disk...</source>
         <translation>Importing blocks from disk...</translation>
     </message>
@@ -425,14 +424,14 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Reindexing blocks on disk...</translation>
     </message>
     <message>
-        <location line="-392"/>
-        <source>Send coins to a Peercoin address</source>
-        <translation>Send coins to a Peercoin address</translation>
+        <location line="-386"/>
+        <source>Send coins to a Sprouts address</source>
+        <translation>Send coins to a Sprouts address</translation>
     </message>
     <message>
-        <location line="+58"/>
-        <source>Modify configuration options for Peercoin</source>
-        <translation>Modify configuration options for Peercoin</translation>
+        <location line="+63"/>
+        <source>Modify configuration options for Sprouts</source>
+        <translation>Modify configuration options for Sprouts</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -460,13 +459,13 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Verify message...</translation>
     </message>
     <message>
-        <location line="-184"/>
-        <location line="+582"/>
-        <source>Peercoin</source>
-        <translation>Peercoin</translation>
+        <location line="-189"/>
+        <location line="+576"/>
+        <source>Sprouts</source>
+        <translation>Sprouts</translation>
     </message>
     <message>
-        <location line="-582"/>
+        <location line="-576"/>
         <source>Wallet</source>
         <translation>Wallet</translation>
     </message>
@@ -496,9 +495,14 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Addresses</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>&amp;About Peercoin</source>
-        <translation>&amp;About Peercoin</translation>
+        <location line="+7"/>
+        <source>Multisig</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>&amp;About Sprouts</source>
+        <translation>&amp;About Sprouts</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -527,41 +531,21 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+7"/>
-        <source>Sign messages with your Peercoin addresses to prove you own them</source>
-        <translation>Sign messages with your Peercoin addresses to prove you own them</translation>
+        <source>Sign messages with your Sprouts addresses to prove you own them</source>
+        <translation>Sign messages with your Sprouts addresses to prove you own them</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Verify messages to ensure they were signed with specified Peercoin addresses</source>
-        <translation>Verify messages to ensure they were signed with specified Peercoin addresses</translation>
+        <source>Verify messages to ensure they were signed with specified Sprouts addresses</source>
+        <translation>Verify messages to ensure they were signed with specified Sprouts addresses</translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>&amp;Chatroom</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Open https://peercoin.chat in a web browser.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Forum</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Open https://talk.peercoin.net in a web browser.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
+        <location line="+29"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>&amp;Settings</source>
         <translation>&amp;Settings</translation>
     </message>
@@ -571,27 +555,27 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Help</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+12"/>
         <source>Tabs toolbar</source>
         <translation>Tabs toolbar</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+22"/>
         <location line="+10"/>
         <source>[testnet]</source>
         <translation>[testnet]</translation>
     </message>
     <message>
-        <location line="+49"/>
-        <source>Peercoin client</source>
-        <translation>Peercoin client</translation>
+        <location line="+47"/>
+        <source>Sprouts client</source>
+        <translation>Sprouts client</translation>
     </message>
     <message numerus="yes">
-        <location line="+154"/>
-        <source>%n active connection(s) to Peercoin network</source>
+        <location line="+152"/>
+        <source>%n active connection(s) to Sprouts network</source>
         <translation>
-            <numerusform>%n active connection to Peercoin network</numerusform>
-            <numerusform>%n active connections to Peercoin network</numerusform>
+            <numerusform>%n active connection to Sprouts network</numerusform>
+            <numerusform>%n active connections to Sprouts network</numerusform>
         </translation>
     </message>
     <message>
@@ -715,8 +699,8 @@ Address: %4
     <message>
         <location line="-23"/>
         <location line="+23"/>
-        <source>URI can not be parsed! This can be caused by an invalid Peercoin address or malformed URI parameters.</source>
-        <translation>URI can not be parsed! This can be caused by an invalid Peercoin address or malformed URI parameters.</translation>
+        <source>URI can not be parsed! This can be caused by an invalid Sprouts address or malformed URI parameters.</source>
+        <translation>URI can not be parsed! This can be caused by an invalid Sprouts address or malformed URI parameters.</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -734,15 +718,15 @@ Address: %4
         <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../bitcoin.cpp" line="+114"/>
-        <source>A fatal error occurred. Peercoin can no longer continue safely and will quit.</source>
-        <translation>A fatal error occurred. Peercoin can no longer continue safely and will quit.</translation>
+        <location filename="../bitcoin.cpp" line="+115"/>
+        <source>A fatal error occurred. Sprouts can no longer continue safely and will quit.</source>
+        <translation>A fatal error occurred. Sprouts can no longer continue safely and will quit.</translation>
     </message>
 </context>
 <context>
     <name>ClientModel</name>
     <message>
-        <location filename="../clientmodel.cpp" line="+104"/>
+        <location filename="../clientmodel.cpp" line="+106"/>
         <source>Network Alert</source>
         <translation>Network Alert</translation>
     </message>
@@ -1062,8 +1046,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="-5"/>
-        <source>The entered address &quot;%1&quot; is not a valid Peercoin address.</source>
-        <translation>The entered address &quot;%1&quot; is not a valid Peercoin address.</translation>
+        <source>The entered address &quot;%1&quot; is not a valid Sprouts address.</source>
+        <translation>The entered address &quot;%1&quot; is not a valid Sprouts address.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1079,10 +1063,10 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
 <context>
     <name>GUIUtil::HelpMessageBox</name>
     <message>
-        <location filename="../guiutil.cpp" line="+445"/>
+        <location filename="../guiutil.cpp" line="+441"/>
         <location line="+12"/>
-        <source>Peercoin-Qt</source>
-        <translation>Peercoin-Qt</translation>
+        <source>Sprouts-Qt</source>
+        <translation>Sprouts-Qt</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -1227,12 +1211,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+2"/>
-        <source>10 min</source>
+        <source>24 hours</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>24 hours</source>
+        <source>5 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>10 days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1256,7 +1245,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+80"/>
+        <location line="+83"/>
         <source>Export Minting Data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1307,6 +1296,336 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
 </context>
 <context>
+    <name>MultisigAddressEntry</name>
+    <message>
+        <location filename="../forms/multisigaddressentry.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished">Form</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Public &amp;key:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>The public key of an address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Enter a public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Paste public key from clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Remove this public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>&amp;Address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+42"/>
+        <source>Address associated to the public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-39"/>
+        <source>Enter one of your addresses to get its public key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Choose address from address book</source>
+        <translation type="unfinished">Choose address from address book</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+A</source>
+        <translation type="unfinished">Alt+A</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Label:</source>
+        <translation type="unfinished">Label:</translation>
+    </message>
+</context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <location filename="../forms/multisigdialog.ui" line="+14"/>
+        <source>Multisig</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&amp;Create Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>Add a member to the signing pool</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;Add public key...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Remove all public key fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Required signatures:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Enter a number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>/ 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Create multisig address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Multisig address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Copy the multisig address to the system clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Redeem script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Copy the redeem script to the system clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>The redeem script will be required to spend the funds sent to the multisig address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save redeem script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Add the multisig address to your personal addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Add address to wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&amp;Spend Funds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Inputs</source>
+        <translation type="unfinished">Inputs</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Inputs amount:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+119"/>
+        <location line="+41"/>
+        <source>123.456</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-150"/>
+        <location line="+119"/>
+        <location line="+38"/>
+        <source>SPRTS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-146"/>
+        <source>Add input...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Outputs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Outputs amount:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Fee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Add output...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Create transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Enter a raw transaction or create a new one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Paste address from clipboard</source>
+        <translation type="unfinished">Paste address from clipboard</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Sign transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+86"/>
+        <source>Send transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../multisigdialog.cpp" line="+362"/>
+        <source>The transaction fee might be too small.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The transaction fee might be too big. Don&apos;t forget to add an output for the change address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+106"/>
+        <source>The transaction signature is complete.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The transaction is NOT completely signed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+6"/>
+        <source>Confirm sending transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>The fee of the transaction (%1 SPRTS) is smaller than the expected fee (%2 SPRTS). Do you want to send the transaction anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The fee of the transaction (%1 SPRTS) is bigger than the expected fee (%2 SPRTS). Do you want to send the transaction anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>The transaction is sent to sprouts network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MultisigInputEntry</name>
+    <message>
+        <location filename="../forms/multisiginputentry.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished">Form</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Enter a transaction id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Transaction id:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Transaction output:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Redeem script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Enter the redeem script of the address in the transaction output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Alt+A</source>
+        <translation type="unfinished">Alt+A</translation>
+    </message>
+</context>
+<context>
     <name>OptionsDialog</name>
     <message>
         <location filename="../forms/optionsdialog.ui" line="+14"/>
@@ -1320,21 +1639,21 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically start Peercoin after logging in to the system.</source>
-        <translation>Automatically start Peercoin after logging in to the system.</translation>
+        <source>Automatically start Sprouts after logging in to the system.</source>
+        <translation>Automatically start Sprouts after logging in to the system.</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+10"/>
         <source>Check this box to follow the centrally issued checkpoints.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>&amp;Start Peercoin on system login</source>
-        <translation>&amp;Start Peercoin on system login</translation>
+        <location line="-7"/>
+        <source>&amp;Start Sprouts on system login</source>
+        <translation>&amp;Start Sprouts on system login</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Enforce checkpoints</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1355,8 +1674,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically open the Peercoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatically open the Peercoin client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
+        <source>Automatically open the Sprouts client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Automatically open the Sprouts client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1365,8 +1684,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the Peercoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>Connect to the Peercoin network through a SOCKS proxy (e.g. when connecting through Tor).</translation>
+        <source>Connect to the Sprouts network through a SOCKS proxy (e.g. when connecting through Tor).</source>
+        <translation>Connect to the Sprouts network through a SOCKS proxy (e.g. when connecting through Tor).</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1440,8 +1759,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting Peercoin.</source>
-        <translation>The user interface language can be set here. This setting will take effect after restarting Peercoin.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting Sprouts.</source>
+        <translation>The user interface language can be set here. This setting will take effect after restarting Sprouts.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1455,8 +1774,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+9"/>
-        <source>Whether to show Peercoin addresses in the transaction list or not.</source>
-        <translation>Whether to show Peercoin addresses in the transaction list or not.</translation>
+        <source>Whether to show Sprouts addresses in the transaction list or not.</source>
+        <translation>Whether to show Sprouts addresses in the transaction list or not.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1471,6 +1790,16 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     <message>
         <location line="+3"/>
         <source>Display coin &amp;control features (experts only!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Whether to show MOYATASU in overview or not.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Display MOYATASU in overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1489,12 +1818,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
         <translation>&amp;Apply</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.cpp" line="+53"/>
+        <location filename="../optionsdialog.cpp" line="+57"/>
         <source>default</source>
         <translation>default</translation>
     </message>
     <message>
-        <location line="+125"/>
+        <location line="+126"/>
         <source>Confirm options reset</source>
         <translation>Confirm options reset</translation>
     </message>
@@ -1517,8 +1846,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     <message>
         <location line="-9"/>
         <location line="+9"/>
-        <source>This setting will take effect after restarting Peercoin.</source>
-        <translation>This setting will take effect after restarting Peercoin.</translation>
+        <source>This setting will take effect after restarting Sprouts.</source>
+        <translation>This setting will take effect after restarting Sprouts.</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -1541,8 +1870,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     <message>
         <location line="+7"/>
         <location line="+245"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Peercoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the Peercoin network after a connection is established, but this process has not completed yet.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Sprouts network after a connection is established, but this process has not completed yet.</source>
+        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the Sprouts network after a connection is established, but this process has not completed yet.</translation>
     </message>
     <message>
         <location line="-199"/>
@@ -1599,9 +1928,9 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
 <context>
     <name>PaymentServer</name>
     <message>
-        <location filename="../paymentserver.cpp" line="+107"/>
-        <source>Cannot start peercoin: click-to-pay handler</source>
-        <translation>Cannot start peercoin: click-to-pay handler</translation>
+        <location filename="../paymentserver.cpp" line="+108"/>
+        <source>Cannot start sprouts: click-to-pay handler</source>
+        <translation>Cannot start sprouts: click-to-pay handler</translation>
     </message>
 </context>
 <context>
@@ -1679,7 +2008,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
         <location line="+53"/>
         <location line="+23"/>
         <location line="+23"/>
-        <location filename="../rpcconsole.cpp" line="+341"/>
+        <location filename="../rpcconsole.cpp" line="+343"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
@@ -1750,8 +2079,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+7"/>
-        <source>Show the Peercoin-Qt help message to get a list with possible Peercoin command-line options.</source>
-        <translation>Show the Peercoin-Qt help message to get a list with possible Peercoin command-line options.</translation>
+        <source>Show the Sprouts-Qt help message to get a list with possible Sprouts command-line options.</source>
+        <translation>Show the Sprouts-Qt help message to get a list with possible Sprouts command-line options.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1770,13 +2099,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="-104"/>
-        <source>Peercoin - Debug window</source>
-        <translation>Peercoin - Debug window</translation>
+        <source>Sprouts - Debug window</source>
+        <translation>Sprouts - Debug window</translation>
     </message>
     <message>
         <location line="+25"/>
-        <source>Peercoin Core</source>
-        <translation>Peercoin Core</translation>
+        <source>Sprouts Core</source>
+        <translation>Sprouts Core</translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1785,8 +2114,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+7"/>
-        <source>Open the Peercoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Open the Peercoin debug log file from the current data directory. This can take a few seconds for large log files.</translation>
+        <source>Open the Sprouts debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Open the Sprouts debug log file from the current data directory. This can take a few seconds for large log files.</translation>
     </message>
     <message>
         <location line="+102"/>
@@ -1795,8 +2124,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-30"/>
-        <source>Welcome to the Peercoin RPC console.</source>
-        <translation>Welcome to the Peercoin RPC console.</translation>
+        <source>Welcome to the Sprouts RPC console.</source>
+        <translation>Welcome to the Sprouts RPC console.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2030,7 +2359,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.</sourc
     </message>
     <message>
         <location line="+303"/>
-        <source>Warning: Invalid Peercoin address.
+        <source>Warning: Invalid Sprouts address.
 A standard change address will be used instead.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2131,8 +2460,8 @@ A standard change address will be used instead.</source>
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a Peercoin address</source>
-        <translation>Enter a Peercoin address</translation>
+        <source>Enter a Sprouts address</source>
+        <translation>Enter a Sprouts address</translation>
     </message>
 </context>
 <context>
@@ -2196,8 +2525,8 @@ A standard change address will be used instead.</source>
     </message>
     <message>
         <location line="+21"/>
-        <source>Sign the message to prove you own this Peercoin address</source>
-        <translation>Sign the message to prove you own this Peercoin address</translation>
+        <source>Sign the message to prove you own this Sprouts address</source>
+        <translation>Sign the message to prove you own this Sprouts address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2232,8 +2561,8 @@ A standard change address will be used instead.</source>
     </message>
     <message>
         <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified Peercoin address</source>
-        <translation>Verify the message to ensure it was signed with the specified Peercoin address</translation>
+        <source>Verify the message to ensure it was signed with the specified Sprouts address</source>
+        <translation>Verify the message to ensure it was signed with the specified Sprouts address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2248,8 +2577,8 @@ A standard change address will be used instead.</source>
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a Peercoin address</source>
-        <translation>Enter a Peercoin address</translation>
+        <source>Enter a Sprouts address</source>
+        <translation>Enter a Sprouts address</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -2258,8 +2587,8 @@ A standard change address will be used instead.</source>
     </message>
     <message>
         <location line="+3"/>
-        <source>Enter Peercoin signature</source>
-        <translation>Enter Peercoin signature</translation>
+        <source>Enter Sprouts signature</source>
+        <translation>Enter Sprouts signature</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -2628,12 +2957,12 @@ A standard change address will be used instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+39"/>
         <source>(n/a)</source>
         <translation>(n/a)</translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+200"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>Transaction status. Hover over this field to show number of confirmations.</translation>
     </message>
@@ -2848,7 +3177,7 @@ A standard change address will be used instead.</source>
 <context>
     <name>WalletView</name>
     <message>
-        <location filename="../walletview.cpp" line="+44"/>
+        <location filename="../walletview.cpp" line="+45"/>
         <source>&amp;Export</source>
         <translation>&amp;Export</translation>
     </message>
@@ -2858,7 +3187,7 @@ A standard change address will be used instead.</source>
         <translation>Export the data in the current tab to a file</translation>
     </message>
     <message>
-        <location line="+243"/>
+        <location line="+253"/>
         <source>Backup Wallet</source>
         <translation>Backup Wallet</translation>
     </message>
@@ -2891,758 +3220,564 @@ A standard change address will be used instead.</source>
 <context>
     <name>bitcoin-core</name>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="+9"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
-%s
-It is recommended you use the following random password:
-rpcuser=peercoinrpc
-rpcpassword=%s
-(you do not need to remember this password)
-The username and password MUST NOT be the same.
-If the file does not exist, create it with owner-readable-only file permissions.
-It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;Peercoin Alert&quot; admin@foo.com
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation type="unfinished">Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
+        <translation type="obsolete">Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation type="unfinished">An error occurred while setting up the RPC port %u for listening on IPv4: %s</translation>
+        <translation type="obsolete">An error occurred while setting up the RPC port %u for listening on IPv4: %s</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation type="unfinished">An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</translation>
+        <translation type="obsolete">An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>
-        <translation type="unfinished">Bind to given address and always listen on it. Use [host]:port notation for IPv6</translation>
+        <translation type="obsolete">Bind to given address and always listen on it. Use [host]:port notation for IPv6</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Cannot obtain a lock on data directory %s. Peercoin is probably already running.</source>
-        <translation type="unfinished">Cannot obtain a lock on data directory %s. Peercoin is probably already running.</translation>
+        <source>Cannot obtain a lock on data directory %s. Sprouts is probably already running.</source>
+        <translation type="obsolete">Cannot obtain a lock on data directory %s. Sprouts is probably already running.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished">Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</translation>
+        <translation type="obsolete">Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!</source>
-        <translation type="unfinished">Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!</translation>
+        <translation type="obsolete">Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Error: Wallet unlocked for block minting only, unable to create transaction.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
-        <translation type="unfinished">Execute command when a relevant alert is received (%s in cmd is replaced by message)</translation>
+        <translation type="obsolete">Execute command when a relevant alert is received (%s in cmd is replaced by message)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
-        <translation type="unfinished">Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</translation>
+        <translation type="obsolete">Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
-        <translation type="unfinished">Execute command when the best block changes (%s in cmd is replaced by block hash)</translation>
+        <translation type="obsolete">Execute command when the best block changes (%s in cmd is replaced by block hash)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation type="unfinished">Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</translation>
+        <translation type="obsolete">Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
-        <translation type="unfinished">Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</translation>
+        <translation type="obsolete">Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Set the number of script verification threads (up to 16, 0 = auto, &lt;0 = leave that many cores free, default: 0)</source>
-        <translation type="unfinished">Set the number of script verification threads (up to 16, 0 = auto, &lt;0 = leave that many cores free, default: 0)</translation>
+        <translation type="obsolete">Set the number of script verification threads (up to 16, 0 = auto, &lt;0 = leave that many cores free, default: 0)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
-        <translation type="unfinished">This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</translation>
+        <translation type="obsolete">This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Unable to bind to %s on this computer. Peercoin is probably already running.</source>
-        <translation type="unfinished">Unable to bind to %s on this computer. Peercoin is probably already running.</translation>
+        <source>Unable to bind to %s on this computer. Sprouts is probably already running.</source>
+        <translation type="obsolete">Unable to bind to %s on this computer. Sprouts is probably already running.</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
-        <translation type="unfinished">Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</translation>
+        <translation type="obsolete">Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Peercoin will not work properly.</source>
-        <translation type="unfinished">Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Peercoin will not work properly.</translation>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Sprouts will not work properly.</source>
+        <translation type="obsolete">Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Sprouts will not work properly.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Warning: checkpoint on different blockchain fork, contact developers to resolve the issue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
         <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation type="unfinished">Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</translation>
+        <translation type="obsolete">Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation type="unfinished">Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</translation>
+        <translation type="obsolete">Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
-        <translation type="unfinished">You must set rpcpassword=&lt;password&gt; in the configuration file:
+        <translation type="obsolete">You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Accept command line and JSON-RPC commands</source>
-        <translation type="unfinished">Accept command line and JSON-RPC commands</translation>
+        <translation type="obsolete">Accept command line and JSON-RPC commands</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation type="unfinished">Accept connections from outside (default: 1 if no -proxy or -connect)</translation>
+        <translation type="obsolete">Accept connections from outside (default: 1 if no -proxy or -connect)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
-        <translation type="unfinished">Add a node to connect to and attempt to keep the connection open</translation>
+        <translation type="obsolete">Add a node to connect to and attempt to keep the connection open</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
-        <translation type="unfinished">Allow DNS lookups for -addnode, -seednode and -connect</translation>
+        <translation type="obsolete">Allow DNS lookups for -addnode, -seednode and -connect</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Allow JSON-RPC connections from specified IP address</source>
-        <translation type="unfinished">Allow JSON-RPC connections from specified IP address</translation>
+        <translation type="obsolete">Allow JSON-RPC connections from specified IP address</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Attempt to recover private keys from a corrupt wallet.dat</source>
-        <translation type="unfinished">Attempt to recover private keys from a corrupt wallet.dat</translation>
+        <translation type="obsolete">Attempt to recover private keys from a corrupt wallet.dat</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Block creation options:</source>
-        <translation type="unfinished">Block creation options:</translation>
+        <translation type="obsolete">Block creation options:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Cannot downgrade wallet</source>
-        <translation type="unfinished">Cannot downgrade wallet</translation>
+        <translation type="obsolete">Cannot downgrade wallet</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
-        <translation type="unfinished">Cannot resolve -bind address: &apos;%s&apos;</translation>
+        <translation type="obsolete">Cannot resolve -bind address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
-        <translation type="unfinished">Cannot resolve -externalip address: &apos;%s&apos;</translation>
+        <translation type="obsolete">Cannot resolve -externalip address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Cannot write default address</source>
-        <translation type="unfinished">Cannot write default address</translation>
+        <translation type="obsolete">Cannot write default address</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Connect only to the specified node(s)</source>
-        <translation type="unfinished">Connect only to the specified node(s)</translation>
+        <translation type="obsolete">Connect only to the specified node(s)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Connect through socks proxy</source>
-        <translation type="unfinished">Connect through socks proxy</translation>
+        <translation type="obsolete">Connect through socks proxy</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Connect to a node to retrieve peer addresses, and disconnect</source>
-        <translation type="unfinished">Connect to a node to retrieve peer addresses, and disconnect</translation>
+        <translation type="obsolete">Connect to a node to retrieve peer addresses, and disconnect</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Corrupted block database detected</source>
-        <translation type="unfinished">Corrupted block database detected</translation>
+        <translation type="obsolete">Corrupted block database detected</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
-        <translation type="unfinished">Discover own IP address (default: 1 when listening and no -externalip)</translation>
+        <translation type="obsolete">Discover own IP address (default: 1 when listening and no -externalip)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Do you want to rebuild the block database now?</source>
-        <translation type="unfinished">Do you want to rebuild the block database now?</translation>
+        <translation type="obsolete">Do you want to rebuild the block database now?</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Done loading</source>
-        <translation type="unfinished">Done loading</translation>
+        <translation type="obsolete">Done loading</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error initializing block database</source>
-        <translation type="unfinished">Error initializing block database</translation>
+        <translation type="obsolete">Error initializing block database</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error initializing wallet database environment %s!</source>
-        <translation type="unfinished">Error initializing wallet database environment %s!</translation>
+        <translation type="obsolete">Error initializing wallet database environment %s!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error loading block database</source>
-        <translation type="unfinished">Error loading block database</translation>
+        <translation type="obsolete">Error loading block database</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error loading wallet.dat</source>
-        <translation type="unfinished">Error loading wallet.dat</translation>
+        <translation type="obsolete">Error loading wallet.dat</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error loading wallet.dat: Wallet corrupted</source>
-        <translation type="unfinished">Error loading wallet.dat: Wallet corrupted</translation>
+        <translation type="obsolete">Error loading wallet.dat: Wallet corrupted</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Peercoin</source>
-        <translation type="unfinished">Error loading wallet.dat: Wallet requires newer version of Peercoin</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Sprouts</source>
+        <translation type="obsolete">Error loading wallet.dat: Wallet requires newer version of Sprouts</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error opening block database</source>
-        <translation type="unfinished">Error opening block database</translation>
+        <translation type="obsolete">Error opening block database</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error</source>
-        <translation type="unfinished">Error</translation>
+        <translation type="obsolete">Error</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error: Disk space is low!</source>
-        <translation type="unfinished">Error: Disk space is low!</translation>
+        <translation type="obsolete">Error: Disk space is low!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error: Wallet locked, unable to create transaction!</source>
-        <translation type="unfinished">Error: Wallet locked, unable to create transaction!</translation>
+        <translation type="obsolete">Error: Wallet locked, unable to create transaction!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Error: system error: </source>
-        <translation type="unfinished">Error: system error: </translation>
+        <translation type="obsolete">Error: system error: </translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation type="unfinished">Failed to listen on any port. Use -listen=0 if you want this.</translation>
+        <translation type="obsolete">Failed to listen on any port. Use -listen=0 if you want this.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to read block info</source>
-        <translation type="unfinished">Failed to read block info</translation>
+        <translation type="obsolete">Failed to read block info</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to read block</source>
-        <translation type="unfinished">Failed to read block</translation>
+        <translation type="obsolete">Failed to read block</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to sync block index</source>
-        <translation type="unfinished">Failed to sync block index</translation>
+        <translation type="obsolete">Failed to sync block index</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write block index</source>
-        <translation type="unfinished">Failed to write block index</translation>
+        <translation type="obsolete">Failed to write block index</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write block info</source>
-        <translation type="unfinished">Failed to write block info</translation>
+        <translation type="obsolete">Failed to write block info</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write block</source>
-        <translation type="unfinished">Failed to write block</translation>
+        <translation type="obsolete">Failed to write block</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write file info</source>
-        <translation type="unfinished">Failed to write file info</translation>
+        <translation type="obsolete">Failed to write file info</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write to coin database</source>
-        <translation type="unfinished">Failed to write to coin database</translation>
+        <translation type="obsolete">Failed to write to coin database</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write transaction index</source>
-        <translation type="unfinished">Failed to write transaction index</translation>
+        <translation type="obsolete">Failed to write transaction index</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Failed to write undo data</source>
-        <translation type="unfinished">Failed to write undo data</translation>
+        <translation type="obsolete">Failed to write undo data</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Fee per KB to add to transactions you send</source>
-        <translation type="unfinished">Fee per KB to add to transactions you send</translation>
+        <translation type="obsolete">Fee per KB to add to transactions you send</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Find peers using DNS lookup (default: 1 unless -connect)</source>
-        <translation type="unfinished">Find peers using DNS lookup (default: 1 unless -connect)</translation>
+        <translation type="obsolete">Find peers using DNS lookup (default: 1 unless -connect)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Generate coins (default: 0)</source>
-        <translation type="unfinished">Generate coins (default: 0)</translation>
+        <translation type="obsolete">Generate coins (default: 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Get help for a command</source>
-        <translation type="unfinished">Get help for a command</translation>
+        <translation type="obsolete">Get help for a command</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>How many blocks to check at startup (default: 288, 0 = all)</source>
-        <translation type="unfinished">How many blocks to check at startup (default: 288, 0 = all)</translation>
+        <translation type="obsolete">How many blocks to check at startup (default: 288, 0 = all)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>How thorough the block verification is (0-4, default: 3)</source>
-        <translation type="unfinished">How thorough the block verification is (0-4, default: 3)</translation>
+        <translation type="obsolete">How thorough the block verification is (0-4, default: 3)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Imports blocks from external blk000??.dat file</source>
-        <translation type="unfinished">Imports blocks from external blk000??.dat file</translation>
+        <translation type="obsolete">Imports blocks from external blk000??.dat file</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Info: Minting suspended due to locked wallet.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Information</source>
-        <translation type="unfinished">Information</translation>
+        <translation type="obsolete">Information</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Insufficient funds</source>
-        <translation type="unfinished">Insufficient funds</translation>
+        <translation type="obsolete">Insufficient funds</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
-        <translation type="unfinished">Invalid -proxy address: &apos;%s&apos;</translation>
+        <translation type="obsolete">Invalid -proxy address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
-        <translation type="unfinished">Invalid -tor address: &apos;%s&apos;</translation>
+        <translation type="obsolete">Invalid -tor address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished">Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
+        <translation type="obsolete">Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Invalid amount</source>
-        <translation type="unfinished">Invalid amount</translation>
+        <translation type="obsolete">Invalid amount</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Keep at most &lt;n&gt; unconnectable blocks in memory (default: 750)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Keep at most &lt;n&gt; unconnectable transactions in memory (default: 100)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>List commands</source>
-        <translation type="unfinished">List commands</translation>
+        <translation type="obsolete">List commands</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9902)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Listen for connections on &lt;port&gt; (default: 9901 or testnet: 9903)</source>
-        <translation type="unfinished">Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333) {9901 ?} {9903)?}</translation>
+        <translation type="obsolete">Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333) {9901 ?} {9903)?}</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Loading addresses...</source>
-        <translation type="unfinished">Loading addresses...</translation>
+        <translation type="obsolete">Loading addresses...</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Loading block index...</source>
-        <translation type="unfinished">Loading block index...</translation>
+        <translation type="obsolete">Loading block index...</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Loading wallet...</source>
-        <translation type="unfinished">Loading wallet...</translation>
+        <translation type="obsolete">Loading wallet...</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Maintain a full transaction index (default: 0)</source>
-        <translation type="unfinished">Maintain a full transaction index (default: 0)</translation>
+        <translation type="obsolete">Maintain a full transaction index (default: 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation type="unfinished">Maintain at most &lt;n&gt; connections to peers (default: 125)</translation>
+        <translation type="obsolete">Maintain at most &lt;n&gt; connections to peers (default: 125)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
-        <translation type="unfinished">Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</translation>
+        <translation type="obsolete">Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
-        <translation type="unfinished">Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</translation>
+        <translation type="obsolete">Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Not enough file descriptors available.</source>
-        <translation type="unfinished">Not enough file descriptors available.</translation>
+        <translation type="obsolete">Not enough file descriptors available.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Only accept block chain matching built-in checkpoints (default: 1)</source>
-        <translation type="unfinished">Only accept block chain matching built-in checkpoints (default: 1)</translation>
+        <translation type="obsolete">Only accept block chain matching built-in checkpoints (default: 1)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
-        <translation type="unfinished">Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</translation>
+        <translation type="obsolete">Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Options:</source>
-        <translation type="unfinished">Options:</translation>
+        <translation type="obsolete">Options:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Output extra debugging information. Implies all other -debug* options</source>
-        <translation type="unfinished">Output extra debugging information. Implies all other -debug* options</translation>
+        <translation type="obsolete">Output extra debugging information. Implies all other -debug* options</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Output extra network debugging information</source>
-        <translation type="unfinished">Output extra network debugging information</translation>
+        <translation type="obsolete">Output extra network debugging information</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Password for JSON-RPC connections</source>
-        <translation type="unfinished">Password for JSON-RPC connections</translation>
+        <translation type="obsolete">Password for JSON-RPC connections</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Peercoin version</source>
-        <translation type="unfinished">Peercoin version</translation>
+        <source>Sprouts version</source>
+        <translation type="obsolete">Sprouts version</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Prepend debug output with timestamp (default: 1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Rebuild block chain index from current blk000??.dat files</source>
-        <translation type="unfinished">Rebuild block chain index from current blk000??.dat files</translation>
+        <translation type="obsolete">Rebuild block chain index from current blk000??.dat files</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Rescan the block chain for missing wallet transactions</source>
-        <translation type="unfinished">Rescan the block chain for missing wallet transactions</translation>
+        <translation type="obsolete">Rescan the block chain for missing wallet transactions</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Rescanning...</source>
-        <translation type="unfinished">Rescanning...</translation>
+        <translation type="obsolete">Rescanning...</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Run in the background as a daemon and accept commands</source>
-        <translation type="unfinished">Run in the background as a daemon and accept commands</translation>
+        <translation type="obsolete">Run in the background as a daemon and accept commands</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation type="unfinished">SSL options: (see the Bitcoin Wiki for SSL setup instructions)</translation>
+        <translation type="obsolete">SSL options: (see the Bitcoin Wiki for SSL setup instructions)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Select the version of socks proxy to use (4-5, default: 5)</source>
-        <translation type="unfinished">Select the version of socks proxy to use (4-5, default: 5)</translation>
+        <translation type="obsolete">Select the version of socks proxy to use (4-5, default: 5)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Send command to -server or peercoind</source>
-        <translation type="unfinished">Send command to -server or peercoind</translation>
+        <source>Send command to -server or sproutsd</source>
+        <translation type="obsolete">Send command to -server or sproutsd</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation type="unfinished">Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</translation>
+        <translation type="obsolete">Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Send trace/debug info to console instead of debug.log file</source>
-        <translation type="unfinished">Send trace/debug info to console instead of debug.log file</translation>
+        <translation type="obsolete">Send trace/debug info to console instead of debug.log file</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Send trace/debug info to debugger</source>
-        <translation type="unfinished">Send trace/debug info to debugger</translation>
+        <translation type="obsolete">Send trace/debug info to debugger</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation type="unfinished">Server certificate file (default: server.cert)</translation>
+        <translation type="obsolete">Server certificate file (default: server.cert)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Server private key (default: server.pem)</source>
-        <translation type="unfinished">Server private key (default: server.pem)</translation>
+        <translation type="obsolete">Server private key (default: server.pem)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set database cache size in megabytes (default: 25)</source>
-        <translation type="unfinished">Set database cache size in megabytes (default: 25)</translation>
+        <translation type="obsolete">Set database cache size in megabytes (default: 25)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation type="unfinished">Set key pool size to &lt;n&gt; (default: 100)</translation>
+        <translation type="obsolete">Set key pool size to &lt;n&gt; (default: 100)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set maximum block size in bytes (default: 250000)</source>
-        <translation type="unfinished">Set maximum block size in bytes (default: 250000)</translation>
+        <translation type="obsolete">Set maximum block size in bytes (default: 250000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set minimum block size in bytes (default: 0)</source>
-        <translation type="unfinished">Set minimum block size in bytes (default: 0)</translation>
+        <translation type="obsolete">Set minimum block size in bytes (default: 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set the number of threads to service RPC calls (default: 4)</source>
-        <translation type="unfinished">Set the number of threads to service RPC calls (default: 4)</translation>
+        <translation type="obsolete">Set the number of threads to service RPC calls (default: 4)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
-        <translation type="unfinished">Shrink debug.log file on client startup (default: 1 when no -debug)</translation>
+        <translation type="obsolete">Shrink debug.log file on client startup (default: 1 when no -debug)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Signing transaction failed</source>
-        <translation type="unfinished">Signing transaction failed</translation>
+        <translation type="obsolete">Signing transaction failed</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Specify configuration file (default: peercoin.conf)</source>
-        <translation type="unfinished">Specify configuration file (default: peercoin.conf)</translation>
+        <source>Specify configuration file (default: sprouts.conf)</source>
+        <translation type="obsolete">Specify configuration file (default: sprouts.conf)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Specify connection timeout in milliseconds (default: 5000)</source>
-        <translation type="unfinished">Specify connection timeout in milliseconds (default: 5000)</translation>
+        <translation type="obsolete">Specify connection timeout in milliseconds (default: 5000)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Specify data directory</source>
-        <translation type="unfinished">Specify data directory</translation>
+        <translation type="obsolete">Specify data directory</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Specify pid file (default: peercoind.pid)</source>
-        <translation type="unfinished">Specify pid file (default: peercoind.pid)</translation>
+        <source>Specify pid file (default: sproutsd.pid)</source>
+        <translation type="obsolete">Specify pid file (default: sproutsd.pid)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Specify your own public address</source>
-        <translation type="unfinished">Specify your own public address</translation>
+        <translation type="obsolete">Specify your own public address</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>System error: </source>
-        <translation type="unfinished">System error: </translation>
+        <translation type="obsolete">System error: </translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>This help message</source>
-        <translation type="unfinished">This help message</translation>
+        <translation type="obsolete">This help message</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation type="unfinished">Threshold for disconnecting misbehaving peers (default: 100)</translation>
+        <translation type="obsolete">Threshold for disconnecting misbehaving peers (default: 100)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>To use the %s option</source>
-        <translation type="unfinished">To use the %s option</translation>
+        <translation type="obsolete">To use the %s option</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Transaction amount too small</source>
-        <translation type="unfinished">Transaction amount too small</translation>
+        <translation type="obsolete">Transaction amount too small</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Transaction amounts must be positive</source>
-        <translation type="unfinished">Transaction amounts must be positive</translation>
+        <translation type="obsolete">Transaction amounts must be positive</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Transaction too large</source>
-        <translation type="unfinished">Transaction too large</translation>
+        <translation type="obsolete">Transaction too large</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
-        <translation type="unfinished">Unable to bind to %s on this computer (bind returned error %d, %s)</translation>
+        <translation type="obsolete">Unable to bind to %s on this computer (bind returned error %d, %s)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Unable to sign checkpoint, wrong checkpointkey?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Unknown -socks proxy version requested: %i</source>
-        <translation type="unfinished">Unknown -socks proxy version requested: %i</translation>
+        <translation type="obsolete">Unknown -socks proxy version requested: %i</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
-        <translation type="unfinished">Unknown network specified in -onlynet: &apos;%s&apos;</translation>
+        <translation type="obsolete">Unknown network specified in -onlynet: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Upgrade wallet to latest format</source>
-        <translation type="unfinished">Upgrade wallet to latest format</translation>
+        <translation type="obsolete">Upgrade wallet to latest format</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Usage:</source>
-        <translation type="unfinished">Usage:</translation>
+        <translation type="obsolete">Usage:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
-        <translation type="unfinished">Use OpenSSL (https) for JSON-RPC connections</translation>
+        <translation type="obsolete">Use OpenSSL (https) for JSON-RPC connections</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use UPnP to map the listening port (default: 0)</source>
-        <translation type="unfinished">Use UPnP to map the listening port (default: 0)</translation>
+        <translation type="obsolete">Use UPnP to map the listening port (default: 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
-        <translation type="unfinished">Use UPnP to map the listening port (default: 1 when listening)</translation>
+        <translation type="obsolete">Use UPnP to map the listening port (default: 1 when listening)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
-        <translation type="unfinished">Use proxy to reach tor hidden services (default: same as -proxy)</translation>
+        <translation type="obsolete">Use proxy to reach tor hidden services (default: same as -proxy)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Use the test network</source>
-        <translation type="unfinished">Use the test network</translation>
+        <translation type="obsolete">Use the test network</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Username for JSON-RPC connections</source>
-        <translation type="unfinished">Username for JSON-RPC connections</translation>
+        <translation type="obsolete">Username for JSON-RPC connections</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Verifying blocks...</source>
-        <translation type="unfinished">Verifying blocks...</translation>
+        <translation type="obsolete">Verifying blocks...</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Verifying wallet...</source>
-        <translation type="unfinished">Verifying wallet...</translation>
+        <translation type="obsolete">Verifying wallet...</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart Peercoin to complete</source>
-        <translation type="unfinished">Wallet needed to be rewritten: restart Peercoin to complete</translation>
+        <source>Wallet needed to be rewritten: restart Sprouts to complete</source>
+        <translation type="obsolete">Wallet needed to be rewritten: restart Sprouts to complete</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Warning</source>
-        <translation type="unfinished">Warning</translation>
+        <translation type="obsolete">Warning</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
-        <translation type="unfinished">Warning: This version is obsolete, upgrade required!</translation>
+        <translation type="obsolete">Warning: This version is obsolete, upgrade required!</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>You need to rebuild the databases using -reindex to change -txindex</source>
-        <translation type="unfinished">You need to rebuild the databases using -reindex to change -txindex</translation>
+        <translation type="obsolete">You need to rebuild the databases using -reindex to change -txindex</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>wallet.dat corrupt, salvage failed</source>
-        <translation type="unfinished">wallet.dat corrupt, salvage failed</translation>
+        <translation type="obsolete">wallet.dat corrupt, salvage failed</translation>
     </message>
 </context>
 </TS>

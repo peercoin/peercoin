@@ -1,8 +1,6 @@
-Source: peercoin
+Source: sprouts
 Section: utils
 Priority: optional
-Maintainer: Peerchemist <peerchemist@protonmail.ch>
-Uploaders: Peerchemist <peerchemist@protonmail.ch>
 Build-Depends: debhelper,
  devscripts,
  automake,
@@ -15,7 +13,6 @@ Build-Depends: debhelper,
  perl,
  perl-modules,
  libevent-dev,
- python,
  libboost-system1.54-dev | libboost-system-dev (>> 1.47),
  libboost-filesystem1.54-dev | libboost-filesystem-dev (>> 1.47),
  libboost-program-options1.54-dev | libboost-program-options-dev (>> 1.47),
@@ -27,11 +24,11 @@ Build-Depends: debhelper,
  qttools5-dev-tools, qttools5-dev,
  libqrencode-dev
 Standards-Version: 3.9.5
-Homepage: https://peercoin.net/
-Vcs-Git: git://github.com/peercoin/peercoin.git
-Vcs-Browser: https://github.com/peercoin/peercoin
+Homepage: https://sprouts.org/
+Vcs-Git: git://github.com/sprouts/sprouts.git
+Vcs-Browser: https://github.com/sprouts/sprouts
 
-Package: peercoind
+Package: sproutsd
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - daemon
@@ -39,9 +36,9 @@ Description: peer-to-peer network based digital currency - daemon
  energy-efficiency and keep as much as possible the original Bitcoin's
  preferable properties.
  .
- This package provides peercoind, a daemon client for the Peercoin network.
+ This package provides sproutsd, a daemon client for the Peercoin network.
 
-Package: peercoin-qt
+Package: sprouts-qt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - Qt GUI

@@ -185,6 +185,9 @@ void OverviewPage::setWalletModel(WalletModel *model)
         connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64, qint64)));
 
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
+        connect(model->getOptionsModel(), SIGNAL(displayBackgroundImageChanged(bool)), this, SLOT(updateDisplayBackgroundImage(bool)));
+        
+        ui->labelMoyatasu->setVisible(model->getOptionsModel()->getBackgroundImage());
     }
 
     // update the display unit, to not use the default ("BTC")
@@ -203,6 +206,11 @@ void OverviewPage::updateDisplayUnit()
 
         ui->listTransactions->update();
     }
+}
+
+void OverviewPage::updateDisplayBackgroundImage(bool fShow)
+{
+	ui->labelMoyatasu->setVisible(fShow);
 }
 
 void OverviewPage::updateAlerts(const QString &warnings)

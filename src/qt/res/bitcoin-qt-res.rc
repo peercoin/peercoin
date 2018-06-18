@@ -1,5 +1,5 @@
-IDI_ICON1 ICON DISCARDABLE "icons/peercoin.ico"
-IDI_ICON2 ICON DISCARDABLE "icons/peercoin_testnet.ico"
+IDI_ICON1 ICON DISCARDABLE "icons/sprouts.ico"
+IDI_ICON2 ICON DISCARDABLE "icons/sprouts_testnet.ico"
 
 #include <windows.h>             // needed for VERSIONINFO
 #include "../../clientversion.h" // holds the needed client version information
@@ -20,14 +20,14 @@ BEGIN
     BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
-            VALUE "CompanyName",        "Peercoin"
-            VALUE "FileDescription",    "Peercoin-Qt (OSS GUI client for Peercoin)"
+            VALUE "CompanyName",        "Sprouts"
+            VALUE "FileDescription",    "Sprouts-Qt (OSS GUI client for Sprouts)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
-            VALUE "InternalName",       "peercoin-qt"
+            VALUE "InternalName",       "sprouts-qt"
             VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
-            VALUE "OriginalFilename",   "peercoin-qt.exe"
-            VALUE "ProductName",        "Peercoin-Qt"
+            VALUE "OriginalFilename",   "sprouts-qt.exe"
+            VALUE "ProductName",        "Sprouts-Qt"
             VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
         END
     END

@@ -29,6 +29,7 @@ public:
         DisplayAddresses,  // bool
         Language,          // QString
         CoinControlFeatures, // bool
+        BackgroundImage,   // bool
         CheckpointEnforce, // bool
         OptionIDRowCount,
     };
@@ -51,6 +52,7 @@ public:
     QString getLanguage() { return language; }
 
     bool getCoinControlFeatures() { return fCoinControlFeatures; }
+    bool getBackgroundImage() { return bBackgroundImage; }
 
     bool getCheckpointEnforce() { return fCheckpointEnforce; }
 
@@ -61,6 +63,7 @@ private:
     bool fMinimizeOnClose;
 
     bool fCoinControlFeatures;
+    bool bBackgroundImage;
 
     QString language;
 
@@ -69,6 +72,7 @@ private:
 signals:
     void displayUnitChanged(int unit);
     void coinControlFeaturesChanged(bool);
+    void displayBackgroundImageChanged(bool);
 };
 
 #endif // OPTIONSMODEL_H

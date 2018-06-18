@@ -486,7 +486,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
         }
         else if (!addr.IsValid()) // Invalid address
         {
-            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Peercoin address.\nA standard change address will be used instead."));
+            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Sprouts address.\nA standard change address will be used instead."));
         }
         else // Valid address
         {

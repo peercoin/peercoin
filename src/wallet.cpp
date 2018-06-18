@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1270,6 +1271,10 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64> >& vecSend,
                     scriptChange = pcoin.first->vout[pcoin.second].scriptPubKey;
                 }
 
+                // The following prevents creating a transaction where inputs accumulate over MAX_MONEY
+                if (nValueIn > (IsProtocolV06(GetAdjustedTime()) ? MAX_MONEY_2 : MAX_MONEY))
+                    return error("Transaction creation failed : total inputs exceed MAX_MONEY");
+
                 int64 nChange = nValueIn - nValue - nFeeRet;
                 // The following if statement should be removed once enough miners
                 // have upgraded to the 0.9 GetMinFee() rules. Until then, this avoids
@@ -1442,7 +1447,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         bool fKernelFound = false;
         for (unsigned int n=0; n<min(nSearchInterval,(int64)nMaxStakeSearchInterval) && !fKernelFound; n++)
         {
-            // Search backward in time from the given txNew timestamp 
+            // Search backward in time from the given txNew timestamp
             // Search nSearchInterval seconds back up to nMaxStakeSearchInterval
             uint256 hashProofOfStake = 0;
             COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
@@ -1484,7 +1489,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 else
                     scriptPubKeyOut = scriptPubKeyKernel;
 
-                txNew.nTime -= n; 
+                txNew.nTime -= n;
                 txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
                 nCredit += pcoin.first->vout[pcoin.second].nValue;
                 vwtxPrev.push_back(pcoin.first);
@@ -1537,11 +1542,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         if (!txNew.GetCoinAge(state, view, nCoinAge))
             return error("CreateCoinStake : failed to calculate coin age");
 
-        int64 nReward = GetProofOfStakeReward(nCoinAge);
+        int64 nReward = GetProofOfStakeReward(nCoinAge, txNew.nTime);
         // Refuse to create mint that has zero or negative reward
-        if(nReward <= 0) {
-          return false;
-        }
+        if(nReward <= 0)
+            return false;
         nCredit += nReward;
     }
 

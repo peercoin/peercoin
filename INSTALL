@@ -1,9 +1,9 @@
-Building Peercoin
+Building Sprouts
 
-See doc/readme-qt.rst for instructions on building Peercoin-Qt,
+See doc/readme-qt.rst for instructions on building Sprouts-Qt,
 the intended-for-end-users, nice-graphical-interface, reference
-implementation of Peercoin.
+implementation of Sprouts.
 
-See doc/build-*.txt for instructions on building peercoind,
+See doc/build-*.txt for instructions on building sproutsd,
 the intended-for-services, no-graphical-interface, reference
-implementation of Peercoin.
+implementation of Sprouts.

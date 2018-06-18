@@ -6,7 +6,7 @@ define(_CLIENT_VERSION_REVISION, 6)
 define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, false)
 define(_COPYRIGHT_YEAR, 2018)
-AC_INIT([Peercoin],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[info@peercoin.net],[peercoin])
+AC_INIT([Sprouts],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[info@sprouts.org],[sprouts])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 LT_INIT([disable-shared])
@@ -621,7 +621,6 @@ fi
 
 dnl these are only used when qt is enabled
 if test x$bitcoin_enable_qt != xno; then
-  CPPFLAGS="$CPPFLAGS -DQT_GUI"
   BUILD_QT=qt
   dnl enable dbus support
   AC_MSG_CHECKING([if dbus should be enabled])

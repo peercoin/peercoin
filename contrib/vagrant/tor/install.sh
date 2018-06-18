@@ -7,6 +7,6 @@ sudo apt-get update -qq
 sudo apt-get install -y -qq tor deb.torproject.org-keyring
 
 
-echo "HiddenServiceDir /var/lib/tor/ppcoin-service/" | sudo tee -a /etc/tor/torrc
+echo "HiddenServiceDir /var/lib/tor/sprouts-service/" | sudo tee -a /etc/tor/torrc
 echo "HiddenServicePort 9901 127.0.0.1:9901" | sudo tee -a /etc/tor/torrc
 sudo systemctl restart tor.service

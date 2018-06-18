@@ -1,8 +1,8 @@
 [Unit]
-Description=Peercoin daemon - tor
+Description=Sprouts daemon - tor
 After=network.target
 Wants=tor.service
-Conflicts=peercoind@%i.service
+Conflicts=sproutsd@%i.service
 
 [Service]
 User=%i
@@ -11,7 +11,7 @@ PermissionsStartOnly=true
 Type=forking
 Restart=always
 RestartSec=15
-ExecStart=/usr/bin/peercoind -daemon -proxy=127.0.0.1:9050
+ExecStart=/usr/bin/sproutsd -daemon -proxy=127.0.0.1:9050
 TimeoutStopSec=60s
 TimeoutStartSec=2s
 

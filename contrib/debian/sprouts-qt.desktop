@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Sprouts
+Comment=Core wallet for Sprouts P2P Cryptocurrency
+Comment[de]=Offizieller Client für die Kryptowährung Sprouts
+Exec=/usr/bin/sprouts-qt %u
+Terminal=false
+Type=Application
+Icon=/usr/share/pixmaps/sprouts.png
+MimeType=x-scheme-handler/sprouts;
+Categories=Application;Network;

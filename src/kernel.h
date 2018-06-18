@@ -1,13 +1,14 @@
 // Copyright (c) 2012-2018 The Peercoin developers
+// Copyright (c) 2018      The Sprouts developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef PPCOIN_KERNEL_H
-#define PPCOIN_KERNEL_H
+#ifndef SPROUTS_KERNEL_H
+#define SPROUTS_KERNEL_H
 
 #include "main.h"
 
 // MODIFIER_INTERVAL: time to elapse before new modifier is computed
-static const unsigned int MODIFIER_INTERVAL = 6 * 60 * 60;
+static const unsigned int MODIFIER_INTERVAL = 3 * 60 * 60;
 extern unsigned int nModifierInterval;
 
 // MODIFIER_INTERVAL_RATIO:
@@ -24,9 +25,14 @@ bool IsProtocolV03(unsigned int nTimeCoinStake);
 bool IsProtocolV04(unsigned int nTimeBlock);
 // Whether a given transaction is subject to new v0.5 protocol
 bool IsProtocolV05(unsigned int nTimeTx);
+
+// Protocol switch time of v0.6 kernel protocol
+extern unsigned int nProtocolV06SwitchTime;
+extern unsigned int nProtocolV06TestSwitchTime;
+
 // Whether a given block is subject to new v0.6 protocol
 // Test against previous block index! (always available)
-bool IsProtocolV06(const CBlockIndex *pindexPrev);
+bool IsProtocolV06(unsigned int nTimeTx);
 
 // Compute the hash modifier for proof-of-stake
 bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64& nStakeModifier, bool& fGeneratedStakeModifier);
@@ -48,4 +54,4 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex);
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum);
 
-#endif // PPCOIN_KERNEL_H
+#endif // SPROUTS_KERNEL_H

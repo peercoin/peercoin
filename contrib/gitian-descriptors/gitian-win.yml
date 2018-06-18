@@ -1,5 +1,5 @@
 ---
-name: "peercoin"
+name: "sprouts"
 suites:
 - "precise"
 architectures:
@@ -14,15 +14,15 @@ packages:
 
 reference_datetime: "2013-06-01 00:00:00"
 remotes:
-- "url": "https://github.com/peercoin/peercoin.git"
-  "dir": "peercoin"
+- "url": "https://github.com/sprouts/sprouts.git"
+  "dir": "sprouts"
 files:
 - "qt-win32-4.8.5-gitian-r1.zip"
 - "qt-win64-4.8.5-gitian-r1.zip"
 - "boost-win32-1.55.0-gitian-r1.zip"
 - "boost-win64-1.55.0-gitian-r1.zip"
-- "peercoin-deps-win32-gitian-r1.zip"
-- "peercoin-deps-win64-gitian-r1.zip"
+- "sprouts-deps-win32-gitian-r1.zip"
+- "sprouts-deps-win64-gitian-r1.zip"
 script: |
   # Defines
   export TZ=UTC
@@ -46,45 +46,45 @@ script: |
     cd $STAGING
     unzip $INDIR/qt-win${BITS}-4.8.5-gitian-r1.zip
     unzip $INDIR/boost-win${BITS}-1.55.0-gitian-r1.zip
-    unzip $INDIR/peercoin-deps-win${BITS}-gitian-r1.zip
+    unzip $INDIR/sprouts-deps-win${BITS}-gitian-r1.zip
     if [ "$NEEDDIST" == "1" ]; then
       # Make source code archive which is architecture independent so it only needs to be done once
-      cd $HOME/build/peercoin
-      git archive --format=tar -o peercoin.tar HEAD
+      cd $HOME/build/sprouts
+      git archive --format=tar -o sprouts.tar HEAD
       cp doc/README_windows.txt $OUTDIR/readme.txt
       cp COPYING $OUTDIR/license.txt
-      DISTNAME=peercoin.tar
+      DISTNAME=sprouts.tar
       NEEDDIST=0
     fi
 
     # Build platform-dependent executables from source archive
     cd $BUILDDIR
-    cp -r $HOME/build/peercoin distsrc
+    cp -r $HOME/build/sprouts distsrc
     cd distsrc
 
     export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
     export FAKETIME=$REFERENCE_DATETIME
 
-    $STAGING/host/bin/qmake -spec win32-g++ CROSS_COMPILE=$HOST USE_QRCODE=1 INCLUDEPATH=$STAGING BOOST_LIB_SUFFIX=-mt-s BOOST_THREAD_LIB_SUFFIX=_win32-mt-s DEFINES=BOOST_THREAD_USE_LIB BITCOIN_NEED_QT_PLUGINS=1 QMAKE_LRELEASE=lrelease QMAKE_CXXFLAGS=-frandom-seed=peercoin QMAKE_LFLAGS="-static-libgcc -static-libstdc++ -frandom-seed=peercoin" USE_BUILD_INFO=1 CURL_STATIC=1 MINIUPNP_STATICLIB=1
+    $STAGING/host/bin/qmake -spec win32-g++ CROSS_COMPILE=$HOST USE_QRCODE=1 INCLUDEPATH=$STAGING BOOST_LIB_SUFFIX=-mt-s BOOST_THREAD_LIB_SUFFIX=_win32-mt-s DEFINES=BOOST_THREAD_USE_LIB BITCOIN_NEED_QT_PLUGINS=1 QMAKE_LRELEASE=lrelease QMAKE_CXXFLAGS=-frandom-seed=sprouts QMAKE_LFLAGS="-static-libgcc -static-libstdc++ -frandom-seed=sprouts" USE_BUILD_INFO=1 CURL_STATIC=1 MINIUPNP_STATICLIB=1
     make $MAKEOPTS
-    ${HOST}-strip release/peercoin-qt.exe
-    cp -f release/peercoin-qt.exe $BINDIR/
+    ${HOST}-strip release/sprouts-qt.exe
+    cp -f release/sprouts-qt.exe $BINDIR/
 
     cd src
-    make -f makefile.linux-mingw $MAKEOPTS HOST=$HOST DEPSDIR=$STAGING peercoind.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=peercoin" LDFLAGS="-static-libgcc -static-libstdc++"
-    ${HOST}-strip peercoind.exe
-    cp -f peercoind.exe $BINDIR/
+    make -f makefile.linux-mingw $MAKEOPTS HOST=$HOST DEPSDIR=$STAGING sproutsd.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=sprouts" LDFLAGS="-static-libgcc -static-libstdc++"
+    ${HOST}-strip sproutsd.exe
+    cp -f sproutsd.exe $BINDIR/
 
     cd $BUILDDIR
     mkdir nsis
     cd nsis
-    tar -xf $HOME/build/peercoin/$DISTNAME
+    tar -xf $HOME/build/sprouts/$DISTNAME
     mkdir release
-    cp $BINDIR/peercoin-qt.exe release/
-    cp $BINDIR/peercoind.exe release/
+    cp $BINDIR/sprouts-qt.exe release/
+    cp $BINDIR/sproutsd.exe release/
     cp share/setup.nsi.in share/setup.nsi
     makensis share/setup.nsi
-    cp share/peercoin-*setup*.exe $BINDIR
+    cp share/sprouts-*setup*.exe $BINDIR
     unset LD_PRELOAD
     unset FAKETIME
   done # for BITS in
@@ -94,4 +94,4 @@ script: |
   rm -rf $TEMPDIR
   mkdir -p $TEMPDIR
   cd $TEMPDIR
-  tar -xvf $HOME/build/peercoin/$DISTNAME | sort | tar --no-recursion -cT /dev/stdin --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 --mtime="$REFERENCE_DATETIME" | gzip -n > $OUTDIR/src/$DISTNAME.gz
+  tar -xvf $HOME/build/sprouts/$DISTNAME | sort | tar --no-recursion -cT /dev/stdin --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 --mtime="$REFERENCE_DATETIME" | gzip -n > $OUTDIR/src/$DISTNAME.gz

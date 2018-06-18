@@ -1,6 +1,6 @@
 #!/bin/bash -ev
 
-#https://github.com/peercoin/peercoin/wiki/Compiling-for-Windows-on-Debian-linux
+#https://github.com/sprouts/sprouts/wiki/Compiling-for-Windows-on-Debian-linux
 
 #dependencies
 sudo apt-get install -yqq  p7zip-full autoconf automake autopoint bash bison bzip2 cmake flex gettext git g++ gperf intltool libffi-dev libtool libltdl-dev libssl-dev libxml-parser-perl make openssl patch perl pkg-config python ruby scons sed unzip wget xz-utils g++-multilib libc6-dev-i386

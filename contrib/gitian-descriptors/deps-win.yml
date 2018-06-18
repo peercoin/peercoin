@@ -1,5 +1,5 @@
 ---
-name: "peercoin-deps"
+name: "sprouts-deps"
 suites:
 - "precise"
 architectures:
@@ -170,5 +170,5 @@ script: |
     done
     #
     cd $INSTALLPREFIX
-    find include lib | sort | zip -X@ $OUTDIR/peercoin-deps-win$BITS-gitian-r1.zip
+    find include lib | sort | zip -X@ $OUTDIR/sprouts-deps-win$BITS-gitian-r1.zip
   done # for BITS in
