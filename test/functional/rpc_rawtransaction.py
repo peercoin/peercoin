@@ -333,11 +333,7 @@ class RawTransactionsTest(BitcoinTestFramework):
 
         txDetails = self.nodes[0].gettransaction(txId, True)
         rawTx = self.nodes[0].decoderawtransaction(txDetails['hex'])
-        vout = False
-        for outpoint in rawTx['vout']:
-            if outpoint['value'] == Decimal('2.200000'):
-                vout = outpoint
-                break
+        vout = next(o for o in rawTx['vout'] if o['value'] == Decimal('2.20000000'))
 
         bal = self.nodes[0].getbalance()
         inputs = [{ "txid" : txId, "vout" : vout['n'], "scriptPubKey" : vout['scriptPubKey']['hex'], "amount" : vout['value']}]
@@ -378,11 +374,7 @@ class RawTransactionsTest(BitcoinTestFramework):
 
         txDetails = self.nodes[0].gettransaction(txId, True)
         rawTx2 = self.nodes[0].decoderawtransaction(txDetails['hex'])
-        vout = False
-        for outpoint in rawTx2['vout']:
-            if outpoint['value'] == Decimal('2.200000'):
-                vout = outpoint
-                break
+        vout = next(o for o in rawTx2['vout'] if o['value'] == Decimal('2.20000000'))
 
         bal = self.nodes[0].getbalance()
         inputs = [{ "txid" : txId, "vout" : vout['n'], "scriptPubKey" : vout['scriptPubKey']['hex'], "redeemScript" : mSigObjValid['hex'], "amount" : vout['value']}]
