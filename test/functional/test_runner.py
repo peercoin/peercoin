@@ -115,6 +115,7 @@ BASE_SCRIPTS = [
     'p2p_invalid_tx.py',
     'rpc_preciousblock.py',
     'wallet_importprunedfunds.py',
+    'rpc_zmq.py',
     'rpc_signmessage.py',
     'feature_nulldummy.py',
     'mempool_accept.py',
