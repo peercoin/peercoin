@@ -11,6 +11,7 @@
 #include <validation.h>
 #include <key_io.h>
 #include <net.h>
+#include <outputtype.h>
 #include <policy/policy.h>
 #include <rpc/mining.h>
 #include <rpc/rawtransaction.h>
