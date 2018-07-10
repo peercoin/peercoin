@@ -1537,7 +1537,6 @@ int64_t CWalletTx::GetTxTime() const
 {
 //    int64_t n = nTimeSmart;
 //    return n ? n : nTimeReceived;
-
     // peercoin: we still have the timestamp, so use it to avoid confusion
     return tx->nTime;
 }
