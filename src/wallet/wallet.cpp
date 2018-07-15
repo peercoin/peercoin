@@ -1551,7 +1551,7 @@ int64_t CWalletTx::GetTxTime() const
     return tx->nTime;
 }
 
-// Helper for producing a max-sized low-S signature (eg 72 bytes)
+// Helper for producing a max-sized low-S low-R signature (eg 71 bytes)
 bool CWallet::DummySignInput(CTxIn &tx_in, const CTxOut &txout) const
 {
     // Fill in dummy signatures for fee calculation.
@@ -1567,7 +1567,7 @@ bool CWallet::DummySignInput(CTxIn &tx_in, const CTxOut &txout) const
     return true;
 }
 
-// Helper for producing a bunch of max-sized low-S signatures (eg 72 bytes)
+// Helper for producing a bunch of max-sized low-S low-R signatures (eg 71 bytes)
 bool CWallet::DummySignTx(CMutableTransaction &txNew, const std::vector<CTxOut> &txouts) const
 {
     // Fill in dummy signatures for fee calculation.
