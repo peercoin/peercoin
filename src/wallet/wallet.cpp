@@ -2020,6 +2020,7 @@ CAmount CWalletTx::GetAvailableCredit(bool fUseCache, const isminefilter& filter
 
     if (cache) {
         *cache = nCredit;
+        assert(cache_used);
         *cache_used = true;
     }
     return nCredit;
