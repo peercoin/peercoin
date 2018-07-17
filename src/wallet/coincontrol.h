@@ -24,21 +24,15 @@ public:
     bool fAllowWatchOnly;
     //! Override the default confirmation target if set
     boost::optional<unsigned int> m_confirm_target;
+    //! Avoid partial use of funds sent to a given address
+    bool m_avoid_partial_spends;
 
     CCoinControl()
     {
         SetNull();
     }
 
-    void SetNull()
-    {
-        destChange = CNoDestination();
-        m_change_type.reset();
-        fAllowOtherInputs = false;
-        fAllowWatchOnly = false;
-        setSelected.clear();
-        m_confirm_target.reset();
-    }
+    void SetNull();
 
     bool HasSelected() const
     {
