@@ -26,6 +26,8 @@ public:
     boost::optional<unsigned int> m_confirm_target;
     //! Avoid partial use of funds sent to a given address
     bool m_avoid_partial_spends;
+    //! Forbids inclusion of dirty (previously used) addresses
+    bool m_avoid_address_reuse;
     //! Minimum chain depth value for coin availability
     int m_min_depth{0};
 
