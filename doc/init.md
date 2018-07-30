@@ -44,7 +44,7 @@ This allows for running peercoind without having to do any manual configuration.
 relative to the data directory. `wallet` *only* supports relative paths.
 
 For an example configuration file that describes the configuration settings,
-see `contrib/debian/examples/peercoin.conf`.
+see `share/examples/peercoin.conf`.
 
 Paths
 ---------------------------------
