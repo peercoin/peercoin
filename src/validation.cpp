@@ -737,7 +737,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         }
 
         // Store transaction in memory
-        pool.addUnchecked(hash, entry, setAncestors);
+        pool.addUnchecked(entry, setAncestors);
 
         // trim mempool and check if tx was trimmed
         if (!bypass_limits) {
