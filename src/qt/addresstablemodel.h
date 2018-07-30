@@ -13,7 +13,9 @@ enum class OutputType;
 class AddressTablePriv;
 class WalletModel;
 
-class CWallet;
+namespace interfaces {
+class Wallet;
+}
 
 /**
    Qt model of the address book in the core. This allows views to access and modify the address book.
@@ -23,7 +25,7 @@ class AddressTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit AddressTableModel(CWallet *wallet, WalletModel *parent = 0);
+    explicit AddressTableModel(WalletModel *parent = nullptr);
     ~AddressTableModel();
 
     enum ColumnIndex {
