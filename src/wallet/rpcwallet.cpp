@@ -186,16 +186,6 @@ static UniValue getnewaddress(const JSONRPCRequest& request)
     return EncodeDestination(dest);
 }
 
-CTxDestination GetLabelDestination(CWallet* const pwallet, const std::string& label, bool bForceNew=false)
-{
-    CTxDestination dest;
-    if (!pwallet->GetLabelDestination(dest, label, bForceNew)) {
-        throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
-    }
-
-    return dest;
-}
-
 static UniValue getrawchangeaddress(const JSONRPCRequest& request)
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
@@ -287,20 +277,6 @@ static UniValue setlabel(const JSONRPCRequest& request)
         pwallet->SetAddressBook(dest, label, "send");
     }
 
-    // Detect when there are no addresses using this label.
-    // If so, delete the account record for it. Labels, unlike addresses, can be deleted,
-    // and if we wouldn't do this, the record would stick around forever.
-    bool found_address = false;
-    for (const std::pair<const CTxDestination, CAddressBookData>& item : pwallet->mapAddressBook) {
-        if (item.second.name == label) {
-            found_address = true;
-            break;
-        }
-    }
-    if (!found_address) {
-        pwallet->DeleteLabel(old_label);
-    }
-
     return NullUniValue;
 }
 
@@ -341,7 +317,7 @@ static CTransactionRef SendMoney(CWallet * const pwallet, const CTxDestination &
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
     CValidationState state;
-    if (!pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */, "" /* account */, reservekey, g_connman.get(), state)) {
+    if (!pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */, reservekey, g_connman.get(), state)) {
         strError = strprintf("Error: The transaction was rejected! Reason given: %s", FormatStateMessage(state));
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
@@ -876,7 +852,7 @@ static UniValue sendmany(const JSONRPCRequest& request)
     EnsureWalletIsUnlocked(pwallet);
 
     // Check funds
-    if (totalAmount > pwallet->GetLegacyBalance(ISMINE_SPENDABLE, nMinDepth, nullptr)) {
+    if (totalAmount > pwallet->GetLegacyBalance(ISMINE_SPENDABLE, nMinDepth)) {
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Wallet has insufficient funds");
     }
 
@@ -893,7 +869,7 @@ static UniValue sendmany(const JSONRPCRequest& request)
     if (!fCreated)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strFailReason);
     CValidationState state;
-    if (!pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */, "" /* account */, keyChange, g_connman.get(), state)) {
+    if (!pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */, keyChange, g_connman.get(), state)) {
         strFailReason = strprintf("Transaction commit failed:: %s", FormatStateMessage(state));
         throw JSONRPCError(RPC_WALLET_ERROR, strFailReason);
     }
@@ -1390,11 +1366,10 @@ static void PushCoinStakeCategory(UniValue & entry, const CWalletTx &wtx)
 static void ListTransactions(CWallet* const pwallet, const CWalletTx& wtx, int nMinDepth, bool fLong, UniValue& ret, const isminefilter& filter) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     CAmount nFee;
-    std::string dummy_account;
     std::list<COutputEntry> listReceived;
     std::list<COutputEntry> listSent;
 
-    wtx.GetAmounts(listReceived, listSent, nFee, dummy_account, filter);
+    wtx.GetAmounts(listReceived, listSent, nFee, filter);
 
     bool involvesWatchonly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
 
@@ -1556,10 +1531,8 @@ UniValue listtransactions(const JSONRPCRequest& request)
         // iterate backwards until we have nCount items to return:
         for (CWallet::TxItems::const_reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it)
         {
-            CWalletTx *const pwtx = (*it).second.first;
-            if (pwtx != nullptr) {
-                ListTransactions(pwallet, *pwtx, 0, true, ret, filter);
-            }
+            CWalletTx *const pwtx = (*it).second;
+            ListTransactions(pwallet, *pwtx, 0, true, ret, filter);
             if ((int)ret.size() >= (nCount+nFrom)) break;
         }
     }
