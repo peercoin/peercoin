@@ -19,6 +19,7 @@
 
 #include <ui_interface.h>
 
+#include <QApplication>
 #include <QComboBox>
 #include <QDateTimeEdit>
 #include <QDesktopServices>
@@ -197,6 +198,11 @@ TransactionView::TransactionView(const PlatformStyle *platformStyle, QWidget *pa
     connect(copyTxPlainText, SIGNAL(triggered()), this, SLOT(copyTxPlainText()));
     connect(editLabelAction, SIGNAL(triggered()), this, SLOT(editLabel()));
     connect(showDetailsAction, SIGNAL(triggered()), this, SLOT(showDetails()));
+
+    // Highlight transaction after fee bump
+    connect(this, &TransactionView::bumpedFee, [this](const uint256& txid) {
+      focusTransaction(txid);
+    });
 }
 
 void TransactionView::setModel(WalletModel *_model)
