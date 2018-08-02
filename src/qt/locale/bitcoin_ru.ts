@@ -30,6 +30,10 @@
         <translation>Удалить текущий выбранный адрес из списка</translation>
     </message>
     <message>
+        <source>Enter address or label to search</source>
+        <translation>Введите адрес или метку для поиска</translation>
+    </message>
+    <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Экспортировать данные текущей вкладки в файл</translation>
     </message>
@@ -62,12 +66,12 @@
         <translation>Адреса получения</translation>
     </message>
     <message>
-        <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Это ваши адреса Peercoin для отправки платежей. Всегда проверяйте количество и адрес получателя перед отправкой перевода.</translation>
+        <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Это ваши адреса Bitcoin для отправки платежей. Всегда проверяйте количество и адрес получателя перед отправкой перевода.</translation>
     </message>
     <message>
-        <source>These are your Peercoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Это ваши адреса Peercoin для приёма платежей. Рекомендуется использовать новый адрес получения для каждой транзакции.</translation>
+        <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Это ваши адреса Bitcoin для приёма платежей. Рекомендуется использовать новый адрес получения для каждой транзакции.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -226,6 +230,14 @@
         <translation>&amp;Около %1</translation>
     </message>
     <message>
+        <source>About &amp;Qt</source>
+        <translation>O &amp;Qt</translation>
+    </message>
+    <message>
+        <source>Show information about Qt</source>
+        <translation>Показать информацию о Qt</translation>
+    </message>
+    <message>
         <source>&amp;Options...</source>
         <translation>&amp;Параметры</translation>
     </message>
@@ -236,6 +248,14 @@
     <message>
         <source>&amp;Encrypt Wallet...</source>
         <translation>&amp;Зашифровать кошелёк...</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Кошелёк</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>Ошибка</translation>
     </message>
     </context>
 <context>
@@ -256,6 +276,10 @@
     </context>
 <context>
     <name>Intro</name>
+    <message>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
     </context>
 <context>
     <name>ModalOverlay</name>
@@ -265,6 +289,10 @@
     </context>
 <context>
     <name>OptionsDialog</name>
+    <message>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
     </context>
 <context>
     <name>OverviewPage</name>
@@ -300,6 +328,10 @@
         <source>Label</source>
         <translation>Метка</translation>
     </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Кошелёк</translation>
+    </message>
     </context>
 <context>
     <name>RecentRequestsTableModel</name>
@@ -314,6 +346,10 @@
     </context>
 <context>
     <name>SendCoinsDialog</name>
+    <message>
+        <source>Transaction fee</source>
+        <translation>Комиссия</translation>
+    </message>
     <message>
         <source>(no label)</source>
         <translation>(нет метки)</translation>
@@ -396,6 +432,10 @@
 <context>
     <name>bitcoin-core</name>
     <message>
+        <source>Error initializing block database</source>
+        <translation>Ошибка инициализации БД блоков</translation>
+    </message>
+    <message>
         <source>The wallet will avoid paying less than the minimum relay fee.</source>
         <translation>Кошелёк постарается не платить меньше, чем минимальная комиссия передачи.</translation>
     </message>
@@ -408,6 +448,10 @@
         <translation>Недостаточно средств</translation>
     </message>
     <message>
+        <source>Loading block index...</source>
+        <translation>Загрузка индекса блоков...</translation>
+    </message>
+    <message>
         <source>Loading wallet...</source>
         <translation>Загрузка электронного кошелька...</translation>
     </message>
@@ -416,8 +460,16 @@
         <translation>Не удаётся понизить версию электронного кошелька</translation>
     </message>
     <message>
+        <source>Rescanning...</source>
+        <translation>Сканирование...</translation>
+    </message>
+    <message>
         <source>Done loading</source>
         <translation>Загрузка завершена</translation>
     </message>
-    </context>
+    <message>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+</context>
 </TS>

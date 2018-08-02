@@ -30,6 +30,10 @@
         <translation>Eliminar la dirección actualmente seleccionada de la lista</translation>
     </message>
     <message>
+        <source>Enter address or label to search</source>
+        <translation>Ingrese dirección o capa a buscar </translation>
+    </message>
+    <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Exportar la información en la tabla actual a un archivo</translation>
     </message>
@@ -68,6 +72,10 @@
     <message>
         <source>These are your Peercoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation>Estas son sus direcciones de Peercoin para recibir pagos. Se recomienda utilizar una nueva dirección de recepción para cada transacción.</translation>
+    </message>
+    <message>
+        <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Estas son sus direcciones de Bitcoin para recibir pagos. Se recomienda utilizar una nueva dirección de recepción para cada transacción.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -369,15 +377,7 @@
         <source>Command-line options</source>
         <translation>opciones de la Linea de comandos</translation>
     </message>
-    <message>
-        <source>Usage:</source>
-        <translation>Uso:</translation>
-    </message>
-    <message>
-        <source>command-line options</source>
-        <translation>Opciones de comando de lineas</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>Intro</name>
     <message>
@@ -491,6 +491,10 @@
     <message>
         <source>Copy &amp;Address</source>
         <translation>&amp;Copiar dirección</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Cartera</translation>
     </message>
     </context>
 <context>
@@ -656,24 +660,12 @@
 <context>
     <name>bitcoin-core</name>
     <message>
-        <source>Options:</source>
-        <translation>Opciones:</translation>
-    </message>
-    <message>
         <source>Peercoin Core</source>
         <translation>nucleo Peercoin</translation>
     </message>
     <message>
-        <source>&lt;category&gt; can be:</source>
-        <translation>&lt;categoria&gt; puede ser:</translation>
-    </message>
-    <message>
         <source>Verifying blocks...</source>
         <translation>Verificando bloques...</translation>
-    </message>
-    <message>
-        <source>Wallet options:</source>
-        <translation>Opciones de cartera:</translation>
     </message>
     <message>
         <source>Information</source>

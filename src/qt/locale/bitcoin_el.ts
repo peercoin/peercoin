@@ -136,6 +136,10 @@
     </context>
 <context>
     <name>ReceiveRequestDialog</name>
+    <message>
+        <source>Wallet</source>
+        <translation>Πορτοφόλι</translation>
+    </message>
     </context>
 <context>
     <name>RecentRequestsTableModel</name>

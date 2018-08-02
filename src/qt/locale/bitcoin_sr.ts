@@ -30,6 +30,10 @@
         <translation>Обришите тренутно одабрану адресу са листе</translation>
     </message>
     <message>
+        <source>Enter address or label to search</source>
+        <translation>Navedite adresu ili naziv koji bi ste potražili</translation>
+    </message>
+    <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Извези податке из одабране картице у фајлj</translation>
     </message>
@@ -62,12 +66,12 @@
         <translation>Адресе за примање</translation>
     </message>
     <message>
-        <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Ово су ваше Пиркойн адресе за слање уплата. Увек добро проверите износ и адресу на коју шаљете пре него што пошаљете уплату.</translation>
+        <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Ово су ваше Биткоин адресе за слање уплата. Увек добро проверите износ и адресу на коју шаљете пре него што пошаљете уплату.</translation>
     </message>
     <message>
-        <source>These are your Peercoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Ово су ваше Пиркойн адресе за примање уплате. Препоручује се да се за сваку трансакцију користи нова адреса.</translation>
+        <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Ово су ваше Биткоин адресе за примање уплате. Препоручује се да се за сваку трансакцију користи нова адреса.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -184,8 +188,8 @@
         <translation>Новчаник шифриран</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your peercoins from being stolen by malware infecting your computer.</source>
-        <translation>%1 ће се сада затворити како би се завршио процес шифрирања.  Запамтите да шифрирањем свог новчаника не можете у потпуности заштити своје пиркойне од крађе од стране злоћудних програма и компјутерских инфекција.</translation>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
+        <translation>%1 ће се сада затворити како би се завршио процес шифрирања.  Запамтите да шифрирањем свог новчаника не можете у потпуности заштити своје биткоине од крађе од стране злоћудних програма и компјутерских инфекција.</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
@@ -322,6 +326,14 @@
         <translation>Отвори &amp;УРИ...</translation>
     </message>
     <message>
+        <source>Wallet:</source>
+        <translation>Новчаник</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation>подразумевани новчаник</translation>
+    </message>
+    <message>
         <source>Click to disable network activity.</source>
         <translation>Кликни да искључиш активност на мрежи.</translation>
     </message>
@@ -342,8 +354,12 @@
         <translation>Поново идексирање блокова на диску.</translation>
     </message>
     <message>
-        <source>Send coins to a Peercoin address</source>
-        <translation>Пошаљите новац на Пиркойн адресу</translation>
+        <source>Proxy is &lt;b&gt;enabled&lt;/b&gt;: %1</source>
+        <translation>Прокси је &lt;b&gt;омогућен&lt;/b&gt;: %1</translation>
+    </message>
+    <message>
+        <source>Send coins to a Bitcoin address</source>
+        <translation>Пошаљите новац на Биткоин адресу</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -366,8 +382,8 @@
         <translation>&amp;Верификовање поруке...</translation>
     </message>
     <message>
-        <source>Peercoin</source>
-        <translation>Пиркойн</translation>
+        <source>Bitcoin</source>
+        <translation>Биткоин</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -394,12 +410,12 @@
         <translation>Шифрирај приватни клуљ који припада новчанику.</translation>
     </message>
     <message>
-        <source>Sign messages with your Peercoin addresses to prove you own them</source>
-        <translation>Потписуј поруку са своје Пиркойн адресе као доказ да си њихов власник</translation>
+        <source>Sign messages with your Bitcoin addresses to prove you own them</source>
+        <translation>Потписуј поруку са своје Биткоин адресе као доказ да си њихов власник</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Peercoin addresses</source>
-        <translation>Верификуј поруке и утврди да ли су потписане од стране спецификованих Пиркойн адреса</translation>
+        <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
+        <translation>Верификуј поруке и утврди да ли су потписане од стране спецификованих Биткоин адреса</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -418,8 +434,8 @@
         <translation>Трака са картицама</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and peercoin: URIs)</source>
-        <translation>Затражи плаћање (генерише QR кодове и пиркойн: URI-е)</translation>
+        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
+        <translation>Затражи плаћање (генерише QR кодове и биткоин: URI-е)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -430,12 +446,16 @@
         <translation>Прегледајте листу коришћених адреса и етикета за пријем уплата</translation>
     </message>
     <message>
-        <source>Open a peercoin: URI or payment request</source>
-        <translation>Отворите пиркойн: URI или захтев за плаћање</translation>
+        <source>Open a bitcoin: URI or payment request</source>
+        <translation>Отворите биткоин: URI или захтев за плаћање</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>&amp;Опције командне линије</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n active connection(s) to Bitcoin network</source>
+        <translation><numerusform>%n aктивна веза са Биткоин мрежом</numerusform><numerusform>%n aктивних веза са Биткоин мрежом</numerusform><numerusform>%n aктивних веза са Биткоин мрежом</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -478,6 +498,10 @@
         <translation>Ажурно</translation>
     </message>
     <message>
+        <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
+        <translation>Прикажи  поруку помоћи %1 за листу са могућим опцијама Биткоин командне линије</translation>
+    </message>
+    <message>
         <source>%1 client</source>
         <translation>%1 клијент</translation>
     </message>
@@ -495,6 +519,12 @@
         <source>Amount: %1
 </source>
         <translation>Износ: %1
+</translation>
+    </message>
+    <message>
+        <source>Wallet: %1
+</source>
+        <translation>Новчаник: %1
 </translation>
     </message>
     <message>
@@ -540,8 +570,8 @@
         <translation>Новчаник јс &lt;b&gt;шифрован&lt;/b&gt; и тренутно &lt;b&gt;закључан&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>A fatal error occurred. Peercoin can no longer continue safely and will quit.</source>
-        <translation>Дошло је до критичне грешке. Пиркойн не може безбедно да настави са радом и искључиће се.</translation>
+        <source>A fatal error occurred. Bitcoin can no longer continue safely and will quit.</source>
+        <translation>Дошло је до критичне грешке. Биткоин не може безбедно да настави са радом и искључиће се.</translation>
     </message>
 </context>
 <context>
@@ -699,10 +729,6 @@
         <translation>&amp;Адреса</translation>
     </message>
     <message>
-        <source>New receiving address</source>
-        <translation>Нова адреса за пријем</translation>
-    </message>
-    <message>
         <source>New sending address</source>
         <translation>Нова адреса за слање</translation>
     </message>
@@ -713,10 +739,6 @@
     <message>
         <source>Edit sending address</source>
         <translation>Измени адресу за слање</translation>
-    </message>
-    <message>
-        <source>The entered address "%1" is already in the address book.</source>
-        <translation>Унета адреса "%1" се већ налази у адресару.</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -768,19 +790,7 @@
         <source>Command-line options</source>
         <translation>Опције командне линије</translation>
     </message>
-    <message>
-        <source>Usage:</source>
-        <translation>Korišćenje:</translation>
-    </message>
-    <message>
-        <source>command-line options</source>
-        <translation>опције командне линије</translation>
-    </message>
-    <message>
-        <source>Choose data directory on startup (default: %u)</source>
-        <translation>Изаберите директоријум података при покретању (подразумевано: %u)</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>Intro</name>
     <message>
@@ -816,8 +826,8 @@
         <translation>Користите прилагођени директоријум података:</translation>
     </message>
     <message>
-        <source>Peercoin</source>
-        <translation>Пиркойн</translation>
+        <source>Bitcoin</source>
+        <translation>Биткоин</translation>
     </message>
     <message>
         <source>Error</source>
@@ -954,6 +964,10 @@
         <translation>Време последњег блока</translation>
     </message>
     <message>
+        <source>default wallet</source>
+        <translation>подразумевани новчаник</translation>
+    </message>
+    <message>
         <source>Yes</source>
         <translation>Da</translation>
     </message>
@@ -1007,6 +1021,10 @@
     <message>
         <source>Label</source>
         <translation>Налепница</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Новчаник</translation>
     </message>
     </context>
 <context>
@@ -1233,36 +1251,12 @@
 <context>
     <name>bitcoin-core</name>
     <message>
-        <source>Options:</source>
-        <translation>Opcije</translation>
-    </message>
-    <message>
-        <source>Specify data directory</source>
-        <translation>Gde je konkretni data direktorijum </translation>
-    </message>
-    <message>
-        <source>Accept command line and JSON-RPC commands</source>
-        <translation>Prihvati komandnu liniju i JSON-RPC komande</translation>
-    </message>
-    <message>
-        <source>Run in the background as a daemon and accept commands</source>
-        <translation>Radi u pozadini kao daemon servis i prihvati komande</translation>
-    </message>
-    <message>
         <source>Information</source>
         <translation>Информације</translation>
     </message>
     <message>
-        <source>Username for JSON-RPC connections</source>
-        <translation>Korisničko ime za JSON-RPC konekcije</translation>
-    </message>
-    <message>
         <source>Warning</source>
         <translation>Упозорење</translation>
-    </message>
-    <message>
-        <source>Password for JSON-RPC connections</source>
-        <translation>Lozinka za JSON-RPC konekcije</translation>
     </message>
     <message>
         <source>Insufficient funds</source>

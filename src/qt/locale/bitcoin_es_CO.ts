@@ -641,10 +641,6 @@ Exportar los datos en la pestaña actual a un archivo</translation>
         <translation>Y dirección</translation>
     </message>
     <message>
-        <source>New receiving address</source>
-        <translation>Nueva dirección de recepción</translation>
-    </message>
-    <message>
         <source>New sending address</source>
         <translation>Nueva dirección de envío</translation>
     </message>
@@ -701,34 +697,6 @@ Exportar los datos en la pestaña actual a un archivo</translation>
     <message>
         <source>Command-line options</source>
         <translation>Opciones de línea de comando</translation>
-    </message>
-    <message>
-        <source>Usage:</source>
-        <translation>Uso:</translation>
-    </message>
-    <message>
-        <source>command-line options</source>
-        <translation>opciones de línea de comando</translation>
-    </message>
-    <message>
-        <source>UI Options:</source>
-        <translation>Opciones de UI:</translation>
-    </message>
-    <message>
-        <source>Set language, for example "de_DE" (default: system locale)</source>
-        <translation>Establecer el idioma, por ejemplo "de_DE" (predeterminado: configuración regional del sistema)</translation>
-    </message>
-    <message>
-        <source>Start minimized</source>
-        <translation>Iniciar minimizado</translation>
-    </message>
-    <message>
-        <source>Set SSL root certificates for payment request (default: -system-)</source>
-        <translation>Establecer certificados raíz SSL para solicitud de pago (predeterminado: -sistema-)</translation>
-    </message>
-    <message>
-        <source>Reset all settings changed in the GUI</source>
-        <translation>Restablecer todas las configuraciones modificadas en la GUI</translation>
     </message>
 </context>
 <context>
@@ -1709,6 +1677,10 @@ Exportar los datos en la pestaña actual a un archivo</translation>
         <source>Label</source>
         <translation>Etiqueta</translation>
     </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Billetera</translation>
+    </message>
     </context>
 <context>
     <name>RecentRequestsTableModel</name>
@@ -1925,6 +1897,10 @@ Exportar los datos en la pestaña actual a un archivo</translation>
     <message>
         <source>Peercoin Core</source>
         <translation>Peercoin Core</translation>
+    </message>
+    <message>
+        <source>This is the transaction fee you may discard if change is smaller than dust at this level</source>
+        <translation>Esta es la cuota de transacción que puede descartar si el cambio es más pequeño que el polvo a este nivel.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may discard if change is smaller than dust at this level</source>
