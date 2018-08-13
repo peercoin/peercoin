@@ -1,5 +1,5 @@
 ---
-name: "peercoin-osx-0.16"
+name: "peercoin-osx-0.18"
 enable_cache: true
 suites:
 - "bionic"
