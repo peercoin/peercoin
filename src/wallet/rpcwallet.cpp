@@ -4727,7 +4727,8 @@ UniValue walletcreatefundedpsbt(const JSONRPCRequest& request)
         UniValue::VARR,
         UniValueType(), // ARR or OBJ, checked later
         UniValue::VNUM,
-        UniValue::VOBJ
+        UniValue::VOBJ,
+        UniValue::VBOOL
         }, true
     );
 
