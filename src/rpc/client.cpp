@@ -18,6 +18,7 @@ public:
     std::string paramName;  //!< parameter name
 };
 
+// clang-format off
 /**
  * Specify a (method, idx, name) here if the argument is a non-string RPC
  * argument and needs to be converted from JSON.
@@ -163,6 +164,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "sendalert", 5, "id"},
     { "sendalert", 6, "cancelupto"},
 };
+// clang-format on
 
 class CRPCConvertTable
 {

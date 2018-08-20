@@ -769,6 +769,7 @@ UniValue enforcecheckpoint(const JSONRPCRequest& request)
 
 
 
+// clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
@@ -793,6 +794,7 @@ static const CRPCCommand commands[] =
 #endif
     { "hidden",             "sendalert",              &sendalert,              {"message", "privatekey", "minver", "maxver", "priority", "id", "cancelupto" } },
 };
+// clang-format on
 
 void RegisterNetRPCCommands(CRPCTable &t)
 {

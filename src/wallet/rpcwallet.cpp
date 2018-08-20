@@ -4086,6 +4086,7 @@ UniValue dumpwallet(const JSONRPCRequest& request);
 UniValue importwallet(const JSONRPCRequest& request);
 UniValue importmulti(const JSONRPCRequest& request);
 
+// clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                                actor (function)                argNames
     //  --------------------- ------------------------          -----------------------         ----------
@@ -4150,6 +4151,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "showkeypair",                      &showkeypair,                   {"hexprivkey"} },
     { "wallet",             "reservebalance",                   &reservebalance,                {"reserve", "amount"} },
 };
+// clang-format on
 
 void RegisterWalletRPCCommands(CRPCTable &t)
 {

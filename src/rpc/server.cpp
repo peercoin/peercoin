@@ -253,6 +253,7 @@ static UniValue uptime(const JSONRPCRequest& jsonRequest)
     return GetTime() - GetStartupTime();
 }
 
+// clang-format off
 /**
  * Call Table
  */
@@ -264,6 +265,7 @@ static const CRPCCommand vRPCCommands[] =
     { "control",            "stop",                   &stop,                   {}  },
     { "control",            "uptime",                 &uptime,                 {}  },
 };
+// clang-format on
 
 CRPCTable::CRPCTable()
 {
