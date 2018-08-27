@@ -263,7 +263,10 @@ public:
     /**
      * Clear available arguments
      */
-    void ClearArgs() { m_available_args.clear(); }
+    void ClearArgs() {
+        LOCK(cs_args);
+        m_available_args.clear();
+    }
 
     /**
      * Get the help string

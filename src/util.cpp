@@ -373,6 +373,8 @@ ArgsManager::ArgsManager() :
 
 void ArgsManager::WarnForSectionOnlyArgs()
 {
+    LOCK(cs_args);
+
     // if there's no section selected, don't worry
     if (m_network.empty()) return;
 
@@ -401,6 +403,7 @@ void ArgsManager::WarnForSectionOnlyArgs()
 
 void ArgsManager::SelectConfigNetwork(const std::string& network)
 {
+    LOCK(cs_args);
     m_network = network;
 }
 
@@ -469,6 +472,7 @@ bool ArgsManager::IsArgKnown(const std::string& key) const
         arg_no_net = std::string("-") + key.substr(option_index + 1, std::string::npos);
     }
 
+    LOCK(cs_args);
     for (const auto& arg_map : m_available_args) {
         if (arg_map.second.count(arg_no_net)) return true;
     }
@@ -572,6 +576,7 @@ void ArgsManager::AddArg(const std::string& name, const std::string& help, const
         eq_index = name.size();
     }
 
+    LOCK(cs_args);
     std::map<std::string, Arg>& arg_map = m_available_args[cat];
     auto ret = arg_map.emplace(name.substr(0, eq_index), Arg(name.substr(eq_index, name.size() - eq_index), help, debug_only));
     assert(ret.second); // Make sure an insertion actually happened
@@ -589,6 +594,7 @@ std::string ArgsManager::GetHelpMessage() const
     const bool show_debug = gArgs.GetBoolArg("-help-debug", false);
 
     std::string usage = "";
+    LOCK(cs_args);
     for (const auto& arg_map : m_available_args) {
         switch(arg_map.first) {
             case OptionsCategory::OPTIONS:
@@ -866,10 +872,8 @@ bool ArgsManager::ReadConfigStream(std::istream& stream, std::string& error, boo
 
 bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
 {
-    {
-        LOCK(cs_args);
-        m_config_args.clear();
-    }
+    LOCK(cs_args);
+    m_config_args.clear();
 
     const std::string confPath = GetArg("-conf", BITCOIN_CONF_FILENAME);
     fs::ifstream stream(GetConfigFile(confPath));
@@ -893,11 +897,8 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
 
             // Remove -includeconf from configuration, so we can warn about recursion
             // later
-            {
-                LOCK(cs_args);
-                m_config_args.erase("-includeconf");
-                m_config_args.erase(std::string("-") + chain_id + ".includeconf");
-            }
+            m_config_args.erase("-includeconf");
+            m_config_args.erase(std::string("-") + chain_id + ".includeconf");
 
             for (const std::string& to_include : includeconf) {
                 fs::ifstream include_config(GetConfigFile(to_include));
@@ -941,6 +942,7 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
 
 std::string ArgsManager::GetChainName() const
 {
+    LOCK(cs_args);
     bool fRegTest = ArgsManagerHelper::GetNetBoolArg(*this, "-regtest");
     bool fTestNet = ArgsManagerHelper::GetNetBoolArg(*this, "-testnet");
 
