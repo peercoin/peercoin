@@ -872,8 +872,10 @@ bool ArgsManager::ReadConfigStream(std::istream& stream, std::string& error, boo
 
 bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
 {
-    LOCK(cs_args);
-    m_config_args.clear();
+    {
+        LOCK(cs_args);
+        m_config_args.clear();
+    }
 
     const std::string confPath = GetArg("-conf", BITCOIN_CONF_FILENAME);
     fs::ifstream stream(GetConfigFile(confPath));
@@ -885,7 +887,12 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
         }
         // if there is an -includeconf in the override args, but it is empty, that means the user
         // passed '-noincludeconf' on the command line, in which case we should not include anything
-        if (m_override_args.count("-includeconf") == 0) {
+        bool emptyIncludeConf;
+        {
+            LOCK(cs_args);
+            emptyIncludeConf = m_override_args.count("-includeconf") == 0;
+        }
+        if (emptyIncludeConf) {
             std::string chain_id = GetChainName();
             std::vector<std::string> includeconf(GetArgs("-includeconf"));
             {
@@ -897,8 +904,11 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
 
             // Remove -includeconf from configuration, so we can warn about recursion
             // later
-            m_config_args.erase("-includeconf");
-            m_config_args.erase(std::string("-") + chain_id + ".includeconf");
+            {
+                LOCK(cs_args);
+                m_config_args.erase("-includeconf");
+                m_config_args.erase(std::string("-") + chain_id + ".includeconf");
+            }
 
             for (const std::string& to_include : includeconf) {
                 fs::ifstream include_config(GetConfigFile(to_include));
