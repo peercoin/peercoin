@@ -236,8 +236,7 @@ disable-wallet mode with:
 
 In this case there is no dependency on Berkeley DB.
 
-Mining is also possible in disable-wallet mode, but only using the `getblocktemplate` RPC
-call not `getwork`.
+Mining is also possible in disable-wallet mode using the `getblocktemplate` RPC call.
 
 Disable checkpoints
 -------------------
@@ -292,4 +291,3 @@ To build executables for ARM:
 
 
 For further documentation on the depends system see [README.md](../depends/README.md) in the depends directory.
-
