@@ -263,7 +263,10 @@ libbitcoin_server_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 if ENABLE_CHECKPOINTS
-  libbitcoin_server_a_SOURCES += checkpointsync.cpp
+libbitcoin_server_a_SOURCES += checkpointsync.cpp
+endif
+if !ENABLE_WALLET
+libbitcoin_server_a_SOURCES += dummywallet.cpp
 endif
 
 if ENABLE_ZMQ
