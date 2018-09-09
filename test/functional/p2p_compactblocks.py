@@ -106,6 +106,9 @@ class CompactBlocksTest(BitcoinTestFramework):
         self.coinbase_key.set_secretbytes(b"horsebattery")
         self.coinbase_pubkey = self.coinbase_key.get_pubkey()
 
+    def skip_test_if_missing_module(self):
+        self.skip_if_no_wallet()
+
     def build_block_on_tip(self, node, segwit=False):
         height = node.getblockcount()
         tip = node.getbestblockhash()
