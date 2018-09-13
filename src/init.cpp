@@ -629,7 +629,7 @@ static void ThreadImport(std::vector<fs::path> vImportFiles)
  *  Ensure that Peercoin is running in a usable environment with all
  *  necessary library support.
  */
-static bool InitSanityCheck(void)
+static bool InitSanityCheck()
 {
     if(!ECC_InitSanityCheck()) {
         InitError("Elliptic curve cryptography sanity check failure. Aborting.");
