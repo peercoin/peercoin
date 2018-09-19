@@ -70,7 +70,11 @@ tuned to conserve memory with additional CXXFLAGS:
 
 Build requirements:
 
-    sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev
+    sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
+
+Now, you can either build from self-compiled [depends](/depends/README.md) or install the required dependencies:
+
+    sudo apt-get libssl-dev libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev
 
 BerkeleyDB is required for the wallet functionality.
 Historically Peercoin was first deployed with now deprecated BerkeleyDB-4.8, which has resulted in the need to upkeep the compatibility with those ancient deployments to this day. BerkeleyDB-4.8 is not compatible with more modern BerkeleyDB-5.1 and BerkeleyDB-5.3. Peercoin has inherited this in the first versions and this is why Peercoin is still officially shipped out with BerkeleyDB-4.8.
@@ -99,7 +103,7 @@ ZMQ dependencies (provides ZMQ API):
 
     sudo apt-get install libzmq3-dev
 
-#### Dependencies for the GUI
+GUI dependencies:
 
 If you want to build Peercoin-Qt, make sure that the required packages for Qt development
 are installed. Qt 5 is necessary to build the GUI.
