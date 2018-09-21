@@ -113,7 +113,7 @@ inline void MilliSleep(int64 n)
 // until fixed in 1.52. Use the deprecated sleep method for the broken case.
 // See: https://svn.boost.org/trac/boost/ticket/7238
 #if defined(HAVE_WORKING_BOOST_SLEEP_FOR)
-    boost::this_thread::sleep_for(boost::chrono::milliseconds(n));
+    boost::this_thread::sleep_for(boost::std::chrono::milliseconds(n));
 #elif defined(HAVE_WORKING_BOOST_SLEEP)
     boost::this_thread::sleep(boost::posix_time::milliseconds(n));
 #else
