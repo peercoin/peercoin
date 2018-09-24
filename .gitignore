@@ -134,3 +134,5 @@ contrib/devtools/split-debug.sh
 
 #python stuff
 .mypy_cache
+# Output from running db4 installation
+db4/
