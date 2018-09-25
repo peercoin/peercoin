@@ -96,6 +96,7 @@ BITCOIN_CORE_H = \
   addrdb.h \
   addrman.h \
   alert.h \
+  attributes.h \
   base58.h \
   bignum.h \
   bech32.h \
