@@ -298,6 +298,7 @@ bitcoin.org (see below for bitcoin.org update instructions).
 
   - Update title of #peercoin on Freenode IRC
 
+
   - Optionally twitter, reddit /r/Peercoin, ... but this will usually sort out itself
 
   - Notify BlueMatt so that he can start building [the PPAs](https://launchpad.net/~bitcoin/+archive/ubuntu/bitcoin)
