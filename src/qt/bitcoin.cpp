@@ -51,7 +51,6 @@
 #include <QThread>
 #include <QTimer>
 #include <QTranslator>
-#include <QSslConfiguration>
 
 #if defined(QT_STATICPLUGIN)
 #include <QtPlugin>
@@ -577,18 +576,11 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_MAC
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
-#if QT_VERSION >= 0x050500
-    // Because of the POODLE attack it is recommended to disable SSLv3 (https://disablessl3.com/),
-    // so set SSL protocols to TLS1.0+.
     QSslSocket::sslLibraryVersionString(); // An unnecessary check to solve issue #14273: bitcoin-qt stops while switching SSLv3 to TLS on Arch Linux
     Q_ASSERT( QSslSocket::supportsSsl() );
 
-    QSslConfiguration sslconf = QSslConfiguration::defaultConfiguration();
-    sslconf.setProtocol(QSsl::TlsV1_0OrLater);
-    QSslConfiguration::setDefaultConfiguration(sslconf);
 
     Q_ASSERT(QSslConfiguration::defaultConfiguration().protocol() == QSsl::TlsV1_0OrLater);
-#endif
 
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
