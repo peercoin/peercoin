@@ -13,7 +13,6 @@
 #include <validation.h>
 #include <key_io.h>
 #include <net.h>
-#include <node/transaction.h>
 #include <outputtype.h>
 #include <policy/policy.h>
 #include <rpc/mining.h>
@@ -1921,10 +1920,10 @@ static UniValue walletpassphrase(const JSONRPCRequest& request)
                 {
                     {"passphrase", RPCArg::Type::STR, RPCArg::Optional::NO, "The wallet passphrase"},
                     {"timeout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The time to keep the decryption key in seconds; capped at 100000000 (~3 years)."},
+                    {"mintonly", RPCArg::Type::BOOL, RPCArg::Optional::YES, "Unlock for minting only"},
                 },
                 RPCResults{},
                 RPCExamples{
-            "3. mintonly           optional true/false allowing only block minting.\n"
             "\nUnlock the wallet for 60 seconds\n"
             + HelpExampleCli("walletpassphrase", "\"my pass phrase\" 60 false") +
             "\nLock the wallet again (before 60 seconds)\n"
@@ -2898,7 +2897,7 @@ static UniValue listunspent(const JSONRPCRequest& request)
                 CRIPEMD160().Write(whash.begin(), whash.size()).Finalize(id.begin());
                 CScript witnessScript;
                 if (pwallet->GetCScript(id, witnessScript)) {
-                    entry.push_back(Pair("witnessScript", HexStr(witnessScript.begin(), witnessScript.end())));
+                    entry.pushKV("witnessScript", HexStr(witnessScript.begin(), witnessScript.end()));
                 }
             }
         }
@@ -3132,7 +3131,8 @@ UniValue signrawtransactionwithwallet(const JSONRPCRequest& request)
                                     {"txid", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The transaction id"},
                                     {"vout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The output number"},
                                     {"scriptPubKey", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "script key"},
-                                    {"redeemScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2SH or P2WSH) redeem script"},
+                                    {"redeemScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2SH) redeem script"},
+                                    {"witnessScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2WSH or P2SH-P2WSH) witness script"},
                                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The amount spent"},
                                 },
                             },
