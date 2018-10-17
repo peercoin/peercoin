@@ -15,7 +15,6 @@
 #include <util/strencodings.h>
 #include <util/system.h>
 
-#include <boost/bind.hpp>
 #include <boost/signals2/signal.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
