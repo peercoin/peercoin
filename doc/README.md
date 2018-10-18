@@ -62,7 +62,7 @@ The Peercoin repo's [root README](/README.md) contains relevant information on t
 - [Benchmarking](benchmarking.md)
 
 ### Resources
-* TODO: add some peercoin resourses
+* Discuss on the [Peercoin](https://talk.peercoin.net/) forums.
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
