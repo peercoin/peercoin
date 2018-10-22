@@ -11,8 +11,8 @@
 #include <validation.h>
 #include <coins.h>
 #include <tinyformat.h>
-#include <util.h>
-#include <utilstrencodings.h>
+#include <util/system.h>
+#include <util/strencodings.h>
 
 bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
 {

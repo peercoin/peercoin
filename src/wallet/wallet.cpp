@@ -24,7 +24,7 @@
 #include <shutdown.h>
 #include <timedata.h>
 #include <txmempool.h>
-#include <utilmoneystr.h>
+#include <util/moneystr.h>
 
 #include <wallet/walletutil.h>
 #include <kernel.h>
