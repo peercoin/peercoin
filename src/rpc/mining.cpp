@@ -204,6 +204,8 @@ static UniValue generatetoaddress(const JSONRPCRequest& request)
             "\nExamples:\n"
             "\nGenerate 11 blocks to myaddress\n"
             + HelpExampleCli("generatetoaddress", "11 \"myaddress\"")
+            + "If you are running the bitcoin core wallet, you can get a new address to send the newly generated bitcoin to with:\n"
+            + HelpExampleCli("getnewaddress", "")
         );
 
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
