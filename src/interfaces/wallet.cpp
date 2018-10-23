@@ -300,7 +300,8 @@ public:
     }
     bool tryGetTxStatus(const uint256& txid,
         interfaces::WalletTxStatus& tx_status,
-        int& num_blocks) override
+        int& num_blocks,
+        int64_t& block_time) override
     {
         auto locked_chain = m_wallet.chain().lock(true /* try_lock */);
         if (!locked_chain) {
@@ -315,6 +316,7 @@ public:
             return false;
         }
         num_blocks = ::chainActive.Height();
+        block_time = ::chainActive.Tip()->GetBlockTime();
         tx_status = MakeWalletTxStatus(*locked_chain, mi->second);
         return true;
     }
