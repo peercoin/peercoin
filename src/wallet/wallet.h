@@ -68,6 +68,16 @@ enum class WalletCreationStatus {
 WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& passphrase, uint64_t wallet_creation_flags, const std::string& name, bilingual_str& error, std::vector<bilingual_str>& warnings, std::shared_ptr<CWallet>& result);
 
 static const CAmount MIN_CHANGE = MIN_TXOUT_AMOUNT;
+/**
+ * maximum fee increase allowed to do partial spend avoidance, even for nodes with this feature disabled by default
+ *
+ * A value of -1 disables this feature completely.
+ * A value of 0 (current default) means to attempt to do partial spend avoidance, and use its results if the fees remain *unchanged*
+ * A value > 0 means to do partial spend avoidance if the fee difference against a regular coin selection instance is in the range [0..value].
+ */
+static const CAmount DEFAULT_MAX_AVOIDPARTIALSPEND_FEE = 0;
+//! discourage APS fee higher than this amount
+constexpr CAmount HIGH_APS_FEE{COIN / 10000};
 //! Default for -spendzeroconfchange
 static const bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
 //! Default for -splitcoins
@@ -707,6 +717,8 @@ private:
     // ScriptPubKeyMan::GetID. In many cases it will be the hash of an internal structure
     std::map<uint256, std::unique_ptr<ScriptPubKeyMan>> m_spk_managers;
 
+    bool CreateTransactionInternal(const std::vector<CRecipient>& vecSend, CTransactionRef& tx, CAmount& nFeeRet, int& nChangePosInOut, bilingual_str& error, const CCoinControl& coin_control, bool sign);
+
 public:
     /*
      * Main wallet lock.
@@ -992,6 +1004,7 @@ public:
     bool m_split_coins{DEFAULT_SPLIT_COINS};
     bool m_check_github{DEFAULT_CHECK_GITHUB};
 
+    CAmount m_max_aps_fee{DEFAULT_MAX_AVOIDPARTIALSPEND_FEE}; //!< note: this is absolute fee, not fee rate
     OutputType m_default_address_type{DEFAULT_ADDRESS_TYPE};
     /**
      * Default output type for change outputs. When unset, automatically choose type
