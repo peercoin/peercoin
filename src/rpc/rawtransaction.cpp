@@ -345,7 +345,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
 
     if (!locktime.isNull()) {
         int64_t nLockTime = locktime.get_int64();
-        if (nLockTime < 0 || nLockTime > std::numeric_limits<uint32_t>::max())
+        if (nLockTime < 0 || nLockTime > LOCKTIME_MAX)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, locktime out of range");
         rawTx.nLockTime = nLockTime;
     }
@@ -365,16 +365,16 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
 
         uint32_t nSequence;
         if (rawTx.nLockTime) {
-            nSequence = std::numeric_limits<uint32_t>::max() - 1;
+            nSequence = CTxIn::SEQUENCE_FINAL - 1;
         } else {
-            nSequence = std::numeric_limits<uint32_t>::max();
+            nSequence = CTxIn::SEQUENCE_FINAL;
         }
 
         // set the sequence number if passed in the parameters object
         const UniValue& sequenceObj = find_value(o, "sequence");
         if (sequenceObj.isNum()) {
             int64_t seqNr64 = sequenceObj.get_int64();
-            if (seqNr64 < 0 || seqNr64 > std::numeric_limits<uint32_t>::max()) {
+            if (seqNr64 < 0 || seqNr64 > CTxIn::SEQUENCE_FINAL) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, sequence number is out of range");
             } else {
                 nSequence = (uint32_t)seqNr64;
