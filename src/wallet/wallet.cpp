@@ -26,6 +26,7 @@
 #include <shutdown.h>
 #include <timedata.h>
 #include <txmempool.h>
+#include <util/bip32.h>
 #include <util/moneystr.h>
 
 #include <kernel.h>
