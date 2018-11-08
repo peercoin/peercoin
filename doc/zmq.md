@@ -147,6 +147,20 @@ dropped by network middle boxes.
 Also, the socket's ZMQ_IPV6 option is enabled to accept connections from IPv6
 hosts as well. If needed, this option has to be set on the client side too.
 
+The ZMQ_PUB socket's ZMQ_TCP_KEEPALIVE option is enabled. This means that
+the underlying SO_KEEPALIVE option is enabled when using a TCP transport.
+The effective TCP keepalive values are managed through the underlying
+operating system configuration and must be configured prior to connection establishment.
+
+For example, when running on GNU/Linux, one might use the following
+to lower the keepalive setting to 10 minutes:
+
+sudo sysctl -w net.ipv4.tcp_keepalive_time=600
+
+Setting the keepalive values appropriately for your operating environment may
+improve connectivity in situations where long-lived connections are silently
+dropped by network middle boxes.
+
 ## Remarks
 
 From the perspective of peercoind, the ZeroMQ socket is write-only; PUB
