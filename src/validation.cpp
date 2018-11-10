@@ -1696,7 +1696,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     // If such overwrites are allowed, coinbases and transactions depending upon those
     // can be duplicated to remove the ability to spend the first instance -- even after
     // being sent to another address.
-    // See BIP30 and http://r6.ca/blog/20120206T005236Z.html for more information.
+    // See BIP30, CVE-2012-1909, and http://r6.ca/blog/20120206T005236Z.html for more information.
     // This logic is not necessary for memory pool transactions, as AcceptToMemoryPool
     // already refuses previously-known transaction ids entirely.
     // This rule was originally applied to all blocks with a timestamp after March 15, 2012, 0:00 UTC.
@@ -2971,6 +2971,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
                    FormatMoney(block.IsProofOfWork()? GetProofOfWorkReward(block.nBits) : 0)));
 
     // Check transactions
+    // Must check for duplicate inputs (see CVE-2018-17144)
     for (const auto& tx : block.vtx)
     {
         if (!CheckTransaction(*tx, state, true))
