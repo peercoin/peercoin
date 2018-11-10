@@ -17,7 +17,7 @@
   <string>APPL</string>
 
   <key>CFBundleGetInfoString</key>
-  <string>@PEERCOIN_VERSION_MAJOR@.@PEERCOIN_VERSION_MINOR@.@PEERCOIN_VERSION_REVISION@, Copyright © 2011-@COPYRIGHT_YEAR@ @COPYRIGHT_HOLDERS_FINAL@</string>
+  <string>@PEERCOIN_VERSION_MAJOR@.@PEERCOIN_VERSION_MINOR@.@PEERCOIN_VERSION_REVISION@.@PEERCOIN_VERSION_BUILD@, Copyright © 2011-@COPYRIGHT_YEAR@ @COPYRIGHT_HOLDERS_FINAL@</string>
 
   <key>CFBundleShortVersionString</key>
   <string>@PEERCOIN_VERSION_MAJOR@.@PEERCOIN_VERSION_MINOR@.@PEERCOIN_VERSION_REVISION@</string>
@@ -95,6 +95,9 @@
     <string>NSApplication</string>
 
   <key>NSHighResolutionCapable</key>
+    <string>True</string>
+
+  <key>LSAppNapIsDisabled</key>
     <string>True</string>
 
   <key>NSRequiresAquaSystemAppearance</key>
