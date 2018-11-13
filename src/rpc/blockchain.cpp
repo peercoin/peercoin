@@ -38,7 +38,6 @@
 
 #include <univalue.h>
 
-#include <boost/algorithm/string.hpp>
 #include <miner.h>
 #include <kernel.h>
 #include <validation.h>
