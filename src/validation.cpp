@@ -3154,6 +3154,7 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
     // Start enforcing BIP113 (Median Time Past)
     int nLockTimeFlags = 0;
     if (pindexPrev && IsBTC16BIPsEnabled(pindexPrev->nTime)) {
+        assert(pindexPrev != nullptr);
         nLockTimeFlags |= LOCKTIME_MEDIAN_TIME_PAST;
     }
 
