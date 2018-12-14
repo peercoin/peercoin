@@ -1639,6 +1639,7 @@ CWallet::ScanResult CWallet::ScanForWalletTransactions(const CBlockIndex* const 
 
     const CBlockIndex* pindex = pindexStart;
     failed_block = nullptr;
+    stop_block = nullptr;
 
     if (pindex) WalletLogPrintf("Rescan started from block %d...\n", pindex->nHeight);
 
