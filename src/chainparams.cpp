@@ -120,6 +120,7 @@ public:
         vSeeds.emplace_back("ppcseed.ns.7server.net");
         vSeeds.emplace_back("seed.ppcoin.info");
         vSeeds.emplace_back("seed.bitcoin.sprovoost.nl"); // Sjors Provoost
+        vSeeds.emplace_back("dnsseed.emzy.de"); // Stephan Oeste
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);  // peercoin: addresses begin with 'P'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,117); // peercoin: addresses begin with 'p'
