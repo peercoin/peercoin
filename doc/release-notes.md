@@ -40,8 +40,9 @@ wallets that were created with older versions are not affected by this.
 Compatibility
 ==============
 
-Peercoin is extensively tested on multiple operating systems using
-the Linux kernel, macOS 10.10+, and Windows 7 and newer (Windows XP is not supported).
+Peercoin is supported and extensively tested on operating systems using
+the Linux kernel, macOS 10.10+, and Windows 7 and newer.  It is not recommended
+to use Bitcoin Core on unsupported systems.
 
 Peercoin should also work on most other Unix-like systems but is not
 frequently tested on them.
