@@ -96,14 +96,15 @@ static UniValue getnetworkhashps(const JSONRPCRequest& request)
                 {
                     {"nblocks", RPCArg::Type::NUM, /* opt */ true, /* default_val */ "120", "The number of blocks, or -1 for blocks since last difficulty change."},
                     {"height", RPCArg::Type::NUM, /* opt */ true, /* default_val */ "-1", "To estimate at the time of the given height."},
-                }}
-                .ToString() +
-            "\nResult:\n"
+                },
+                RPCResult{
             "x             (numeric) Hashes per second estimated\n"
-            "\nExamples:\n"
-            + HelpExampleCli("getnetworkhashps", "")
+                },
+                RPCExamples{
+                    HelpExampleCli("getnetworkhashps", "")
             + HelpExampleRpc("getnetworkhashps", "")
-       );
+                },
+            }.ToString());
 
     LOCK(cs_main);
     return GetNetworkHashPS(!request.params[0].isNull() ? request.params[0].get_int() : 120, !request.params[1].isNull() ? request.params[1].get_int() : -1);
@@ -200,18 +201,19 @@ static UniValue generatetoaddress(const JSONRPCRequest& request)
                 "\nMine blocks immediately to a specified address (before the RPC call returns)\n",
                 {
                     {"nblocks", RPCArg::Type::NUM, /* opt */ false, /* default_val */ "", "How many blocks are generated immediately."},
-                    {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The address to send the newly generated bitcoin to."},
+                    {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The address to send the newly generated peercoin to."},
                     {"maxtries", RPCArg::Type::NUM, /* opt */ true, /* default_val */ "1000000", "How many iterations to try."},
-                }}
-                .ToString() +
-            "\nResult:\n"
+                },
+                RPCResult{
             "[ blockhashes ]     (array) hashes of blocks generated\n"
-            "\nExamples:\n"
+                },
+                RPCExamples{
             "\nGenerate 11 blocks to myaddress\n"
             + HelpExampleCli("generatetoaddress", "11 \"myaddress\"")
-            + "If you are running the bitcoin core wallet, you can get a new address to send the newly generated bitcoin to with:\n"
+            + "If you are running the Peercoin wallet, you can get a new address to send the newly generated peercoin to with:\n"
             + HelpExampleCli("getnewaddress", "")
-        );
+                },
+            }.ToString());
 
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
     if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
@@ -240,9 +242,9 @@ static UniValue getmininginfo(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
             RPCHelpMan{"getmininginfo",
-                "\nReturns a json object containing mining-related information.", {}}
-                .ToString() +
-            "\nResult:\n"
+                "\nReturns a json object containing mining-related information.",
+                {},
+                RPCResult{
             "{\n"
             "  \"blocks\": nnn,             (numeric) The current block\n"
             "  \"currentblockweight\": nnn, (numeric) The last block weight\n"
@@ -254,10 +256,12 @@ static UniValue getmininginfo(const JSONRPCRequest& request)
             "  \"warnings\": \"...\"          (string) any network and blockchain warnings\n"
             "  \"errors\": \"...\"            (string) DEPRECATED. Same as warnings. Only shown when peercoind is started with -deprecatedrpc=getmininginfo\n"
             "}\n"
-            "\nExamples:\n"
-            + HelpExampleCli("getmininginfo", "")
+                },
+                RPCExamples{
+                    HelpExampleCli("getmininginfo", "")
             + HelpExampleRpc("getmininginfo", "")
-        );
+                },
+            }.ToString());
 
 
     LOCK(cs_main);
@@ -323,9 +327,8 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
                                 },
                         },
                         "\"template_request\""},
-                }}
-                .ToString() +
-            "\nResult:\n"
+                },
+                RPCResult{
             "{\n"
             "  \"version\" : n,                    (numeric) The preferred block version\n"
             "  \"rules\" : [ \"rulename\", ... ],    (array of strings) specific block rules that are to be enforced\n"
@@ -369,11 +372,12 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
             "  \"bits\" : \"xxxxxxxx\",              (string) compressed target of next block\n"
             "  \"height\" : n                      (numeric) The height of the next block\n"
             "}\n"
-
-            "\nExamples:\n"
-            + HelpExampleCli("getblocktemplate", "{\"rules\": [\"segwit\"]}")
+                },
+                RPCExamples{
+                    HelpExampleCli("getblocktemplate", "{\"rules\": [\"segwit\"]}")
             + HelpExampleRpc("getblocktemplate", "{\"rules\": [\"segwit\"]}")
-         );
+                },
+            }.ToString());
 
     LOCK(cs_main);
 
@@ -669,13 +673,13 @@ static UniValue submitblock(const JSONRPCRequest& request)
                 {
                     {"hexdata", RPCArg::Type::STR_HEX, /* opt */ false, /* default_val */ "", "the hex-encoded block data to submit"},
                     {"dummy", RPCArg::Type::STR, /* opt */ true, /* default_val */ "ignored", "dummy value, for compatibility with BIP22. This value is ignored."},
-                }}
-                .ToString() +
-            "\nResult:\n"
-            "\nExamples:\n"
-            + HelpExampleCli("submitblock", "\"mydata\"")
+                },
+                RPCResults{},
+                RPCExamples{
+                    HelpExampleCli("submitblock", "\"mydata\"")
             + HelpExampleRpc("submitblock", "\"mydata\"")
-        );
+                },
+            }.ToString());
     }
 
     std::shared_ptr<CBlock> blockptr = std::make_shared<CBlock>();
@@ -745,13 +749,15 @@ static UniValue submitheader(const JSONRPCRequest& request)
                 "\nThrows when the header is invalid.\n",
                 {
                     {"hexdata", RPCArg::Type::STR_HEX, /* opt */ false, /* default_val */ "", "the hex-encoded block header data"},
-                }}
-                .ToString() +
-            "\nResult:\n"
+                },
+                RPCResult{
             "None"
-            "\nExamples:\n" +
-            HelpExampleCli("submitheader", "\"aabbcc\"") +
-            HelpExampleRpc("submitheader", "\"aabbcc\""));
+                },
+                RPCExamples{
+                    HelpExampleCli("submitheader", "\"aabbcc\"") +
+                    HelpExampleRpc("submitheader", "\"aabbcc\"")
+                },
+            }.ToString());
     }
 
     CBlockHeader h;
@@ -794,9 +800,8 @@ static UniValue estimatesmartfee(const JSONRPCRequest& request)
             "       \"UNSET\"\n"
             "       \"ECONOMICAL\"\n"
             "       \"CONSERVATIVE\""},
-                }}
-                .ToString() +
-            "\nResult:\n"
+                },
+                RPCResult{
             "{\n"
             "  \"feerate\" : x.x,     (numeric, optional) estimate fee rate in " + CURRENCY_UNIT + "/kB\n"
             "  \"errors\": [ str... ] (json array of strings, optional) Errors encountered during processing\n"
@@ -807,9 +812,11 @@ static UniValue estimatesmartfee(const JSONRPCRequest& request)
             "fee estimation is able to return based on how long it has been running.\n"
             "An error is returned if not enough transactions and blocks\n"
             "have been observed to make an estimate for any number of blocks.\n"
-            "\nExample:\n"
-            + HelpExampleCli("estimatesmartfee", "6")
-            );
+                },
+                RPCExamples{
+                    HelpExampleCli("estimatesmartfee", "6")
+                },
+            }.ToString());
 
     RPCTypeCheck(request.params, {UniValue::VNUM, UniValue::VSTR});
     RPCTypeCheckArgument(request.params[0], UniValue::VNUM);

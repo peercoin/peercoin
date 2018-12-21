@@ -111,16 +111,16 @@ UniValue importprivkey(const JSONRPCRequest& request)
         throw std::runtime_error(
             RPCHelpMan{"importprivkey",
                 "\nAdds a private key (as returned by dumpprivkey) to your wallet. Requires a new wallet backup.\n"
-                "Hint: use importmulti to import more than one private key.\n",
+                "Hint: use importmulti to import more than one private key.\n"
+            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
+            "may report that the imported key exists but related transactions are still missing, leading to temporarily incorrect/bogus balances and unspent outputs until rescan completes.\n",
                 {
                     {"privkey", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The private key (see dumpprivkey)"},
                     {"label", RPCArg::Type::STR, /* opt */ true, /* default_val */ "current label if address exists, otherwise \"\"", "An optional label"},
                     {"rescan", RPCArg::Type::BOOL, /* opt */ true, /* default_val */ "true", "Rescan the wallet for transactions"},
-                }}
-                .ToString() +
-            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
-            "may report that the imported key exists but related transactions are still missing, leading to temporarily incorrect/bogus balances and unspent outputs until rescan completes.\n"
-            "\nExamples:\n"
+                },
+                RPCResults{},
+                RPCExamples{
             "\nDump a private key\n"
             + HelpExampleCli("dumpprivkey", "\"myaddress\"") +
             "\nImport the private key with rescan\n"
@@ -131,7 +131,8 @@ UniValue importprivkey(const JSONRPCRequest& request)
             + HelpExampleCli("importprivkey", "\"mykey\" \"\" false") +
             "\nAs a JSON-RPC call\n"
             + HelpExampleRpc("importprivkey", "\"mykey\", \"testing\", false")
-        );
+                },
+            }.ToString());
 
 
     WalletRescanReserver reserver(pwallet);
@@ -206,16 +207,18 @@ UniValue abortrescan(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() > 0)
         throw std::runtime_error(
             RPCHelpMan{"abortrescan",
-                "\nStops current wallet rescan triggered by an RPC call, e.g. by an importprivkey call.\n", {}}
-                .ToString() +
-            "\nExamples:\n"
+                "\nStops current wallet rescan triggered by an RPC call, e.g. by an importprivkey call.\n",
+                {},
+                RPCResults{},
+                RPCExamples{
             "\nImport a private key\n"
             + HelpExampleCli("importprivkey", "\"mykey\"") +
             "\nAbort the running wallet rescan\n"
             + HelpExampleCli("abortrescan", "") +
             "\nAs a JSON-RPC call\n"
             + HelpExampleRpc("abortrescan", "")
-        );
+                },
+            }.ToString());
 
     if (!pwallet->IsScanning() || pwallet->IsAbortingRescan()) return false;
     pwallet->AbortRescan();
@@ -269,27 +272,28 @@ UniValue importaddress(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 4)
         throw std::runtime_error(
             RPCHelpMan{"importaddress",
-                "\nAdds an address or script (in hex) that can be watched as if it were in your wallet but cannot be used to spend. Requires a new wallet backup.\n",
+                "\nAdds an address or script (in hex) that can be watched as if it were in your wallet but cannot be used to spend. Requires a new wallet backup.\n"
+            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
+            "may report that the imported address exists but related transactions are still missing, leading to temporarily incorrect/bogus balances and unspent outputs until rescan completes.\n"
+            "If you have the full public key, you should call importpubkey instead of this.\n"
+            "\nNote: If you import a non-standard raw script in hex form, outputs sending to it will be treated\n"
+            "as change, and not show up in many RPCs.\n",
                 {
                     {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The Bitcoin address (or hex-encoded script)"},
                     {"label", RPCArg::Type::STR, /* opt */ true, /* default_val */ "\"\"", "An optional label"},
                     {"rescan", RPCArg::Type::BOOL, /* opt */ true, /* default_val */ "true", "Rescan the wallet for transactions"},
                     {"p2sh", RPCArg::Type::BOOL, /* opt */ true, /* default_val */ "false", "Add the P2SH version of the script as well"},
-                }}
-                .ToString() +
-            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
-            "may report that the imported address exists but related transactions are still missing, leading to temporarily incorrect/bogus balances and unspent outputs until rescan completes.\n"
-            "If you have the full public key, you should call importpubkey instead of this.\n"
-            "\nNote: If you import a non-standard raw script in hex form, outputs sending to it will be treated\n"
-            "as change, and not show up in many RPCs.\n"
-            "\nExamples:\n"
+                },
+                RPCResults{},
+                RPCExamples{
             "\nImport an address with rescan\n"
             + HelpExampleCli("importaddress", "\"myaddress\"") +
             "\nImport using a label without rescan\n"
             + HelpExampleCli("importaddress", "\"myaddress\" \"testing\" false") +
             "\nAs a JSON-RPC call\n"
             + HelpExampleRpc("importaddress", "\"myaddress\", \"testing\", false")
-        );
+                },
+            }.ToString());
 
 
     std::string strLabel;
@@ -348,23 +352,24 @@ UniValue importpubkey(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 3)
         throw std::runtime_error(
             RPCHelpMan{"importpubkey",
-                "\nAdds a public key (in hex) that can be watched as if it were in your wallet but cannot be used to spend. Requires a new wallet backup.\n",
+                "\nAdds a public key (in hex) that can be watched as if it were in your wallet but cannot be used to spend. Requires a new wallet backup.\n"
+            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
+            "may report that the imported pubkey exists but related transactions are still missing, leading to temporarily incorrect/bogus balances and unspent outputs until rescan completes.\n",
                 {
                     {"pubkey", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The hex-encoded public key"},
                     {"label", RPCArg::Type::STR, /* opt */ true, /* default_val */ "\"\"", "An optional label"},
                     {"rescan", RPCArg::Type::BOOL, /* opt */ true, /* default_val */ "true", "Rescan the wallet for transactions"},
-                }}
-                .ToString() +
-            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
-            "may report that the imported pubkey exists but related transactions are still missing, leading to temporarily incorrect/bogus balances and unspent outputs until rescan completes.\n"
-            "\nExamples:\n"
+                },
+                RPCResults{},
+                RPCExamples{
             "\nImport a public key with rescan\n"
             + HelpExampleCli("importpubkey", "\"mypubkey\"") +
             "\nImport using a label without rescan\n"
             + HelpExampleCli("importpubkey", "\"mypubkey\" \"testing\" false") +
             "\nAs a JSON-RPC call\n"
             + HelpExampleRpc("importpubkey", "\"mypubkey\", \"testing\", false")
-        );
+                },
+            }.ToString());
 
 
     std::string strLabel;
@@ -422,16 +427,17 @@ UniValue importwallet(const JSONRPCRequest& request)
                 "\nImports keys from a wallet dump file (see dumpwallet). Requires a new wallet backup to include imported keys.\n",
                 {
                     {"filename", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The wallet file"},
-                }}
-                .ToString() +
-            "\nExamples:\n"
+                },
+                RPCResults{},
+                RPCExamples{
             "\nDump the wallet\n"
             + HelpExampleCli("dumpwallet", "\"test\"") +
             "\nImport the wallet\n"
             + HelpExampleCli("importwallet", "\"test\"") +
             "\nImport using the json rpc call\n"
             + HelpExampleRpc("importwallet", "\"test\"")
-        );
+                },
+            }.ToString());
 
     WalletRescanReserver reserver(pwallet);
     if (!reserver.reserve()) {
@@ -551,16 +557,17 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
                 "\nReveals the private key corresponding to 'address'.\n"
                 "Then the importprivkey can be used with this output\n",
                 {
-                    {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The bitcoin address for the private key"},
-                }}
-                .ToString() +
-            "\nResult:\n"
+                    {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The peercoin address for the private key"},
+                },
+                RPCResult{
             "\"key\"                (string) The private key\n"
-            "\nExamples:\n"
-            + HelpExampleCli("dumpprivkey", "\"myaddress\"")
+                },
+                RPCExamples{
+                    HelpExampleCli("dumpprivkey", "\"myaddress\"")
             + HelpExampleCli("importprivkey", "\"mykey\"")
             + HelpExampleRpc("dumpprivkey", "\"myaddress\"")
-        );
+                },
+            }.ToString());
 
     auto locked_chain = pwallet->chain().lock();
     LOCK(pwallet->cs_wallet);
@@ -600,17 +607,18 @@ UniValue dumpwallet(const JSONRPCRequest& request)
                 "Note that if your wallet contains keys which are not derived from your HD seed (e.g. imported keys), these are not covered by\n"
                 "only backing up the seed itself, and must be backed up too (e.g. ensure you back up the whole dumpfile).\n",
                 {
-                    {"filename", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The filename with path (either absolute or relative to bitcoind)"},
-                }}
-                .ToString() +
-            "\nResult:\n"
+                    {"filename", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The filename with path (either absolute or relative to peercoind)"},
+                },
+                RPCResult{
             "{                           (json object)\n"
             "  \"filename\" : {        (string) The filename with full absolute path\n"
             "}\n"
-            "\nExamples:\n"
-            + HelpExampleCli("dumpwallet", "\"test\"")
+                },
+                RPCExamples{
+                    HelpExampleCli("dumpwallet", "\"test\"")
             + HelpExampleRpc("dumpwallet", "\"test\"")
-        );
+                },
+            }.ToString());
 
     auto locked_chain = pwallet->chain().lock();
     LOCK(pwallet->cs_wallet);
@@ -1031,7 +1039,9 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
             RPCHelpMan{"importmulti",
                 "\nImport addresses/scripts (with private or public keys, redeem script (P2SH)), optionally rescanning the blockchain from the earliest creation time of the imported scripts. Requires a new wallet backup.\n"
                 "If an address/script is imported without all of the private keys required to spend from that address, it will be watchonly. The 'watchonly' option must be set to true in this case or a warning will be returned.\n"
-                "Conversely, if all the private keys are provided and the address/script is spendable, the watchonly option must be set to false, or a warning will be returned.\n",
+                "Conversely, if all the private keys are provided and the address/script is spendable, the watchonly option must be set to false, or a warning will be returned.\n"
+            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
+            "may report that the imported keys, addresses or scripts exists but related transactions are still missing.\n",
                 {
                     {"requests", RPCArg::Type::ARR, /* opt */ false, /* default_val */ "", "Data to be imported",
                         {
@@ -1072,17 +1082,18 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
                             {"rescan", RPCArg::Type::BOOL, /* opt */ true, /* default_val */ "true", "Stating if should rescan the blockchain after all imports"},
                         },
                         "\"options\""},
-                }}
-                .ToString() +
-            "\nNote: This call can take over an hour to complete if rescan is true, during that time, other rpc calls\n"
-            "may report that the imported keys, addresses or scripts exists but related transactions are still missing.\n"
-            "\nExamples:\n" +
-            HelpExampleCli("importmulti", "'[{ \"scriptPubKey\": { \"address\": \"<my address>\" }, \"timestamp\":1455191478 }, "
-                                          "{ \"scriptPubKey\": { \"address\": \"<my 2nd address>\" }, \"label\": \"example 2\", \"timestamp\": 1455191480 }]'") +
-            HelpExampleCli("importmulti", "'[{ \"scriptPubKey\": { \"address\": \"<my address>\" }, \"timestamp\":1455191478 }]' '{ \"rescan\": false}'") +
-
+                },
+                RPCResult{
             "\nResponse is an array with the same size as the input that has the execution result :\n"
-            "  [{\"success\": true}, {\"success\": true, \"warnings\": [\"Ignoring irrelevant private key\"]}, {\"success\": false, \"error\": {\"code\": -1, \"message\": \"Internal Server Error\"}}, ...]\n");
+            "  [{\"success\": true}, {\"success\": true, \"warnings\": [\"Ignoring irrelevant private key\"]}, {\"success\": false, \"error\": {\"code\": -1, \"message\": \"Internal Server Error\"}}, ...]\n"
+                },
+                RPCExamples{
+                    HelpExampleCli("importmulti", "'[{ \"scriptPubKey\": { \"address\": \"<my address>\" }, \"timestamp\":1455191478 }, "
+                                          "{ \"scriptPubKey\": { \"address\": \"<my 2nd address>\" }, \"label\": \"example 2\", \"timestamp\": 1455191480 }]'") +
+                    HelpExampleCli("importmulti", "'[{ \"scriptPubKey\": { \"address\": \"<my address>\" }, \"timestamp\":1455191478 }]' '{ \"rescan\": false}'")
+                },
+            }.ToString()
+        );
 
 
     RPCTypeCheck(mainRequest.params, {UniValue::VARR, UniValue::VOBJ});
