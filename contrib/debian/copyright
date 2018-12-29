@@ -4,6 +4,7 @@ Source: https://github.com/peercoin/peercoin
 
 Files: *
 Copyright: 2011-2020 Peercoin Developers
+Copyright: 2009-2019, Bitcoin Core Developers
 License: Expat
 Comment: The Peercoin Developers encompasses the current developers listed on https://github.com/peercoin/peercoin,
          as well as the numerous contributors to the project.
