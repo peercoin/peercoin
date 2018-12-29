@@ -2,12 +2,11 @@
 .TH PEERCOIN "1" "February 2019" "Peercoin Daemon version v0.8.0" "User Commands"
 .SH NAME
 Peercoin \- peercoind
+.SH SYNOPSIS
+.B peercoind
+[\fI\,options\/\fR]                     \fI\,Start Peercoin Daemon\/\fR
 .SH DESCRIPTION
 Peercoin Core Daemon version v0.8.0
-.SS "Usage:"
-.TP
-peercoind [options]
-Start Peercoin Core Daemon
 .SH OPTIONS
 .HP
 \-?
@@ -62,7 +61,8 @@ Set database cache size in megabytes (4 to 16384, default: 450)
 \fB\-debuglogfile=\fR<file>
 .IP
 Specify location of debug log file. Relative paths will be prefixed by a
-net\-specific datadir location. (0 to disable; default: debug.log)
+net\-specific datadir location. (\fB\-nodebuglogfile\fR to disable;
+default: debug.log)
 .HP
 \fB\-includeconf=\fR<file>
 .IP
@@ -106,7 +106,9 @@ Rebuild chain state and block index from the blk*.dat files on disk
 .HP
 \fB\-reindex\-chainstate\fR
 .IP
-Rebuild chain state from the currently indexed blocks
+Rebuild chain state from the currently indexed blocks. When in pruning
+mode or if blocks on disk might be corrupted, use full \fB\-reindex\fR
+instead.
 .HP
 \fB\-sysperms\fR
 .IP
@@ -146,7 +148,7 @@ for IPv6
 .HP
 \fB\-connect=\fR<ip>
 .IP
-Connect only to the specified node; \fB\-connect\fR=\fI\,0\/\fR disables automatic
+Connect only to the specified node; \fB\-noconnect\fR disables automatic
 connections (the rules for this peer are the same as for
 \fB\-addnode\fR). This option can be specified multiple times to connect
 to multiple nodes.
@@ -167,7 +169,7 @@ unless \fB\-connect\fR used)
 .HP
 \fB\-enablebip61\fR
 .IP
-Send reject messages per BIP61 (default: 1)
+Send reject messages per BIP61 (default: 0)
 .HP
 \fB\-externalip=\fR<ip>
 .IP
@@ -210,8 +212,8 @@ Tries to keep outbound traffic under the given target (in MiB per 24h),
 .HP
 \fB\-onion=\fR<ip:port>
 .IP
-Use separate SOCKS5 proxy to reach peers via Tor hidden services
-(default: \fB\-proxy\fR)
+Use separate SOCKS5 proxy to reach peers via Tor hidden services, set
+\fB\-noonion\fR to disable (default: \fB\-proxy\fR)
 .HP
 \fB\-onlynet=\fR<net>
 .IP
@@ -231,11 +233,13 @@ Relay non\-P2SH multisig (default: 1)
 .HP
 \fB\-port=\fR<port>
 .IP
-Listen for connections on <port> (default: 9901 or testnet: 9903)
+Listen for connections on <port> (default: 9901, testnet: 9903, 
+regtest: 18444)
 .HP
 \fB\-proxy=\fR<ip:port>
 .IP
-Connect through SOCKS5 proxy
+Connect through SOCKS5 proxy, set \fB\-noproxy\fR to disable (default:
+disabled)
 .HP
 \fB\-proxyrandomize\fR
 .IP
@@ -371,14 +375,13 @@ Send transactions with full\-RBF opt\-in enabled (RPC only, default: 0)
 .IP
 Delete all wallet transactions and only recover those parts of the
 blockchain through \fB\-rescan\fR on startup (1 = keep tx meta data e.g.
-account owner and payment request information, 2 = drop tx meta
-data)
+payment request information, 2 = drop tx meta data)
 .PP
 Debugging/Testing options:
 .HP
 \fB\-debug=\fR<category>
 .IP
-Output debugging information (default: 0, supplying <category> is
+Output debugging information (default: \fB\-nodebug\fR, supplying <category> is
 optional). If <category> is not supplied or if <category> = 1,
 output all debugging information. <category> can be: net, tor,
 mempool, http, bench, zmq, db, rpc, estimatefee, addrman,
@@ -393,7 +396,7 @@ or more specified categories.
 .HP
 \fB\-help\-debug\fR
 .IP
-Show all debugging options (usage: \fB\-\-help\fR \fB\-help\-debug\fR)
+Print help message with debugging options and exit
 .HP
 \fB\-logips\fR
 .IP
@@ -406,7 +409,7 @@ Prepend debug output with timestamp (default: 1)
 \fB\-printtoconsole\fR
 .IP
 Send trace/debug info to console (default: 1 when no \fB\-daemon\fR. To disable
-logging to file, set debuglogfile=0)
+logging to file, set \fB\-nodebuglogfile\fR)
 .HP
 \fB\-shrinkdebugfile\fR
 .IP
@@ -469,8 +472,8 @@ option can be specified multiple times
 .HP
 \fB\-rpcauth=\fR<userpw>
 .IP
-Username and hashed password for JSON\-RPC connections. The field
-<userpw> comes in the format: <USERNAME>:<SALT>$<HASH>. A
+Username and HMAC\-SHA\-256 hashed password for JSON\-RPC connections. The
+field <userpw> comes in the format: <USERNAME>:<SALT>$<HASH>. A
 canonical python script is included in share/rpcauth. The client
 then connects normally using the
 rpcuser=<USERNAME>/rpcpassword=<PASSWORD> pair of arguments. This
@@ -478,12 +481,12 @@ option can be specified multiple times
 .HP
 \fB\-rpcbind=\fR<addr>[:port]
 .IP
-Bind to given address to listen for JSON\-RPC connections. This option is
-ignored unless \fB\-rpcallowip\fR is also passed. Port is optional and
-overrides \fB\-rpcport\fR. Use [host]:port notation for IPv6. This
-option can be specified multiple times (default: 127.0.0.1 and
-::1 i.e., localhost, or if \fB\-rpcallowip\fR has been specified,
-0.0.0.0 and :: i.e., all addresses)
+Bind to given address to listen for JSON\-RPC connections. Do not expose
+the RPC server to untrusted networks such as the public internet!
+This option is ignored unless \fB\-rpcallowip\fR is also passed. Port is
+optional and overrides \fB\-rpcport\fR. Use [host]:port notation for
+IPv6. This option can be specified multiple times (default:
+127.0.0.1 and ::1 i.e., localhost)
 .HP
 \fB\-rpccookiefile=\fR<loc>
 .IP
@@ -496,8 +499,8 @@ Password for JSON\-RPC connections
 .HP
 \fB\-rpcport=\fR<port>
 .IP
-Listen for JSON\-RPC connections on <port> (default: 9902 or testnet:
-9904)
+Listen for JSON\-RPC connections on <port> (default: 9902, testnet:
+9904, regtest: 18443)
 .HP
 \fB\-rpcserialversion\fR
 .IP
