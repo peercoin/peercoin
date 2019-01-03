@@ -56,7 +56,7 @@ All three configurations assume several paths that might need to be adjusted.
 Binary:              `/usr/bin/peercoind`  
 Configuration file:  `/etc/peercoin/peercoin.conf`  
 Data directory:      `/var/lib/peercoind`  
-PID file:            `/var/run/peercoind/peercoind.pid` (OpenRC and Upstart) or `/var/lib/peercoind/peercoind.pid` (systemd)  
+PID file:            `/var/run/peercoind/peercoind.pid` (OpenRC and Upstart) or `/run/peercoind/peercoind.pid` (systemd)  
 Lock file:           `/var/lock/subsys/peercoind` (CentOS)  
 
 The configuration file, PID directory (if applicable) and data directory
@@ -64,6 +64,22 @@ should all be owned by the peercoin user and group.  It is advised for security
 reasons to make the configuration file and data directory only readable by the
 peercoin user and group.  Access to peercoin-cli and other peercoind rpc clients
 can then be controlled by group membership.
+
+NOTE: When using the systemd .service file, the creation of the aforementioned
+directories and the setting of their permissions is automatically handled by
+systemd. Directories are given a permission of 710, giving the bitcoin group
+access to files under it _if_ the files themselves give permission to the
+bitcoin group to do so (e.g. when `-sysperms` is specified). This does not allow
+for the listing of files under the directory.
+
+NOTE: It is not currently possible to override `datadir` in
+`/etc/bitcoin/bitcoin.conf` with the current systemd, OpenRC, and Upstart init
+files out-of-the-box. This is because the command line options specified in the
+init files take precedence over the configurations in
+`/etc/bitcoin/bitcoin.conf`. However, some init systems have their own
+configuration mechanisms that would allow for overriding the command line
+options specified in the init files (e.g. setting `BITCOIND_DATADIR` for
+OpenRC).
 
 ### macOS
 
