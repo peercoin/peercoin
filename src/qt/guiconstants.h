@@ -54,6 +54,7 @@ static const int MAX_URI_LENGTH = 255;
 #define QAPP_ORG_DOMAIN "peercoin.net"
 #define QAPP_APP_NAME_DEFAULT "Peercoin-Qt"
 #define QAPP_APP_NAME_TESTNET "Peercoin-Qt-testnet"
+#define QAPP_APP_NAME_REGTEST "Peercoin-Qt-regtest"
 
 /* Colors for minting tab for each coin age group */
 #define COLOR_MINT_YOUNG QColor(255, 224, 226)
