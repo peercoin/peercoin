@@ -42,8 +42,6 @@ WalletModel::WalletModel(std::unique_ptr<interfaces::Wallet> wallet, interfaces:
     cachedNumBlocks(0)
 {
     fHaveWatchOnly = m_wallet->haveWatchOnly();
-    fForceCheckBalanceChanged = false;
-
     addressTableModel = new AddressTableModel(this);
     mintingTableModel = new MintingTableModel(this);
     recentRequestsTableModel = new RecentRequestsTableModel(this);
