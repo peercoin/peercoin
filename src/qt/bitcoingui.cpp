@@ -83,7 +83,8 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     m_node(node),
     decryptForMintingAction(0),
     trayIconMenu{new QMenu()},
-    platformStyle(_platformStyle)
+    platformStyle(_platformStyle),
+    m_network_style(networkStyle)
 {
     QSettings settings;
     if (!restoreGeometry(settings.value("MainWindowGeometry").toByteArray())) {
@@ -101,7 +102,9 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     } else {
         windowTitle += tr("Node");
     }
-    windowTitle += " " + networkStyle->getTitleAddText();
+    windowTitle += " " + m_network_style->getTitleAddText();
+    QApplication::setWindowIcon(m_network_style->getTrayAndWindowIcon());
+    setWindowIcon(m_network_style->getTrayAndWindowIcon());
 
     QFontDatabase::addApplicationFont(":/fonts/notosans-regular");
     QFile styleFile(":/themes/default");
@@ -109,8 +112,6 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     QString styleSheet = QLatin1String(styleFile.readAll());
     this->setStyleSheet(styleSheet);
 
-    QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());
-    setWindowIcon(networkStyle->getTrayAndWindowIcon());
     setWindowTitle(windowTitle);
 
     rpcConsole = new RPCConsole(node, _platformStyle, nullptr);
@@ -146,7 +147,7 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
 
     // Create system tray icon and notification
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
-        createTrayIcon(networkStyle);
+        createTrayIcon();
     }
     notificator = new Notificator(QApplication::applicationName(), trayIcon, this);
 
@@ -688,14 +689,14 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     openAction->setEnabled(enabled);
 }
 
-void BitcoinGUI::createTrayIcon(const NetworkStyle *networkStyle)
+void BitcoinGUI::createTrayIcon()
 {
     assert(QSystemTrayIcon::isSystemTrayAvailable());
 
 #ifndef Q_OS_MAC
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
-        trayIcon = new QSystemTrayIcon(networkStyle->getTrayAndWindowIcon(), this);
-        QString toolTip = tr("%1 client").arg(tr(PACKAGE_NAME)) + " " + networkStyle->getTitleAddText();
+        trayIcon = new QSystemTrayIcon(m_network_style->getTrayAndWindowIcon(), this);
+        QString toolTip = tr("%1 client").arg(tr(PACKAGE_NAME)) + " " + m_network_style->getTitleAddText();
         trayIcon->setToolTip(toolTip);
     }
 #endif
