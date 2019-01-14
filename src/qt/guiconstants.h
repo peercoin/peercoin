@@ -61,4 +61,7 @@ static const int MAX_URI_LENGTH = 255;
 #define COLOR_MINT_MATURE QColor(204, 255, 207)
 #define COLOR_MINT_OLD QColor(111, 252, 141)
 
+/* One gigabyte (GB) in bytes */
+static constexpr uint64_t GB_BYTES{1000000000};
+
 #endif // BITCOIN_QT_GUICONSTANTS_H
