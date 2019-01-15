@@ -9,6 +9,7 @@
 #include "wallet.h"
 #include "walletdb.h" // for BackupWallet
 #include "base58.h"
+#include "kernel.h"
 
 #include <QSet>
 #include <QTimer>
@@ -142,6 +143,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     qint64 total = 0;
     QSet<QString> setAddress;
     QString hex;
+    bool fNewFees = IsProtocolV07(GetAdjustedTime());
 
     if(recipients.empty())
     {
@@ -157,7 +159,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         }
         setAddress.insert(rcp.address);
 
-        if(rcp.amount < MIN_TXOUT_AMOUNT)
+        if(rcp.amount < (fNewFees ? MIN_TXOUT_AMOUNT : MIN_TXOUT_AMOUNT_PREV7))
         {
             return InvalidAmount;
         }
@@ -179,11 +181,6 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     if(total > nBalance)
     {
         return AmountExceedsBalance;
-    }
-
-    if((total + nTransactionFee) > nBalance)
-    {
-        return SendCoinsReturn(AmountWithFeeExceedsBalance, nTransactionFee);
     }
 
     {
