@@ -1,16 +1,26 @@
+/*
+Green: #3cb054
+Light Grey: #e8e8e8
+Dark grey: #363636
+*/
+
 /* Global Styles */
+/* Default font should be Roboto */
 * {
-    font-family: "NotoSans-Regular";
-    color: #4b4b4b;
+    font-family: "Roboto-Regular";
+    color: #363636;
 }
 
+/* Main window color should now be white */
 QMainWindow, QDialog {
-    background: #f6f6f6;
+    background: #ffffff;
 }
 
 /* Global Styles - Buttons */
+/* Resting state */
 QToolButton, QPushButton {
-    background: #333333;
+    background: #3cb054;
+    border-radius: 20px;
     border: none;
     color: #ffffff;
     margin: 5px;
@@ -20,25 +30,28 @@ QToolButton, QPushButton {
     padding-right: 6px;
 }
 
+/* Alternative button states */
 QToolButton:checked, QPushButton:checked {
-    background: #3cb054;
+    background: gray;
     border: none;
 }
 
 QToolButton:hover, QPushButton:hover {
-    background: #3cb054;
+    background: gray;
     border: none;
 }
 
+/* Disabled state */
 QToolButton:!enabled, QPushButton:!enabled {
-    background: gray;
+    background: #e8e8e8;
 }
 
 /* Global Styles - Inputs */
+/* Password input and such */
 QLineEdit, QTextEdit {
-    background: #fefefe;
+    background: #ffffff;
     border-radius: 0px;
-    border: 1px solid #e9e9e9;
+    border: 1px solid #3cb054;
 }
 
 QSpinBox, QDoubleSpinBox   {
@@ -163,19 +176,19 @@ QToolBar > QToolButton {
 }
 
 /* Status Bar */
+/* Bottom bar I think */
 QStatusBar {
     color: #ffffff;
-    background: #333333;
-    border-top: 1px solid #e1e1e1;
+    background: #e8e8e8;
 }
 
 QStatusBar QLabel {
-    color: #ffffff;
+    color: #3cb054;
     border: none;
 }
 
 QStatusBar::item {
-    color: #ffffff;
+    color: #3cb054;
     border: none;
 }
 
@@ -348,6 +361,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     background: none;
 }
 
+/* Haven't figured out what the QMenu is yet */
 QMenu {
     background-color: #f6f6f6;
 }
