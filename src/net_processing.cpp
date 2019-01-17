@@ -1608,7 +1608,7 @@ bool static ProcessHeadersMessage(CNode *pfrom, CConnman *connman, const std::ve
                     Misbehaving(pfrom->GetId(), nDoS);
                 }
             }
-            if (punish_duplicate_invalid && LookupBlockIndex(first_invalid_header.GetHash())) {
+            if (punish_duplicate_invalid && state.GetReason() == ValidationInvalidReason::CACHED_INVALID) { 
                 // Goal: don't allow outbound peers to use up our outbound
                 // connection slots if they are on incompatible chains.
                 //
