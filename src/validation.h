@@ -51,7 +51,7 @@ static const bool DEFAULT_ALERTS = true;
 /** Default for -whitelistrelay. */
 static const bool DEFAULT_WHITELISTRELAY = true;
 /** Default for -whitelistforcerelay. */
-static const bool DEFAULT_WHITELISTFORCERELAY = true;
+static const bool DEFAULT_WHITELISTFORCERELAY = false;
 /** Default for -limitancestorcount, max number of in-mempool ancestors */
 static const unsigned int DEFAULT_ANCESTOR_LIMIT = 25;
 /** Default for -limitancestorsize, maximum kilobytes of tx + all in-mempool ancestors */
