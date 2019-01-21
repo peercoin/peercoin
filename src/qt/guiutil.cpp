@@ -678,10 +678,8 @@ bool SetStartOnSystemStartup(bool fAutoStart)
 #elif defined(Q_OS_MAC) && defined(MAC_OS_X_VERSION_MIN_REQUIRED) && MAC_OS_X_VERSION_MIN_REQUIRED <= 101100
 // based on: https://github.com/Mozketo/LaunchAtLoginController/blob/master/LaunchAtLoginController.m
 
-LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl);
-LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl)
+LSSharedFileListItemRef findStartupItemInList(CFArrayRef listSnapshot, LSSharedFileListRef list, CFURLRef findUrl)
 {
-    CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(list, nullptr);
     if (listSnapshot == nullptr) {
         return nullptr;
     }
@@ -706,15 +704,12 @@ LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef
         if(currentItemURL) {
             if (CFEqual(currentItemURL, findUrl)) {
                 // found
-                CFRelease(listSnapshot);
                 CFRelease(currentItemURL);
                 return item;
             }
             CFRelease(currentItemURL);
         }
     }
-
-    CFRelease(listSnapshot);
     return nullptr;
 }
 
@@ -726,10 +721,12 @@ bool GetStartOnSystemStartup()
     }
 
     LSSharedFileListRef loginItems = LSSharedFileListCreate(nullptr, kLSSharedFileListSessionLoginItems, nullptr);
-    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcoinAppUrl);
-
+    CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(loginItems, nullptr);
+    bool res = (findStartupItemInList(listSnapshot, loginItems, bitcoinAppUrl) != nullptr);
     CFRelease(bitcoinAppUrl);
-    return !!foundItem; // return boolified object
+    CFRelease(loginItems);
+    CFRelease(listSnapshot);
+    return res;
 }
 
 bool SetStartOnSystemStartup(bool fAutoStart)
@@ -740,7 +737,8 @@ bool SetStartOnSystemStartup(bool fAutoStart)
     }
 
     LSSharedFileListRef loginItems = LSSharedFileListCreate(nullptr, kLSSharedFileListSessionLoginItems, nullptr);
-    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcoinAppUrl);
+    CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(loginItems, nullptr);
+    LSSharedFileListItemRef foundItem = findStartupItemInList(listSnapshot, loginItems, bitcoinAppUrl);
 
     if(fAutoStart && !foundItem) {
         // add bitcoin app to startup item list
@@ -752,6 +750,8 @@ bool SetStartOnSystemStartup(bool fAutoStart)
     }
 
     CFRelease(bitcoinAppUrl);
+    CFRelease(loginItems);
+    CFRelease(listSnapshot);
     return true;
 }
 #pragma GCC diagnostic pop
