@@ -134,6 +134,9 @@ UniValue importprivkey(const JSONRPCRequest& request)
                 },
             }.ToString());
 
+    if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Cannot import private keys to a wallet with private keys disabled");
+    }
 
     WalletRescanReserver reserver(pwallet);
     bool fRescan = true;
@@ -505,6 +508,11 @@ UniValue importwallet(const JSONRPCRequest& request)
             }
         }
         file.close();
+        // We now know whether we are importing private keys, so we can error if private keys are disabled
+        if (keys.size() > 0 && pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
+            uiInterface.ShowProgress("", 100, false); // hide progress dialog in GUI
+            throw JSONRPCError(RPC_WALLET_ERROR, "Importing wallets is disabled when private keys are disabled");
+        }
         double total = (double)(keys.size() + scripts.size());
         double progress = 0;
         for (const auto& key_tuple : keys) {
@@ -857,6 +865,11 @@ static UniValue ProcessImport(CWallet * const pwallet, const UniValue& data, con
         const bool internal = data.exists("internal") ? data["internal"].get_bool() : false;
         const bool watchOnly = data.exists("watchonly") ? data["watchonly"].get_bool() : false;
         const std::string& label = data.exists("label") ? data["label"].get_str() : "";
+
+        // If private keys are disabled, abort if private keys are being imported
+        if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS) && !keys.isNull()) {
+            throw JSONRPCError(RPC_WALLET_ERROR, "Cannot import private keys to a wallet with private keys disabled");
+        }
 
         // Generate the script and destination for the scriptPubKey provided
         CScript script;
