@@ -21,7 +21,10 @@ public:
     {
         BTC,
         mBTC,
-        uBTC
+        uBTC,
+        PPC,
+        mPPC,
+        uPPC
     };
 
     //! @name Static API
