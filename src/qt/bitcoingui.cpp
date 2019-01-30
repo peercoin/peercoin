@@ -3,7 +3,7 @@
  *
  * W.J. van der Laan 2011-2012
  * The Bitcoin developers 2011-2012
- * The Peercoin developers 2011-2018
+ * The Peercoin developers 2011-2019
  */
 
 #include <QApplication>
@@ -74,7 +74,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent) :
 {
     restoreWindowGeometry();
     setWindowTitle(tr("Peercoin") + " - " + tr("Wallet"));
-    
+
     QFontDatabase::addApplicationFont(":/fonts/notosans-regular");
     QFile styleFile(":/themes/default");
     styleFile.open(QFile::ReadOnly);
@@ -140,11 +140,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent) :
     // Override style sheet for progress bar for styles that have a segmented progress bar,
     // as they make the text unreadable (workaround for issue #1071)
     // See https://qt-project.org/doc/qt-4.8/gallery.html
-    QString curStyle = QApplication::style()->metaObject()->className();
-    if(curStyle == "QWindowsStyle" || curStyle == "QWindowsXPStyle")
-    {
-        progressBar->setStyleSheet("QProgressBar { background-color: #333333; text-align: center; color: white; border: 1px solid #4b4b4b; } QProgressBar::chunk { background: #3cb054; margin: 0px; }");
-    }
+    progressBar->setStyleSheet("QProgressBar { background-color: #8C8C8C; text-align: center; color: white; border: 1px solid #4b4b4b; } QProgressBar::chunk { background: #3cb054; margin: 0px; }");
 
     statusBar()->addWidget(progressBarLabel);
     statusBar()->addWidget(progressBar);
@@ -218,6 +214,9 @@ void BitcoinGUI::createActions()
 
     multisigAction = new QAction(QIcon(":/icons/multisig"), tr("&Multisig"), this);
     multisigAction->setStatusTip(tr("UI to create multisig addresses"));
+    multisigAction->setToolTip(multisigAction->statusTip());
+    multisigAction->setCheckable(true);
+    multisigAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
     tabGroup->addAction(multisigAction);
 
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -342,6 +341,7 @@ void BitcoinGUI::createToolBars()
     toolbar->addAction(mintingAction);
 #endif // DISABLE_MINING
     toolbar->addAction(addressBookAction);
+    toolbar->addAction(multisigAction);
 }
 
 void BitcoinGUI::setClientModel(ClientModel *clientModel)
