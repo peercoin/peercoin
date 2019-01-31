@@ -370,6 +370,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 
 QMenu {
     background-color: #ffffff;
+    padding-left: 2px;
 }
 
 QMenu::item {
