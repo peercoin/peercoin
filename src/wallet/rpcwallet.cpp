@@ -3289,6 +3289,11 @@ UniValue rescanblockchain(const JSONRPCRequest& request)
             }
         }
 
+            // If called with a stop_height, set the stop_height here to
+            // trigger a rescan to that height.
+            // If called without a stop height, leave stop_height as null here
+            // so rescan continues to the tip (even if the tip advances during
+            // rescan).
     CWallet::ScanResult result =
         pwallet->ScanForWalletTransactions(start_block, stop_block, reserver, true /* fUpdate */);
     switch (result.status) {
