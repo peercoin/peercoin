@@ -399,6 +399,7 @@ QMenu::item:disabled {
 
 QMenuBar {
     background-color: #3cb054;
+    color: #ffffff;
 }
 
 QMenuBar::item {
@@ -408,9 +409,9 @@ QMenuBar::item {
 }
 
 QMenuBar::item:selected { /* when selected using mouse or keyboard */
-    background: #E3E3E3;
+    background: #46CF63;
 }
 
 QMenuBar::item:pressed {
-    background: #E3E3E3;
+    background: #46CF63;
 }
