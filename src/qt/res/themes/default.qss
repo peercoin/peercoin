@@ -38,12 +38,13 @@ QPushButton {
     padding-right: 6px;
 }
 
+/* Changes all buttons including top "tabs" */
 QToolButton:checked, QPushButton:checked {
-    background: #666666;
+    background: #339648;
 }
 
 QToolButton:hover, QPushButton:hover {
-    background: #666666;
+    background: #339648;
 }
 
 QToolButton:!enabled, QPushButton:!enabled {
@@ -181,11 +182,6 @@ QToolBar > QToolButton {
     padding-left: 8px;
     padding-right: 8px;
 }
-
-QToolBar > QToolButton:checked, QToolButton:hover {
-    background: #339648;
-}
-
 
 /* Status Bar */
 QStatusBar {
