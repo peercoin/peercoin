@@ -316,7 +316,7 @@ QTabBar::tab {
 }
 
 QTabBar::tab:selected {
-    background: #8C8C8C;
+    background: #339648;
     color: #ffffff;
 }
 
