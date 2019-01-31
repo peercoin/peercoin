@@ -110,6 +110,7 @@
         <file alias="default">res/themes/default.qss</file>
     </qresource>
     <qresource prefix="/fonts">
+        <file alias="roboto-regular">res/fonts/Roboto-Regular.ttf</file>
         <file alias="notosans-regular">res/fonts/NotoSans-Regular.ttf</file>
     </qresource>
     <qresource prefix="/controls">
