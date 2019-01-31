@@ -182,6 +182,11 @@ QToolBar > QToolButton {
     padding-right: 8px;
 }
 
+QToolBar > QToolButton:checked, QToolButton:hover {
+    background: #339648;
+}
+
+
 /* Status Bar */
 QStatusBar {
     color: #666666;
