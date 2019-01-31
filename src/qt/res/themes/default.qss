@@ -398,7 +398,7 @@ QMenu::item:disabled {
 }
 
 QMenuBar {
-    background-color: #ffffff;
+    background-color: #3cb054;
 }
 
 QMenuBar::item {
