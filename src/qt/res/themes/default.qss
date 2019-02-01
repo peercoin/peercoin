@@ -7,7 +7,7 @@
 
 /* Global Styles */
 * {
-    font-family: "Roboto-Regular";
+    font-family: "NotoSans-Regular";
     color: #666666;
 }
 
