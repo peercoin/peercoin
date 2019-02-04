@@ -30,6 +30,10 @@
         <translation>Hapus alamat yang dipilih dari daftar</translation>
     </message>
     <message>
+        <source>Enter address or label to search</source>
+        <translation>Masukkan alamat atau label untuk mencari</translation>
+    </message>
+    <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Ekspor data dalam tab saat ini ke file</translation>
     </message>
@@ -320,6 +324,10 @@
     <message>
         <source>Open &amp;URI...</source>
         <translation>Buka &amp;URI...</translation>
+    </message>
+    <message>
+        <source>Wallet:</source>
+        <translation>Dompet:</translation>
     </message>
     <message>
         <source>Click to disable network activity.</source>
@@ -638,10 +646,6 @@
         <translation>&amp;Label</translation>
     </message>
     <message>
-        <source>New receiving address</source>
-        <translation>Alamat penerima baru</translation>
-    </message>
-    <message>
         <source>New sending address</source>
         <translation>Alamat pengirim baru</translation>
     </message>
@@ -682,10 +686,6 @@
     <message>
         <source>About %1</source>
         <translation>Tentang %1</translation>
-    </message>
-    <message>
-        <source>Usage:</source>
-        <translation>Pemakaian:</translation>
     </message>
     </context>
 <context>
@@ -761,6 +761,10 @@
     <message>
         <source>Label</source>
         <translation>Label</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Wallet</translation>
     </message>
     </context>
 <context>

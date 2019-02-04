@@ -252,6 +252,10 @@
         <source>Label</source>
         <translation>Zita</translation>
     </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Chikwama</translation>
+    </message>
     </context>
 <context>
     <name>RecentRequestsTableModel</name>

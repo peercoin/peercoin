@@ -10,6 +10,10 @@
         <translation>새로운 주소 발급받기</translation>
     </message>
     <message>
+        <source>&amp;New</source>
+        <translation>&amp;발급받기</translation>
+    </message>
+    <message>
         <source>Copy the currently selected address to the system clipboard</source>
         <translation>선택된 주소 클립보드에 붙여넣기</translation>
     </message>
@@ -18,8 +22,16 @@
         <translation>&amp;복사</translation>
     </message>
     <message>
+        <source>C&amp;lose</source>
+        <translation>&amp;닫기</translation>
+    </message>
+    <message>
         <source>Delete the currently selected address from the list</source>
         <translation>선택한 주소 리스트에서 삭제</translation>
+    </message>
+    <message>
+        <source>Enter address or label to search</source>
+        <translation>검색할 주소나 라벨을 입력하세요</translation>
     </message>
     <message>
         <source>Export the data in the current tab to a file</source>
@@ -42,6 +54,10 @@
         <translation>코인을 받을 주소를 선택하세요</translation>
     </message>
     <message>
+        <source>C&amp;hoose</source>
+        <translation>&amp;선택하기</translation>
+    </message>
+    <message>
         <source>Sending addresses</source>
         <translation>보낼 주소</translation>
     </message>
@@ -60,6 +76,10 @@
     <message>
         <source>&amp;Copy Address</source>
         <translation>&amp;주소 복사</translation>
+    </message>
+    <message>
+        <source>Copy &amp;Label</source>
+        <translation>&amp;라벨 복사</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
@@ -90,6 +110,10 @@
     <message>
         <source>New passphrase</source>
         <translation>새 암호문</translation>
+    </message>
+    <message>
+        <source>Repeat new passphrase</source>
+        <translation>새 암호문 다시 입력</translation>
     </message>
     <message>
         <source>Show password</source>
@@ -190,9 +214,17 @@
         <source>IP/Netmask</source>
         <translation>IP/Netmask</translation>
     </message>
-    </context>
+    <message>
+        <source>Banned Until</source>
+        <translation>특정 시점까지 차단</translation>
+    </message>
+</context>
 <context>
     <name>BitcoinGUI</name>
+    <message>
+        <source>Sign &amp;message...</source>
+        <translation>&amp;메시지에 서명하기...</translation>
+    </message>
     <message>
         <source>Synchronizing with network...</source>
         <translation>네트워크와 동기화중...</translation>
@@ -216,6 +248,10 @@
     <message>
         <source>Browse transaction history</source>
         <translation>거래 기록 보기</translation>
+    </message>
+    <message>
+        <source>E&amp;xit</source>
+        <translation>&amp;나가기</translation>
     </message>
     <message>
         <source>Quit application</source>
@@ -266,6 +302,18 @@
         <translation>&amp;받을 주소...</translation>
     </message>
     <message>
+        <source>Open &amp;URI...</source>
+        <translation>&amp;URL 열기</translation>
+    </message>
+    <message>
+        <source>Wallet:</source>
+        <translation>지갑:</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation>기본 지갑</translation>
+    </message>
+    <message>
         <source>Click to disable network activity.</source>
         <translation>클릭해서 네트워크 활동 중지</translation>
     </message>
@@ -292,6 +340,10 @@
     <message>
         <source>Backup wallet to another location</source>
         <translation>이 지갑을 다른 곳으로 백업</translation>
+    </message>
+    <message>
+        <source>Change the passphrase used for wallet encryption</source>
+        <translation>지갑 암호화에 사용될 암호문 바꾸기</translation>
     </message>
     </context>
 <context>
@@ -338,6 +390,10 @@
     </context>
 <context>
     <name>RPCConsole</name>
+    <message>
+        <source>default wallet</source>
+        <translation>기본 지갑</translation>
+    </message>
     </context>
 <context>
     <name>ReceiveCoinsDialog</name>
