@@ -140,6 +140,12 @@ QHeaderView::section {
     border-left: 0px;
     padding: 4px;
  }
+ 
+ QHeaderView::section:checked
+{
+    background-color: #3CB054;
+
+}
 
 QHeaderView::down-arrow {
     image: url(:/controls/caret-down);
@@ -402,7 +408,7 @@ QMenuBar::item {
     background: transparent;
 }
 
-QMenuBar::item:selected { /* when selected using mouse or keyboard */
+QMenuBar::item: { /* when selected using mouse or keyboard */
     background: #E3E3E3;
 }
 
