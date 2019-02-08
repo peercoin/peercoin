@@ -33,15 +33,6 @@
 #include <memory>
 #include <stdint.h>
 
-unsigned int ParseConfirmTarget(const UniValue& value)
-{
-    int target = value.get_int();
-    if (target < 1) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid conf_target, must be >= %u", 1));
-    }
-    return (unsigned int)target;
-}
-
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,
  * or from the last difficulty change if 'lookup' is nonpositive.
