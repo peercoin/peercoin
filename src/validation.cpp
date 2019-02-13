@@ -189,8 +189,6 @@ public:
     bool RewindBlockIndex(const CChainParams& params);
     bool LoadGenesisBlock(const CChainParams& chainparams);
 
-    void PruneBlockIndexCandidates();
-
     void UnloadBlockIndex();
 
 private:
@@ -2847,9 +2845,6 @@ static bool FindBlockPos(FlatFilePos &pos, unsigned int nAddSize, unsigned int n
         if (out_of_space) {
             return AbortNode("Disk space is low!", _("Error: Disk space is low!"));
         }
-        if (bytes_allocated != 0 && fPruneMode) {
-            fCheckForPruning = true;
-        }
     }
 
     setDirtyFileInfo.insert(nFile);
@@ -2870,9 +2865,6 @@ static bool FindUndoPos(CValidationState &state, int nFile, FlatFilePos &pos, un
     size_t bytes_allocated = UndoFileSeq().Allocate(pos, nAddSize, out_of_space);
     if (out_of_space) {
         return AbortNode(state, "Disk space is low!", _("Error: Disk space is low!"));
-    }
-    if (bytes_allocated != 0 && fPruneMode) {
-        fCheckForPruning = true;
     }
 
     return true;
@@ -3976,57 +3968,65 @@ void CChainState::EraseBlockData(CBlockIndex* index)
 
 bool CChainState::RewindBlockIndex(const CChainParams& params)
 {
-    LOCK(cs_main);
     // Note that during -reindex-chainstate we are called with an empty chainActive!
 
     // First erase all post-segwit blocks without witness not in the main chain,
     // as this can we done without costly DisconnectTip calls. Active
-    // blocks will be dealt with below.
-    for (const auto& entry : mapBlockIndex) {
-        if (IsWitnessEnabled(entry.second->pprev, params.GetConsensus()) && !(entry.second->nStatus & BLOCK_OPT_WITNESS) && !chainActive.Contains(entry.second)) {
-            EraseBlockData(entry.second);
+    // blocks will be dealt with below (releasing cs_main in between).
+    {
+        LOCK(cs_main);
+        for (const auto& entry : mapBlockIndex) {
+            if (IsWitnessEnabled(entry.second->pprev, params.GetConsensus()) && !(entry.second->nStatus & BLOCK_OPT_WITNESS) && !chainActive.Contains(entry.second)) {
+                EraseBlockData(entry.second);
+            }
         }
     }
 
     // Find what height we need to reorganize to.
+    CBlockIndex *tip;
     int nHeight = 1;
-    while (nHeight <= chainActive.Height()) {
-        // Although SCRIPT_VERIFY_WITNESS is now generally enforced on all
-        // blocks in ConnectBlock, we don't need to go back and
-        // re-download/re-verify blocks from before segwit actually activated.
-        if (IsWitnessEnabled(chainActive[nHeight - 1], params.GetConsensus()) && !(chainActive[nHeight]->nStatus & BLOCK_OPT_WITNESS)) {
-            break;
+    {
+        LOCK(cs_main);
+        while (nHeight <= chainActive.Height()) {
+            // Although SCRIPT_VERIFY_WITNESS is now generally enforced on all
+            // blocks in ConnectBlock, we don't need to go back and
+            // re-download/re-verify blocks from before segwit actually activated.
+            if (IsWitnessEnabled(chainActive[nHeight - 1], params.GetConsensus()) && !(chainActive[nHeight]->nStatus & BLOCK_OPT_WITNESS)) {
+                break;
+            }
+            nHeight++;
         }
-        nHeight++;
-    }
 
+        tip = chainActive.Tip();
+    }
     // nHeight is now the height of the first insufficiently-validated block, or tipheight + 1
+
     CValidationState state;
-    CBlockIndex* tip = chainActive.Tip();
     // Loop until the tip is below nHeight, or we reach a pruned block.
     while (true) {
-        // Make sure nothing changed from under us (this won't happen because RewindBlockIndex runs before importing/network are active)
-        assert(tip == chainActive.Tip());
-        if (tip == nullptr || tip->nHeight < nHeight) break;
-        if (fPruneMode && !(tip->nStatus & BLOCK_HAVE_DATA)) {
+        {
+            LOCK(cs_main);
+            // Make sure nothing changed from under us (this won't happen because RewindBlockIndex runs before importing/network are active)
+            assert(tip == chainActive.Tip());
+            if (tip == nullptr || tip->nHeight < nHeight) break;
 
-        // Disconnect block
-        if (!DisconnectTip(state, params, nullptr)) {
-            return error("RewindBlockIndex: unable to disconnect block at height %i (%s)", tip->nHeight, FormatStateMessage(state));
+            // Disconnect block
+            if (!DisconnectTip(state, params, nullptr)) {
+                return error("RewindBlockIndex: unable to disconnect block at height %i (%s)", tip->nHeight, FormatStateMessage(state));
+            }
+
+            // Reduce validity flag and have-data flags.
+            // We do this after actual disconnecting, otherwise we'll end up writing the lack of data
+            // to disk before writing the chainstate, resulting in a failure to continue if interrupted.
+            // Note: If we encounter an insufficiently validated block that
+            // is on chainActive, it must be because we are a pruning node, and
+            // this block or some successor doesn't HAVE_DATA, so we were unable to
+            // rewind all the way.  Blocks remaining on chainActive at this point
+            // must not have their validity reduced.
+            EraseBlockData(tip);
+
+            tip = tip->pprev;
         }
-
-        // Reduce validity flag and have-data flags.
-        // We do this after actual disconnecting, otherwise we'll end up writing the lack of data
-        // to disk before writing the chainstate, resulting in a failure to continue if interrupted.
-        // Note: If we encounter an insufficiently validated block that
-        // is on chainActive, it must be because we are a pruning node, and
-        // this block or some successor doesn't HAVE_DATA, so we were unable to
-        // rewind all the way.  Blocks remaining on chainActive at this point
-        // must not have their validity reduced.
-        EraseBlockData(tip);
-
-        tip = tip->pprev;
-
         // Occasionally flush state to disk.
         if (!FlushStateToDisk(params, state, FlushStateMode::PERIODIC)) {
             LogPrintf("RewindBlockIndex: unable to flush state to disk (%s)\n", FormatStateMessage(state));
@@ -4034,12 +4034,15 @@ bool CChainState::RewindBlockIndex(const CChainParams& params)
         }
     }
 
-    if (chainActive.Tip() != nullptr) {
-        // We can't prune block index candidates based on our tip if we have
-        // no tip due to chainActive being empty!
-        PruneBlockIndexCandidates();
+    {
+        LOCK(cs_main);
+        if (chainActive.Tip() != nullptr) {
+            // We can't prune block index candidates based on our tip if we have
+            // no tip due to chainActive being empty!
+            PruneBlockIndexCandidates();
 
-        CheckBlockIndex(params.GetConsensus());
+            CheckBlockIndex(params.GetConsensus());
+        }
     }
 
     return true;
