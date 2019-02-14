@@ -44,6 +44,11 @@
 #pragma warning(disable:4717)
 #endif
 
+#ifdef _WIN32_WINNT
+#undef _WIN32_WINNT
+#endif
+#define _WIN32_WINNT 0x0501
+
 #ifdef _WIN32_IE
 #undef _WIN32_IE
 #endif
@@ -74,11 +79,9 @@
 const int64_t nStartupTime = GetTime();
 
 const char * const BITCOIN_CONF_FILENAME = "peercoin.conf";
-const char * const BITCOIN_PID_FILENAME = "peercoind.pid";
 
 ArgsManager gArgs;
 
-    {BCLog::ALERT, "alert"},
 /** A map that contains all the currently held directory locks. After
  * successful locking, these will be held here until the global destructor
  * cleans them up and thus automatically unlocks them, or ReleaseDirectoryLocks
@@ -110,12 +113,6 @@ bool LockDirectory(const fs::path& directory, const std::string lockfile_name, b
         dir_locks.emplace(pathLockFile.string(), std::move(lock));
     }
     return true;
-}
-
-void UnlockDirectory(const fs::path& directory, const std::string& lockfile_name)
-{
-    std::lock_guard<std::mutex> lock(cs_dir_locks);
-    dir_locks.erase((directory / lockfile_name).string());
 }
 
 void ReleaseDirectoryLocks()
@@ -636,12 +633,6 @@ bool HelpRequested(const ArgsManager& args)
     return args.IsArgSet("-?") || args.IsArgSet("-h") || args.IsArgSet("-help") || args.IsArgSet("-help-debug");
 }
 
-void SetupHelpOptions(ArgsManager& args)
-{
-    args.AddArg("-?", "Print this help message and exit", false, OptionsCategory::OPTIONS);
-    args.AddHiddenArgs({"-h", "-help"});
-}
-
 static const int screenWidth = 79;
 static const int optIndent = 2;
 static const int msgIndent = 7;
@@ -965,13 +956,6 @@ std::string ArgsManager::GetChainName() const
         return CBaseChainParams::TESTNET;
     return CBaseChainParams::MAIN;
 }
-
-#ifndef WIN32
-fs::path GetPidFile()
-{
-    return AbsPathForConfigVal(fs::path(gArgs.GetArg("-pid", BITCOIN_PID_FILENAME)));
-}
-#endif
 
 bool RenameOver(fs::path src, fs::path dest)
 {
