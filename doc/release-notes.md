@@ -80,4 +80,4 @@ And to those that reported security issues:
 
 (to be filled in)
 
-As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/bitcoin/).
+As well as everyone that helped translating on [Transifex](https://www.transifex.com/bitcoin/bitcoin/).
