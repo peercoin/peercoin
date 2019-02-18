@@ -78,7 +78,7 @@ using ExtPubKey = std::array<unsigned char, 4>;
 
 static const std::array<ExtPubKey, nNetworks> ExtPubKeys{{
     {0x04, 0x88, 0xB2, 0x1E}, // Main
-    {0x04, 0x35, 0x83, 0x9F}  // Test
+    {0x04, 0x35, 0x87, 0xCF}  // Test
 }};
 
 Network DetectNetwork(const CChainParams& params)
@@ -216,7 +216,7 @@ struct SelectionBlock {
     bool operator<(const SelectionBlock& x) const
     {
         auto t1 = GetTime(), t2 = x.GetTime();
-        return t1 != t2 ? t1 < t2 : pindex->GetBlockHash() < x.pindex->GetBlockHash();
+        return t1 != t2 ? t1 < t2 : pindex->GetBlockHash().ReversedLess(x.pindex->GetBlockHash());
     }
 };
 
@@ -621,25 +621,6 @@ bool State::CheckCoinStake(CoinStake& coinStake, uint256& hashProofOfStake, bool
 
     return true;
 }
-
-/*
-bool State::CheckProofOfStake(CValidationState& state, const CTransactionRef& tx, unsigned int nBits, uint256& hashProofOfStake) const
-{
-    static char const* function = "Kernel::State::CheckProofOfStake";
-
-    CoinStake coinStake;
-    coinStake.nBits = nBits;
-
-    if (!coinStake.Load(tx))
-        return error("%s(): could not load coin stake tx.", function);
-
-    bool fDoS = false;
-    if (!CheckCoinStake(coinStake, hashProofOfStake, &fDoS))
-        return fDoS && state.DoS(1);
-
-    return true;
-}
-*/
 
 // V0.3: Stake modifier used to hash for a stake kernel is chosen as the stake
 // modifier about a selection interval later than the coin generating the kernel

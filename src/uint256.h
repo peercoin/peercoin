@@ -53,6 +53,12 @@ public:
     friend inline bool operator!=(const base_blob& a, const base_blob& b) { return a.Compare(b) != 0; }
     friend inline bool operator<(const base_blob& a, const base_blob& b) { return a.Compare(b) < 0; }
 
+    inline bool ReversedLess(const base_blob& other) const {
+        auto p1 = data + WIDTH, p2 = other.data + WIDTH;
+        do { --p1; --p2; } while (*p1 == *p2 && p1 != data);
+        return *p1 < *p2;
+    }
+
     std::string GetHex() const;
     void SetHex(const char* psz);
     void SetHex(const std::string& str);
