@@ -530,13 +530,14 @@ static UniValue signmessage(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
     }
 
-    const CKeyID *keyID = boost::get<CKeyID>(&dest);
-    if (!keyID) {
+    const PKHash *pkhash = boost::get<PKHash>(&dest);
+    if (!pkhash) {
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
     }
 
     CKey key;
-    if (!pwallet->GetKey(*keyID, key)) {
+    CKeyID keyID(*pkhash);
+    if (!pwallet->GetKey(keyID, key)) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
     }
 
@@ -2889,7 +2890,7 @@ static UniValue listunspent(const JSONRPCRequest& request)
             }
 
             if (scriptPubKey.IsPayToScriptHash()) {
-                const CScriptID& hash = boost::get<CScriptID>(address);
+                const CScriptID& hash = CScriptID(boost::get<ScriptHash>(address));
                 CScript redeemScript;
                 if (pwallet->GetCScript(hash, redeemScript)) {
                     entry.pushKV("redeemScript", HexStr(redeemScript.begin(), redeemScript.end()));
@@ -3522,8 +3523,9 @@ public:
 
     UniValue operator()(const CNoDestination& dest) const { return UniValue(UniValue::VOBJ); }
 
-    UniValue operator()(const CKeyID& keyID) const
+    UniValue operator()(const PKHash& pkhash) const
     {
+        CKeyID keyID(pkhash);
         UniValue obj(UniValue::VOBJ);
         CPubKey vchPubKey;
         if (pwallet && pwallet->GetPubKey(keyID, vchPubKey)) {
@@ -3533,8 +3535,9 @@ public:
         return obj;
     }
 
-    UniValue operator()(const CScriptID& scriptID) const
+    UniValue operator()(const ScriptHash& scripthash) const
     {
+        CScriptID scriptID(scripthash);
         UniValue obj(UniValue::VOBJ);
         CScript subscript;
         if (pwallet && pwallet->GetCScript(scriptID, subscript)) {
