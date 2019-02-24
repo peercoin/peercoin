@@ -4002,32 +4002,36 @@ bool CChainState::RewindBlockIndex(const CChainParams& params)
 
     // nHeight is now the height of the first insufficiently-validated block, or tipheight + 1
     CValidationState state;
-    CBlockIndex* pindex = chainActive.Tip();
-    CBlockIndex* tip = pindex;
-    while (chainActive.Height() >= nHeight) {
-        if (!DisconnectTip(state, params, nullptr)) {
-            return error("RewindBlockIndex: unable to disconnect block at height %i (%s)", pindex->nHeight, FormatStateMessage(state));
-        }
-        // Occasionally flush state to disk.
-        if (!FlushStateToDisk(params, state, FlushStateMode::PERIODIC)) {
-            LogPrintf("RewindBlockIndex: unable to flush state to disk (%s)\n", FormatStateMessage(state));
-            return false;
-        }
-    }
+    CBlockIndex* tip = chainActive.Tip();
+    // Loop until the tip is below nHeight, or we reach a pruned block.
+    while (true) {
+        // Make sure nothing changed from under us (this won't happen because RewindBlockIndex runs before importing/network are active)
+        assert(tip == chainActive.Tip());
+        if (tip == nullptr || tip->nHeight < nHeight) break;
+        if (fPruneMode && !(tip->nStatus & BLOCK_HAVE_DATA)) {
 
-    // Reduce validity flag and have-data flags.
-    // We do this after actual disconnecting, otherwise we'll end up writing the lack of data
-    // to disk before writing the chainstate, resulting in a failure to continue if interrupted.
-    while (tip->nHeight > chainActive.Height()) {
+        // Disconnect block
+        if (!DisconnectTip(state, params, nullptr)) {
+            return error("RewindBlockIndex: unable to disconnect block at height %i (%s)", tip->nHeight, FormatStateMessage(state));
+        }
+
+        // Reduce validity flag and have-data flags.
+        // We do this after actual disconnecting, otherwise we'll end up writing the lack of data
+        // to disk before writing the chainstate, resulting in a failure to continue if interrupted.
         // Note: If we encounter an insufficiently validated block that
         // is on chainActive, it must be because we are a pruning node, and
         // this block or some successor doesn't HAVE_DATA, so we were unable to
         // rewind all the way.  Blocks remaining on chainActive at this point
         // must not have their validity reduced.
-        if (IsWitnessEnabled(tip->pprev, params.GetConsensus()) && !(tip->nStatus & BLOCK_OPT_WITNESS)) {
-            EraseBlockData(tip);
-        }
+        EraseBlockData(tip);
+
         tip = tip->pprev;
+
+        // Occasionally flush state to disk.
+        if (!FlushStateToDisk(params, state, FlushStateMode::PERIODIC)) {
+            LogPrintf("RewindBlockIndex: unable to flush state to disk (%s)\n", FormatStateMessage(state));
+            return false;
+        }
     }
 
     if (chainActive.Tip() != nullptr) {
@@ -4125,10 +4129,10 @@ bool CChainState::LoadGenesisBlock(const CChainParams& chainparams)
 
     try {
         const CBlock& block = chainparams.GenesisBlock();
-        FlatFilePos blockPos = SaveBlockToDisk(block, 0, chainparams, nullptr);
+        CDiskBlockPos blockPos = SaveBlockToDisk(block, 0, chainparams, nullptr);
         if (blockPos.IsNull())
             return error("%s: writing genesis block to disk failed", __func__);
-        CBlockIndex *pindex = AddToBlockIndex(block, false);
+        CBlockIndex *pindex = AddToBlockIndex(block);
         ReceivedBlockTransactions(block, pindex, blockPos, chainparams.GetConsensus());
     } catch (const std::runtime_error& e) {
         return error("%s: failed to write genesis block: %s", __func__, e.what());
@@ -4142,10 +4146,10 @@ bool LoadGenesisBlock(const CChainParams& chainparams)
     return g_chainstate.LoadGenesisBlock(chainparams);
 }
 
-bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, FlatFilePos *dbp)
+bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskBlockPos *dbp)
 {
     // Map of disk positions for blocks with unknown parent (only used for reindex)
-    static std::multimap<uint256, FlatFilePos> mapBlocksUnknownParent;
+    static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
     int64_t nStart = GetTimeMillis();
 
     int nLoaded = 0;
@@ -4231,9 +4235,9 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, FlatFi
                 while (!queue.empty()) {
                     uint256 head = queue.front();
                     queue.pop_front();
-                    std::pair<std::multimap<uint256, FlatFilePos>::iterator, std::multimap<uint256, FlatFilePos>::iterator> range = mapBlocksUnknownParent.equal_range(head);
+                    std::pair<std::multimap<uint256, CDiskBlockPos>::iterator, std::multimap<uint256, CDiskBlockPos>::iterator> range = mapBlocksUnknownParent.equal_range(head);
                     while (range.first != range.second) {
-                        std::multimap<uint256, FlatFilePos>::iterator it = range.first;
+                        std::multimap<uint256, CDiskBlockPos>::iterator it = range.first;
                         std::shared_ptr<CBlock> pblockrecursive = std::make_shared<CBlock>();
                         if (ReadBlockFromDisk(*pblockrecursive, it->second, chainparams.GetConsensus()))
                         {
