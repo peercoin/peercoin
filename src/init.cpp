@@ -94,7 +94,6 @@ std::unique_ptr<BanMan> g_banman;
 /**
  * The PID file facilities.
  */
-#ifndef WIN32
 static const char* BITCOIN_PID_FILENAME = "peercoind.pid";
 
 static fs::path GetPidFile()
@@ -106,14 +105,17 @@ NODISCARD static bool CreatePidFile()
 {
     FILE* file = fsbridge::fopen(GetPidFile(), "w");
     if (file) {
+#ifdef WIN32
+        fprintf(file, "%d\n", GetCurrentProcessId());
+#else
         fprintf(file, "%d\n", getpid());
+#endif
         fclose(file);
         return true;
     } else {
         return InitError(strprintf(_("Unable to create the PID file '%s': %s"), GetPidFile().string(), std::strerror(errno)));
     }
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -271,15 +273,13 @@ void Shutdown(InitInterfaces& interfaces)
     }
 #endif
 
-#ifndef WIN32
     try {
         if (!fs::remove(GetPidFile())) {
             LogPrintf("%s: Unable to remove PID file: File does not exist\n", __func__);
         }
     } catch (const fs::filesystem_error& e) {
-        LogPrintf("%s: Unable to remove PID file: %s\n", __func__, e.what());
+        LogPrintf("%s: Unable to remove PID file: %s\n", __func__, fsbridge::get_filesystem_error_message(e));
     }
-#endif
     interfaces.chain_clients.clear();
     UnregisterAllValidationInterfaces();
     GetMainSignals().UnregisterBackgroundSignalScheduler();
@@ -378,11 +378,7 @@ void SetupServerArgs()
     gArgs.AddArg("-par=<n>", strprintf("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)",
         -GetNumCores(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS), false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-persistmempool", strprintf("Whether to save the mempool on shutdown and load on restart (default: %u)", DEFAULT_PERSIST_MEMPOOL), false, OptionsCategory::OPTIONS);
-#ifndef WIN32
     gArgs.AddArg("-pid=<file>", strprintf("Specify pid file. Relative paths will be prefixed by a net-specific datadir location. (default: %s)", BITCOIN_PID_FILENAME), false, OptionsCategory::OPTIONS);
-#else
-    hidden_args.emplace_back("-pid");
-#endif
     gArgs.AddArg("-reindex", "Rebuild chain state and block index from the blk*.dat files on disk", false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-reindex-chainstate", "Rebuild chain state from the currently indexed blocks. When in pruning mode or if blocks on disk might be corrupted, use full -reindex instead.", false, OptionsCategory::OPTIONS);
 #ifndef WIN32
@@ -1114,12 +1110,10 @@ bool AppInitMain(InitInterfaces& interfaces)
 {
     const CChainParams& chainparams = Params();
     // ********************************************************* Step 4a: application initialization
-#ifndef WIN32
     if (!CreatePidFile()) {
         // Detailed error printed inside CreatePidFile().
         return false;
     }
-#endif
     if (LogInstance().m_print_to_file) {
         if (gArgs.GetBoolArg("-shrinkdebugfile", LogInstance().DefaultShrinkDebugFile())) {
             // Do this first since it both loads a bunch of debug.log into memory,
