@@ -589,7 +589,7 @@ void PoSMiner(CWallet *pwallet)
             {
                 if (!SignBlock(*pblock, *pwallet))
                 {
-                    LogPrintf("PoSMiner(): failed to sign PoS block");
+                    LogPrintf("PoSMiner(): failed to sign PoS block\n");
                     continue;
                 }
                 LogPrintf("CPUMiner : proof-of-stake block found %s\n", pblock->GetHash().ToString());
