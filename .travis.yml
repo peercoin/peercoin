@@ -4,20 +4,6 @@ matrix:
   include:
       #linux
       - os: linux
-        services: docker
-        env:
-          - V=Dockerfile-stretch
-        script:
-          - ./archive.sh
-          - docker build -f scripts/docker/debian/Dockerfile-stretch .
-      - os: linux
-        services: docker
-        env:
-          - V=Dockerfile-jessie
-        script:
-          - ./archive.sh
-          - docker build -f scripts/docker/debian/Dockerfile-jessie .
-      - os: linux
         sudo: required
         env:
           - V=ubuntu
