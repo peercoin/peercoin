@@ -291,22 +291,21 @@ bitcoin.org (see below for bitcoin.org update instructions).
   - After the pull request is merged, the website will automatically show the newest version within 15 minutes, as well
     as update the OS download links. Ping @saivann/@harding (saivann/harding on Freenode) in case anything goes wrong
 
-- Announce the release:
-
-  - bitcoin-dev and bitcoin-core-dev mailing list
-
-  - Bitcoin announcements list https://bitcoincore.org/en/list/announcements/join/
+- Update other repositories and websites for new version
 
   - bitcoincore.org blog post
 
   - Update title of #peercoin on Freenode IRC
 
+  - Update packaging repo
 
   - Optionally twitter, reddit /r/Peercoin, ... but this will usually sort out itself
 
-  - Notify BlueMatt so that he can start building [the PPAs](https://launchpad.net/~bitcoin/+archive/ubuntu/bitcoin)
+      - Create a new branch for the major release "release-0.xx" (used to build the snap package)
 
-  - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
+  - This repo
+
+      - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
   - Create a [new GitHub release](https://github.com/peercoin/peercoin/releases/new) with a link to the archived release notes.
 
