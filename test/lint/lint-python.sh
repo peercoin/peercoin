@@ -81,6 +81,8 @@ enabled=(
     W605 # invalid escape sequence "x"
     W606 # 'async' and 'await' are reserved keywords starting with Python 3.7
 )
+echo "Skipping Python linting"
+exit 0
 
 if ! command -v flake8 > /dev/null; then
     echo "Skipping Python linting since flake8 is not installed. Install by running \"pip3 install flake8\""
