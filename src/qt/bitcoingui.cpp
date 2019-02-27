@@ -249,7 +249,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     // Subscribe to notifications from core
     subscribeToCoreSignals();
 
-    connect(connectionsControl, SIGNAL(clicked(QPoint)), this, SLOT(toggleNetworkActive()));
+    connect(connectionsControl, &GUIUtil::ClickableLabel::clicked, this, &BitcoinGUI::toggleNetworkActive);
 
     modalOverlay = new ModalOverlay(this->centralWidget());
 #ifdef ENABLE_WALLET
@@ -416,8 +416,8 @@ void BitcoinGUI::createActions()
     // prevents an open debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, &QAction::triggered, rpcConsole, &QWidget::hide);
 
-    connect(openChatroomAction, SIGNAL(triggered()), this, SLOT(openChatroom()));
-    connect(openForumAction, SIGNAL(triggered()), this, SLOT(openForum()));
+    connect(openChatroomAction, &QAction::triggered, this, &BitcoinGUI::openChatroom);
+    connect(openForumAction, &QAction::triggered, this, &BitcoinGUI::openForum);
 
 #ifdef ENABLE_WALLET
     if(walletFrame)

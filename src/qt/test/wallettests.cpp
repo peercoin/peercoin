@@ -45,7 +45,7 @@ void ConfirmMessage(QString* text = nullptr)
             }
         }
         delete callback;
-    }), SLOT(call()));
+    }), &Callback::call);
 }
 
 //! Press "Yes" or "Cancel" buttons in modal send confirmation dialog.

@@ -33,14 +33,14 @@ MultisigDialog::MultisigDialog(const PlatformStyle *_platformStyle, QWidget *par
     addPubKey();
     addPubKey();
 
-    connect(ui->addPubKeyButton, SIGNAL(clicked()), this, SLOT(addPubKey()));
-    connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(ui->addPubKeyButton, &QPushButton::clicked, this, &MultisigDialog::addPubKey);
+    connect(ui->clearButton, &QPushButton::clicked, this, &MultisigDialog::clear);
 
     addInput();
     addOutput();
 
-    connect(ui->addInputButton, SIGNAL(clicked()), this, SLOT(addInput()));
-    connect(ui->addOutputButton, SIGNAL(clicked()), this, SLOT(addOutput()));
+    connect(ui->addInputButton, &QPushButton::clicked, this, &MultisigDialog::addInput);
+    connect(ui->addOutputButton, &QPushButton::clicked, this, &MultisigDialog::addOutput);
 
     ui->signTransactionButton->setEnabled(false);
     ui->sendTransactionButton->setEnabled(false);
@@ -217,7 +217,7 @@ MultisigAddressEntry * MultisigDialog::addPubKey()
 
     entry->setModel(model);
     ui->pubkeyEntries->addWidget(entry);
-    connect(entry, SIGNAL(removeEntry(MultisigAddressEntry *)), this, SLOT(removeEntry(MultisigAddressEntry *)));
+    connect(entry, &MultisigAddressEntry::removeEntry, this, &MultisigAddressEntry::removeEntry);
     updateRemoveEnabled();
     entry->clear();
     ui->scrollAreaWidgetContents->resize(ui->scrollAreaWidgetContents->sizeHint());
@@ -545,8 +545,8 @@ MultisigInputEntry * MultisigDialog::addInput()
 
     entry->setModel(model);
     ui->inputs->addWidget(entry);
-    connect(entry, SIGNAL(removeEntry(MultisigInputEntry *)), this, SLOT(removeEntry(MultisigInputEntry *)));
-    connect(entry, SIGNAL(updateAmount()), this, SLOT(updateAmounts()));
+    connect(entry, &MultisigInputEntry::removeEntry, this, &MultisigInputEntry::removeEntry);
+    connect(entry, &MultisigInputEntry::updateAmount, this, &MultisigDialog::updateAmounts);
     updateRemoveEnabled();
     entry->clear();
     ui->scrollAreaWidgetContents_2->resize(ui->scrollAreaWidgetContents_2->sizeHint());
@@ -569,8 +569,8 @@ SendCoinsEntry * MultisigDialog::addOutput()
 
     entry->setModel(model);
     ui->outputs->addWidget(entry);
-    connect(entry, SIGNAL(removeEntry(SendCoinsEntry *)), this, SLOT(removeEntry(SendCoinsEntry *)));
-    connect(entry, SIGNAL(payAmountChanged()), this, SLOT(updateAmounts()));
+    connect(entry, &SendCoinsEntry::removeEntry, this, &SendCoinsEntry::removeEntry);
+    connect(entry, &MultisigInputEntry::payAmountChanged, this, &MultisigDialog::updateAmounts);
     updateRemoveEnabled();
     entry->clear();
     ui->scrollAreaWidgetContents_3->resize(ui->scrollAreaWidgetContents_3->sizeHint());

@@ -247,10 +247,10 @@ MintingTableModel::MintingTableModel(CWallet* wallet, WalletModel *parent) :
     priv->refreshWallet();
 
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateAge()));
+    connect(timer, &QTimer::timeout, this, &MintingTableModel::updateAge);
     timer->start(MODEL_UPDATE_DELAY);
 
-    connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
+    connect(walletModel->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &MintingTableModel::updateDisplayUnit);
 }
 
 MintingTableModel::~MintingTableModel()
