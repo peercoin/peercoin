@@ -8,6 +8,9 @@
 
 export LC_ALL=C
 
+echo "Skipping dead code linting"
+exit 0
+
 if ! command -v vulture > /dev/null; then
     echo "Skipping Python dead code linting since vulture is not installed. Install by running \"pip3 install vulture\""
     exit 0
