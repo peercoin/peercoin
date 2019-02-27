@@ -10,6 +10,9 @@ export LC_ALL=C
 
 EXIT_CODE=0
 
+echo "no rpchelpmon yet"
+exit 0
+
 # Assume that all multiline strings passed into a runtime_error are help texts.
 # This is potentially fragile, but the linter is only temporary and can safely
 # be removed early 2019.
