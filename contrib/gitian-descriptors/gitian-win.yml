@@ -1,5 +1,5 @@
 ---
-name: "peercoin-win-0.18"
+name: "peercoin-win-0.19"
 enable_cache: true
 suites:
 - "bionic"
@@ -20,7 +20,7 @@ packages:
 - "nsis"
 - "zip"
 - "ca-certificates"
-- "python3"
+- "python"
 - "rename"
 remotes:
 - "url": "https://github.com/peercoin/peercoin.git"
