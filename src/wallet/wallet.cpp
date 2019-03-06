@@ -2782,7 +2782,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
         LOCK(cs_wallet);
         {
             std::vector<COutput> vAvailableCoins;
-            AvailableCoins(*locked_chain, vAvailableCoins, true, &coin_control, txNew.nTime);
+            AvailableCoins(*locked_chain, vAvailableCoins, true, &coin_control, txNew.nTime, 1, MAX_MONEY, MAX_MONEY, 0, coin_control.m_min_depth);
             CoinSelectionParams coin_selection_params; // Parameters for coin selection, init with dummy
 
             // Create change script that will be used if we need change
@@ -4526,7 +4526,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     std::vector<CTransactionRef> vwtxPrev;
     CAmount nValueIn = 0;
     std::vector<COutput> vAvailableCoins;
-    AvailableCoins(vAvailableCoins, true, nullptr, 1, MAX_MONEY, MAX_MONEY, 0, 0, 9999999, txNew.nTime);
+    AvailableCoins(vAvailableCoins, true, nullptr, txNew.nTime, 1, MAX_MONEY, MAX_MONEY, 0, 0, 9999999);
     if (!SelectCoins(vAvailableCoins, nBalance - nReserveBalance, setCoins, nValueIn, nullptr))
         return false;
     if (setCoins.empty())

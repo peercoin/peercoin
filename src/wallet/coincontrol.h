@@ -26,6 +26,8 @@ public:
     boost::optional<unsigned int> m_confirm_target;
     //! Avoid partial use of funds sent to a given address
     bool m_avoid_partial_spends;
+    //! Minimum chain depth value for coin availability
+    int m_min_depth{0};
 
     CCoinControl()
     {
