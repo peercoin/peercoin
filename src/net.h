@@ -713,7 +713,6 @@ public:
     std::vector<CAddress> vAddrToSend;
     CRollingBloomFilter addrKnown;
     bool fGetAddr{false};
-    std::set<uint256> setKnown;
     uint256 hashCheckpointKnown; // peercoin: known sent sync-checkpoint
     int64_t nNextAddrSend GUARDED_BY(cs_sendProcessing){0};
     int64_t nNextLocalAddrSend GUARDED_BY(cs_sendProcessing){0};
