@@ -902,6 +902,7 @@ void AlertNotify(const std::string& strMessage, bool fUpdateUI)
 
     std::thread t(runCommand, strCmd);
     t.detach(); // thread runs free
+#endif
 }
 
 static void CheckForkWarningConditions() EXCLUSIVE_LOCKS_REQUIRED(cs_main)
