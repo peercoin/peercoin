@@ -331,13 +331,21 @@ void MultisigDialog::on_transaction_textChanged()
     index = -1;
     BOOST_FOREACH(const CTxOut& txout, tx.vout)
     {
-        CScript scriptPubKey = txout.scriptPubKey;
-        CTxDestination addr;
-        ExtractDestination(scriptPubKey, addr);
-        CBitcoinAddress address(addr);
         SendCoinsRecipient recipient;
-        recipient.address = QString(address.ToString().c_str());
-        recipient.amount = txout.nValue;
+        if(txout.nValue > 0)
+        {
+            CScript scriptPubKey = txout.scriptPubKey;
+            CTxDestination addr;
+            ExtractDestination(scriptPubKey, addr);
+            CBitcoinAddress address(addr);
+            recipient.address = QString(address.ToString().c_str());
+            recipient.amount = txout.nValue;
+        }
+        else
+        {
+            recipient.address = QString(txout.scriptPubKey.ToString().c_str());
+            recipient.amount = 0;
+        }
         addOutput();
         index++;
         SendCoinsEntry *entry = qobject_cast<SendCoinsEntry *>(ui->outputs->itemAt(index)->widget());
