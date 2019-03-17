@@ -456,17 +456,15 @@ void MultisigDialog::on_signTransactionButton_clicked()
     {
         CTxIn& txin = mergedTx.vin[i];
         CCoins coins;
-        if (view.GetCoins(txin.prevout.hash, coins)) {
+        if (view.GetCoins(txin.prevout.hash, coins))
+        {
             const CScript& prevPubKey = coins.vout[txin.prevout.n].scriptPubKey;
 
             txin.scriptSig.clear();
             SignSignature(*wallet, prevPubKey, mergedTx, i, SIGHASH_ALL);
             txin.scriptSig = CombineSignatures(prevPubKey, mergedTx, i, txin.scriptSig, tx.vin[i].scriptSig);
             if(!VerifyScript(txin.scriptSig, prevPubKey, mergedTx, i, true, 0))
-            {
-              fComplete = false;
-            }
-
+                fComplete = false;
         }
         else
         {
@@ -477,7 +475,10 @@ void MultisigDialog::on_signTransactionButton_clicked()
 
     CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
     ssTx << mergedTx;
-    ui->signedTransaction->setText(HexStr(ssTx.begin(), ssTx.end()).c_str());
+    bool fSignedAnything = (ssTx.size() > txData.size()) ? true : false;
+
+    if(fSignedAnything)
+        ui->signedTransaction->setText(HexStr(ssTx.begin(), ssTx.end()).c_str());
 
     if(fComplete)
     {
@@ -486,7 +487,11 @@ void MultisigDialog::on_signTransactionButton_clicked()
     }
     else
     {
-        ui->statusLabel->setText(tr("The transaction is NOT completely signed."));
+        if(fSignedAnything)
+            ui->statusLabel->setText(tr("The transaction is NOT completely signed."));
+        else
+            ui->statusLabel->setText(tr("Could not sign. Have you added this multisig address to wallet?"));
+
         ui->sendTransactionButton->setEnabled(false);
     }
 }
