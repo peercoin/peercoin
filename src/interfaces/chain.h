@@ -221,6 +221,9 @@ public:
     //! Check if p2p enabled.
     virtual bool p2pEnabled() = 0;
 
+    //! Check if the node is ready to broadcast transactions.
+    virtual bool isReadyToBroadcast() = 0;
+
     //! Check if in IBD.
     virtual bool isInitialBlockDownload() = 0;
 
@@ -256,7 +259,6 @@ public:
         virtual void BlockDisconnected(const CBlock& block) {}
         virtual void UpdatedBlockTip() {}
         virtual void ChainStateFlushed(const CBlockLocator& locator) {}
-        virtual void ResendWalletTransactions(Lock& locked_chain) {}
     };
 
     //! Register handler for notifications.
