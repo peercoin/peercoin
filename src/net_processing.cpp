@@ -1742,7 +1742,8 @@ void static ProcessOrphanTx(CConnman* connman, std::set<uint256>& orphan_work_se
     AssertLockHeld(cs_main);
     AssertLockHeld(g_cs_orphans);
     std::set<NodeId> setMisbehaving;
-    while (!orphan_work_set.empty()) {
+    bool done = false;
+    while (!done && !orphan_work_set.empty()) {
         const uint256 orphanHash = *orphan_work_set.begin();
         orphan_work_set.erase(orphan_work_set.begin());
 
@@ -1771,6 +1772,7 @@ void static ProcessOrphanTx(CConnman* connman, std::set<uint256>& orphan_work_se
                 }
             }
             EraseOrphanTx(orphanHash);
+            done = true;
         } else if (!fMissingInputs2) {
             int nDos = 0;
             if (stateDummy.IsInvalid(nDos) && nDos > 0) {
@@ -1790,6 +1792,7 @@ void static ProcessOrphanTx(CConnman* connman, std::set<uint256>& orphan_work_se
                 recentRejects->insert(orphanHash);
             }
             EraseOrphanTx(orphanHash);
+            done = true;
         }
         mempool.check(pcoinsTip.get());
     }
@@ -2451,8 +2454,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return true;
         }
 
-        std::set<uint256> orphan_work_set;
-
         CTransactionRef ptx;
         vRecv >> ptx;
         const CTransaction& tx = *ptx;
@@ -2478,7 +2479,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 auto it_by_prev = mapOrphanTransactionsByPrev.find(COutPoint(inv.hash, i));
                 if (it_by_prev != mapOrphanTransactionsByPrev.end()) {
                     for (const auto& elem : it_by_prev->second) {
-                        orphan_work_set.insert(elem->first);
+                        pfrom->orphan_work_set.insert(elem->first);
                     }
                 }
             }
@@ -2491,7 +2492,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 mempool.size(), mempool.DynamicMemoryUsage() / 1000);
 
             // Recursively process any orphan transactions that depended on this one
-            ProcessOrphanTx(connman, orphan_work_set);
+            ProcessOrphanTx(connman, pfrom->orphan_work_set);
         }
         else if (fMissingInputs)
         {
@@ -3387,11 +3388,21 @@ bool PeerLogicValidation::ProcessMessages(CNode* pfrom, std::atomic<bool>& inter
     if (!pfrom->vRecvGetData.empty())
         ProcessGetData(pfrom, chainparams, connman, interruptMsgProc);
 
+    if (!pfrom->orphan_work_set.empty()) {
+        std::list<CTransactionRef> removed_txn;
+        LOCK2(cs_main, g_cs_orphans);
+        ProcessOrphanTx(connman, pfrom->orphan_work_set, removed_txn);
+        for (const CTransactionRef& removedTx : removed_txn) {
+            AddToCompactExtraTransactions(removedTx);
+        }
+    }
+
     if (pfrom->fDisconnect)
         return false;
 
     // this maintains the order of responses
     if (!pfrom->vRecvGetData.empty()) return true;
+    if (!pfrom->orphan_work_set.empty()) return true;
 
     // Don't bother if send buffer is too full to respond anyway
     if (pfrom->fPauseSend)
