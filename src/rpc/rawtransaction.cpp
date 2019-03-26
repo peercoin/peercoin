@@ -971,7 +971,7 @@ static UniValue signrawtransactionwithkey(const JSONRPCRequest& request)
                                     {"vout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The output number"},
                                     {"scriptPubKey", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "script key"},
                                     {"redeemScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2SH or P2WSH) redeem script"},
-                                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The amount spent"},
+                                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "(required for Segwit inputs) the amount spent"},
                                 },
                                 },
                         },
