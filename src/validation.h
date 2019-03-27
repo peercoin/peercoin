@@ -30,6 +30,7 @@
 #include <utility>
 #include <vector>
 
+class CChainState;
 class CBlockIndex;
 class CBlockTreeDB;
 class CBlockUndo;
@@ -257,8 +258,6 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex* pin
 /** Calculate the amount of disk space the block & undo files currently use */
 uint64_t CalculateCurrentUsage();
 
-/** Flush all state, indexes and buffers to disk. */
-void FlushStateToDisk();
 
 /** (try to) add transaction to memory pool
  * plTxnReplaced will be appended to with all transactions replaced from mempool **/
@@ -397,6 +396,14 @@ enum DisconnectResult
 
 class ConnectTrace;
 
+/** @see CChainState::FlushStateToDisk */
+enum class FlushStateMode {
+    NONE,
+    IF_NEEDED,
+    PERIODIC,
+    ALWAYS
+};
+
 struct CBlockIndexWorkComparator
 {
     bool operator()(const CBlockIndex *pa, const CBlockIndex *pb) const;
@@ -472,6 +479,28 @@ public:
     CBlockIndex *pindexBestInvalid = nullptr;
 
     bool LoadBlockIndex(const Consensus::Params& consensus_params, CBlockTreeDB& blocktree) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+
+    /**
+     * Update the on-disk chain state.
+     * The caches and indexes are flushed depending on the mode we're called with
+     * if they're too large, if it's been a while since the last write,
+     * or always and in all cases if we're in prune mode and are deleting files.
+     *
+     * If FlushStateMode::NONE is used, then FlushStateToDisk(...) won't do anything
+     * besides checking if we need to prune.
+     */
+    bool FlushStateToDisk(
+        const CChainParams& chainparams,
+        CValidationState &state,
+        FlushStateMode mode,
+        int nManualPruneHeight = 0);
+
+    //! Unconditionally flush all changes to disk.
+    void ForceFlushStateToDisk();
+
+    //! Prune blockfiles from the disk if necessary and then flush chainstate changes
+    //! if we pruned.
+    void PruneAndFlush();
 
     bool ActivateBestChain(CValidationState &state, const CChainParams& chainparams, std::shared_ptr<const CBlock> pblock) LOCKS_EXCLUDED(cs_main);
 

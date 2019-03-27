@@ -244,7 +244,7 @@ void Shutdown(InitInterfaces& interfaces)
 
     // FlushStateToDisk generates a ChainStateFlushed callback, which we should avoid missing
     if (pcoinsTip != nullptr) {
-        FlushStateToDisk();
+        ::ChainstateActive().ForceFlushStateToDisk();
     }
 
     // After there are no more peers/RPC left to give us new data which may generate
@@ -260,7 +260,7 @@ void Shutdown(InitInterfaces& interfaces)
     {
         LOCK(cs_main);
         if (pcoinsTip != nullptr) {
-            FlushStateToDisk();
+            ::ChainstateActive().ForceFlushStateToDisk();
         }
         pcoinsTip.reset();
         pcoinscatcher.reset();
