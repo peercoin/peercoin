@@ -98,8 +98,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         return nullptr;
     pblock = &pblocktemplate->block; // pointer for convenience
 
-    LOCK(cs_main);
-    CBlockIndex* pindexPrev = chainActive.Tip();
+    LOCK2(cs_main, mempool.cs);
+    CBlockIndex* pindexPrev = ::ChainActive().Tip();
     assert(pindexPrev != nullptr);
     nHeight = pindexPrev->nHeight + 1;
 
@@ -488,7 +488,7 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
     // Found a solution
     {
         LOCK(cs_main);
-        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+        if (pblock->hashPrevBlock != ::ChainActive().Tip()->GetBlockHash())
             return error("PeercoinMiner: generated block is stale");
     }
 
@@ -550,9 +550,9 @@ void PoSMiner(CWallet *pwallet)
                 while(g_connman == nullptr || g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0 || IsInitialBlockDownload())
                     MilliSleep(5 * 1000);
             }
-            while (GuessVerificationProgress(Params().TxData(), chainActive.Tip()) < 0.996)
+            while (GuessVerificationProgress(Params().TxData(), ::ChainActive().Tip()) < 0.996)
             {
-                LogPrintf("Minter thread sleeps while sync at %f\n", GuessVerificationProgress(Params().TxData(), chainActive.Tip()));
+                LogPrintf("Minter thread sleeps while sync at %f\n", GuessVerificationProgress(Params().TxData(), ::ChainActive().Tip()));
                 strMintWarning = strMintSyncMessage;
                 MilliSleep(10000);
             }
@@ -562,7 +562,7 @@ void PoSMiner(CWallet *pwallet)
             //
             // Create new block
             //
-            CBlockIndex* pindexPrev = chainActive.Tip();
+            CBlockIndex* pindexPrev = ::ChainActive().Tip();
             bool fPoSCancel = false;
             std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbaseScript->reserveScript, true, pwallet, &fPoSCancel));
             if (!pblocktemplate.get())
