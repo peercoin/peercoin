@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
 
     int32_t& nPoSTemperature = mapPoSTemperature[CNetAddr()];
     // Process all the headers so we understand the toplogy of the chain
-    BOOST_CHECK(ProcessNewBlockHeaders(nPoSTemperature, chainActive.Tip()->GetBlockHash(), headers, false /* */, state, Params()));
+    BOOST_CHECK(ProcessNewBlockHeaders(nPoSTemperature, chainActive.Tip()->GetBlockHash(), headers, state, Params()));
 
     // Connect the genesis block and drain any outstanding events
     BOOST_CHECK(ProcessNewBlock(Params(), std::make_shared<CBlock>(Params().GenesisBlock()), true, &ignored));
