@@ -20,6 +20,7 @@
 #include <chain.h>
 #include <txmempool.h> // For CTxMemPool::cs
 #include <txdb.h>
+#include <serialize.h>
 
 #include <algorithm>
 #include <atomic>
