@@ -614,7 +614,7 @@ class CBlock(CBlockHeader):
         self.vtx = deser_vector(f, CTransaction)
         self.vchBlockSig = deser_string(f)
 
-    def serialize(self, with_witness=False):
+    def serialize(self, with_witness=True):
         r = b""
         r += super(CBlock, self).serialize()
         if with_witness:
