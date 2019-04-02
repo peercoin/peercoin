@@ -22,6 +22,7 @@
 #include <timedata.h>
 #include <util/moneystr.h>
 #include <util/system.h>
+#include <util/validation.h>
 #include <validationinterface.h>
 #include <kernel.h>
 

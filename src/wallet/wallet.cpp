@@ -28,9 +28,12 @@
 #include <timedata.h>
 #include <txmempool.h>
 #include <util/bip32.h>
+#include <util/error.h>
+#include <util/fees.h>
 #include <util/moneystr.h>
 
 #include <kernel.h>
+#include <util/validation.h>
 #include <bignum.h>
 #include <txdb.h>
 
