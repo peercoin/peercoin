@@ -218,6 +218,7 @@ BITCOIN_CORE_H = \
   wallet/coincontrol.h \
   wallet/crypter.h \
   wallet/db.h \
+  wallet/load.h \
   wallet/psbtwallet.h \
   wallet/rpcwallet.h \
   wallet/wallet.h \
@@ -298,6 +299,9 @@ libbitcoin_server_a_SOURCES = \
 if ENABLE_CHECKPOINTS
 libbitcoin_server_a_SOURCES += checkpointsync.cpp
 endif
+if ENABLE_WALLET
+libbitcoin_server_a_SOURCES += wallet/init.cpp
+endif
 if !ENABLE_WALLET
 libbitcoin_server_a_SOURCES += dummywallet.cpp
 endif
@@ -322,7 +326,7 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/coincontrol.cpp \
   wallet/crypter.cpp \
   wallet/db.cpp \
-  wallet/init.cpp \
+  wallet/load.cpp \
   wallet/psbtwallet.cpp \
   wallet/rpcdump.cpp \
   wallet/rpcwallet.cpp \
