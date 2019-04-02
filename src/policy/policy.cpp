@@ -10,6 +10,7 @@
 #include <consensus/validation.h>
 #include <validation.h>
 #include <coins.h>
+#include <policy/settings.h>
 #include <tinyformat.h>
 #include <util/system.h>
 #include <util/strencodings.h>
@@ -195,8 +196,6 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
     }
     return true;
 }
-
-unsigned int nBytesPerSigOp = DEFAULT_BYTES_PER_SIGOP;
 
 int64_t GetVirtualTransactionSize(int64_t nWeight, int64_t nSigOpCost)
 {

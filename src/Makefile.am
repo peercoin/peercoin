@@ -163,6 +163,7 @@ BITCOIN_CORE_H = \
   optional.h \
   outputtype.h \
   policy/policy.h \
+  policy/settings.h \
   pow.h \
   protocol.h \
   psbt.h \
@@ -272,7 +273,7 @@ libbitcoin_server_a_SOURCES = \
   node/transaction.cpp \
   noui.cpp \
   outputtype.cpp \
-  policy/policy.cpp \
+  policy/settings.cpp \
   pow.cpp \
   rest.cpp \
   rpc/blockchain.cpp \
@@ -440,6 +441,7 @@ libbitcoin_common_a_SOURCES = \
   keystore.cpp \
   netaddress.cpp \
   netbase.cpp \
+  policy/policy.cpp \
   protocol.cpp \
   psbt.cpp \
   scheduler.cpp \
