@@ -1193,7 +1193,7 @@ public:
 void MaybeResendWalletTxs();
 
 /** A key allocated from the key pool. */
-class CReserveKey final : public CReserveScript
+class CReserveKey
 {
 protected:
     CWallet* pwallet;
@@ -1218,7 +1218,6 @@ public:
     void ReturnKey();
     bool GetReservedKey(CPubKey &pubkey, bool internal = false);
     void KeepKey();
-    void KeepScript() override { KeepKey(); }
 };
 
 /** RAII object to check and reserve a wallet rescan */
