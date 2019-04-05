@@ -1032,7 +1032,9 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
                 "\nAlso see createrawtransaction and signrawtransactionwithkey calls.\n",
                 {
                     {"hexstring", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The hex string of the raw transaction"},
-                    {"allowhighfees", RPCArg::Type::BOOL, /* default */ "false", "Allow high fees"},
+                    {"maxfeerate", RPCArg::Type::AMOUNT, /* default */ FormatMoney(DEFAULT_MAX_RAW_TX_FEE),
+                        "Reject transactions whose fee rate is higher than the specified value, expressed in " + CURRENCY_UNIT +
+                            "/kB.\nSet to 0 to accept any fee rate.\n"},
                 },
                 RPCResult{
             "\"hex\"             (string) The transaction hash in hex\n"
@@ -1047,9 +1049,16 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
             "\nAs a JSON-RPC call\n"
             + HelpExampleRpc("sendrawtransaction", "\"signedhex\"")
                 },
-            }.ToString());
+    };
 
-    RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VBOOL});
+    if (request.fHelp || !help.IsValidNumArgs(request.params.size())) {
+        throw std::runtime_error(help.ToString());
+    }
+
+    RPCTypeCheck(request.params, {
+        UniValue::VSTR,
+        UniValueType(), // NUM or BOOL, checked later
+    });
 
     // parse hex string from parameter
     CMutableTransaction mtx;
@@ -1057,12 +1066,24 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
     CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 
-    bool allowhighfees = false;
-    if (!request.params[1].isNull()) allowhighfees = request.params[1].get_bool();
-    const CAmount highfee{allowhighfees ? 0 : ::maxTxFee};
+    CAmount max_raw_tx_fee = DEFAULT_MAX_RAW_TX_FEE;
+    // TODO: temporary migration code for old clients. Remove in v0.20
+    if (request.params[1].isBool()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Second argument must be numeric (maxfeerate) and no longer supports a boolean. To allow a transaction with high fees, set maxfeerate to 0.");
+    } else if (request.params[1].isNum()) {
+        size_t weight = GetTransactionWeight(*tx);
+        CFeeRate fr(AmountFromValue(request.params[1]));
+        // the +3/4 part rounds the value up, and is the same formula used when
+        // calculating the fee for a transaction
+        // (see GetVirtualTransactionSize)
+        max_raw_tx_fee = fr.GetFee((weight+3)/4);
+    } else if (!request.params[1].isNull()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "second argument (maxfeerate) must be numeric");
+    }
+
     uint256 txid;
     std::string err_string;
-    const TransactionError err = BroadcastTransaction(tx, txid, err_string, highfee);
+    const TransactionError err = BroadcastTransaction(tx, txid, err_string, max_raw_tx_fee);
     if (TransactionError::OK != err) {
         throw JSONRPCTransactionError(err, err_string);
     }
@@ -1072,9 +1093,7 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
 
 static UniValue testmempoolaccept(const JSONRPCRequest& request)
 {
-    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2) {
-        throw std::runtime_error(
-            RPCHelpMan{"testmempoolaccept",
+    const RPCHelpMan help{"testmempoolaccept",
                 "\nReturns result of mempool acceptance tests indicating if raw transaction (serialized, hex-encoded) would be accepted by mempool.\n"
                 "\nThis checks if the transaction violates the consensus or policy rules.\n"
                 "\nSee sendrawtransaction call.\n",
@@ -1085,7 +1104,7 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
                             {"rawtx", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, ""},
                         },
                         },
-                    {"allowhighfees", RPCArg::Type::BOOL, /* default */ "false", "Allow high fees"},
+                    {"maxfeerate", RPCArg::Type::AMOUNT, /* default */ FormatMoney(DEFAULT_MAX_RAW_TX_FEE), "Reject transactions whose fee rate is higher than the specified value, expressed in " + CURRENCY_UNIT + "/kB\n"},
                 },
                 RPCResult{
             "[                   (array) The result of the mempool acceptance test for each raw transaction in the input array.\n"
@@ -1107,10 +1126,17 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
             "\nAs a JSON-RPC call\n"
             + HelpExampleRpc("testmempoolaccept", "[\"signedhex\"]")
                 },
-            }.ToString());
+    };
+
+    if (request.fHelp || !help.IsValidNumArgs(request.params.size())) {
+        throw std::runtime_error(help.ToString());
     }
 
-    RPCTypeCheck(request.params, {UniValue::VARR, UniValue::VBOOL});
+    RPCTypeCheck(request.params, {
+        UniValue::VARR,
+        UniValueType(), // NUM or BOOL, checked later
+    });
+
     if (request.params[0].get_array().size() != 1) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Array must contain exactly one raw transaction for now");
     }
@@ -1122,9 +1148,19 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
     CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
     const uint256& tx_hash = tx->GetHash();
 
-    CAmount max_raw_tx_fee = ::maxTxFee;
-    if (!request.params[1].isNull() && request.params[1].get_bool()) {
-        max_raw_tx_fee = 0;
+    CAmount max_raw_tx_fee = DEFAULT_MAX_RAW_TX_FEE;
+    // TODO: temporary migration code for old clients. Remove in v0.20
+    if (request.params[1].isBool()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Second argument must be numeric (maxfeerate) and no longer supports a boolean. To allow a transaction with high fees, set maxfeerate to 0.");
+    } else if (request.params[1].isNum()) {
+        size_t weight = GetTransactionWeight(*tx);
+        CFeeRate fr(AmountFromValue(request.params[1]));
+        // the +3/4 part rounds the value up, and is the same formula used when
+        // calculating the fee for a transaction
+        // (see GetVirtualTransactionSize)
+        max_raw_tx_fee = fr.GetFee((weight+3)/4);
+    } else if (!request.params[1].isNull()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "second argument (maxfeerate) must be numeric");
     }
 
     UniValue result(UniValue::VARR);
@@ -1888,53 +1924,148 @@ UniValue analyzepsbt(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, strprintf("TX decode failed %s", error));
     }
 
-    PSBTAnalysis psbta = AnalyzePSBT(psbtx);
-
+    // Go through each input and build status
     UniValue result(UniValue::VOBJ);
     UniValue inputs_result(UniValue::VARR);
-    for (const auto& input : psbta.inputs) {
+    bool calc_fee = true;
+    bool all_final = true;
+    bool only_missing_sigs = true;
+    bool only_missing_final = false;
+    CAmount in_amt = 0;
+    for (unsigned int i = 0; i < psbtx.tx->vin.size(); ++i) {
+        PSBTInput& input = psbtx.inputs[i];
         UniValue input_univ(UniValue::VOBJ);
         UniValue missing(UniValue::VOBJ);
 
-        input_univ.pushKV("has_utxo", input.has_utxo);
-        input_univ.pushKV("is_final", input.is_final);
-        input_univ.pushKV("next", PSBTRoleName(input.next));
+        // Check for a UTXO
+        CTxOut utxo;
+        if (psbtx.GetInputUTXO(utxo, i)) {
+            in_amt += utxo.nValue;
+            input_univ.pushKV("has_utxo", true);
+        } else {
+            input_univ.pushKV("has_utxo", false);
+            input_univ.pushKV("is_final", false);
+            input_univ.pushKV("next", "updater");
+            calc_fee = false;
+        }
 
-        if (!input.missing_pubkeys.empty()) {
-            UniValue missing_pubkeys_univ(UniValue::VARR);
-            for (const CKeyID& pubkey : input.missing_pubkeys) {
-                missing_pubkeys_univ.push_back(HexStr(pubkey));
+        // Check if it is final
+        if (!utxo.IsNull() && !PSBTInputSigned(input)) {
+            input_univ.pushKV("is_final", false);
+            all_final = false;
+
+            // Figure out what is missing
+            SignatureData outdata;
+            bool complete = SignPSBTInput(DUMMY_SIGNING_PROVIDER, psbtx, i, 1, &outdata);
+
+            // Things are missing
+            if (!complete) {
+                if (!outdata.missing_pubkeys.empty()) {
+                    // Missing pubkeys
+                    UniValue missing_pubkeys_univ(UniValue::VARR);
+                    for (const CKeyID& pubkey : outdata.missing_pubkeys) {
+                        missing_pubkeys_univ.push_back(HexStr(pubkey));
+                    }
+                    missing.pushKV("pubkeys", missing_pubkeys_univ);
+                }
+                if (!outdata.missing_redeem_script.IsNull()) {
+                    // Missing redeemScript
+                    missing.pushKV("redeemscript", HexStr(outdata.missing_redeem_script));
+                }
+                if (!outdata.missing_witness_script.IsNull()) {
+                    // Missing witnessScript
+                    missing.pushKV("witnessscript", HexStr(outdata.missing_witness_script));
+                }
+                if (!outdata.missing_sigs.empty()) {
+                    // Missing sigs
+                    UniValue missing_sigs_univ(UniValue::VARR);
+                    for (const CKeyID& pubkey : outdata.missing_sigs) {
+                        missing_sigs_univ.push_back(HexStr(pubkey));
+                    }
+                    missing.pushKV("signatures", missing_sigs_univ);
+                }
+                input_univ.pushKV("missing", missing);
+
+                // If we are only missing signatures and nothing else, then next is signer
+                if (outdata.missing_pubkeys.empty() && outdata.missing_redeem_script.IsNull() && outdata.missing_witness_script.IsNull() && !outdata.missing_sigs.empty()) {
+                    input_univ.pushKV("next", "signer");
+                } else {
+                    only_missing_sigs = false;
+                    input_univ.pushKV("next", "updater");
+                }
+            } else {
+                only_missing_final = true;
+                input_univ.pushKV("next", "finalizer");
             }
-            missing.pushKV("pubkeys", missing_pubkeys_univ);
-        }
-        if (!input.missing_redeem_script.IsNull()) {
-            missing.pushKV("redeemscript", HexStr(input.missing_redeem_script));
-        }
-        if (!input.missing_witness_script.IsNull()) {
-            missing.pushKV("witnessscript", HexStr(input.missing_witness_script));
-        }
-        if (!input.missing_sigs.empty()) {
-            UniValue missing_sigs_univ(UniValue::VARR);
-            for (const CKeyID& pubkey : input.missing_sigs) {
-                missing_sigs_univ.push_back(HexStr(pubkey));
-            }
-            missing.pushKV("signatures", missing_sigs_univ);
-        }
-        if (!missing.getKeys().empty()) {
-            input_univ.pushKV("missing", missing);
+        } else if (!utxo.IsNull()){
+            input_univ.pushKV("is_final", true);
         }
         inputs_result.push_back(input_univ);
     }
     result.pushKV("inputs", inputs_result);
 
-    if (psbta.estimated_vsize != nullopt) {
-        result.pushKV("estimated_vsize", (int)*psbta.estimated_vsize);
+    if (all_final) {
+        only_missing_sigs = false;
+        result.pushKV("next", "extractor");
     }
-    if (psbta.fee != nullopt) {
-        result.pushKV("fee", ValueFromAmount(*psbta.fee));
-    }
-    result.pushKV("next", PSBTRoleName(psbta.next));
+    if (calc_fee) {
+        // Get the output amount
+        CAmount out_amt = std::accumulate(psbtx.tx->vout.begin(), psbtx.tx->vout.end(), CAmount(0),
+            [](CAmount a, const CTxOut& b) {
+                return a += b.nValue;
+            }
+        );
 
+        // Get the fee
+        CAmount fee = in_amt - out_amt;
+
+        // Estimate the size
+        CMutableTransaction mtx(*psbtx.tx);
+        CCoinsView view_dummy;
+        CCoinsViewCache view(&view_dummy);
+        bool success = true;
+
+        for (unsigned int i = 0; i < psbtx.tx->vin.size(); ++i) {
+            PSBTInput& input = psbtx.inputs[i];
+            if (SignPSBTInput(DUMMY_SIGNING_PROVIDER, psbtx, i, 1, nullptr, true)) {
+                mtx.vin[i].scriptSig = input.final_script_sig;
+                mtx.vin[i].scriptWitness = input.final_script_witness;
+
+                Coin newcoin;
+                if (!psbtx.GetInputUTXO(newcoin.out, i)) {
+                    success = false;
+                    break;
+                }
+                newcoin.nHeight = 1;
+                view.AddCoin(psbtx.tx->vin[i].prevout, std::move(newcoin), true);
+            } else {
+                success = false;
+                break;
+            }
+        }
+
+        if (success) {
+            CTransaction ctx = CTransaction(mtx);
+            size_t size = GetVirtualTransactionSize(ctx, GetTransactionSigOpCost(ctx, view, STANDARD_SCRIPT_VERIFY_FLAGS));
+            result.pushKV("estimated_vsize", (int)size);
+            // Estimate fee rate
+            CFeeRate feerate(fee, size);
+            result.pushKV("estimated_feerate", ValueFromAmount(feerate.GetFeePerK()));
+        }
+        result.pushKV("fee", ValueFromAmount(fee));
+
+        if (only_missing_sigs) {
+            result.pushKV("next", "signer");
+        } else if (only_missing_final) {
+            result.pushKV("next", "finalizer");
+        } else if (all_final) {
+            result.pushKV("next", "extractor");
+        } else {
+            result.pushKV("next", "updater");
+        }
+    } else {
+        result.pushKV("next", "updater");
+    }
     return result;
 }
 
@@ -1946,11 +2077,10 @@ static const CRPCCommand commands[] =
     { "rawtransactions",    "createrawtransaction",         &createrawtransaction,      {"inputs","outputs","locktime"} },
     { "rawtransactions",    "decoderawtransaction",         &decoderawtransaction,      {"hexstring","iswitness"} },
     { "rawtransactions",    "decodescript",                 &decodescript,              {"hexstring"} },
-    { "rawtransactions",    "sendrawtransaction",           &sendrawtransaction,        {"hexstring","allowhighfees"} },
+    { "rawtransactions",    "sendrawtransaction",           &sendrawtransaction,        {"hexstring","allowhighfees|maxfeerate"} },
     { "rawtransactions",    "combinerawtransaction",        &combinerawtransaction,     {"txs"} },
-    { "hidden",             "signrawtransaction",           &signrawtransaction,        {"hexstring","prevtxs","privkeys","sighashtype"} },
     { "rawtransactions",    "signrawtransactionwithkey",    &signrawtransactionwithkey, {"hexstring","privkeys","prevtxs","sighashtype"} },
-    { "rawtransactions",    "testmempoolaccept",            &testmempoolaccept,         {"rawtxs","allowhighfees"} },
+    { "rawtransactions",    "testmempoolaccept",            &testmempoolaccept,         {"rawtxs","allowhighfees|maxfeerate"} },
     { "rawtransactions",    "decodepsbt",                   &decodepsbt,                {"psbt"} },
     { "rawtransactions",    "combinepsbt",                  &combinepsbt,               {"txs"} },
     { "rawtransactions",    "finalizepsbt",                 &finalizepsbt,              {"psbt", "extract"} },
