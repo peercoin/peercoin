@@ -141,6 +141,7 @@ CoinControlDialog::CoinControlDialog(CCoinControl& coin_control, WalletModel* _m
     if (settings.contains("nCoinControlSortColumn") && settings.contains("nCoinControlSortOrder"))
         sortView(settings.value("nCoinControlSortColumn").toInt(), (static_cast<Qt::SortOrder>(settings.value("nCoinControlSortOrder").toInt())));
 
+    GUIUtil::handleCloseWindowShortcut(this);
     if(_model->getOptionsModel() && _model->getAddressTableModel())
     {
         updateView();

@@ -226,6 +226,8 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
 #ifdef Q_OS_MAC
     m_app_nap_inhibitor = new CAppNapInhibitor;
 #endif
+
+    GUIUtil::handleCloseWindowShortcut(this);
 }
 
 void BitcoinGUI::onResult(QNetworkReply *reply) {
