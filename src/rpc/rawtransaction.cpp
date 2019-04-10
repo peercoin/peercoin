@@ -14,6 +14,7 @@
 #include <key_io.h>
 #include <keystore.h>
 #include <merkleblock.h>
+#include <node/coin.h>
 #include <node/psbt.h>
 #include <node/transaction.h>
 #include <policy/policy.h>
@@ -742,7 +743,14 @@ static UniValue signrawtransactionwithkey(const JSONRPCRequest& request)
         keystore.AddKey(key);
     }
 
-    return SignTransaction(*g_rpc_interfaces->chain, mtx, request.params[2], &keystore, true, request.params[3]);
+    // Fetch previous transactions (inputs):
+    std::map<COutPoint, Coin> coins;
+    for (const CTxIn& txin : mtx.vin) {
+        coins[txin.prevout]; // Create empty map entry keyed by prevout.
+    }
+    FindCoins(coins);
+
+    return SignTransaction(mtx, request.params[2], &keystore, coins, true, request.params[3]);
 }
 
 UniValue signrawtransaction(const JSONRPCRequest& request)
