@@ -11,7 +11,7 @@
 #include <pow.h>
 #include <net.h>
 #include <random.h>
-#include <test/test_bitcoin.h>
+#include <test/setup_common.h>
 #include <validation.h>
 #include <validationinterface.h>
 
