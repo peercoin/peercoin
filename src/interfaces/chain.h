@@ -43,10 +43,6 @@ class Wallet;
 //!   asynchronously
 //!   (https://github.com/bitcoin/bitcoin/pull/10973#issuecomment-380101269).
 //!
-//! * The relayTransactions() and submitToMemoryPool() methods could be replaced
-//!   with a higher-level broadcastTransaction method
-//!   (https://github.com/bitcoin/bitcoin/pull/14978#issuecomment-459373984).
-//!
 //! * The initMessages() and loadWallet() methods which the wallet uses to send
 //!   notifications to the GUI should go away when GUI and wallet can directly
 //!   communicate with each other without going through the node
@@ -127,9 +123,6 @@ public:
 
         //! Check if transaction will be final given chain height current time.
         virtual bool checkFinalTx(const CTransaction& tx) = 0;
-
-        //! Add transaction to memory pool */
-        virtual bool submitToMemoryPool(const CTransactionRef& tx, CValidationState& state) = 0;
     };
 
     //! Return Lock interface. Chain is locked when this is called, and
@@ -161,9 +154,6 @@ public:
 
     //! Check if transaction has descendants in mempool.
     virtual bool hasDescendantsInMempool(const uint256& txid) = 0;
-
-    //! Relay transaction.
-    virtual void relayTransaction(const uint256& txid) = 0;
 
     //! Transaction is added to memory pool, if the transaction fee is below the
     //! amount specified by max_tx_fee, and broadcast to all peers if relay is set to true.
