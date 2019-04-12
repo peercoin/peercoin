@@ -82,6 +82,8 @@ Peercoin is now available at `./src/peercoind`
 
 Before running, you may create an empty configuration file:
 
+    mkdir -p "/Users/${USER}/Library/Application Support/Peercoin"
+
     touch "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
 
     chmod 600 "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
