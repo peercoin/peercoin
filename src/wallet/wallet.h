@@ -10,16 +10,16 @@
 #include <interfaces/chain.h>
 #include <interfaces/handler.h>
 #include <outputtype.h>
+#include <script/ismine.h>
+#include <script/sign.h>
 #include <streams.h>
 #include <tinyformat.h>
 #include <ui_interface.h>
 #include <util/strencodings.h>
-#include <validationinterface.h>
-#include <script/ismine.h>
-#include <script/sign.h>
 #include <util/system.h>
-#include <wallet/crypter.h>
+#include <validationinterface.h>
 #include <wallet/coinselection.h>
+#include <wallet/crypter.h>
 #include <wallet/walletdb.h>
 #include <wallet/walletutil.h>
 
@@ -755,7 +755,10 @@ public:
     unsigned int nMasterKeyMaxID = 0;
 
     /** Construct wallet with specified name and database implementation. */
-    CWallet(interfaces::Chain* chain, const WalletLocation& location, std::unique_ptr<WalletDatabase> database) : m_chain(chain), m_location(location), database(std::move(database))
+    CWallet(interfaces::Chain* chain, const WalletLocation& location, std::unique_ptr<WalletDatabase> database)
+        : m_chain(chain),
+          m_location(location),
+          database(std::move(database))
     {
     }
 
@@ -781,6 +784,9 @@ public:
 
     /** Registered interfaces::Chain::Notifications handler. */
     std::unique_ptr<interfaces::Handler> m_chain_notifications_handler;
+
+    /** Register the wallet for chain notifications */
+    void handleNotifications();
 
     /** Interface for accessing chain state. */
     interfaces::Chain& chain() const { assert(m_chain); return *m_chain; }
@@ -1182,8 +1188,6 @@ public:
 
     /** Add a KeyOriginInfo to the wallet */
     bool AddKeyOrigin(const CPubKey& pubkey, const KeyOriginInfo& info);
-
-    friend struct WalletTestingSetup;
 };
 
 /**

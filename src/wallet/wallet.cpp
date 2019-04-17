@@ -5,9 +5,8 @@
 
 #include <wallet/wallet.h>
 
-#include <checkpoints.h>
 #include <chain.h>
-#include <wallet/coincontrol.h>
+#include <checkpoints.h>
 #include <consensus/consensus.h>
 #include <consensus/validation.h>
 #include <consensus/tx_verify.h>
@@ -17,7 +16,6 @@
 #include <key.h>
 #include <key_io.h>
 #include <keystore.h>
-#include <validation.h>
 #include <net.h>
 #include <policy/policy.h>
 #include <primitives/block.h>
@@ -36,6 +34,8 @@
 #include <util/validation.h>
 #include <bignum.h>
 #include <txdb.h>
+#include <validation.h>
+#include <wallet/coincontrol.h>
 
 #include <algorithm>
 #include <assert.h>
@@ -4319,7 +4319,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     chain.loadWallet(interfaces::MakeWallet(walletInstance));
 
     // Register with the validation interface. It's ok to do this after rescan since we're still holding locked_chain.
-    walletInstance->m_chain_notifications_handler = chain.handleNotifications(*walletInstance);
+    walletInstance->handleNotifications();
 
     walletInstance->SetBroadcastTransactions(gArgs.GetBoolArg("-walletbroadcast", DEFAULT_WALLETBROADCAST));
 
@@ -4330,6 +4330,11 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     }
 
     return walletInstance;
+}
+
+void CWallet::handleNotifications()
+{
+    m_chain_notifications_handler = m_chain->handleNotifications(*this);
 }
 
 void CWallet::postInitProcess()
