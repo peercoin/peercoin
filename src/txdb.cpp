@@ -11,6 +11,7 @@
 #include <random.h>
 #include <shutdown.h>
 #include <uint256.h>
+#include <util/memory.h>
 #include <util/system.h>
 #include <util/translation.h>
 #include <util/vector.h>
