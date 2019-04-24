@@ -96,6 +96,9 @@ class CompactBlocksTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
+        self.extra_args = [[
+            "-acceptnonstdtxn=1",
+        ]]
         self.utxos = []
         self.coinbase_key = CECKey()
         self.coinbase_key.set_secretbytes(b"horsebattery")
