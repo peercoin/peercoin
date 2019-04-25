@@ -51,6 +51,26 @@ struct AssumeutxoData {
 using MapAssumeutxo = std::map<int, const AssumeutxoData>;
 
 /**
+ * Holds configuration for use during UTXO snapshot load and validation. The contents
+ * here are security critical, since they dictate which UTXO snapshots are recognized
+ * as valid.
+ */
+struct AssumeutxoData {
+    //! The expected hash of the deserialized UTXO set.
+    const uint256 hash_serialized;
+
+    //! Used to populate the nChainTx value, which is used during BlockManager::LoadBlockIndex().
+    //!
+    //! We need to hardcode the value here because this is computed cumulatively using block data,
+    //! which we do not necessarily have at the time of snapshot load.
+    const unsigned int nChainTx;
+};
+
+std::ostream& operator<<(std::ostream& o, const AssumeutxoData& aud);
+
+using MapAssumeutxo = std::map<int, const AssumeutxoData>;
+
+/**
  * Holds various statistics on transactions within a chain. Used to estimate
  * verification progress during chain sync.
  *

@@ -1077,4 +1077,13 @@ bool CheckBlockSignature(const CBlock& block);
  */
 const AssumeutxoData* ExpectedAssumeutxo(const int height, const CChainParams& params);
 
+/**
+ * Return the expected assumeutxo value for a given height, if one exists.
+ *
+ * @param height[in] Get the assumeutxo value for this height.
+ *
+ * @returns empty if no assumeutxo configuration exists for the given height.
+ */
+const AssumeutxoData* ExpectedAssumeutxo(const int height, const CChainParams& params);
+
 #endif // BITCOIN_VALIDATION_H
