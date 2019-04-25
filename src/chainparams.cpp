@@ -8,7 +8,6 @@
 #include <chainparamsseeds.h>
 #include <consensus/merkle.h>
 #include <hash.h> // for signet block challenge hash
-#include <tinyformat.h>
 #include <util/system.h>
 #include <util/strencodings.h>
 #include <versionbitsinfo.h>
@@ -160,6 +159,10 @@ public:
             }
         };
 
+        m_assumeutxo_data = MapAssumeutxo{
+         // TODO to be specified in a future patch.
+        };
+
         chainTxData = ChainTxData{
             // Data as of block 967c14abf21214639aeff0a270c4543cd3b80fe53178384ac5aa3c277662f1d0 (height 589659).
             1635782211, // * UNIX timestamp of last known number of transactions
@@ -262,6 +265,10 @@ public:
                 {441299, uint256S("0x4091d0836a37c50ceee876000ac0cb251fd10031dab901d2c0677cd86283096e")},
                 {442735, uint256S("0x1b83b33894d51be0b8b323bfab093f638915236e0e40ba3b52bb33fdbc4053cd")},
             }
+        };
+
+        m_assumeutxo_data = MapAssumeutxo{
+            // TODO to be specified in a future patch.
         };
 
         chainTxData = ChainTxData{
@@ -448,6 +455,17 @@ public:
             }
         };
 
+        m_assumeutxo_data = MapAssumeutxo{
+            {
+                110,
+                {uint256S("0x76fd7334ac7c1baf57ddc0c626f073a655a35d98a4258cd1382c8cc2b8392e10"), 110},
+            },
+            {
+                210,
+                {uint256S("0x9c5ed99ef98544b34f8920b6d1802f72ac28ae6e2bd2bd4c316ff10c230df3f2"), 210},
+            },
+        };
+
         chainTxData = ChainTxData{
             0,
             0,
@@ -508,4 +526,10 @@ void SelectParams(const std::string& network)
 {
     SelectBaseParams(network);
     globalChainParams = CreateChainParams(gArgs, network);
+}
+
+std::ostream& operator<<(std::ostream& o, const AssumeutxoData& aud)
+{
+    o << strprintf("AssumeutxoData(%s, %s)", aud.hash_serialized.ToString(), aud.nChainTx);
+    return o;
 }

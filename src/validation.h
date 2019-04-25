@@ -55,6 +55,7 @@ struct ChainTxData;
 struct DisconnectedBlockTransactions;
 struct PrecomputedTransactionData;
 struct LockPoints;
+struct AssumeutxoData;
 
 /** Default for -limitancestorcount, max number of in-mempool ancestors */
 static const unsigned int DEFAULT_ANCESTOR_LIMIT = 25;
@@ -988,5 +989,14 @@ CAmount GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneyS
 bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, unsigned int nTimeTx, bool isTrueCoinAge = true); // peercoin: get transaction coin age
 bool SignBlock(CBlock& block, const CWallet& keystore);
 bool CheckBlockSignature(const CBlock& block);
+
+/**
+ * Return the expected assumeutxo value for a given height, if one exists.
+ *
+ * @param height[in] Get the assumeutxo value for this height.
+ *
+ * @returns empty if no assumeutxo configuration exists for the given height.
+ */
+const AssumeutxoData* ExpectedAssumeutxo(const int height, const CChainParams& params);
 
 #endif // BITCOIN_VALIDATION_H
