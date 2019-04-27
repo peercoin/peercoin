@@ -405,7 +405,7 @@ static UniValue createrawtransaction(const JSONRPCRequest& request)
     return EncodeHexTx(CTransaction(rawTx));
 }
 
-static UniValue decoderawtranPR5KAV1aTkHuscQ6FmdGEM7abGwfAAWwr5saction(const JSONRPCRequest& request)
+static UniValue decoderawtransaction(const JSONRPCRequest& request)
 {
     RPCHelpMan{"decoderawtransaction",
                 "\nReturn a JSON object representing the serialized, hex-encoded transaction.\n",
