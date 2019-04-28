@@ -1216,6 +1216,28 @@ BOOST_AUTO_TEST_CASE(util_ReadWriteSettings)
     }
 }
 
+BOOST_AUTO_TEST_CASE(util_ReadWriteSettings)
+{
+    // Test writing setting.
+    TestArgsManager args1;
+    args1.LockSettings([&](util::Settings& settings) { settings.rw_settings["name"] = "value"; });
+    args1.WriteSettingsFile();
+
+    // Test reading setting.
+    TestArgsManager args2;
+    args2.ReadSettingsFile();
+    args2.LockSettings([&](util::Settings& settings) { BOOST_CHECK_EQUAL(settings.rw_settings["name"].get_str(), "value"); });
+
+    // Test error logging, and remove previously written setting.
+    {
+        ASSERT_DEBUG_LOG("Failed renaming settings file");
+        fs::remove(GetDataDir() / "settings.json");
+        fs::create_directory(GetDataDir() / "settings.json");
+        args2.WriteSettingsFile();
+        fs::remove(GetDataDir() / "settings.json");
+    }
+}
+
 BOOST_AUTO_TEST_CASE(util_FormatMoney)
 {
     BOOST_CHECK_EQUAL(FormatMoney(0), "0.00");
