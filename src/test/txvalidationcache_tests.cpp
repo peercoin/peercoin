@@ -23,7 +23,7 @@ ToMemPool(const CMutableTransaction& tx)
     LOCK(cs_main);
 
     TxValidationState state;
-    return AcceptToMemoryPool(mempool, state, MakeTransactionRef(tx), nullptr /* pfMissingInputs */,
+    return AcceptToMemoryPool(mempool, state, MakeTransactionRef(tx),
                               true /* bypass_limits */);
 }
 
