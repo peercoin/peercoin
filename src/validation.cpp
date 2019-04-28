@@ -3509,9 +3509,8 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
 }
 
 // Exposed wrapper for AcceptBlockHeader
-bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAcceptedHeader, const std::vector<CBlockHeader>& headers, BlockValidationState& state, const CChainParams& chainparams, const CBlockIndex** ppindex, CBlockHeader *first_invalid)
+bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAcceptedHeader, const std::vector<CBlockHeader>& headers, BlockValidationState& state, const CChainParams& chainparams, const CBlockIndex** ppindex)
 {
-    if (first_invalid != nullptr) first_invalid->SetNull();
     {
         LOCK(cs_main);
 
@@ -3531,7 +3530,6 @@ bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAccepte
 
             if (!accepted) {
                 nPoSTemperature += POW_HEADER_COOLING;
-                if (first_invalid) *first_invalid = header;
                 return false;
             }
             if (ppindex) {
