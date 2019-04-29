@@ -302,7 +302,7 @@ UniValue importaddress(const JSONRPCRequest& request)
         {
             auto locked_chain = pwallet->chain().lock();
             LOCK(pwallet->cs_wallet);
-            pwallet->ReacceptWalletTransactions(*locked_chain);
+            pwallet->ReacceptWalletTransactions();
         }
     }
 
@@ -383,7 +383,7 @@ UniValue importpubkey(const JSONRPCRequest& request)
         {
             auto locked_chain = pwallet->chain().lock();
             LOCK(pwallet->cs_wallet);
-            pwallet->ReacceptWalletTransactions(*locked_chain);
+            pwallet->ReacceptWalletTransactions();
         }
     }
 
@@ -1275,7 +1275,7 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
         {
             auto locked_chain = pwallet->chain().lock();
             LOCK(pwallet->cs_wallet);
-            pwallet->ReacceptWalletTransactions(*locked_chain);
+            pwallet->ReacceptWalletTransactions();
         }
 
         if (pwallet->IsAbortingRescan()) {
