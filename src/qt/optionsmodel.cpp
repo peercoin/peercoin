@@ -45,6 +45,8 @@ static const char* SettingName(OptionsModel::OptionID option)
     case OptionsModel::MapPortNatpmp: return "natpmp";
     case OptionsModel::Listen: return "listen";
     case OptionsModel::Server: return "server";
+    case OptionsModel::PruneSize: return "prune";
+    case OptionsModel::Prune: return "prune";
     case OptionsModel::ProxyIP: return "proxy";
     case OptionsModel::ProxyPort: return "proxy";
     case OptionsModel::ProxyUse: return "proxy";
@@ -60,7 +62,9 @@ static void UpdateRwSetting(interfaces::Node& node, OptionsModel::OptionID optio
 {
     if (value.isNum() &&
         (option == OptionsModel::DatabaseCache ||
-         option == OptionsModel::ThreadsScriptVerif)) {
+         option == OptionsModel::ThreadsScriptVerif ||
+         option == OptionsModel::Prune ||
+         option == OptionsModel::PruneSize)) {
         // Write certain old settings as strings, even though they are numbers,
         // because Bitcoin 22.x releases try to read these specific settings as
         // strings in addOverriddenOption() calls at startup, triggering
@@ -72,6 +76,36 @@ static void UpdateRwSetting(interfaces::Node& node, OptionsModel::OptionID optio
     } else {
         node.updateRwSetting(SettingName(option), value);
     }
+}
+
+//! Convert enabled/size values to bitcoin -prune setting.
+static util::SettingsValue PruneSetting(bool prune_enabled, int prune_size_gb)
+{
+    assert(!prune_enabled || prune_size_gb >= 1); // PruneSizeGB and ParsePruneSizeGB never return less
+    return prune_enabled ? PruneGBtoMiB(prune_size_gb) : 0;
+}
+
+//! Get pruning enabled value to show in GUI from bitcoin -prune setting.
+static bool PruneEnabled(const util::SettingsValue& prune_setting)
+{
+    // -prune=1 setting is manual pruning mode, so disabled for purposes of the gui
+    return SettingToInt(prune_setting, 0) > 1;
+}
+
+//! Get pruning size value to show in GUI from bitcoin -prune setting. If
+//! pruning is not enabled, just show default recommended pruning size (2GB).
+static int PruneSizeGB(const util::SettingsValue& prune_setting)
+{
+    int value = SettingToInt(prune_setting, 0);
+    return value > 1 ? PruneMiBtoGB(value) : DEFAULT_PRUNE_TARGET_GB;
+}
+
+//! Parse pruning size value provided by user in GUI or loaded from QSettings
+//! (windows registry key or qt .conf file). Smallest value that the GUI can
+//! display is 1 GB, so round up if anything less is parsed.
+static int ParsePruneSizeGB(const QVariant& prune_size)
+{
+    return std::max(1, prune_size.toInt());
 }
 
 struct ProxySetting {
@@ -96,6 +130,7 @@ void OptionsModel::addOverriddenOption(const std::string &option)
 bool OptionsModel::Init(bilingual_str& error)
 {
     // Initialize display settings from stored settings.
+    m_prune_size_gb = PruneSizeGB(node().getPersistentSetting("prune"));
     ProxySetting proxy = ParseProxyString(SettingToString(node().getPersistentSetting("proxy"), GetDefaultProxyAddress().toStdString()));
     m_proxy_ip = proxy.ip;
     m_proxy_port = proxy.port;
@@ -155,7 +190,7 @@ bool OptionsModel::Init(bilingual_str& error)
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
     for (OptionID option : {DatabaseCache, ThreadsScriptVerif, SpendZeroConfChange, ExternalSignerPath, MapPortUPnP,
-                            MapPortNatpmp, Listen, Server, ProxyUse, ProxyUseTor}) {
+                            MapPortNatpmp, Listen, Server, Prune, ProxyUse, ProxyUseTor}) {
         std::string setting = SettingName(option);
         if (node().isSettingIgnored(setting)) addOverriddenOption("-" + setting);
         try {
@@ -657,9 +692,9 @@ QVariant OptionsModel::getOption(OptionID option) const
     case EnablePSBTControls:
         return settings.value("enable_psbt_controls");
     case Prune:
-        return settings.value("bPrune");
+        return PruneEnabled(setting());
     case PruneSize:
-        return settings.value("nPruneSize");
+        return m_prune_size_gb;
     case DatabaseCache:
         return qlonglong(SettingToInt(setting(), nDefaultDbCache));
     case ThreadsScriptVerif:
@@ -812,15 +847,18 @@ bool OptionsModel::setOption(OptionID option, const QVariant& value)
         settings.setValue("enable_psbt_controls", m_enable_psbt_controls);
         break;
     case Prune:
-        if (settings.value("bPrune") != value) {
-            settings.setValue("bPrune", value);
+        if (changed()) {
+            update(PruneSetting(value.toBool(), m_prune_size_gb));
             setRestartRequired(true);
         }
         break;
     case PruneSize:
-        if (settings.value("nPruneSize") != value) {
-            settings.setValue("nPruneSize", value);
-            setRestartRequired(true);
+        if (changed()) {
+            m_prune_size_gb = ParsePruneSizeGB(value);
+            if (getOption(Prune).toBool()) {
+                update(PruneSetting(true, m_prune_size_gb));
+                setRestartRequired(true);
+            }
         }
         break;
     case DatabaseCache:
@@ -930,6 +968,8 @@ void OptionsModel::checkAndMigrate()
     migrate_setting(MapPortNatpmp, "fUseNatpmp");
     migrate_setting(Listen, "fListen");
     migrate_setting(Server, "server");
+    migrate_setting(PruneSize, "nPruneSize");
+    migrate_setting(Prune, "bPrune");
     migrate_setting(ProxyIP, "addrProxy");
     migrate_setting(ProxyUse, "fUseProxy");
     migrate_setting(ProxyIPTor, "addrSeparateProxyTor");
