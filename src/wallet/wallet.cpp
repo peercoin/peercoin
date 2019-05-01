@@ -2698,7 +2698,11 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
     wtxNew.fTimeReceivedIsTxTime = true;
     wtxNew.BindWallet(this);
     CMutableTransaction txNew;
-    txNew.nTime = wtxNew.tx->nTime;  // peercoin: set time
+    // while 0.8 is not active
+    if (!IsBTC16BIPsEnabled(wtxNew.tx->nTime)) {
+        txNew.nVersion = 1;
+        txNew.nTime = wtxNew.tx->nTime;  // peercoin: set time
+    }
 
     // Discourage fee sniping.
     //
