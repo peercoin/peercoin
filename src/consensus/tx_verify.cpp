@@ -178,7 +178,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
             return state.DoS(100, false, REJECT_INVALID, "empty-txout");
         // peercoin: enforce minimum output amount
         // v0.5 protocol: zero amount allowed
-        if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT &&
+        if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT && tx.nVersion == 1 &&
             !(IsProtocolV05(tx.nTime) && (txout.nValue == 0)))
             return state.DoS(100, false, REJECT_INVALID, "txout.nValue below minimum");
         if (txout.nValue < 0)
