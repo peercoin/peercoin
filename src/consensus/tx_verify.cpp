@@ -237,7 +237,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         }
 
         // peercoin: check transaction timestamp
-        if (coin.nTime > tx.nTime)
+        if (tx.nVersion == 1 && coin.nTime > tx.nTime)
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-spent-too-early", false, strprintf("%s : transaction timestamp earlier than input transaction", __func__));
 
         // Check for negative or overflow input values
