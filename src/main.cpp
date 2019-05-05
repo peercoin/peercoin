@@ -3875,6 +3875,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if (strCommand == "verack")
     {
         pfrom->SetRecvVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+
+        // pre 0.7 nodes are to be disconnected
+        if (pfrom->nVersion < 70002)
+        {
+            printf("version %d is deprecated, disconnecting peer %s\n", pfrom->nVersion, pfrom->addr.ToString().c_str());
+            pfrom->Misbehaving(100);
+        }
     }
 
 
