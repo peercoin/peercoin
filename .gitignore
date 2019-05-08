@@ -72,7 +72,6 @@ src/qt/bitcoin-qt.includes
 *.pyc
 *.o
 *.o-*
-*.patch
 .ppcoin
 .peercoin
 *.a
@@ -86,6 +85,10 @@ src/qt/bitcoin-qt.includes
 
 *.json.h
 *.raw.h
+
+# Only ignore unexpected patches
+*.patch
+!depends/patches/*.patch
 
 #libtool object files
 *.lo
