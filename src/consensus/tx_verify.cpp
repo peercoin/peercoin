@@ -11,6 +11,7 @@
 
 #include <kernel.h>
 #include <validation.h>   // GetCoinAge()
+#include <utiltime.h>     // GetTime()
 
 // TODO remove the following dependencies
 #include <chain.h>
@@ -254,7 +255,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         if (!GetCoinAge(tx, inputs, nCoinAge))
             return state.DoS(100, false, REJECT_INVALID, "unable to get coin age for coinstake");
         CAmount nStakeReward = tx.GetValueOut() - nValueIn;
-        CAmount nCoinstakeCost = (GetMinFee(tx) < PERKB_TX_FEE) ? 0 : (GetMinFee(tx) - PERKB_TX_FEE);
+        CAmount nCoinstakeCost = (GetMinFee(tx, nTime) < PERKB_TX_FEE) ? 0 : (GetMinFee(tx, nTime) - PERKB_TX_FEE);
         if (nStakeReward > GetProofOfStakeReward(nCoinAge) - nCoinstakeCost)
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-coinstake-too-large");
     }
@@ -271,17 +272,17 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-fee-outofrange");
         }
         // peercoin: enforce transaction fees for every block
-        if (txfee_aux < GetMinFee(tx))
+        if (txfee_aux < GetMinFee(tx, nTime))
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-fee-not-enough");
         txfee = txfee_aux;
     }
     return true;
 }
 
-CAmount GetMinFee(const CTransaction& tx)
+CAmount GetMinFee(const CTransaction& tx, uint32_t nTime)
 {
     size_t nBytes = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-    return GetMinFee(nBytes, tx.nTime);
+    return GetMinFee(nBytes, nTime);
 }
 
 CAmount GetMinFee(size_t nBytes, uint32_t nTime)

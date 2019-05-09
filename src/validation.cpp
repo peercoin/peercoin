@@ -643,7 +643,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         if (!Consensus::CheckTxInputs(tx, state, view, GetSpendHeight(view), nFees, chainparams.GetConsensus())) {
             return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
         }
-        if (nFees < GetMinFee(tx))
+        if (nFees < GetMinFee(tx, GetTime()))
             return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "fee is below minimum");
 
         // Check for non-standard pay-to-script-hash in inputs
@@ -2901,7 +2901,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // Check coinbase reward
     CAmount nCoinbaseCost = 0;
     if (block.IsProofOfWork())
-        nCoinbaseCost = (GetMinFee(*block.vtx[0]) < PERKB_TX_FEE)? 0 : (GetMinFee(*block.vtx[0]) - PERKB_TX_FEE);
+        nCoinbaseCost = (GetMinFee(*block.vtx[0], block.GetBlockTime()) < PERKB_TX_FEE)? 0 : (GetMinFee(*block.vtx[0], block.GetBlockTime()) - PERKB_TX_FEE);
     if (block.vtx[0]->GetValueOut() > (block.IsProofOfWork()? (GetProofOfWorkReward(block.nBits) - nCoinbaseCost) : 0))
         return state.DoS(50, false, REJECT_INVALID, "bad-cb-amount", false,
                 strprintf("CheckBlock() : coinbase reward exceeded %s > %s",
