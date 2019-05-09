@@ -61,6 +61,10 @@ extern const char * const BITCOIN_PID_FILENAME;
 
 extern std::atomic<uint32_t> logCategories;
 
+#ifdef TESTING
+extern uint64_t nTimeShift;
+#endif
+
 /**
  * Translation function: Call Translate signal on UI interface, which returns a boost::optional result.
  * If no translation slot is registered, nothing is returned, and simply return the input.

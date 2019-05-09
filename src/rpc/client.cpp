@@ -142,6 +142,9 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "sendalert", 4, "priority"},
     { "sendalert", 5, "id"},
     { "sendalert", 6, "cancelupto"},
+#ifdef TESTING
+    { "timetravel", 0, "timestamp"},
+#endif
 };
 
 class CRPCConvertTable

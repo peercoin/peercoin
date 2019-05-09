@@ -99,6 +99,10 @@ CTranslationInterface translationInterface;
 /** Log categories bitfield. */
 std::atomic<uint32_t> logCategories(0);
 
+#ifdef TESTING
+uint64_t nTimeShift = 0;
+#endif
+
 /** Init OpenSSL library multithreading support */
 static std::unique_ptr<CCriticalSection[]> ppmutexOpenSSL;
 void locking_callback(int mode, int i, const char* file, int line) NO_THREAD_SAFETY_ANALYSIS

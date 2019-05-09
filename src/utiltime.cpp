@@ -8,6 +8,7 @@
 #endif
 
 #include <utiltime.h>
+#include <util.h>
 
 #include <atomic>
 
@@ -23,7 +24,11 @@ int64_t GetTime()
 
     time_t now = time(nullptr);
     assert(now > 0);
+#ifdef TESTING
+    return now + nTimeShift;
+#else
     return now;
+#endif
 }
 
 void SetMockTime(int64_t nMockTimeIn)

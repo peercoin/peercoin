@@ -445,6 +445,33 @@ UniValue setmocktime(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
+#ifdef TESTING
+UniValue timetravel(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 1)
+        throw std::runtime_error(
+            "timetravel seconds\n"
+            "\nChange relative time by number of given seconds (TESTING only)\n"
+            "\nArguments:\n"
+            "1. seconds  (integer, required)\n"
+            "   Pass negative value to go back in time."
+        );
+
+    // For now, don't change mocktime if we're in the middle of validation, as
+    // this could have an effect on mempool time-based eviction, as well as
+    // IsCurrentForFeeEstimation() and IsInitialBlockDownload().
+    // TODO: figure out the right way to synchronize around mocktime, and
+    // ensure all call sites of GetTime() are accessing this safely.
+    LOCK(cs_main);
+
+    RPCTypeCheck(request.params, {UniValue::VNUM});
+    nTimeShift += request.params[0].get_int64();
+    UniValue result(UniValue::VOBJ);
+    result.push_back(Pair("delta", int64_t(nTimeShift)));
+    return result;
+}
+#endif
+
 static UniValue RPCLockedMemoryInfo()
 {
     LockedPool::Stats stats = LockedPoolManager::Instance().stats();
@@ -650,6 +677,9 @@ static const CRPCCommand commands[] =
     { "hidden",             "echo",                   &echo,                   {"arg0","arg1","arg2","arg3","arg4","arg5","arg6","arg7","arg8","arg9"}},
     { "hidden",             "echojson",               &echo,                   {"arg0","arg1","arg2","arg3","arg4","arg5","arg6","arg7","arg8","arg9"}},
     { "hidden",             "getinfo",                &getinfo_deprecated,     {}},
+#ifdef TESTING
+    { "hidden",             "timetravel",             &timetravel,             {"seconds"}},
+#endif
 };
 
 void RegisterMiscRPCCommands(CRPCTable &t)

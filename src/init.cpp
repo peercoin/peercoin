@@ -1098,6 +1098,11 @@ bool AppInitSanityChecks()
     }
 #endif
 
+#ifdef TESTING
+    if (gArgs.IsArgSet("-timetravel"))
+        nTimeShift = gArgs.GetArg("-timetravel", 0);
+#endif
+
     // Sanity check
     if (!InitSanityCheck())
         return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down."), _(PACKAGE_NAME)));
