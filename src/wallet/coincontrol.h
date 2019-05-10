@@ -10,6 +10,9 @@
 
 #include <boost/optional.hpp>
 
+const int DEFAULT_MIN_DEPTH = 0;
+const int DEFAULT_MAX_DEPTH = 9999999;
+
 /** Coin Control Features. */
 class CCoinControl
 {
@@ -29,7 +32,9 @@ public:
     //! Forbids inclusion of dirty (previously used) addresses
     bool m_avoid_address_reuse;
     //! Minimum chain depth value for coin availability
-    int m_min_depth{0};
+    int m_min_depth = DEFAULT_MIN_DEPTH;
+    //! Maximum chain depth value for coin availability
+    int m_max_depth = DEFAULT_MAX_DEPTH;
 
     CCoinControl()
     {
