@@ -1,5 +1,19 @@
 Peercoin version 0.8.x is now available from:
 
+*The release notes draft is a temporary file that can be added to by anyone. See
+[/doc/developer-notes.md#release-notes](/doc/developer-notes.md#release-notes)
+for the process.*
+
+*Create the draft, named* "*version* Release Notes Draft"
+*(e.g. "0.20.0 Release Notes Draft"), as a collaborative wiki in:*
+
+https://github.com/bitcoin-core/bitcoin-devwiki/wiki/
+
+*Before the final release, move the notes back to this git repository.*
+
+*version* Release Notes Draft
+===============================
+
   <https://bitcoincore.org/bin/bitcoin-core-*version*/>
 
 This is a new major version release, including new features, various bugfixes
