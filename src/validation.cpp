@@ -2915,7 +2915,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
                                  strprintf("Transaction check failed (tx hash %s) %s", tx->GetHash().ToString(), state.GetDebugMessage()));
         // peercoin: check transaction timestamp
-        if (tx->nVersion == 1 && block.GetBlockTime() < (int64_t)tx->nTime)
+        if (tx->nVersion < 3 && block.GetBlockTime() < (int64_t)tx->nTime)
             return state.DoS(50, false, REJECT_INVALID, "bad-tx-time", false, strprintf("%s : block timestamp earlier than transaction timestamp", __func__));
     }
 

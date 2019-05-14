@@ -179,7 +179,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
             return state.DoS(100, false, REJECT_INVALID, "empty-txout");
         // peercoin: enforce minimum output amount
         // v0.5 protocol: zero amount allowed
-        if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT && tx.nVersion == 1 &&
+        if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT && tx.nVersion < 3 &&
             !(IsProtocolV05(tx.nTime) && (txout.nValue == 0)))
             return state.DoS(100, false, REJECT_INVALID, "txout.nValue below minimum");
         if (txout.nValue < 0)
@@ -238,7 +238,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         }
 
         // peercoin: check transaction timestamp
-        if (tx.nVersion == 1 && coin.nTime > tx.nTime)
+        if (tx.nVersion < 3 && coin.nTime > tx.nTime)
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-spent-too-early", false, strprintf("%s : transaction timestamp earlier than input transaction", __func__));
 
         // Check for negative or overflow input values

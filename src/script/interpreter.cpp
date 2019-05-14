@@ -1135,7 +1135,7 @@ public:
     void Serialize(S &s) const {
         // Serialize nVersion
         ::Serialize(s, txTo.nVersion);
-        if (txTo.nVersion == 1) {
+        if (txTo.nVersion < 3) {
             // Serialize nTime
             ::Serialize(s, txTo.nTime);
         }
@@ -1222,7 +1222,7 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
         // Version
         ss << txTo.nVersion;
         // nTime
-        if (txTo.nVersion == 1)
+        if (txTo.nVersion < 3)
             ss << txTo.nTime;
         // Input prevouts/nSequence (none/all, depending on flags)
         ss << hashPrevouts;

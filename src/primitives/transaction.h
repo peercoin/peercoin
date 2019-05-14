@@ -192,7 +192,7 @@ struct CMutableTransaction;
 /**
  * Basic transaction serialization format:
  * - int32_t nVersion
- * - if (nVersion == 1):
+ * - if (nVersion < 3):
  *   - uint32_t nTime
  * - std::vector<CTxIn> vin
  * - std::vector<CTxOut> vout
@@ -200,7 +200,7 @@ struct CMutableTransaction;
  *
  * Extended transaction serialization format:
  * - int32_t nVersion
- * - if (nVersion == 1):
+ * - if (nVersion < 3):
  *   - uint32_t nTime
  * - unsigned char dummy = 0x00
  * - unsigned char flags (!= 0)
@@ -215,7 +215,7 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s >> tx.nVersion;
-    if (tx.nVersion == 1)
+    if (tx.nVersion < 3)
         s >> tx.nTime;
     unsigned char flags = 0;
     tx.vin.clear();
@@ -252,7 +252,7 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s << tx.nVersion;
-    if (tx.nVersion == 1)
+    if (tx.nVersion < 3)
         s << tx.nTime;
     unsigned char flags = 0;
     // Consistency check
@@ -285,13 +285,13 @@ class CTransaction
 {
 public:
     // Default transaction version.
-    static const int32_t CURRENT_VERSION=2; //ppcTODO - bip68 is active on testnet now, before mainnet release change back to 1.
+    static const int32_t CURRENT_VERSION=3; //ppcTODO - bip68 is active on testnet now, before mainnet release change back to 1.
 
     // Changing the default transaction version requires a two step process: first
     // adapting relay policy by bumping MAX_STANDARD_VERSION, and then later date
     // bumping the default CURRENT_VERSION at which point both CURRENT_VERSION and
     // MAX_STANDARD_VERSION will be equal.
-    static const int32_t MAX_STANDARD_VERSION=2;
+    static const int32_t MAX_STANDARD_VERSION=3;
 
     // The local variables are made const to prevent unintended modification
     // without updating the cached hash value. However, CTransaction is not
