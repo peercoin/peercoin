@@ -1553,7 +1553,10 @@ bool PeercoinContextualBlockChecks(const CBlock& block, CValidationState& state,
 {
     uint256 hashProofOfStake = uint256();
     // peercoin: verify hash target and signature of coinstake tx
-    if (block.IsProofOfStake() && !CheckProofOfStake(state, pindex->pprev, block.vtx[1], block.nBits, hashProofOfStake)) {
+    // use timestamp of block for transactions 3 and above
+    int64_t nTimeTx = (block.vtx[1]->nVersion < 3) ? block.vtx[1]->nTime : block.GetBlockTime();
+
+    if (block.IsProofOfStake() && !CheckProofOfStake(state, pindex->pprev, block.vtx[1], block.nBits, nTimeTx, hashProofOfStake)) {
         LogPrintf("WARNING: %s: check proof-of-stake failed for block %s\n", __func__, block.GetHash().ToString());
         return false; // do not error here as we expect this during initial block download
     }
@@ -1567,7 +1570,7 @@ bool PeercoinContextualBlockChecks(const CBlock& block, CValidationState& state,
     if (!ComputeNextStakeModifier(pindex, nStakeModifier, fGeneratedStakeModifier))
         return error("ConnectBlock() : ComputeNextStakeModifier() failed");
 
-  // compute nStakeModifierChecksum begin
+    // compute nStakeModifierChecksum begin
     unsigned int nFlagsBackup      = pindex->nFlags;
     uint64_t nStakeModifierBackup  = pindex->nStakeModifier;
     uint256 hashProofOfStakeBackup = pindex->hashProofOfStake;
