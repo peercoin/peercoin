@@ -1554,7 +1554,9 @@ bool PeercoinContextualBlockChecks(const CBlock& block, CValidationState& state,
     uint256 hashProofOfStake = uint256();
     // peercoin: verify hash target and signature of coinstake tx
     // use timestamp of block for transactions 3 and above
-    int64_t nTimeTx = (block.vtx[1]->nVersion < 3) ? block.vtx[1]->nTime : block.GetBlockTime();
+    int64_t nTimeTx;
+    if (block.IsProofOfStake())
+        nTimeTx = (block.vtx[1]->nVersion < 3) ? block.vtx[1]->nTime : block.GetBlockTime();
 
     if (block.IsProofOfStake() && !CheckProofOfStake(state, pindex->pprev, block.vtx[1], block.nBits, nTimeTx, hashProofOfStake)) {
         LogPrintf("WARNING: %s: check proof-of-stake failed for block %s\n", __func__, block.GetHash().ToString());
@@ -1587,7 +1589,7 @@ bool PeercoinContextualBlockChecks(const CBlock& block, CValidationState& state,
     pindex->nFlags           = nFlagsBackup;
     pindex->nStakeModifier   = nStakeModifierBackup;
     pindex->hashProofOfStake = hashProofOfStakeBackup;
-  // compute nStakeModifierChecksum end
+    // compute nStakeModifierChecksum end
 
     if (!CheckStakeModifierCheckpoints(pindex->nHeight, nStakeModifierChecksum))
         return error("ConnectBlock() : Rejected by stake modifier checkpoint height=%d, modifier=0x%016llx", pindex->nHeight, nStakeModifier);
@@ -1600,7 +1602,7 @@ bool PeercoinContextualBlockChecks(const CBlock& block, CValidationState& state,
     if (block.IsProofOfStake())
     {
         pindex->prevoutStake = block.vtx[1]->vin[0].prevout;
-        pindex->nStakeTime = block.vtx[1]->nTime;
+        pindex->nStakeTime = nTimeTx;
         pindex->hashProofOfStake = hashProofOfStake;
     }
     if (!pindex->SetStakeEntropyBit(nEntropyBit))
