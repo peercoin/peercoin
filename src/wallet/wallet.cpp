@@ -326,7 +326,7 @@ bool CWallet::AddKeyPubKeyWithDB(WalletBatch& batch, const CKey& secret, const C
                                                  secret.GetPrivKey(),
                                                  mapKeyMetadata[pubkey.GetID()]);
     }
-    UnsetWalletFlag(WALLET_FLAG_BLANK_WALLET);
+    UnsetWalletFlagWithDB(batch, WALLET_FLAG_BLANK_WALLET);
     return true;
 }
 
@@ -437,7 +437,7 @@ bool CWallet::AddCScriptWithDB(WalletBatch& batch, const CScript& redeemScript)
     if (!CCryptoKeyStore::AddCScript(redeemScript))
         return false;
     if (batch.WriteCScript(Hash160(redeemScript), redeemScript)) {
-        UnsetWalletFlag(WALLET_FLAG_BLANK_WALLET);
+        UnsetWalletFlagWithDB(batch, WALLET_FLAG_BLANK_WALLET);
         return true;
     }
     return false;
@@ -466,7 +466,7 @@ bool CWallet::AddWatchOnlyWithDB(WalletBatch &batch, const CScript& dest)
     UpdateTimeFirstKey(meta.nCreateTime);
     NotifyWatchonlyChanged(true);
     if (batch.WriteWatchOnly(dest, meta)) {
-        UnsetWalletFlag(WALLET_FLAG_BLANK_WALLET);
+        UnsetWalletFlagWithDB(batch, WALLET_FLAG_BLANK_WALLET);
         return true;
     }
     return false;
@@ -1556,9 +1556,15 @@ void CWallet::SetWalletFlag(uint64_t flags)
 
 void CWallet::UnsetWalletFlag(uint64_t flag)
 {
+    WalletBatch batch(*database);
+    UnsetWalletFlagWithDB(batch, flag);
+}
+
+void CWallet::UnsetWalletFlagWithDB(WalletBatch& batch, uint64_t flag)
+{
     LOCK(cs_wallet);
     m_wallet_flags &= ~flag;
-    if (!WalletBatch(*database).WriteWalletFlags(m_wallet_flags))
+    if (!batch.WriteWalletFlags(m_wallet_flags))
         throw std::runtime_error(std::string(__func__) + ": writing wallet flags failed");
 }
 
