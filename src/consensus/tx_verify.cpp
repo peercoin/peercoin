@@ -216,7 +216,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
     return true;
 }
 
-bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight, CAmount& txfee, const Consensus::Params& params)
+bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight, CAmount& txfee, const Consensus::Params& params, uint32_t nTime)
 {
     // are the actual inputs available?
     if (!inputs.HaveInputs(tx)) {
@@ -238,7 +238,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         }
 
         // peercoin: check transaction timestamp
-        if (tx.nVersion < 3 && coin.nTime > tx.nTime)
+        if (coin.nTime > nTime)
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-spent-too-early", false, strprintf("%s : transaction timestamp earlier than input transaction", __func__));
 
         // Check for negative or overflow input values
@@ -252,7 +252,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
     {
         // peercoin: coin stake tx earns reward instead of paying fee
         uint64_t nCoinAge;
-        if (!GetCoinAge(tx, inputs, nCoinAge))
+        if (!GetCoinAge(tx, inputs, nCoinAge, nTime))
             return state.DoS(100, false, REJECT_INVALID, "unable to get coin age for coinstake");
         CAmount nStakeReward = tx.GetValueOut() - nValueIn;
         CAmount nCoinstakeCost = (GetMinFee(tx, nTime) < PERKB_TX_FEE) ? 0 : (GetMinFee(tx, nTime) - PERKB_TX_FEE);

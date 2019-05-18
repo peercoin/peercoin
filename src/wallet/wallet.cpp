@@ -4434,7 +4434,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     {
         uint64_t nCoinAge;
         CCoinsViewCache view(pcoinsTip.get());
-        if (!GetCoinAge(txNew, view, nCoinAge))
+        if (!GetCoinAge(txNew, view, nCoinAge, txNew.nTime))
             return error("CreateCoinStake : failed to calculate coin age");
 
         CAmount nReward = GetProofOfStakeReward(nCoinAge);

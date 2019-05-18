@@ -640,7 +640,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
             return state.DoS(0, false, REJECT_NONSTANDARD, "non-BIP68-final");
 
         CAmount nFees = 0;
-        if (!Consensus::CheckTxInputs(tx, state, view, GetSpendHeight(view), nFees, chainparams.GetConsensus())) {
+        if (!Consensus::CheckTxInputs(tx, state, view, GetSpendHeight(view), nFees, chainparams.GetConsensus(), GetTime())) {
             return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
         }
         if (nFees < GetMinFee(tx, GetTime()))
@@ -1759,7 +1759,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         else
         {
             CAmount txfee = 0;
-            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus())) {
+            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus(), block.GetBlockTime())) {
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
             nValueIn += view.GetValueIn(tx);
@@ -4673,7 +4673,7 @@ public:
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge)
+bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, uint32_t nTime)
 {
     arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
     nCoinAge = 0;
@@ -4689,7 +4689,7 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
 
         if (!view.GetCoin(prevout, coin))
             continue;  // previous transaction not in main chain
-        if (tx.nTime < coin.nTime)
+        if (nTime < coin.nTime)
             return false;  // Transaction timestamp violation
 
         // Transaction index is required to get to block header
@@ -4712,14 +4712,16 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
             if (txPrev->GetHash() != prevout.hash)
                 return error("%s() : txid mismatch in GetCoinAge()", __PRETTY_FUNCTION__);
 
-            if (header.GetBlockTime() + Params().GetConsensus().nStakeMinAge > tx.nTime)
+            if (header.GetBlockTime() + Params().GetConsensus().nStakeMinAge > nTime)
                 continue; // only count coins meeting min age requirement
 
             int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
-            bnCentSecond += arith_uint256(nValueIn) * (tx.nTime-txPrev->nTime) / CENT;
+            int64_t nTimePrevTx = (txPrev->nVersion < 3) ? txPrev->nTime : header.GetBlockTime();
+
+            bnCentSecond += arith_uint256(nValueIn) * (nTime-nTimePrevTx) / CENT;
 
             if (gArgs.GetBoolArg("-printcoinage", false))
-                LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, tx.nTime - txPrev->nTime, bnCentSecond.ToString());
+                LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, nTime - nTimePrevTx, bnCentSecond.ToString());
         }
         else
             return error("%s() : tx missing in tx index in GetCoinAge()", __PRETTY_FUNCTION__);
