@@ -461,7 +461,7 @@ bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBl
 {
     const Consensus::Params& params = Params().GetConsensus();
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
-    int64_t nTimeTxPrev = (txPrev->nVersion < 3) ? txPrev->nTime : nTimeBlockFrom;
+    uint32_t nTimeTxPrev = (txPrev->nVersion < 3) ? txPrev->nTime : nTimeBlockFrom;
 
     if (nTimeTx < nTimeTxPrev)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
