@@ -481,9 +481,8 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
         // TODO: Maybe recheck connections/IBD and (if something wrong) send an expires-immediately template to stop miners?
     }
 
-    bool fSupportsSegwit = setClientRules.find("segwit") != setClientRules.end();
     // GBT must be called with 'segwit' set in the rules
-    if (!fSupportsSegwit) {
+    if (setClientRules.count("segwit") != 1) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "getblocktemplate must be called with the segwit rule set (call with {\"rules\": [\"segwit\"]})");
     }
 
