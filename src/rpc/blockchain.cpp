@@ -1178,15 +1178,12 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
             "  \"initialblockdownload\": xxxx, (bool) (debug information) estimate of whether this node is in Initial Block Download mode.\n"
             "  \"chainwork\": \"xxxx\"           (string) total amount of work in active chain, in hexadecimal\n"
             "  \"size_on_disk\": xxxxxx,       (numeric) the estimated size of the block and undo files on disk\n"
-            "  \"softforks\": [                (array) status of softforks in progress\n"
-            "     {\n"
-            "        \"id\": \"xxxx\",           (string) name of softfork\n"
-            "        \"version\": xx,          (numeric) block version\n"
-            "        \"reject\": {             (object) progress toward rejecting pre-softfork blocks\n"
-            "           \"status\": xx,        (boolean) true if threshold reached\n"
+            "  \"softforks\": {                (object) status of softforks\n"
+            "        \"type\": \"xxxx\",         (string) one of \"buried\", \"bip9\"\n"
+            "        \"bip9\": {               (object) status of bip9 softforks (only for \"bip9\" type)\n"
             "        },\n"
-            "     }, ...\n"
-            "  ],\n"
+            "        \"height\": \"xxxxxx\",     (numeric) height of the first block which the rules are or will be enforced (only for \"buried\" type, or \"bip9\" type with \"active\" status)\n"
+            "        \"active\": xx,           (boolean) true if the rules are enforced for the mempool and the next block\n"
             "  \"warnings\" : \"...\",           (string) any network and blockchain warnings.\n"
             "}\n"
                 },
@@ -1212,6 +1209,10 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.pushKV("size_on_disk",          CalculateCurrentUsage());
 
     UniValue softforks(UniValue::VARR);
+    softforks.push_back(SoftForkDesc("bip34", 2, tip, consensusParams));
+    softforks.push_back(SoftForkDesc("bip66", 3, tip, consensusParams));
+    softforks.push_back(SoftForkDesc("bip65", 4, tip, consensusParams));
+
     obj.pushKV("softforks",             softforks);
 
     obj.pushKV("warnings", GetWarnings("statusbar"));
