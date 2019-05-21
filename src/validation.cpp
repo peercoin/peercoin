@@ -1554,11 +1554,11 @@ bool PeercoinContextualBlockChecks(const CBlock& block, CValidationState& state,
     uint256 hashProofOfStake = uint256();
     // peercoin: verify hash target and signature of coinstake tx
     // use timestamp of block for transactions 3 and above
-    int64_t nTimeTx;
+    uint32_t nTime;
     if (block.IsProofOfStake())
-        nTimeTx = (block.vtx[1]->nVersion < 3) ? block.vtx[1]->nTime : block.GetBlockTime();
+        nTime = (block.vtx[1]->nVersion < 3) ? block.vtx[1]->nTime : block.GetBlockTime();
 
-    if (block.IsProofOfStake() && !CheckProofOfStake(state, pindex->pprev, block.vtx[1], block.nBits, nTimeTx, hashProofOfStake)) {
+    if (block.IsProofOfStake() && !CheckProofOfStake(state, pindex->pprev, block.vtx[1], block.nBits, nTime, hashProofOfStake)) {
         LogPrintf("WARNING: %s: check proof-of-stake failed for block %s\n", __func__, block.GetHash().ToString());
         return false; // do not error here as we expect this during initial block download
     }
@@ -1602,7 +1602,7 @@ bool PeercoinContextualBlockChecks(const CBlock& block, CValidationState& state,
     if (block.IsProofOfStake())
     {
         pindex->prevoutStake = block.vtx[1]->vin[0].prevout;
-        pindex->nStakeTime = nTimeTx;
+        pindex->nStakeTime = nTime;
         pindex->hashProofOfStake = hashProofOfStake;
     }
     if (!pindex->SetStakeEntropyBit(nEntropyBit))
@@ -4718,7 +4718,7 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
                 continue; // only count coins meeting min age requirement
 
             int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
-            int64_t nTimePrevTx = (txPrev->nVersion < 3) ? txPrev->nTime : header.GetBlockTime();
+            uint32_t nTimePrevTx = (txPrev->nVersion < 3) ? txPrev->nTime : header.GetBlockTime();
 
             bnCentSecond += arith_uint256(nValueIn) * (nTime-nTimePrevTx) / CENT;
 
