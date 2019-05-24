@@ -5243,14 +5243,14 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 
         while (vNodes.empty())
             MilliSleep(1000);
-
+#ifndef TESTING
         while (fProofOfStake && Checkpoints::GuessVerificationProgress(pindexBest)<0.996)
         {
             printf("Minter thread sleeps while sync at %f\n",Checkpoints::GuessVerificationProgress(pindexBest));
             strMintWarning = strMintSyncMessage;
             MilliSleep(10000);
         }
-
+#endif
         while (pwallet->IsLocked())
         {
             strMintWarning = strMintMessage;
