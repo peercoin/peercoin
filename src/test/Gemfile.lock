@@ -20,7 +20,7 @@ GEM
     httparty (0.13.1)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
-    json (1.8.1)
+    json (1.8.3)
     multi_json (1.10.1)
     multi_test (0.1.1)
     multi_xml (0.5.5)
