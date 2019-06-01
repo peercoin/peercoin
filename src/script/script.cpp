@@ -5,7 +5,6 @@
 
 #include <script/script.h>
 
-#include <tinyformat.h>
 #include <util/strencodings.h>
 
 #include <key.h>
