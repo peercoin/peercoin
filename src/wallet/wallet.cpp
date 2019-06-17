@@ -24,10 +24,10 @@
 #include <util/error.h>
 #include <util/fees.h>
 #include <util/moneystr.h>
-
-#include <kernel.h>
+#include <util/translation.h>
 #include <util/validation.h>
 #include <bignum.h>
+#include <kernel.h>
 #include <txdb.h>
 #include <validation.h>
 #include <wallet/coincontrol.h>
