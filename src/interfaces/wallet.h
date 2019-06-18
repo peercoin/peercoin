@@ -77,6 +77,9 @@ public:
     //! Get wallet name.
     virtual std::string getWalletName() = 0;
 
+    // Get a new address.
+    virtual bool getNewDestination(const OutputType type, const std::string label, CTxDestination& dest) = 0;
+
     //! Get public key.
     virtual bool getPubKey(const CKeyID& address, CPubKey& pub_key) = 0;
 
