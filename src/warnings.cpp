@@ -53,7 +53,7 @@ std::string GetWarnings(const std::string& strFor)
 
     if (!CLIENT_VERSION_IS_RELEASE) {
         strStatusBar = "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications";
-        strGUI = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications");
+        strGUI = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications").translated;
     }
 
     // peercoin: wallet lock warning for minting
@@ -87,13 +87,13 @@ std::string GetWarnings(const std::string& strFor)
     {
         nPriority = 2000;
         strStatusBar = "Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.";
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.");
+        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.").translated;
     }
     else if (fLargeWorkInvalidChainFound)
     {
         nPriority = 2000;
         strStatusBar = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
+        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.").translated;
     }
 #ifdef ENABLE_CHECKPOINTS
     // peercoin: detect invalid checkpoint
