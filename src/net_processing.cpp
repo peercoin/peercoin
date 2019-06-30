@@ -4202,6 +4202,11 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         return;
     }
 
+    if (msg_type == NetMsgType::GETCFCHECKPT) {
+        ProcessGetCFCheckPt(pfrom, vRecv, chainparams, connman);
+        return true;
+    }
+
     if (msg_type == NetMsgType::NOTFOUND) {
         std::vector<CInv> vInv;
         vRecv >> vInv;
