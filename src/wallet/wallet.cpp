@@ -3042,8 +3042,6 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
                 for (auto& vin : txNew.vin) {
                     vin.scriptSig = CScript();
                     vin.scriptWitness.SetNull();
-                }
-
 //ppcTODO: this code was in 0.7, but was refactored by b33d1f5ee512da5719b793b3867f75f1eea5cf52:
 //                int64 nPayFee;
 //                if (fNewFees)
