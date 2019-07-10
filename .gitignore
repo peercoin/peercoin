@@ -6,6 +6,8 @@ src/*/*.exe
 src/peercoin
 src/peercoind
 src/peercoin-cli
+src/peercoin-gui
+src/peercoin-node
 src/peercoin-tx
 src/peercoin-wallet
 src/test/fuzz
