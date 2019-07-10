@@ -88,6 +88,10 @@ if BUILD_BITCOIN_NODE
   bin_PROGRAMS += peercoin-node
 endif
 
+if BUILD_BITCOIN_NODE
+  bin_PROGRAMS += bitcoin-node
+endif
+
 if BUILD_BITCOIN_CLI
   bin_PROGRAMS += peercoin-cli
 endif
@@ -653,8 +657,8 @@ endif
 bitcoin_bin_ldadd = \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_COMMON) \
-  $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
+  $(LIBUNIVALUE) \
   $(LIBBITCOIN_ZMQ) \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
@@ -745,22 +749,6 @@ peercoin_wallet_LDADD = \
 if TARGET_WINDOWS
 peercoin_wallet_SOURCES += bitcoin-wallet-res.rc
 endif
-
-bitcoin_wallet_LDADD = \
-  $(LIBBITCOIN_WALLET_TOOL) \
-  $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_CONSENSUS) \
-  $(LIBBITCOIN_UTIL) \
-  $(LIBBITCOIN_CRYPTO) \
-  $(LIBBITCOIN_ZMQ) \
-  $(LIBLEVELDB) \
-  $(LIBLEVELDB_SSE42) \
-  $(LIBMEMENV) \
-  $(LIBSECP256K1) \
-  $(LIBUNIVALUE)
-
-bitcoin_wallet_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(MINIUPNPC_LIBS) $(ZMQ_LIBS)
 #
 
 # bitcoin-util binary #
