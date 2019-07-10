@@ -115,6 +115,11 @@ public:
     //! or one of its ancestors.
     virtual std::optional<int> findLocatorFork(const CBlockLocator& locator) = 0;
 
+    //! Get current chain height, not including genesis block (returns 0 if
+    //! chain only contains genesis block, nullopt if chain does not contain
+    //! any blocks)
+    virtual Optional<int> getHeight() = 0;
+
     //! Return whether node has the block and optionally return block metadata
     //! or contents.
     virtual bool findBlock(const uint256& hash, const FoundBlock& block={}) = 0;
