@@ -51,7 +51,7 @@ std::shared_ptr<CWallet> LoadWallet(interfaces::Chain& chain, const WalletLocati
 
 extern bool fWalletUnlockMintOnly;
 
-enum WalletCreationStatus {
+enum class WalletCreationStatus {
     SUCCESS,
     CREATION_FAILED,
     ENCRYPTION_FAILED
