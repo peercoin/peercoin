@@ -38,9 +38,6 @@
 
 #include <wallet/wallet.h>
 
-#include <iostream>
-#include <memory>
-
 #include <QAction>
 #include <QApplication>
 #include <QComboBox>
