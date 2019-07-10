@@ -88,6 +88,10 @@ if BUILD_BITCOIN_NODE
   bin_PROGRAMS += peercoin-node
 endif
 
+if BUILD_BITCOIN_NODE
+  bin_PROGRAMS += bitcoin-node
+endif
+
 if BUILD_BITCOIN_CLI
   bin_PROGRAMS += peercoin-cli
 endif
