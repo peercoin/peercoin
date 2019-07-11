@@ -556,17 +556,55 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
             return state.Invalid(ValidationInvalidReason::TX_NOT_STANDARD, false, REJECT_NONSTANDARD, "bad-txns-too-many-sigops",
                 strprintf("%d", nSigOpsCost));
 
+        const CTxMemPool::setEntries setIterConflicting = pool.GetIterSet(setConflicts);
         // Calculate in-mempool ancestors, up to a limit.
         CTxMemPool::setEntries setAncestors;
         size_t nLimitAncestors = gArgs.GetArg("-limitancestorcount", DEFAULT_ANCESTOR_LIMIT);
         size_t nLimitAncestorSize = gArgs.GetArg("-limitancestorsize", DEFAULT_ANCESTOR_SIZE_LIMIT)*1000;
         size_t nLimitDescendants = gArgs.GetArg("-limitdescendantcount", DEFAULT_DESCENDANT_LIMIT);
         size_t nLimitDescendantSize = gArgs.GetArg("-limitdescendantsize", DEFAULT_DESCENDANT_SIZE_LIMIT)*1000;
+
+        if (setConflicts.size() == 1) {
+            // In general, when we receive an RBF transaction with mempool conflicts, we want to know whether we
+            // would meet the chain limits after the conflicts have been removed. However, there isn't a practical
+            // way to do this short of calculating the ancestor and descendant sets with an overlay cache of
+            // changed mempool entries. Due to both implementation and runtime complexity concerns, this isn't
+            // very realistic, thus we only ensure a limited set of transactions are RBF'able despite mempool
+            // conflicts here. Importantly, we need to ensure that some transactions which were accepted using
+            // the below carve-out are able to be RBF'ed, without impacting the security the carve-out provides
+            // for off-chain contract systems (see link in the comment below).
+            //
+            // Specifically, the subset of RBF transactions which we allow despite chain limits are those which
+            // conflict directly with exactly one other transaction (but may evict children of said transaction),
+            // and which are not adding any new mempool dependencies. Note that the "no new mempool dependencies"
+            // check is accomplished later, so we don't bother doing anything about it here, but if BIP 125 is
+            // amended, we may need to move that check to here instead of removing it wholesale.
+            //
+            // Such transactions are clearly not merging any existing packages, so we are only concerned with
+            // ensuring that (a) no package is growing past the package size (not count) limits and (b) we are
+            // not allowing something to effectively use the (below) carve-out spot when it shouldn't be allowed
+            // to.
+            //
+            // To check these we first check if we meet the RBF criteria, above, and increment the descendant
+            // limits by the direct conflict and its descendants (as these are recalculated in
+            // CalculateMempoolAncestors by assuming the new transaction being added is a new descendant, with no
+            // removals, of each parent's existing dependant set). The ancestor count limits are unmodified (as
+            // the ancestor limits should be the same for both our new transaction and any conflicts).
+            // We don't bother incrementing nLimitDescendants by the full removal count as that limit never comes
+            // into force here (as we're only adding a single transaction).
+            assert(setIterConflicting.size() == 1);
+            CTxMemPool::txiter conflict = *setIterConflicting.begin();
+
+            nLimitDescendants += 1;
+            nLimitDescendantSize += conflict->GetSizeWithDescendants();
+        }
+
         std::string errString;
         if (!pool.CalculateMemPoolAncestors(entry, setAncestors, nLimitAncestors, nLimitAncestorSize, nLimitDescendants, nLimitDescendantSize, errString)) {
             setAncestors.clear();
             // If CalculateMemPoolAncestors fails second time, we want the original error string.
             std::string dummy_err_string;
+            // Contracting/payment channels CPFP carve-out:
             // If the new transaction is relatively small (up to 40k weight)
             // and has at most one ancestor (ie ancestor limit of 2, including
             // the new transaction), allow it if its parent has exactly the
@@ -583,6 +621,11 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
             }
         }
 
+                //
+                // Note that if you relax this to make RBF a little more useful,
+                // this may break the CalculateMempoolAncestors RBF relaxation,
+                // above. See the comment above the first CalculateMempoolAncestors
+                // call for more info.
         constexpr unsigned int scriptVerifyFlags = STANDARD_SCRIPT_VERIFY_FLAGS;
 
         // peercoin: if transaction is after version 0.8 fork, verify SCRIPT_VERIFY_LOW_S
