@@ -71,6 +71,9 @@ class RpcCreateMultiSigTest(BitcoinTestFramework):
         node0.createwallet(wallet_name='wmulti0', disable_private_keys=True)
         wmulti0 = node0.get_wallet_rpc('wmulti0')
 
+        node0.createwallet(wallet_name='wmulti0', disable_private_keys=True)
+        wmulti0 = node0.get_wallet_rpc('wmulti0')
+
         # Check all permutations of keys because order matters apparently
         for keys in itertools.permutations([pk0, pk1, pk2]):
             # Results should be the same as this legacy one

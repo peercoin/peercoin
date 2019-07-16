@@ -404,6 +404,8 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         extra_args = [[]] * self.num_nodes
         if hasattr(self, "extra_args"):
             extra_args = self.extra_args
+            wallets = [[x for x in eargs if x.startswith('-wallet=')] for eargs in extra_args]
+        extra_args = [x + ['-nowallet'] for x in extra_args]
         self.add_nodes(self.num_nodes, extra_args)
         self.start_nodes()
         if self.requires_wallet:

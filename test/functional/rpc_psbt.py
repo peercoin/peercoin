@@ -55,6 +55,11 @@ class PSBTTest(BitcoinTestFramework):
         wonline = online_node.get_wallet_rpc('wonline')
         w2 = online_node.get_wallet_rpc('')
 
+        # Create watchonly on online_node
+        online_node.createwallet(wallet_name='wonline', disable_private_keys=True)
+        wonline = online_node.get_wallet_rpc('wonline')
+        w2 = online_node.get_wallet_rpc('')
+
         # Mine a transaction that credits the offline address
         offline_addr = offline_node.getnewaddress(address_type="p2sh-segwit")
         online_addr = w2.getnewaddress(address_type="p2sh-segwit")

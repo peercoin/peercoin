@@ -203,7 +203,7 @@ class KeyPoolTest(BitcoinTestFramework):
 
 
         # create a blank wallet
-        nodes[0].createwallet(wallet_name='w2', blank=True)
+        nodes[0].createwallet(wallet_name='w2', blank=True, disable_private_keys=True)
         w2 = nodes[0].get_wallet_rpc('w2')
 
         # refer to initial wallet as w1
@@ -211,8 +211,11 @@ class KeyPoolTest(BitcoinTestFramework):
 
         # import private key and fund it
         address = addr.pop()
-        privkey = w1.dumpprivkey(address)
-        res = w2.importmulti([{'scriptPubKey': {'address': address}, 'keys': [privkey], 'timestamp': 'now'}])
+        desc = w1.getaddressinfo(address)['desc']
+        if self.options.descriptors:
+            res = w2.importdescriptors([{'desc': desc, 'timestamp': 'now'}])
+        else:
+            res = w2.importmulti([{'desc': desc, 'timestamp': 'now'}])
         assert_equal(res[0]['success'], True)
         w1.walletpassphrase('test', 100)
 
