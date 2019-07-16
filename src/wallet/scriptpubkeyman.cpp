@@ -1492,3 +1492,5 @@ std::set<CKeyID> LegacyScriptPubKeyMan::GetKeys() const
     }
     return set_address;
 }
+
+void LegacyScriptPubKeyMan::SetType(OutputType type, bool internal) {}
