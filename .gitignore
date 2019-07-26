@@ -89,7 +89,7 @@ src/qt/bitcoin-qt.includes
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-ppcoin-qt
+!depends/Makefile
 peercoin-qt
 PPCoin-Qt.app
 Peercoin-Qt.app
