@@ -538,7 +538,7 @@ void ArgsManager::ForceSetArg(const std::string& strArg, const std::string& strV
     m_override_args[strArg] = {strValue};
 }
 
-void ArgsManager::AddArg(const std::string& name, const std::string& help, unsigned int flags, const bool debug_only, const OptionsCategory& cat)
+void ArgsManager::AddArg(const std::string& name, const std::string& help, unsigned int flags, const OptionsCategory& cat)
 {
     // Split arg name from its help param
     size_t eq_index = name.find('=');
@@ -548,14 +548,14 @@ void ArgsManager::AddArg(const std::string& name, const std::string& help, unsig
 
     LOCK(cs_args);
     std::map<std::string, Arg>& arg_map = m_available_args[cat];
-    auto ret = arg_map.emplace(name.substr(0, eq_index), Arg{name.substr(eq_index, name.size() - eq_index), help, ArgsManager::NONE, debug_only});
+    auto ret = arg_map.emplace(name.substr(0, eq_index), Arg{name.substr(eq_index, name.size() - eq_index), help, flags, false});
     assert(ret.second); // Make sure an insertion actually happened
 }
 
 void ArgsManager::AddHiddenArgs(const std::vector<std::string>& names)
 {
     for (const std::string& name : names) {
-        AddArg(name, "", ArgsManager::ALLOW_ANY, false, OptionsCategory::HIDDEN);
+        AddArg(name, "", ArgsManager::ALLOW_ANY, OptionsCategory::HIDDEN);
     }
 }
 
@@ -614,7 +614,7 @@ std::string ArgsManager::GetHelpMessage() const
         if (arg_map.first == OptionsCategory::HIDDEN) break;
 
         for (const auto& arg : arg_map.second) {
-            if (show_debug || !arg.second.m_debug_only) {
+            if (show_debug || !(arg.second.m_flags & ArgsManager::DEBUG_ONLY)) {
                 std::string name;
                 if (arg.second.m_help_param.empty()) {
                     name = arg.first;
@@ -631,6 +631,12 @@ std::string ArgsManager::GetHelpMessage() const
 bool HelpRequested(const ArgsManager& args)
 {
     return args.IsArgSet("-?") || args.IsArgSet("-h") || args.IsArgSet("-help") || args.IsArgSet("-help-debug");
+}
+
+void SetupHelpOptions(ArgsManager& args)
+{
+    args.AddArg("-?", "Print this help message and exit", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    args.AddHiddenArgs({"-h", "-help"});
 }
 
 static const int screenWidth = 79;
