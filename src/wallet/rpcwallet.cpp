@@ -9,7 +9,6 @@
 #include <init.h>
 #include <interfaces/chain.h>
 #include <key_io.h>
-#include <node/transaction.h>
 #include <outputtype.h>
 #include <rpc/rawtransaction_util.h>
 #include <rpc/server.h>
@@ -33,7 +32,6 @@
 
 #include <univalue.h>
 
-#include <functional>
 
 #include <kernelrecord.h>
 #include <miner.h>

@@ -16,7 +16,6 @@
 #include <policy/policy.h>
 #include <pow.h>
 #include <primitives/transaction.h>
-#include <script/standard.h>
 #include <timedata.h>
 #include <util/moneystr.h>
 #include <util/system.h>
@@ -27,7 +26,6 @@
 #include <warnings.h>
 
 #include <algorithm>
-#include <queue>
 #include <utility>
 
 #include <boost/thread.hpp>
