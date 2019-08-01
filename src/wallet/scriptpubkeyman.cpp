@@ -1902,6 +1902,15 @@ void DescriptorScriptPubKeyMan::AddDescriptorKey(const CKey& key, const CPubKey 
     }
 }
 
+void DescriptorScriptPubKeyMan::AddDescriptorKey(const CKey& key, const CPubKey &pubkey)
+{
+    LOCK(cs_desc_man);
+    WalletBatch batch(m_storage.GetDatabase());
+    if (!AddDescriptorKeyWithDB(batch, key, pubkey)) {
+        throw std::runtime_error(std::string(__func__) + ": writing descriptor private key failed");
+    }
+}
+
 bool DescriptorScriptPubKeyMan::AddDescriptorKeyWithDB(WalletBatch& batch, const CKey& key, const CPubKey &pubkey)
 {
     AssertLockHeld(cs_desc_man);

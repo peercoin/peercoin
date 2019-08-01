@@ -77,6 +77,25 @@ def get_generate_key():
                p2sh_p2wpkh_redeem_script=key_to_p2wpkh_script(pubkey).hex(),
                p2sh_p2wpkh_addr=key_to_p2sh_p2wpkh(pubkey))
 
+def get_generate_key():
+    """Generate a fresh key
+
+    Returns a named tuple of privkey, pubkey and all address and scripts."""
+    eckey = ECKey()
+    eckey.generate()
+    privkey = bytes_to_wif(eckey.get_bytes())
+    pubkey = eckey.get_pubkey().get_bytes().hex()
+    pkh = hash160(hex_str_to_bytes(pubkey))
+    return Key(privkey=privkey,
+               pubkey=pubkey,
+               p2pkh_script=CScript([OP_DUP, OP_HASH160, pkh, OP_EQUALVERIFY, OP_CHECKSIG]).hex(),
+               p2pkh_addr=key_to_p2pkh(pubkey),
+               p2wpkh_script=CScript([OP_0, pkh]).hex(),
+               p2wpkh_addr=key_to_p2wpkh(pubkey),
+               p2sh_p2wpkh_script=CScript([OP_HASH160, hash160(CScript([OP_0, pkh])), OP_EQUAL]).hex(),
+               p2sh_p2wpkh_redeem_script=CScript([OP_0, pkh]).hex(),
+               p2sh_p2wpkh_addr=key_to_p2sh_p2wpkh(pubkey))
+
 def get_multisig(node):
     """Generate a fresh 2-of-3 multisig on node
 
