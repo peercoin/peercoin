@@ -95,6 +95,9 @@ PPCoin-Qt.app
 Peercoin-Qt.app
 background.tiff*
 
+# Qt Creator
+Makefile.am.user
+
 # Unit-tests
 Makefile.test
 ppcoin-qt_test
