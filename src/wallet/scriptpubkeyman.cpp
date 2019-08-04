@@ -13,6 +13,7 @@
 #include <util/system.h>
 #include <util/time.h>
 #include <util/translation.h>
+#include <wallet/external_signer.h>
 #include <wallet/scriptpubkeyman.h>
 
 #include <optional>
