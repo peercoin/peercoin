@@ -59,11 +59,11 @@ Data directory:      `/var/lib/peercoind`
 PID file:            `/var/run/peercoind/peercoind.pid` (OpenRC and Upstart) or `/run/peercoind/peercoind.pid` (systemd)  
 Lock file:           `/var/lock/subsys/peercoind` (CentOS)  
 
-The configuration file, PID directory (if applicable) and data directory
-should all be owned by the peercoin user and group.  It is advised for security
-reasons to make the configuration file and data directory only readable by the
-peercoin user and group.  Access to peercoin-cli and other peercoind rpc clients
-can then be controlled by group membership.
+The PID directory (if applicable) and data directory should both be owned by the
+peercoin user and group. It is advised for security reasons to make the
+configuration file and data directory only readable by the peercoin user and
+group. Access to peercoin-cli and other peercoind rpc clients can then be
+controlled by group membership.
 
 NOTE: When using the systemd .service file, the creation of the aforementioned
 directories and the setting of their permissions is automatically handled by
