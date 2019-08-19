@@ -28,6 +28,7 @@
 #include <util/check.h>
 #include <util/error.h>
 #include <util/moneystr.h>
+#include <util/string.h>
 #include <util/translation.h>
 #include <validation.h>
 #include <bignum.h>
@@ -156,48 +157,34 @@ void UnloadWallet(std::shared_ptr<CWallet>&& wallet)
     }
 }
 
-namespace {
-std::shared_ptr<CWallet> LoadWalletInternal(interfaces::Chain& chain, const WalletLocation& location, std::string& error, std::vector<std::string>& warnings)
+std::shared_ptr<CWallet> LoadWallet(interfaces::Chain& chain, const WalletLocation& location, bilingual_str& error, std::vector<bilingual_str>& warnings)
 {
     try {
         if (!CWallet::Verify(chain, location, false, error, warnings)) {
-            error = "Wallet file verification failed: " + error;
+            error = Untranslated("Wallet file verification failed: ") + error;
             return nullptr;
         }
 
         std::shared_ptr<CWallet> wallet = CWallet::CreateWalletFromFile(chain, location, error, warnings);
         if (!wallet) {
-            error = "Wallet loading failed: " + error;
+            error = Untranslated("Wallet loading failed: ") + error;
             return nullptr;
         }
         AddWallet(wallet);
         wallet->postInitProcess();
         return wallet;
     } catch (const std::runtime_error& e) {
-        error = e.what();
+        error = Untranslated(e.what());
         return nullptr;
     }
 }
-} // namespace
 
-std::shared_ptr<CWallet> LoadWallet(interfaces::Chain& chain, const WalletLocation& location, std::string& error, std::vector<std::string>& warnings)
-{
-    auto result = WITH_LOCK(g_loading_wallet_mutex, return g_loading_wallet_set.insert(location.GetName()));
-    if (!result.second) {
-        error = "Wallet already being loading.";
-        return nullptr;
-    }
-    auto wallet = LoadWalletInternal(chain, location, error, warnings);
-    WITH_LOCK(g_loading_wallet_mutex, g_loading_wallet_set.erase(result.first));
-    return wallet;
-}
-
-std::shared_ptr<CWallet> LoadWallet(interfaces::Chain& chain, const std::string& name, std::string& error, std::vector<std::string>& warnings)
+std::shared_ptr<CWallet> LoadWallet(interfaces::Chain& chain, const std::string& name, bilingual_str& error, std::vector<bilingual_str>& warnings)
 {
     return LoadWallet(chain, WalletLocation(name), error, warnings);
 }
 
-WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& passphrase, uint64_t wallet_creation_flags, const std::string& name, std::string& error, std::vector<std::string>& warnings, std::shared_ptr<CWallet>& result)
+WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& passphrase, uint64_t wallet_creation_flags, const std::string& name, bilingual_str& error, std::vector<bilingual_str>& warnings, std::shared_ptr<CWallet>& result)
 {
     // Indicate that the wallet is actually supposed to be blank and not just blank to make it encrypted
     bool create_blank = (wallet_creation_flags & WALLET_FLAG_BLANK_WALLET);
@@ -210,39 +197,39 @@ WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& 
     // Check the wallet file location
     WalletLocation location(name);
     if (location.Exists()) {
-        error = "Wallet " + location.GetName() + " already exists.";
+        error = strprintf(Untranslated("Wallet %s already exists."), location.GetName());
         return WalletCreationStatus::CREATION_FAILED;
     }
 
     // Wallet::Verify will check if we're trying to create a wallet with a duplicate name.
     if (!CWallet::Verify(chain, location, false, error, warnings)) {
-        error = "Wallet file verification failed: " + error;
+        error = Untranslated("Wallet file verification failed.") + Untranslated(" ") + error;
         return WalletCreationStatus::CREATION_FAILED;
     }
 
     // Do not allow a passphrase when private keys are disabled
     if (!passphrase.empty() && (wallet_creation_flags & WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
-        error = "Passphrase provided but private keys are disabled. A passphrase is only used to encrypt private keys, so cannot be used for wallets with private keys disabled.";
+        error = Untranslated("Passphrase provided but private keys are disabled. A passphrase is only used to encrypt private keys, so cannot be used for wallets with private keys disabled.");
         return WalletCreationStatus::CREATION_FAILED;
     }
 
     // Make the wallet
     std::shared_ptr<CWallet> wallet = CWallet::CreateWalletFromFile(chain, location, error, warnings, wallet_creation_flags);
     if (!wallet) {
-        error = "Wallet creation failed: " + error;
+        error = Untranslated("Wallet creation failed.") + Untranslated(" ") + error;
         return WalletCreationStatus::CREATION_FAILED;
     }
 
     // Encrypt the wallet
     if (!passphrase.empty() && !(wallet_creation_flags & WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
         if (!wallet->EncryptWallet(passphrase)) {
-            error = "Error: Wallet created but failed to encrypt.";
+            error = Untranslated("Error: Wallet created but failed to encrypt.");
             return WalletCreationStatus::ENCRYPTION_FAILED;
         }
         if (!create_blank) {
             // Unlock the wallet
             if (!wallet->Unlock(passphrase)) {
-                error = "Error: Wallet was encrypted but could not be unlocked";
+                error = Untranslated("Error: Wallet was encrypted but could not be unlocked");
                 return WalletCreationStatus::ENCRYPTION_FAILED;
             }
 
@@ -254,7 +241,7 @@ WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& 
                 } else {
                     for (auto spk_man : wallet->GetActiveScriptPubKeyMans()) {
                         if (!spk_man->SetupGeneration()) {
-                            error = "Unable to generate initial keys";
+                            error = Untranslated("Unable to generate initial keys");
                             return WalletCreationStatus::CREATION_FAILED;
                         }
                     }
@@ -3722,7 +3709,7 @@ std::vector<std::string> CWallet::GetDestValues(const std::string& prefix) const
     return values;
 }
 
-bool CWallet::Verify(interfaces::Chain& chain, const WalletLocation& location, bool salvage_wallet, std::string& error_string, std::vector<std::string>& warnings)
+bool CWallet::Verify(interfaces::Chain& chain, const WalletLocation& location, bool salvage_wallet, bilingual_str& error_string, std::vector<bilingual_str>& warnings)
 {
     // Do some checking on wallet path. It should be either a:
     //
@@ -3736,17 +3723,17 @@ bool CWallet::Verify(interfaces::Chain& chain, const WalletLocation& location, b
     if (!(path_type == fs::file_not_found || path_type == fs::directory_file ||
           (path_type == fs::symlink_file && fs::is_directory(wallet_path)) ||
           (path_type == fs::regular_file && fs::path(location.GetName()).filename() == location.GetName()))) {
-        error_string = strprintf(
+        error_string = Untranslated(strprintf(
               "Invalid -wallet path '%s'. -wallet path should point to a directory where wallet.dat and "
               "database/log.?????????? files can be stored, a location where such a directory could be created, "
               "or (for backwards compatibility) the name of an existing data file in -walletdir (%s)",
-              location.GetName(), GetWalletDir());
+              location.GetName(), GetWalletDir()));
         return false;
     }
 
     // Make sure that the wallet path doesn't clash with an existing wallet path
     if (IsWalletLoaded(wallet_path)) {
-        error_string = strprintf("Error loading wallet %s. Duplicate -wallet filename specified.", location.GetName());
+        error_string = Untranslated(strprintf("Error loading wallet %s. Duplicate -wallet filename specified.", location.GetName()));
         return false;
     }
 
@@ -3758,7 +3745,7 @@ bool CWallet::Verify(interfaces::Chain& chain, const WalletLocation& location, b
             return false;
         }
     } catch (const fs::filesystem_error& e) {
-        error_string = strprintf("Error loading wallet %s. %s", location.GetName(), fsbridge::get_filesystem_error_message(e));
+        error_string = Untranslated(strprintf("Error loading wallet %s. %s", location.GetName(), fsbridge::get_filesystem_error_message(e)));
         return false;
     }
 
@@ -3774,7 +3761,7 @@ bool CWallet::Verify(interfaces::Chain& chain, const WalletLocation& location, b
     return WalletBatch::VerifyDatabaseFile(wallet_path, warnings, error_string);
 }
 
-std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain, const WalletLocation& location, std::string& error, std::vector<std::string>& warnings, uint64_t wallet_creation_flags)
+std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain, const WalletLocation& location, bilingual_str& error, std::vector<bilingual_str>& warnings, uint64_t wallet_creation_flags)
 {
     const std::string walletFile = WalletDataFilePath(location.GetPath()).string();
 
@@ -3787,7 +3774,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
         std::unique_ptr<CWallet> tempWallet = MakeUnique<CWallet>(&chain, location, WalletDatabase::Create(location.GetPath()));
         DBErrors nZapWalletRet = tempWallet->ZapWalletTx(vWtx);
         if (nZapWalletRet != DBErrors::LOAD_OK) {
-            error = strprintf(_("Error loading %s: Wallet corrupted").translated, walletFile);
+            error = strprintf(_("Error loading %s: Wallet corrupted"), walletFile);
             return nullptr;
         }
     }
@@ -3802,26 +3789,26 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     DBErrors nLoadWalletRet = walletInstance->LoadWallet(fFirstRun);
     if (nLoadWalletRet != DBErrors::LOAD_OK) {
         if (nLoadWalletRet == DBErrors::CORRUPT) {
-            error = strprintf(_("Error loading %s: Wallet corrupted").translated, walletFile);
+            error = strprintf(_("Error loading %s: Wallet corrupted"), walletFile);
             return nullptr;
         }
         else if (nLoadWalletRet == DBErrors::NONCRITICAL_ERROR)
         {
             warnings.push_back(strprintf(_("Error reading %s! All keys read correctly, but transaction data"
-                                          " or address book entries might be missing or incorrect.").translated,
+                                           " or address book entries might be missing or incorrect."),
                 walletFile));
         }
         else if (nLoadWalletRet == DBErrors::TOO_NEW) {
-            error = strprintf(_("Error loading %s: Wallet requires newer version of %s").translated, walletFile, PACKAGE_NAME);
+            error = strprintf(_("Error loading %s: Wallet requires newer version of %s"), walletFile, PACKAGE_NAME);
             return nullptr;
         }
         else if (nLoadWalletRet == DBErrors::NEED_REWRITE)
         {
-            error = strprintf(_("Wallet needed to be rewritten: restart %s to complete").translated, PACKAGE_NAME);
+            error = strprintf(_("Wallet needed to be rewritten: restart %s to complete"), PACKAGE_NAME);
             return nullptr;
         }
         else {
-            error = strprintf(_("Error loading %s").translated, walletFile);
+            error = strprintf(_("Error loading %s"), walletFile);
             return nullptr;
         }
     }
@@ -3847,7 +3834,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
                 // Legacy wallets need SetupGeneration here.
                 for (auto spk_man : walletInstance->GetActiveScriptPubKeyMans()) {
                     if (!spk_man->SetupGeneration()) {
-                        error = _("Unable to generate initial keys").translated;
+                        error = _("Unable to generate initial keys");
                         return nullptr;
                     }
                 }
@@ -3857,24 +3844,24 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
         walletInstance->chainStateFlushed(chain.getTipLocator());
     } else if (wallet_creation_flags & WALLET_FLAG_DISABLE_PRIVATE_KEYS) {
         // Make it impossible to disable private keys after creation
-        error = strprintf(_("Error loading %s: Private keys can only be disabled during creation").translated, walletFile);
+        error = strprintf(_("Error loading %s: Private keys can only be disabled during creation"), walletFile);
         return NULL;
     } else if (walletInstance->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
         for (auto spk_man : walletInstance->GetActiveScriptPubKeyMans()) {
             if (spk_man->HavePrivateKeys()) {
-                warnings.push_back(strprintf(_("Warning: Private keys detected in wallet {%s} with disabled private keys").translated, walletFile));
+                warnings.push_back(strprintf(_("Warning: Private keys detected in wallet {%s} with disabled private keys"), walletFile));
                 break;
             }
         }
     }
 
     if (!gArgs.GetArg("-addresstype", "").empty() && !ParseOutputType(gArgs.GetArg("-addresstype", ""), walletInstance->m_default_address_type)) {
-        error = strprintf(_("Unknown address type '%s'").translated, gArgs.GetArg("-addresstype", ""));
+        error = strprintf(_("Unknown address type '%s'"), gArgs.GetArg("-addresstype", ""));
         return nullptr;
     }
 
     if (!gArgs.GetArg("-changetype", "").empty() && !ParseOutputType(gArgs.GetArg("-changetype", ""), walletInstance->m_default_change_type)) {
-        error = strprintf(_("Unknown change type '%s'").translated, gArgs.GetArg("-changetype", ""));
+        error = strprintf(_("Unknown change type '%s'"), gArgs.GetArg("-changetype", ""));
         return nullptr;
     }
 
@@ -3945,7 +3932,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
         {
             WalletRescanReserver reserver(*walletInstance);
             if (!reserver.reserve() || (ScanResult::SUCCESS != walletInstance->ScanForWalletTransactions(chain.getBlockHash(rescan_height), rescan_height, {} /* max height */, reserver, true /* update */).status)) {
-                error = _("Failed to rescan the wallet during initialization").translated;
+                error = _("Failed to rescan the wallet during initialization");
                 return nullptr;
             }
         }
@@ -4005,7 +3992,7 @@ const CAddressBookData* CWallet::FindAddressBookEntry(const CTxDestination& dest
     return &address_book_it->second;
 }
 
-bool CWallet::UpgradeWallet(int version, std::string& error, std::vector<std::string>& warnings)
+bool CWallet::UpgradeWallet(int version, bilingual_str& error, std::vector<bilingual_str>& warnings)
 {
     int prev_version = GetVersion();
     int nMaxVersion = version;
@@ -4014,12 +4001,12 @@ bool CWallet::UpgradeWallet(int version, std::string& error, std::vector<std::st
         WalletLogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
         nMaxVersion = FEATURE_LATEST;
         SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
-    }
-    else
+    } else {
         WalletLogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
+    }
     if (nMaxVersion < GetVersion())
     {
-        error = _("Cannot downgrade wallet").translated;
+        error = _("Cannot downgrade wallet");
         return false;
     }
     SetMaxVersion(nMaxVersion);
@@ -4029,7 +4016,7 @@ bool CWallet::UpgradeWallet(int version, std::string& error, std::vector<std::st
     // Do not upgrade versions to any version between HD_SPLIT and FEATURE_PRE_SPLIT_KEYPOOL unless already supporting HD_SPLIT
     int max_version = GetVersion();
     if (!CanSupportFeature(FEATURE_HD_SPLIT) && max_version >= FEATURE_HD_SPLIT && max_version < FEATURE_PRE_SPLIT_KEYPOOL) {
-        error = _("Cannot upgrade a non HD split wallet without upgrading to support pre split keypool. Please use version 169900 or no version specified.").translated;
+        error = _("Cannot upgrade a non HD split wallet without upgrading to support pre split keypool. Please use version 169900 or no version specified.");
         return false;
     }
 
