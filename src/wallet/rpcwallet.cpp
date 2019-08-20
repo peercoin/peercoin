@@ -2321,7 +2321,7 @@ static UniValue settxfee(const JSONRPCRequest& request)
             }.Check(request);
 
     CFeeRate tx_fee_rate(nAmount, 1000);
-    if (tx_fee_rate == 0) {
+    if (tx_fee_rate == CFeeRate(0)) {
         // automatic selection
     } else if (tx_fee_rate < pwallet->chain().relayMinFee()) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("txfee cannot be less than min relay tx fee (%s)", pwallet->chain().relayMinFee().ToString()));
