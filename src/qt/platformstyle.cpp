@@ -65,9 +65,6 @@ QIcon ColorizeIcon(const QString& filename, const QColor& colorbase)
     return QIcon(QPixmap::fromImage(ColorizeImage(filename, colorbase)));
 }
 
-}
-
-
 PlatformStyle::PlatformStyle(const QString &_name, bool _imagesOnButtons, bool _colorizeIcons, bool _useExtraSpacing):
     name(_name),
     imagesOnButtons(_imagesOnButtons),
@@ -112,13 +109,6 @@ QIcon PlatformStyle::SingleColorIcon(const QIcon& icon) const
     if (!colorizeIcons)
         return icon;
     return ColorizeIcon(icon, SingleColor());
-}
-
-QIcon PlatformStyle::TextColorIcon(const QString& filename) const
-{
-    if (!colorizeIcons)
-        return QIcon(QPixmap::fromImage(QImage(filename)));
-    return ColorizeIcon(filename, TextColor());
 }
 
 QIcon PlatformStyle::TextColorIcon(const QIcon& icon) const
