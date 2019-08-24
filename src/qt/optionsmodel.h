@@ -79,6 +79,9 @@ public:
     bool getCheckpointEnforce() const { return fCheckpointEnforce; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
 
+    /* Explicit setters */
+    void SetPrune(bool prune, bool force = false);
+
     /* Restart flag helper */
     void setRestartRequired(bool fRequired);
     bool isRestartRequired() const;
