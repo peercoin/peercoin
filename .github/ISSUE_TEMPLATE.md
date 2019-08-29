@@ -11,7 +11,7 @@ General Peercoin questions and/or support requests are best directed to the Peer
 
 <!-- What version of Peercoin are you using, where did you get it (website, self-compiled, etc)? Which OS do you use, on which platform? -->
 
-<!-- For the GUI-related issue on Linux provide names and versions of a distro, a desktop environment and a graphical shell (if relevant). -->
+<!-- GUI-related issue? What is your operating system and its version? If Linux, what is your desktop environment and graphical shell? -->
 
 <!-- Any extra information that might be useful in the debugging process. -->
 
