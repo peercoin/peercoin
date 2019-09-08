@@ -53,11 +53,11 @@ Paths
 
 All three configurations assume several paths that might need to be adjusted.
 
-Binary:              `/usr/bin/peercoind`  
-Configuration file:  `/etc/peercoin/peercoin.conf`  
-Data directory:      `/var/lib/peercoind`  
+Binary:              `/usr/bin/peercoind`
+Configuration file:  `/etc/peercoin/peercoin.conf`
+Data directory:      `/var/lib/peercoind`
 PID file:            `/var/run/peercoind/peercoind.pid` (OpenRC and Upstart) or `/run/peercoind/peercoind.pid` (systemd)  
-Lock file:           `/var/lock/subsys/peercoind` (CentOS)  
+Lock file:           `/var/lock/subsys/peercoind` (CentOS)
 
 The PID directory (if applicable) and data directory should both be owned by the
 peercoin user and group. It is advised for security reasons to make the
@@ -83,10 +83,10 @@ OpenRC).
 
 ### macOS
 
-Binary:              `/usr/local/bin/peercoind`  
-Configuration file:  `~/Library/Application Support/Peercoin/peercoin.conf`  
-Data directory:      `~/Library/Application Support/Peercoin`  
-Lock file:           `~/Library/Application Support/Peercoin/.lock`  
+Binary:              `/usr/local/bin/peercoind`
+Configuration file:  `~/Library/Application Support/Peercoin/peercoin.conf`
+Data directory:      `~/Library/Application Support/Peercoin`
+Lock file:           `~/Library/Application Support/Peercoin/.lock`
 
 Installing Service Configuration
 -----------------------------------

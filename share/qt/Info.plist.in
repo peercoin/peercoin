@@ -30,7 +30,7 @@
 
   <key>CFBundleExecutable</key>
   <string>Peercoin-Qt</string>
-  
+
   <key>CFBundleName</key>
   <string>Peercoin-Qt</string>
 
@@ -102,7 +102,7 @@
 
   <key>NSRequiresAquaSystemAppearance</key>
     <string>True</string>
-  
+
   <key>LSApplicationCategoryType</key>
     <string>public.app-category.finance</string>
 </dict>
