@@ -205,6 +205,11 @@ public:
         WalletBatch batch{m_wallet->GetDatabase()};
         return m_wallet->SetAddressReceiveRequest(batch, dest, id, value);
     }
+    bool displayAddress(const CTxDestination& dest) override
+    {
+        LOCK(m_wallet->cs_wallet);
+        return m_wallet->DisplayAddress(dest);
+    }
     void lockCoin(const COutPoint& output) override
     {
         LOCK(m_wallet->cs_wallet);
