@@ -1438,6 +1438,9 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
             try {
                 LOCK(cs_main);
                 chainman.InitializeChainstate();
+                chainman.m_total_coinstip_cache = nCoinCacheUsage;
+                chainman.m_total_coinsdb_cache = nCoinDBCache;
+
                 UnloadBlockIndex();
 
                 // new CBlockTreeDB tries to delete the existing file, which
