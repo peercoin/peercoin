@@ -66,6 +66,7 @@ public:
         Prune,                  // bool
         PruneSize,              // int
         DatabaseCache,          // int
+        ExternalSignerPath,     // QString
         SpendZeroConfChange,    // bool
         SplitCoins,             // bool
         CheckGithub,            // bool

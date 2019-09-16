@@ -187,6 +187,7 @@ void OptionsDialog::setModel(OptionsModel *_model)
 
     /* Main */
     connect(ui->databaseCache, qOverload<int>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
+    connect(ui->externalSignerPath, &QLineEdit::textChanged, [this]{ showRestartWarning(); });
     connect(ui->threadsScriptVerif, qOverload<int>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
     /* Wallet */
     connect(ui->spendZeroConfChange, &QCheckBox::clicked, this, &OptionsDialog::showRestartWarning);
@@ -224,6 +225,7 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->splitCoins, OptionsModel::SplitCoins);
     mapper->addMapping(ui->checkGithub, OptionsModel::CheckGithub);
     mapper->addMapping(ui->coinControlFeatures, OptionsModel::CoinControlFeatures);
+    mapper->addMapping(ui->externalSignerPath, OptionsModel::ExternalSignerPath);
 
     /* Network */
     mapper->addMapping(ui->mapPortUpnp, OptionsModel::MapPortUPnP);
