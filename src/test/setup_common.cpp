@@ -15,6 +15,7 @@
 #include <net.h>
 #include <noui.h>
 #include <pow.h>
+#include <rpc/blockchain.h>
 #include <rpc/register.h>
 #include <rpc/server.h>
 #include <script/sigcache.h>
@@ -72,6 +73,7 @@ TestingSetup::TestingSetup(const std::string& chainName) : BasicTestingSetup(cha
     const CChainParams& chainparams = Params();
     // Ideally we'd move all the RPC tests to the functional testing framework
     // instead of unit tests, but for now we need these here.
+    g_rpc_node = &m_node;
     RegisterAllCoreRPCCommands(tableRPC);
 
     // We have to run a scheduler thread to prevent ActivateBestChain
@@ -110,6 +112,7 @@ TestingSetup::~TestingSetup()
     threadGroup.join_all();
     GetMainSignals().FlushBackgroundCallbacks();
     GetMainSignals().UnregisterBackgroundSignalScheduler();
+    g_rpc_node = nullptr;
     m_node.connman.reset();
     m_node.banman.reset();
     UnloadBlockIndex();
