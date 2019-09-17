@@ -14,6 +14,7 @@
 #include <outputtype.h>
 #include <psbt.h>
 #include <tinyformat.h>
+#include <util/hasher.h>
 #include <util/message.h>
 #include <util/result.h>
 #include <util/strencodings.h>
@@ -38,6 +39,7 @@
 #include <stdint.h>
 #include <string>
 #include <utility>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/signals2/signal.hpp>
@@ -386,7 +388,7 @@ public:
 
     /** Map from txid to CWalletTx for all transactions this wallet is
      * interested in, including received and sent transactions. */
-    std::map<uint256, CWalletTx> mapWallet GUARDED_BY(cs_wallet);
+    std::unordered_map<uint256, CWalletTx, SaltedTxidHasher> mapWallet GUARDED_BY(cs_wallet);
 
     typedef std::multimap<int64_t, CWalletTx*> TxItems;
     TxItems wtxOrdered;
