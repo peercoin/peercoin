@@ -166,7 +166,7 @@ public:
     virtual WalletTx getWalletTx(const uint256& txid) = 0;
 
     //! Get list of all wallet transactions.
-    virtual std::vector<WalletTx> getWalletTxs() = 0;
+    virtual std::set<WalletTx> getWalletTxs() = 0;
 
     //! Try to get updated status for a particular transaction, if possible without blocking.
     virtual bool tryGetTxStatus(const uint256& txid,
