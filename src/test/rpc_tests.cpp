@@ -7,8 +7,8 @@
 #include <rpc/util.h>
 
 #include <core_io.h>
-#include <init.h>
 #include <interfaces/chain.h>
+#include <node/context.h>
 #include <test/setup_common.h>
 #include <util/time.h>
 
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
     std::string privkey1 = "\"U9MHK7o3WQbCD4kNJAye1PtHDKBCn9LU2BGwQJaqcsQqPcDAVSYc\"";
     std::string privkey2 = "\"UA6rEKCCjpYG4V6AQfcd9V7ZZZzcHBT1M5CtTyq3jwnQNgrdkbd1\"";
     NodeContext node;
-    node.chain = interfaces::MakeChain();
+    node.chain = interfaces::MakeChain(node);
     g_rpc_node = &node;
     r = CallRPC(std::string("signrawtransactionwithkey ")+notsigned+" [] "+prevout);
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == false);
