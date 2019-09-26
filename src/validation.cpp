@@ -1236,10 +1236,14 @@ static void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip) E
     CheckForkWarningConditions();
 }
 
+// Called both upon regular invalid block discovery *and* InvalidateBlock
 void static InvalidChainFound(CBlockIndex* pindexNew) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     if (!pindexBestInvalid || pindexNew->nChainTrust > pindexBestInvalid->nChainTrust)
         pindexBestInvalid = pindexNew;
+    if (pindexBestHeader != nullptr && pindexBestHeader->GetAncestor(pindexNew->nHeight) == pindexNew) {
+        pindexBestHeader = ::ChainActive().Tip();
+    }
 
     LogPrintf("%s: invalid block=%s  height=%d  log2_trust=%.8g  moneysupply=%s  date=%s  moneysupply=%s\n", __func__,
       pindexNew->GetBlockHash().ToString(), pindexNew->nHeight,
@@ -1255,6 +1259,8 @@ void static InvalidChainFound(CBlockIndex* pindexNew) EXCLUSIVE_LOCKS_REQUIRED(c
     CheckForkWarningConditions();
 }
 
+// Same as InvalidChainFound, above, except not called directly from InvalidateBlock,
+// which does its own setBlockIndexCandidates manageent.
 void CChainState::InvalidBlockFound(CBlockIndex *pindex, const BlockValidationState &state) {
     if (state.GetResult() != BlockValidationResult::BLOCK_MUTATED) {
         pindex->nStatus |= BLOCK_FAILED_VALID;
