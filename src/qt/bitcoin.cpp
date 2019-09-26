@@ -436,9 +436,6 @@ int GuiMain(int argc, char* argv[])
 #if QT_VERSION >= 0x050600
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-#ifdef Q_OS_MAC
-    QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
-#endif
     QSslSocket::sslLibraryVersionString(); // An unnecessary check to solve issue #14273: bitcoin-qt stops while switching SSLv3 to TLS on Arch Linux
     Q_ASSERT( QSslSocket::supportsSsl() );
 
