@@ -163,7 +163,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
 {
     // are the actual inputs available?
     if (!inputs.HaveInputs(tx)) {
-        return state.Invalid(ValidationInvalidReason::TX_MISSING_INPUTS, false, REJECT_INVALID, "bad-txns-inputs-missingorspent",
+        return state.Invalid(ValidationInvalidReason::TX_MISSING_INPUTS, false, "bad-txns-inputs-missingorspent",
                          strprintf("%s: inputs missing/spent", __func__));
     }
 
@@ -175,18 +175,18 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
 
         // If prev is coinbase, check that it's matured
         if ((coin.IsCoinBase() || coin.IsCoinStake()) && nSpendHeight - coin.nHeight < params.nCoinbaseMaturity) {
-            return state.Invalid(ValidationInvalidReason::TX_PREMATURE_SPEND, false, REJECT_INVALID, "bad-txns-premature-spend-of-coinbase/coinstake",
+            return state.Invalid(ValidationInvalidReason::TX_PREMATURE_SPEND, false, "bad-txns-premature-spend-of-coinbase/coinstake",
                 strprintf("tried to spend coinbase at depth %d", nSpendHeight - coin.nHeight));
         }
 
         // peercoin: check transaction timestamp
         if (coin.nTime > tx.nTime)
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-spent-too-early", false, strprintf("%s : transaction timestamp earlier than input transaction", __func__));
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-spent-too-early", false, strprintf("%s : transaction timestamp earlier than input transaction", __func__));
 
         // Check for negative or overflow input values
         nValueIn += coin.out.nValue;
         if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-inputvalues-outofrange");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-inputvalues-outofrange");
         }
     }
 
@@ -195,27 +195,27 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         // peercoin: coin stake tx earns reward instead of paying fee
         uint64_t nCoinAge;
         if (!GetCoinAge(tx, inputs, nCoinAge))
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "unable to get coin age for coinstake");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "unable to get coin age for coinstake");
         CAmount nStakeReward = tx.GetValueOut() - nValueIn;
         CAmount nCoinstakeCost = (GetMinFee(tx) < PERKB_TX_FEE) ? 0 : (GetMinFee(tx) - PERKB_TX_FEE);
         if (nMoneySupply && nStakeReward > GetProofOfStakeReward(nCoinAge, tx.nTime, nMoneySupply) - nCoinstakeCost)
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-coinstake-too-large");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-coinstake-too-large");
     }
     else
     {
         const CAmount value_out = tx.GetValueOut();
         if (nValueIn < value_out) {
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-in-belowout",
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-in-belowout",
                 strprintf("value in (%s) < value out (%s)", FormatMoney(nValueIn), FormatMoney(value_out)));
         }
         // Tally transaction fees
         const CAmount txfee_aux = nValueIn - value_out;
         if (!MoneyRange(txfee_aux)) {
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-fee-outofrange");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-fee-outofrange");
         }
         // peercoin: enforce transaction fees for every block
         if (txfee_aux < GetMinFee(tx))
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-fee-not-enough");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-fee-not-enough");
         txfee = txfee_aux;
     }
     return true;
