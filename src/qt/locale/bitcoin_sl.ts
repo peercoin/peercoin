@@ -1,980 +1,1048 @@
-<TS language="ko" version="2.1">
+<TS language="sl" version="2.1">
 <context>
     <name>AddressBookPage</name>
     <message>
         <source>Right-click to edit address or label</source>
-        <translation>지갑 주소나 라벨을 수정/변경하려면 우클릭을 하십시오.</translation>
+        <translation>Desni klik za urejanje naslovov ali oznak</translation>
     </message>
     <message>
         <source>Create a new address</source>
-        <translation>새로운 지갑 주소 생성하기.</translation>
+        <translation>Ustvari nov naslov</translation>
     </message>
     <message>
         <source>&amp;New</source>
-        <translation>새 항목(&amp;N)</translation>
+        <translation>&amp;Novo</translation>
     </message>
     <message>
         <source>Copy the currently selected address to the system clipboard</source>
-        <translation>현재 선택한 주소를 시스템 클립보드로 복사하기</translation>
+        <translation>Kopiraj trenutno izbrani naslov v odložišče</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
-        <translation>복사(&amp;C)</translation>
+        <translation>&amp;Kopiraj</translation>
     </message>
     <message>
         <source>C&amp;lose</source>
-        <translation>닫기(&amp;L)</translation>
+        <translation>&amp;Zapri</translation>
     </message>
     <message>
         <source>Delete the currently selected address from the list</source>
-        <translation>현재 목록에 선택한 주소 삭제</translation>
+        <translation>Izbriši trenutno označeni naslov  iz seznama</translation>
     </message>
     <message>
         <source>Enter address or label to search</source>
-        <translation>검색하려는 주소 또는 라벨 입력</translation>
+        <translation>Iščite po naslovu ali oznaki</translation>
     </message>
     <message>
         <source>Export the data in the current tab to a file</source>
-        <translation>현재 탭에 있는 데이터를 파일로 내보내기</translation>
+        <translation>Izvozi podatke v trenutnem zavihku v datoteko</translation>
     </message>
     <message>
         <source>&amp;Export</source>
-        <translation>내보내기(&amp;E)</translation>
+        <translation>&amp;Izvozi</translation>
     </message>
     <message>
         <source>&amp;Delete</source>
-        <translation>삭제(&amp;D)</translation>
+        <translation>I&amp;zbriši</translation>
     </message>
     <message>
         <source>Choose the address to send coins to</source>
-        <translation>코인을 보내실 주소를 선택하세요</translation>
+        <translation>Izberi naslov prejemnika kovancev</translation>
     </message>
     <message>
         <source>Choose the address to receive coins with</source>
-        <translation>코인을 받으실 주소를 선택하세요</translation>
+        <translation>Izberi naslov, na katerega želiš prejeti kovance</translation>
     </message>
     <message>
         <source>C&amp;hoose</source>
-        <translation>선택 (&amp;H)</translation>
+        <translation>&amp;Izberi</translation>
     </message>
     <message>
         <source>Sending addresses</source>
-        <translation>보내는 주소들</translation>
+        <translation>Imenik naslovov za pošiljanje</translation>
     </message>
     <message>
         <source>Receiving addresses</source>
-        <translation>받는 주소들</translation>
+        <translation>Imenik naslovov za prejemanje</translation>
     </message>
     <message>
-        <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>비트코인을 보내는 계좌 주소입니다. 코인을 보내기 전에 금액과 받는 주소를 항상 확인하세요.</translation>
+        <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>To so vaši Bitcoin naslovi za pošiljanje. Pred pošiljanjem vedno preverite količino in prejemnikov naslov.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
-        <translation>주소 복사(&amp;C)</translation>
+        <translation>&amp;Kopiraj naslov</translation>
     </message>
     <message>
         <source>Copy &amp;Label</source>
-        <translation>라벨 복사(&amp;L)</translation>
+        <translation>Kopiraj &amp;oznako</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation>편집 (&amp;E)</translation>
+        <translation>&amp;Uredi</translation>
     </message>
     <message>
         <source>Export Address List</source>
-        <translation>주소 목록 내보내기</translation>
+        <translation>Izvozi seznam naslovov</translation>
     </message>
     <message>
         <source>Comma separated file (*.csv)</source>
-        <translation>쉼표로 구분된 파일 (*.csv)</translation>
+        <translation>Podatki ločenimi z vejico (*.csv)</translation>
     </message>
     <message>
         <source>Exporting Failed</source>
-        <translation>내보내기 실패</translation>
+        <translation>Podatkov ni bilo mogoče izvoziti.</translation>
     </message>
     <message>
         <source>There was an error trying to save the address list to %1. Please try again.</source>
-        <translation>%1으로 주소 리스트를 저장하는 동안 오류가 발생했습니다. 다시 시도해주세요.</translation>
+        <translation>Napaka pri shranjevanju seznama naslovov v %1. Prosim poskusite znova.</translation>
     </message>
 </context>
 <context>
     <name>AddressTableModel</name>
     <message>
         <source>Label</source>
-        <translation>라벨</translation>
+        <translation>Oznaka</translation>
     </message>
     <message>
         <source>Address</source>
-        <translation>주소</translation>
+        <translation>Naslov</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation>(라벨 없음)</translation>
+        <translation>(brez oznake)</translation>
     </message>
 </context>
 <context>
     <name>AskPassphraseDialog</name>
     <message>
         <source>Passphrase Dialog</source>
-        <translation>암호문 대화상자</translation>
+        <translation>Vnos gesla</translation>
     </message>
     <message>
         <source>Enter passphrase</source>
-        <translation>암호 입력하기</translation>
+        <translation>Vnesite geslo</translation>
     </message>
     <message>
         <source>New passphrase</source>
-        <translation>새로운 암호</translation>
+        <translation>Novo geslo</translation>
     </message>
     <message>
         <source>Repeat new passphrase</source>
-        <translation>새로운 암호 재입력</translation>
+        <translation>Ponovite novo geslo</translation>
+    </message>
+    <message>
+        <source>Show passphrase</source>
+        <translation>Pokaži geslo</translation>
     </message>
     <message>
         <source>Encrypt wallet</source>
-        <translation>지갑 암호화</translation>
+        <translation>Šifriraj denarnico</translation>
     </message>
     <message>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation>이 작업은 지갑 잠금해제를 위해 사용자 지갑의 암호가 필요합니다.</translation>
+        <translation>To dejanje zahteva geslo za odklepanje vaše denarnice.</translation>
     </message>
     <message>
         <source>Unlock wallet</source>
-        <translation>지갑 잠금해제</translation>
+        <translation>Odkleni denarnico</translation>
     </message>
     <message>
         <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
-        <translation>이 작업은 지갑을 복호화하기 위해 사용자 지갑의 암호가 필요합니다.</translation>
+        <translation>To dejanje zahteva geslo za dešifriranje vaše denarnice.</translation>
     </message>
     <message>
         <source>Decrypt wallet</source>
-        <translation>지갑 복호화</translation>
+        <translation>Odšifriraj denarnico</translation>
     </message>
     <message>
         <source>Change passphrase</source>
-        <translation>암호 변경</translation>
+        <translation>Spremeni geslo</translation>
     </message>
     <message>
         <source>Confirm wallet encryption</source>
-        <translation>지갑 암호화 승인</translation>
+        <translation>Potrdi šifriranje denarnice</translation>
     </message>
     <message>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
-        <translation>경고: 만약 암호화 된 지갑의 비밀번호를 잃어버릴 경우, &lt;b&gt;모든 비트코인들을 잃어버릴 수 있습니다&lt;/b&gt;!</translation>
+        <translation>Opozorilo: V primeru izgube gesla šifrirane denarnice, boste &lt;b&gt;IZGUBILI VSE SVOJE BITCOINE&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
-        <translation>지갑 암호화를 허용하시겠습니까?</translation>
+        <translation>Ali ste prepričani, da želite šifrirati svojo denarnico?</translation>
     </message>
     <message>
         <source>Wallet encrypted</source>
-        <translation>지갑 암호화 완료</translation>
+        <translation>Denarnica šifrirana</translation>
+    </message>
+    <message>
+        <source>Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
+        <translation>Vnesite novo geslo za denarnico. &lt;br/&gt;Prosimo, uporabite geslo z vsaj &lt;b&gt;10 ali več naključnimi simboli&lt;/b&gt;, ali vsaj osmimi besedami.&lt;b&gt;</translation>
+    </message>
+    <message>
+        <source>Wallet to be encrypted</source>
+        <translation>Denarnica, ki bo zašifrirana</translation>
+    </message>
+    <message>
+        <source>Your wallet is about to be encrypted. </source>
+        <translation>Vaša denarnica bo zašifrirana.</translation>
+    </message>
+    <message>
+        <source>Your wallet is now encrypted. </source>
+        <translation>Vaša denarnica je sedaj šifrirana.</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation>중요: 본인 지갑 파일에서 만든 예전 백업들은 새로 생성한 암호화된 지갑 파일로 교체해야 합니다. 보안상 이유로, 새 암호화된 지갑을 사용하게 되면 이전에 암호화하지 않은 지갑 파일의 백업은 사용할 수 없게 됩니다.</translation>
+        <translation>POMEMBNO: Vse starejše varnostne kopije denarnice je potrebno zamenjati z novoizdelano, šifrirano, varnostno kopijo. Zaradi varnosti bodo stare varnostne kopije postale neuporabne takoj, ko začnete uporabljati novo, šifrirano denarnico.</translation>
     </message>
     <message>
         <source>Wallet encryption failed</source>
-        <translation>지갑 암호화 실패</translation>
+        <translation>Šifriranje denarnice ni uspelo</translation>
     </message>
     <message>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
-        <translation>지갑 암호화가 내부 오류로 인해 실패했습니다.  당신의 지갑은 암호화 되지 않았습니다.</translation>
+        <translation>Šifriranje denarnice ni uspelo zaradi notranje napake. Vaša denarnica ni bila šifrirana.</translation>
     </message>
     <message>
         <source>The supplied passphrases do not match.</source>
-        <translation>지정한 암호가 일치하지 않습니다.</translation>
+        <translation>Navedeni gesli se ne ujemata.</translation>
     </message>
     <message>
         <source>Wallet unlock failed</source>
-        <translation>지갑 잠금해제 실패</translation>
+        <translation>Denarnice ni bilo mogoče odkleniti.</translation>
     </message>
     <message>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
-        <translation>지갑 복호화를 위한 암호가 틀렸습니다.</translation>
+        <translation>Geslo za dešifriranje denarnice, ki ste ga vnesli, ni pravilno.</translation>
     </message>
     <message>
         <source>Wallet decryption failed</source>
-        <translation>지갑 복호화 실패</translation>
+        <translation>Dešifriranje denarnice ni uspelo</translation>
     </message>
     <message>
         <source>Wallet passphrase was successfully changed.</source>
-        <translation>지갑 암호가 성공적으로 변경되었습니다.</translation>
+        <translation>Geslo za dostop do denarnice je bilo uspešno spremenjeno.</translation>
     </message>
     <message>
         <source>Warning: The Caps Lock key is on!</source>
-        <translation>경고: Caps Lock키가 켜져있습니다!</translation>
+        <translation>Opozorilo: Vključena je tipka Caps Lock!</translation>
     </message>
 </context>
 <context>
     <name>BanTableModel</name>
     <message>
         <source>IP/Netmask</source>
-        <translation>IP주소/넷마스크</translation>
+        <translation>IP/Netmaska</translation>
     </message>
     <message>
         <source>Banned Until</source>
-        <translation>해당 일정까지 밴됨.</translation>
+        <translation>Prepoved do</translation>
     </message>
 </context>
 <context>
     <name>BitcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
-        <translation>메시지 서명(&amp;M)...</translation>
+        <translation>Podpiši &amp;sporočilo ...</translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
-        <translation>네트워크와 동기화중...</translation>
+        <translation>Dohitevam omrežje ...</translation>
     </message>
     <message>
         <source>&amp;Overview</source>
-        <translation>개요(&amp;O)</translation>
+        <translation>Pre&amp;gled</translation>
     </message>
     <message>
         <source>Show general overview of wallet</source>
-        <translation>지갑의 일반적 개요를 보여줍니다</translation>
+        <translation>Oglejte si splošne informacije o vaši denarnici</translation>
     </message>
     <message>
         <source>&amp;Transactions</source>
-        <translation>거래(&amp;T)</translation>
+        <translation>&amp;Transakcije</translation>
     </message>
     <message>
         <source>Browse transaction history</source>
-        <translation>거래내역을 검색합니다</translation>
+        <translation>Brskajte po zgodovini transakcij</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation>나가기(&amp;X)</translation>
+        <translation>I&amp;zhod</translation>
     </message>
     <message>
         <source>Quit application</source>
-        <translation>어플리케이션 종료</translation>
+        <translation>Ustavite program</translation>
     </message>
     <message>
         <source>&amp;About %1</source>
-        <translation>%1 정보(&amp;A)</translation>
+        <translation>&amp;O nas%1</translation>
     </message>
     <message>
         <source>Show information about %1</source>
-        <translation>%1 정보를 표시합니다</translation>
+        <translation>Prikaži informacije o %1</translation>
     </message>
     <message>
         <source>About &amp;Qt</source>
-        <translation>&amp;Qt 정보</translation>
+        <translation>O &amp;Qt</translation>
     </message>
     <message>
         <source>Show information about Qt</source>
-        <translation>Qt 정보를 표시합니다</translation>
+        <translation>Oglejte si informacije o Qt</translation>
     </message>
     <message>
         <source>&amp;Options...</source>
-        <translation>옵션(&amp;O)...</translation>
+        <translation>&amp;Možnosti ...</translation>
     </message>
     <message>
         <source>Modify configuration options for %1</source>
-        <translation>%1 설정 옵션 수정</translation>
+        <translation>Spremeni možnosti konfiguracije za %1</translation>
     </message>
     <message>
         <source>&amp;Encrypt Wallet...</source>
-        <translation>지갑 암호화(&amp;E)...</translation>
+        <translation>&amp;Šifriraj denarnico ...</translation>
     </message>
     <message>
         <source>&amp;Backup Wallet...</source>
-        <translation>지갑 백업(&amp;B)...</translation>
+        <translation>Shrani &amp;varnostno kopijo denarnice ...</translation>
     </message>
     <message>
         <source>&amp;Change Passphrase...</source>
-        <translation>암호 변경(&amp;C)...</translation>
+        <translation>&amp;Spremeni geslo ...</translation>
     </message>
     <message>
         <source>Open &amp;URI...</source>
-        <translation>&amp;URI 열기...</translation>
+        <translation>Odpri &amp;URI ...</translation>
+    </message>
+    <message>
+        <source>Create Wallet...</source>
+        <translation>Ustvari denarnico ...</translation>
+    </message>
+    <message>
+        <source>Create a new wallet</source>
+        <translation>Ustvari novo denarnico</translation>
     </message>
     <message>
         <source>Wallet:</source>
-        <translation>지갑:</translation>
+        <translation>Denarnica:</translation>
     </message>
     <message>
         <source>Click to disable network activity.</source>
-        <translation>네트워크 활동을 중지하려면 클릭하세요.</translation>
+        <translation>Kliknite, da onemogočite omrežno aktivnosti.</translation>
     </message>
     <message>
         <source>Network activity disabled.</source>
-        <translation>네트워크 활동이 정지됨.</translation>
+        <translation>Omrežna aktivnost onemogočena.</translation>
     </message>
     <message>
         <source>Click to enable network activity again.</source>
-        <translation>네트워크 활동을 다시 시작하려면 클릭하세요.</translation>
+        <translation>Kliknite, da ponovno vključite omrežno aktivnost.</translation>
     </message>
     <message>
         <source>Syncing Headers (%1%)...</source>
-        <translation>헤더 동기화중 (%1%)...</translation>
+        <translation>Sinhronizacija glav (%1%)...</translation>
     </message>
     <message>
         <source>Reindexing blocks on disk...</source>
-        <translation>디스크에서 블록 다시 색인중...</translation>
+        <translation>Poustvarjam kazalo blokov na disku ...</translation>
     </message>
     <message>
         <source>Proxy is &lt;b&gt;enabled&lt;/b&gt;: %1</source>
-        <translation>프록시가 &lt;b&gt;활성화&lt;/b&gt; 되었습니다: %1</translation>
+        <translation>Namestniški strežnik je omogočen&lt;/b&gt;: %1</translation>
     </message>
     <message>
-        <source>Send coins to a Peercoin address</source>
-        <translation>비트코인 주소로 코인을 전송합니다</translation>
+        <source>Send coins to a Bitcoin address</source>
+        <translation>Izvedite plačilo na naslov Bitcoin</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
-        <translation>지갑을 다른장소에 백업합니다</translation>
+        <translation>Shranite varnostno kopijo svoje denarnice na drugo lokacijo</translation>
     </message>
     <message>
         <source>Change the passphrase used for wallet encryption</source>
-        <translation>지갑 암호화에 사용되는 암호를 변경합니다</translation>
+        <translation>Spremenite geslo za šifriranje denarnice</translation>
     </message>
     <message>
         <source>&amp;Debug window</source>
-        <translation>디버그 창(&amp;D)</translation>
+        <translation>&amp;Razhroščevalno okno</translation>
     </message>
     <message>
         <source>Open debugging and diagnostic console</source>
-        <translation>디버깅 및 진단 콘솔을 엽니다</translation>
+        <translation>Odprite razhroščevalno in diagnostično konzolo</translation>
     </message>
     <message>
         <source>&amp;Verify message...</source>
-        <translation>메시지 검증(&amp;V)...</translation>
+        <translation>&amp;Preveri sporočilo ...</translation>
     </message>
     <message>
         <source>&amp;Send</source>
-        <translation>보내기(&amp;S)</translation>
+        <translation>&amp;Pošlji</translation>
     </message>
     <message>
         <source>&amp;Receive</source>
-        <translation>받기(&amp;R)</translation>
+        <translation>P&amp;rejmi</translation>
     </message>
     <message>
         <source>&amp;Show / Hide</source>
-        <translation>보이기/숨기기(&amp;S)</translation>
+        <translation>&amp;Prikaži / Skrij</translation>
     </message>
     <message>
         <source>Show or hide the main Window</source>
-        <translation>메인창 보이기 또는 숨기기</translation>
+        <translation>Prikaži ali skrij glavno okno</translation>
     </message>
     <message>
         <source>Encrypt the private keys that belong to your wallet</source>
-        <translation>지갑에 포함된 개인키 암호화하기</translation>
+        <translation>Šifrirajte zasebne ključe, ki se nahajajo v denarnici</translation>
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation>지갑 주소가 본인 소유인지 증명하기 위해 메시지를 서명합니다</translation>
+        <translation>Podpišite poljubno sporočilo z enim svojih naslovov Bitcoin, da prejemniku sporočila dokažete, da je ta naslov v vaši lasti.</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
-        <translation>해당 비트코인 주소로 서명되었는지 확인하기 위해 메시지를 검증합니다</translation>
+        <translation>Preverite, če je bilo prejeto sporočilo podpisano z določenim naslovom Bitcoin</translation>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation>파일(&amp;F)</translation>
+        <translation>&amp;Datoteka</translation>
     </message>
     <message>
         <source>&amp;Settings</source>
-        <translation>설정(&amp;S)</translation>
+        <translation>&amp;Nastavitve</translation>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation>도움말(&amp;H)</translation>
+        <translation>&amp;Pomoč</translation>
     </message>
     <message>
         <source>Tabs toolbar</source>
-        <translation>툴바 색인표</translation>
+        <translation>Orodna vrstica zavihkov</translation>
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>지불 요청하기 (QR코드와 bitcoin: URI를 생성합니다)</translation>
+        <translation>Zahtevajte plačilo (ustvarite zahtevek s kodo QR in URI tipa bitcoin:)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
-        <translation>한번 이상 사용된 보내는 주소와 라벨의 목록을 보여줍니다</translation>
+        <translation>Preglejte in uredite seznam naslovov, na katere ste kdaj poslali plačila</translation>
     </message>
     <message>
         <source>Show the list of used receiving addresses and labels</source>
-        <translation>한번 이상 사용된 받는 주소와 라벨의 목록을 보여줍니다</translation>
+        <translation>Preglejte in uredite seznam naslovov, na katere ste kdaj prejeli plačila</translation>
     </message>
     <message>
         <source>Open a bitcoin: URI or payment request</source>
-        <translation>bitcoin: URI 또는 지불요청 열기</translation>
+        <translation>Izvedite plačilo iz zahtevka v datoteki ali iz URI tipa bitcoin:</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
-        <translation>명령줄 옵션(&amp;C)</translation>
+        <translation>Opcije &amp;ukazne vrstice</translation>
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin network</source>
-        <translation><numerusform>비트코인 네트워크에 %n개의 연결 활성화됨</numerusform></translation>
+        <translation><numerusform>%n aktivna povezava v omrežje Bitcoin</numerusform><numerusform>%n aktivni povezavi v omrežje Bitcoin</numerusform><numerusform>%n aktivne povezave v omrežje Bitcoin</numerusform><numerusform>%n aktivnih povezav v omrežje Bitcoin</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
-        <translation>디스크에서 블록 색인중...</translation>
+        <translation>Indeksirani bloki na disku ...</translation>
     </message>
     <message>
         <source>Processing blocks on disk...</source>
-        <translation>디스크에서 블록 처리중...</translation>
+        <translation>Obdelava blokov na disku ...</translation>
     </message>
     <message numerus="yes">
         <source>Processed %n block(s) of transaction history.</source>
-        <translation><numerusform>%n 블록 만큼의 거래 기록이 처리됨.</numerusform></translation>
+        <translation><numerusform>%n obdelan blok zgodovine transakcij.</numerusform><numerusform>%n obdelana bloka zgodovine transakcij.</numerusform><numerusform>%n obdelani bloki zgodovine transakcij.</numerusform><numerusform>%n obdelanih blokov zgodovine transakcij.</numerusform></translation>
     </message>
     <message>
         <source>%1 behind</source>
-        <translation>%1 뒷처짐</translation>
+        <translation>imam še %1 zaostanka</translation>
     </message>
     <message>
         <source>Last received block was generated %1 ago.</source>
-        <translation>최근에 받은 블록은 %1 전에 생성되었습니다.</translation>
+        <translation>Zadnji prejeti blok je star %1.</translation>
     </message>
     <message>
         <source>Transactions after this will not yet be visible.</source>
-        <translation>이 후의 거래들은 아직 보이지 않을 것입니다.</translation>
+        <translation>Novejše transakcije še ne bodo vidne.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation>오류</translation>
+        <translation>Napaka</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation>경고</translation>
+        <translation>Opozorilo</translation>
     </message>
     <message>
         <source>Information</source>
-        <translation>정보</translation>
+        <translation>Informacije</translation>
     </message>
     <message>
         <source>Up to date</source>
-        <translation>최신의</translation>
+        <translation>Posodobljeno</translation>
     </message>
     <message>
         <source>&amp;Sending addresses</source>
-        <translation>보내는 주소(&amp;S)</translation>
+        <translation>&amp;Naslovi za pošiljanje ...</translation>
     </message>
     <message>
         <source>&amp;Receiving addresses</source>
-        <translation>받는 주소(&amp;R)</translation>
+        <translation>&amp;Naslovi za prejemanje ...</translation>
     </message>
     <message>
         <source>Open Wallet</source>
-        <translation>지갑 열기</translation>
+        <translation>Odpri denarnico</translation>
     </message>
     <message>
         <source>Open a wallet</source>
-        <translation>지갑 하나 열기</translation>
+        <translation>Odpri denarnico</translation>
     </message>
     <message>
         <source>Close Wallet...</source>
-        <translation>지갑 닫기...</translation>
+        <translation>Zapri denarnico ...</translation>
     </message>
     <message>
         <source>Close wallet</source>
-        <translation>지갑 닫기</translation>
+        <translation>Zapri denarnico</translation>
     </message>
     <message>
         <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
-        <translation>사용할 수 있는 비트코인 명령줄 옵션 목록을 가져오기 위해 %1 도움말 메시지를 표시합니다</translation>
+        <translation>Pokaži %1 sporočilo za pomoč s seznamom vseh možnosti v ukazni vrstici</translation>
     </message>
     <message>
         <source>default wallet</source>
-        <translation>기본 지갑</translation>
+        <translation>privzeta denarnica</translation>
     </message>
     <message>
         <source>No wallets available</source>
-        <translation>사용 가능한 블록이 없습니다.</translation>
+        <translation>Ni denarnic na voljo</translation>
     </message>
     <message>
         <source>&amp;Window</source>
-        <translation>창(&amp;W)</translation>
+        <translation>O&amp;kno</translation>
     </message>
     <message>
         <source>Minimize</source>
-        <translation>최소화</translation>
+        <translation>Pomanjšaj</translation>
     </message>
     <message>
         <source>Zoom</source>
-        <translation>최대화</translation>
+        <translation>Povečaj</translation>
     </message>
     <message>
         <source>Main Window</source>
-        <translation>메인창</translation>
+        <translation>Glavno okno</translation>
     </message>
     <message>
         <source>%1 client</source>
-        <translation>%1 클라이언트</translation>
+        <translation>%1 odjemalec</translation>
     </message>
     <message>
         <source>Connecting to peers...</source>
-        <translation>피어에 연결중...</translation>
+        <translation>Povezujem s soležniki ...</translation>
     </message>
     <message>
         <source>Catching up...</source>
-        <translation>블록 따라잡기...</translation>
+        <translation>Dohitevam omrežje ...</translation>
     </message>
     <message>
         <source>Error: %1</source>
-        <translation>오류: %1</translation>
+        <translation>Napaka: %1</translation>
+    </message>
+    <message>
+        <source>Warning: %1</source>
+        <translation>Opozorilo: %1</translation>
     </message>
     <message>
         <source>Date: %1
 </source>
-        <translation>날짜: %1
+        <translation>Datum: %1
 </translation>
     </message>
     <message>
         <source>Amount: %1
 </source>
-        <translation>금액: %1
+        <translation>Znesek: %1
 </translation>
     </message>
     <message>
         <source>Wallet: %1
 </source>
-        <translation>지갑: %1
+        <translation>Denarnica: %1
 </translation>
     </message>
     <message>
         <source>Type: %1
 </source>
-        <translation>종류: %1
+        <translation>Vrsta: %1
 </translation>
     </message>
     <message>
         <source>Label: %1
 </source>
-        <translation>라벨: %1
+        <translation>Oznaka: %1
 </translation>
     </message>
     <message>
         <source>Address: %1
 </source>
-        <translation>주소: %1
+        <translation>Naslov: %1
 </translation>
     </message>
     <message>
         <source>Sent transaction</source>
-        <translation>발송된 거래</translation>
+        <translation>Odlivi</translation>
     </message>
     <message>
         <source>Incoming transaction</source>
-        <translation>들어오고 있는 거래</translation>
+        <translation>Prilivi</translation>
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;enabled&lt;/b&gt;</source>
-        <translation>HD 키 생성이 &lt;b&gt;활성화되었습니다&lt;/b&gt;</translation>
+        <translation>Generiranje HD ključa je &lt;b&gt;omogočeno&lt;/b&gt;</translation>
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;disabled&lt;/b&gt;</source>
-        <translation>HD 키 생성이 &lt;b&gt;비활성화되었습니다&lt;/b&gt;</translation>
+        <translation>Generiranje HD ključa je &lt;b&gt;onemogočeno&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Private key &lt;b&gt;disabled&lt;/b&gt;</source>
-        <translation>개인키 &lt;b&gt;비활성화됨&lt;/b&gt;</translation>
+        <translation>Zasebni ključ &lt;b&gt;onemogočen&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation>지갑이 &lt;b&gt;암호화&lt;/b&gt; 되었고 현재 &lt;b&gt;잠금해제&lt;/b&gt; 되었습니다</translation>
+        <translation>Denarnica je &lt;b&gt;šifrirana&lt;/b&gt; in trenutno &lt;b&gt;odklenjena&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation>지갑이 &lt;b&gt;암호화&lt;/b&gt; 되었고 현재 &lt;b&gt;잠겨져&lt;/b&gt; 있습니다</translation>
+        <translation>Denarnica je &lt;b&gt;šifrirana&lt;/b&gt; in trenutno &lt;b&gt;zaklenjena&lt;/b&gt;</translation>
     </message>
     <message>
         <source>A fatal error occurred. Bitcoin can no longer continue safely and will quit.</source>
-        <translation>치명적인 오류가 발생했습니다. 비트코인을 더이상 안전하게 진행할 수 없어 곧 종료합니다.</translation>
+        <translation>Napaka. Bitcoin ne more več varno nadaljevati in se bo zaprl.</translation>
     </message>
 </context>
 <context>
     <name>CoinControlDialog</name>
     <message>
         <source>Coin Selection</source>
-        <translation>코인 선택</translation>
+        <translation>Izbira vhodnih kovancev</translation>
     </message>
     <message>
         <source>Quantity:</source>
-        <translation>수량:</translation>
+        <translation>Število vhodov:</translation>
     </message>
     <message>
         <source>Bytes:</source>
-        <translation>바이트:</translation>
+        <translation>Število bajtov:</translation>
     </message>
     <message>
         <source>Amount:</source>
-        <translation>금액:</translation>
+        <translation>Znesek:</translation>
     </message>
     <message>
         <source>Fee:</source>
-        <translation>수수료:</translation>
+        <translation>Provizija:</translation>
     </message>
     <message>
         <source>Dust:</source>
-        <translation>더스트:</translation>
+        <translation>Prah:</translation>
     </message>
     <message>
         <source>After Fee:</source>
-        <translation>수수료 이후:</translation>
+        <translation>Po proviziji:</translation>
     </message>
     <message>
         <source>Change:</source>
-        <translation>잔돈:</translation>
+        <translation>Vračilo:</translation>
     </message>
     <message>
         <source>(un)select all</source>
-        <translation>모두 선택(하지 않음)</translation>
+        <translation>izberi vse/nič</translation>
     </message>
     <message>
         <source>Tree mode</source>
-        <translation>트리 모드</translation>
+        <translation>Drevesni prikaz</translation>
     </message>
     <message>
         <source>List mode</source>
-        <translation>리스트 모드</translation>
+        <translation>Seznam</translation>
     </message>
     <message>
         <source>Amount</source>
-        <translation>거래액</translation>
+        <translation>Znesek</translation>
     </message>
     <message>
         <source>Received with label</source>
-        <translation>입금과 함께 수신된 라벨</translation>
+        <translation>Oznaka priliva</translation>
     </message>
     <message>
         <source>Received with address</source>
-        <translation>입금과 함께 수신된 주소</translation>
+        <translation>Naslov priliva</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>날짜</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Confirmations</source>
-        <translation>확인</translation>
+        <translation>Potrditve</translation>
     </message>
     <message>
         <source>Confirmed</source>
-        <translation>확인됨</translation>
+        <translation>Potrjeno</translation>
     </message>
     <message>
         <source>Copy address</source>
-        <translation>주소 복사</translation>
+        <translation>Kopiraj naslov</translation>
     </message>
     <message>
         <source>Copy label</source>
-        <translation>라벨 복사</translation>
+        <translation>Kopiraj oznako</translation>
     </message>
     <message>
         <source>Copy amount</source>
-        <translation>금액 복사</translation>
+        <translation>Kopiraj znesek</translation>
     </message>
     <message>
         <source>Copy transaction ID</source>
-        <translation>거래 아이디 복사</translation>
+        <translation>Kopiraj ID transakcije</translation>
     </message>
     <message>
         <source>Lock unspent</source>
-        <translation>사용되지 않은 주소를 잠금 처리합니다.</translation>
+        <translation>Zakleni neporabljeno</translation>
     </message>
     <message>
         <source>Unlock unspent</source>
-        <translation>사용되지 않은 주소를 잠금 해제합니다. </translation>
+        <translation>Odkleni neporabljeno</translation>
     </message>
     <message>
         <source>Copy quantity</source>
-        <translation>수량 복사</translation>
+        <translation>Kopiraj količino</translation>
     </message>
     <message>
         <source>Copy fee</source>
-        <translation>수수료 복사</translation>
+        <translation>Kopiraj znesek provizije</translation>
     </message>
     <message>
         <source>Copy after fee</source>
-        <translation>수수료 이후 복사</translation>
+        <translation>Kopiraj po proviziji</translation>
     </message>
     <message>
         <source>Copy bytes</source>
-        <translation>bytes 복사</translation>
+        <translation>Kopiraj bajte</translation>
     </message>
     <message>
         <source>Copy dust</source>
-        <translation>더스트 복사</translation>
+        <translation>Kopiraj prah</translation>
     </message>
     <message>
         <source>Copy change</source>
-        <translation>잔돈 복사</translation>
+        <translation>Kopiraj vračilo</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
-        <translation>(%1 잠금)</translation>
+        <translation>(%1 zaklenjeno)</translation>
     </message>
     <message>
         <source>yes</source>
-        <translation>예</translation>
+        <translation>da</translation>
     </message>
     <message>
         <source>no</source>
-        <translation>아니요</translation>
+        <translation>ne</translation>
     </message>
     <message>
         <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
-        <translation>수령인이 현재 더스트 임계값보다 작은 양을 수신하면 이 라벨이 빨간색으로 변합니다.</translation>
+        <translation>Ta oznaka se spremeni v rdeče, če katerikoli prejemnik prejme znesek, ki je manjši od trenutnega praga za prah.</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
-        <translation>입력마다 +/- %1 사토시가 변할 수 있습니다.</translation>
+        <translation>Se lahko razlikuje +/- %1 satošijev na vnos.</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation>(라벨 없음)</translation>
+        <translation>(brez oznake)</translation>
     </message>
     <message>
         <source>change from %1 (%2)</source>
-        <translation>%1로부터 변경 (%2)</translation>
+        <translation>vračilo od %1 (%2)</translation>
     </message>
     <message>
         <source>(change)</source>
-        <translation>(잔돈)</translation>
+        <translation>(vračilo)</translation>
     </message>
 </context>
 <context>
     <name>CreateWalletActivity</name>
+    <message>
+        <source>Creating Wallet &lt;b&gt;%1&lt;/b&gt;...</source>
+        <translation>Ustvarjam denarnico &lt;b&gt;%1&lt;/b&gt; ...</translation>
+    </message>
+    <message>
+        <source>Create wallet failed</source>
+        <translation>Ustvarjanje denarnice neuspešno</translation>
+    </message>
     </context>
 <context>
     <name>CreateWalletDialog</name>
-    </context>
+    <message>
+        <source>Create Wallet</source>
+        <translation>Ustvari denarnico</translation>
+    </message>
+    <message>
+        <source>Wallet Name</source>
+        <translation>Ime denarnice</translation>
+    </message>
+    <message>
+        <source>Encrypt the wallet. The wallet will be encrypted with a passphrase of your choice.</source>
+        <translation>Šifriraj denarnico. Denarnica bo bila šifrirana z geslom po vaši izbiri.</translation>
+    </message>
+    <message>
+        <source>Encrypt Wallet</source>
+        <translation>Šifriraj denarnico</translation>
+    </message>
+    <message>
+        <source>Make Blank Wallet</source>
+        <translation>Ustvari prazno denarnico</translation>
+    </message>
+    <message>
+        <source>Create</source>
+        <translation>Ustvari</translation>
+    </message>
+</context>
 <context>
     <name>EditAddressDialog</name>
     <message>
         <source>Edit Address</source>
-        <translation>주소 편집</translation>
+        <translation>Uredi naslov</translation>
     </message>
     <message>
         <source>&amp;Label</source>
-        <translation>라벨(&amp;L)</translation>
+        <translation>&amp;Oznaka</translation>
     </message>
     <message>
         <source>The label associated with this address list entry</source>
-        <translation>현재 선택된 주소 필드의 제목입니다. </translation>
+        <translation>Oznaka, pod katero je spodnji naslov naveden v vašem imeniku naslovov.</translation>
     </message>
     <message>
         <source>The address associated with this address list entry. This can only be modified for sending addresses.</source>
-        <translation>본 주소록 입력은 주소와 연계되었습니다.  이것은 보내는 주소들에서만 변경될수 있습니다.</translation>
+        <translation>Naslov tega vnosa v imeniku. Spremeniti ga je mogoče le pri vnosih iz imenika naslovov za pošiljanje.</translation>
     </message>
     <message>
         <source>&amp;Address</source>
-        <translation>주소(&amp;A)</translation>
+        <translation>&amp;Naslov</translation>
     </message>
     <message>
         <source>New sending address</source>
-        <translation>새 보내는 주소</translation>
+        <translation>Nov naslov za pošiljanje</translation>
     </message>
     <message>
         <source>Edit receiving address</source>
-        <translation>받는 주소 편집</translation>
+        <translation>Nov naslov za prejemanje</translation>
     </message>
     <message>
         <source>Edit sending address</source>
-        <translation>보내는 주소 편집</translation>
+        <translation>Uredi naslov za pošiljanje</translation>
     </message>
     <message>
         <source>The entered address "%1" is not a valid Bitcoin address.</source>
-        <translation>입력한 "%1" 주소는 올바른 비트코인 주소가 아닙니다.</translation>
+        <translation>Vnešeni naslov %1 ni veljaven Bitcoin naslov.</translation>
     </message>
     <message>
         <source>Address "%1" already exists as a receiving address with label "%2" and so cannot be added as a sending address.</source>
-        <translation>주소 "%1"은 이미 라벨 "%2"로 받는 주소에 존재하여 보내는 주소로 추가될 수 없습니다.</translation>
+        <translation>Naslov %1 že obstaja kot naslov za prejemanje z oznako "%2" in ga je nemogoče dodati kot naslov za pošiljanje.</translation>
     </message>
     <message>
         <source>The entered address "%1" is already in the address book with label "%2".</source>
-        <translation>입력된 주소 "%1"은 라벨 "%2"로 이미 주소록에 있습니다.</translation>
+        <translation>Vnešeni naslov "%1" je že v imeniku z oznako "%2".</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
-        <translation>지갑을 잠금해제 할 수 없습니다.</translation>
+        <translation>Denarnice ni bilo mogoče odkleniti.</translation>
     </message>
     <message>
         <source>New key generation failed.</source>
-        <translation>새로운 키 생성이 실패하였습니다.</translation>
+        <translation>Generiranje novega ključa je spodletelo.</translation>
     </message>
 </context>
 <context>
     <name>FreespaceChecker</name>
     <message>
         <source>A new data directory will be created.</source>
-        <translation>새로운 데이터 폴더가 생성됩니다.</translation>
+        <translation>Ustvarjena bo nova podatkovna mapa.</translation>
     </message>
     <message>
         <source>name</source>
-        <translation>이름</translation>
+        <translation>ime</translation>
     </message>
     <message>
         <source>Directory already exists. Add %1 if you intend to create a new directory here.</source>
-        <translation>폴더가 이미 존재합니다. 새로운 폴더 생성을 원한다면 %1 명령어를 추가하세요. </translation>
+        <translation>Mapa že obstaja. Dodajte %1, če tu želite ustvariti novo mapo.</translation>
     </message>
     <message>
         <source>Path already exists, and is not a directory.</source>
-        <translation>경로가 이미 존재합니다. 그리고 그것은 폴더가 아닙니다.</translation>
+        <translation>Pot že obstaja, vendar ni mapa.</translation>
     </message>
     <message>
         <source>Cannot create data directory here.</source>
-        <translation>데이터 폴더를 여기에 생성할 수 없습니다.</translation>
+        <translation>Na tem mestu ni mogoče ustvariti nove mape.</translation>
     </message>
 </context>
 <context>
     <name>HelpMessageDialog</name>
     <message>
         <source>version</source>
-        <translation>버전</translation>
+        <translation>različica</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
-        <translation>(%1-비트)</translation>
+        <translation>(%1-bit)</translation>
     </message>
     <message>
         <source>About %1</source>
-        <translation>%1 정보</translation>
+        <translation>O %1</translation>
     </message>
     <message>
         <source>Command-line options</source>
-        <translation>명령줄 옵션</translation>
+        <translation>Možnosti ukazne vrstice</translation>
     </message>
 </context>
 <context>
     <name>Intro</name>
     <message>
         <source>Welcome</source>
-        <translation>환영합니다</translation>
+        <translation>Dobrodošli</translation>
     </message>
     <message>
         <source>Welcome to %1.</source>
-        <translation>%1에 오신것을 환영합니다.</translation>
+        <translation>Dobrodošli v %1</translation>
     </message>
     <message>
         <source>As this is the first time the program is launched, you can choose where %1 will store its data.</source>
-        <translation>프로그램이 처음으로 실행되고 있습니다. %1가 어디에 데이터를 저장할지 선택할 수 있습니다. </translation>
+        <translation>Ker ste program zagnali prvič, lahko izberete, kje bo %1 shranil podatke.</translation>
     </message>
     <message>
         <source>When you click OK, %1 will begin to download and process the full %4 block chain (%2GB) starting with the earliest transactions in %3 when %4 initially launched.</source>
-        <translation>확인을 클릭하면 %1은 모든 %4블록 체인 (%2GB) 장부를 %3 안에 다운로드하고 처리하기 시작합니다.  이는 %4가 시작될 때 생성된 가장 오래된 트랜잭션부터 시작합니다.</translation>
+        <translation>Ko kliknete OK, bo %1 začel prenašati podatke in procesirati celotno %4 bazo podatkovnih blokov (%2 GB), začenši z najstarejšo transakcijo in z %3 ob prvotnem začetku %4.</translation>
     </message>
     <message>
         <source>This initial synchronisation is very demanding, and may expose hardware problems with your computer that had previously gone unnoticed. Each time you run %1, it will continue downloading where it left off.</source>
-        <translation>초기 동기화는 매우 오래 걸리며 이전에는 본 적 없는  하드웨어 문제가 발생할 수 있습니다. %1을 실행할 때마다 중단 된 곳에서 다시 계속 다운로드 됩니다.</translation>
+        <translation>Začetna sinhronizacija je zelo zahtevna in lahko odkrije probleme s strojno opremo v vašem računalniku, ki so prej bili neopaženi. Vsakič, ko zaženete %1, bo le-ta nadaljeval s prenosom kjer je ostal.</translation>
     </message>
     <message>
         <source>If you have chosen to limit block chain storage (pruning), the historical data must still be downloaded and processed, but will be deleted afterward to keep your disk usage low.</source>
-        <translation>블록 체인 저장 영역 (블록축소)을 제한하도록 선택한 경우, 이력 데이터는 계속해서 다운로드 및 처리 되어야 하지만 차후 디스크 용량을 줄이기 위해 삭제됩니다.</translation>
+        <translation>Če ste se odločili omejiti shranjevanje blokovnih verig (obrezovanje), je treba zgodovinske podatke še vedno prenesti in obdelati, vendar jih boste pozneje izbrisali, da bo uporaba diska nizka.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
-        <translation>기본 데이터 폴더를 사용하기</translation>
+        <translation>Uporabi privzeto podatkovno mapo</translation>
     </message>
     <message>
         <source>Use a custom data directory:</source>
-        <translation>커스텀 데이터 폴더 사용:</translation>
+        <translation>Uporabi to podatkovno mapo:</translation>
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>비트코인</translation>
+        <translation>Bitcoin</translation>
     </message>
     <message>
         <source>At least %1 GB of data will be stored in this directory, and it will grow over time.</source>
-        <translation>최소 %1 GB의 데이터가 이 디렉토리에 저장되며 시간이 지남에 따라 증가할 것입니다.</translation>
+        <translation>Vsaj %1 GB podatkov bo shranjenih v tem direktoriju, velikost podatkov pa bo s časom naraščala.</translation>
     </message>
     <message>
         <source>Approximately %1 GB of data will be stored in this directory.</source>
-        <translation>약 %1 GB의 데이터가 이 디렉토리에 저장됩니다.</translation>
+        <translation>Približno %1 GB podatkov bo shranjenih v tem direktoriju.</translation>
     </message>
     <message>
         <source>%1 will download and store a copy of the Bitcoin block chain.</source>
-        <translation>%1은 비트코인 블록체인의 사본을 다운로드하여 저장합니다.</translation>
+        <translation>%1 bo prenesel in shranil kopijo Bitcoin baze podatkovnih blokov.</translation>
     </message>
     <message>
         <source>The wallet will also be stored in this directory.</source>
-        <translation>지갑도 이 디렉토리에 저장됩니다.</translation>
+        <translation>Tudi denarnica bo shranjena v tem direktoriju.</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
-        <translation>오류: 지정한 데이터 디렉토리 "%1" 를 생성할 수 없습니다.</translation>
+        <translation>Napaka: Ni mogoče ustvariti mape "%1".</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation>오류</translation>
+        <translation>Napaka</translation>
     </message>
     <message numerus="yes">
         <source>%n GB of free space available</source>
-        <translation><numerusform>%n GB 사용가능</numerusform></translation>
+        <translation><numerusform>%n GiB prostega prostora na voljo</numerusform><numerusform>%n GiB prostega prostora na voljo</numerusform><numerusform>%n GiB prostega prostora na voljo</numerusform><numerusform>%n GiB prostega prostora na voljo</numerusform></translation>
     </message>
     <message numerus="yes">
         <source>(of %n GB needed)</source>
-        <translation><numerusform>(%n GB가 필요)</numerusform></translation>
+        <translation><numerusform>(od potrebnih %n GiB)</numerusform><numerusform>(od potrebnih %n GiB)</numerusform><numerusform>(od potrebnih %n GiB)</numerusform><numerusform>(od potrebnih %n GB)</numerusform></translation>
     </message>
-    </context>
+    <message numerus="yes">
+        <source>(%n GB needed for full chain)</source>
+        <translation><numerusform>(%n GB potreben za celotno verigo blokov)</numerusform><numerusform>(%n GB potrebna za celotno verigo blokov)</numerusform><numerusform>(%n GB potrebni za celotno verigo blokov)</numerusform><numerusform>(%n GB potrebnih za celotno verigo blokov)</numerusform></translation>
+    </message>
+</context>
 <context>
     <name>ModalOverlay</name>
     <message>
         <source>Form</source>
-        <translation>유형</translation>
+        <translation>Oblika</translation>
     </message>
     <message>
         <source>Recent transactions may not yet be visible, and therefore your wallet's balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the bitcoin network, as detailed below.</source>
-        <translation>최근 거래는 아직 보이지 않을 것입니다, 그러므로 당신의 지갑의 잔액이 틀릴 수도 있습니다. 이 정보는 비트코인 네트워크와 완전한 동기화가 완료되면 아래의 설명과 같이 정확해집니다.</translation>
+        <translation>Zadnje transakcije morda še niso vidne, zato je stanje v denarnici morda napačno. Ti podatki bodo pravilni, ko se bo vaša denarnica končala s sinhronizacijo z bitcoin omrežjem, kot je podrobneje opisano spodaj.</translation>
     </message>
     <message>
         <source>Attempting to spend bitcoins that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
-        <translation>아직 표시되지 않은 거래의 영향을 받는 비트코인을 사용하려고 하는 것은 네트워크에서 허가되지 않습니다.</translation>
+        <translation>Poskus porabe bitcoinov, na katere vplivajo še ne prikazane transakcije, omrežje ne bo sprejelo.</translation>
     </message>
     <message>
         <source>Number of blocks left</source>
-        <translation>남은 블록의 수</translation>
+        <translation>Preostalo število blokov</translation>
     </message>
     <message>
         <source>Unknown...</source>
-        <translation>알수없음...</translation>
+        <translation>Neznano ...</translation>
     </message>
     <message>
         <source>Last block time</source>
-        <translation>최종 블록 시각</translation>
+        <translation>Čas zadnjega bloka</translation>
     </message>
     <message>
         <source>Progress</source>
-        <translation>진행</translation>
+        <translation>Napredek</translation>
     </message>
     <message>
         <source>Progress increase per hour</source>
-        <translation>시간당 진행 증가율</translation>
+        <translation>Napredek na uro</translation>
     </message>
     <message>
         <source>calculating...</source>
-        <translation>계산중...</translation>
+        <translation>Računam ...</translation>
     </message>
     <message>
         <source>Estimated time left until synced</source>
-        <translation>동기화 완료까지 예상 시간</translation>
+        <translation>Ocenjeni čas do sinhronizacije</translation>
     </message>
     <message>
         <source>Hide</source>
-        <translation>숨기기</translation>
+        <translation>Skrij</translation>
     </message>
     <message>
         <source>Unknown. Syncing Headers (%1, %2%)...</source>
-        <translation>알 수 없음. 헤더 동기화 중(%1,%2%)...</translation>
+        <translation>Neznano. Sinhroniziram glave (%1, %2%)...</translation>
     </message>
 </context>
 <context>
     <name>OpenURIDialog</name>
     <message>
         <source>Open URI</source>
-        <translation>URI 열기</translation>
+        <translation>Odpri URl</translation>
     </message>
     <message>
         <source>Open payment request from URI or file</source>
-        <translation>지불 요청 URI 또는 파일 열기</translation>
+        <translation>Vnesite zahtevek za plačilo iz URI ali pa ga naložite iz datoteke</translation>
     </message>
     <message>
         <source>URI:</source>
@@ -982,105 +1050,109 @@
     </message>
     <message>
         <source>Select payment request file</source>
-        <translation>지불 요청 파일을 선택하세요</translation>
+        <translation>Izbiranje datoteke z zahtevkom za plačilo</translation>
     </message>
     <message>
         <source>Select payment request file to open</source>
-        <translation>지불 요청 파일을 열기 위해서 선택하세요</translation>
+        <translation>Izberi datoteko za zahtevek plačila</translation>
     </message>
 </context>
 <context>
     <name>OpenWalletActivity</name>
     <message>
+        <source>Open wallet failed</source>
+        <translation>Odpiranje denarnice neuspešno</translation>
+    </message>
+    <message>
         <source>default wallet</source>
-        <translation>기본 지갑</translation>
+        <translation>privzeta denarnica</translation>
     </message>
     <message>
         <source>Opening Wallet &lt;b&gt;%1&lt;/b&gt;...</source>
-        <translation>지갑 &lt;b&gt;%1&lt;/b&gt; 여는중...</translation>
+        <translation>Odpiram denarnico &lt;b&gt;%1&lt;/b&gt;...</translation>
     </message>
 </context>
 <context>
     <name>OptionsDialog</name>
     <message>
         <source>Options</source>
-        <translation>환경설정</translation>
+        <translation>Možnosti</translation>
     </message>
     <message>
         <source>&amp;Main</source>
-        <translation>메인(&amp;M)</translation>
+        <translation>&amp;Glavno</translation>
     </message>
     <message>
         <source>Automatically start %1 after logging in to the system.</source>
-        <translation>시스템 로그인후에 %1을 자동으로 시작합니다.</translation>
+        <translation>Avtomatsko zaženi %1 po prijavi v sistem.</translation>
     </message>
     <message>
         <source>&amp;Start %1 on system login</source>
-        <translation>시스템 로그인시 %1 시작(&amp;S)</translation>
+        <translation>&amp;Zaženi %1 ob prijavi v sistem</translation>
     </message>
     <message>
         <source>Size of &amp;database cache</source>
-        <translation>데이터베이스 캐시 크기(&amp;D)</translation>
+        <translation>Velikost &amp;predpomnilnika podatkovne baze</translation>
     </message>
     <message>
         <source>Number of script &amp;verification threads</source>
-        <translation>스크립트 인증 쓰레드의 개수(&amp;V)</translation>
+        <translation>Število programskih &amp;niti za preverjanje</translation>
     </message>
     <message>
         <source>IP address of the proxy (e.g. IPv4: 127.0.0.1 / IPv6: ::1)</source>
-        <translation>프록시 아이피 주소 (예. IPv4:127.0.0.1 / IPv6: ::1)</translation>
+        <translation>Naslov IP posredniškega strežnika (npr. IPv4: 127.0.0.1 ali IPv6: ::1)</translation>
     </message>
     <message>
         <source>Shows if the supplied default SOCKS5 proxy is used to reach peers via this network type.</source>
-        <translation>제공된 기본 SOCKS5 프록시가 이 네트워크 유형을 통해 피어에 도달하는 경우 표시됩니다.</translation>
+        <translation>Prikaže, če je priloženi privzeti proxy SOCKS5 uporabljen za doseganje soležnikov prek te vrste omrežja.</translation>
     </message>
     <message>
         <source>Use separate SOCKS&amp;5 proxy to reach peers via Tor hidden services:</source>
-        <translation>Tor 서비스를 이용하여 피어에게 연결하기 위해 분리된 SOCKS5 프록시 사용:</translation>
+        <translation>Za dostop do soležnikov preko skritih storitev Tor uporabi drug posredniški strežnik SOCKS&amp;5:</translation>
     </message>
     <message>
         <source>Hide the icon from the system tray.</source>
-        <translation>시스템 트레이 로 부터 아이콘 숨기기</translation>
+        <translation>Skrij ikono na pladnju.</translation>
     </message>
     <message>
         <source>&amp;Hide tray icon</source>
-        <translation>트레이 아이콘 숨기기(&amp;H)</translation>
+        <translation>&amp;Skrij ikono</translation>
     </message>
     <message>
         <source>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Exit in the menu.</source>
-        <translation>창을 닫으면 종료 대신 트레이로 보내기. 이 옵션을 활성화하면 메뉴에서 종료를 선택한 후에만 어플리케이션이 종료됩니다.</translation>
+        <translation>Ko zaprete glavno okno programa, bo program tekel še naprej, okno pa bo zgolj minimirano. Program v tem primeru ustavite tako, da v meniju izberete ukaz Izhod.</translation>
     </message>
     <message>
         <source>Third party URLs (e.g. a block explorer) that appear in the transactions tab as context menu items. %s in the URL is replaced by transaction hash. Multiple URLs are separated by vertical bar |.</source>
-        <translation>서드-파티 URLs (예. 블록 탐색기)는 거래 탭의 컨텍스트 메뉴에 나타납니다. URL의 %s는 거래 해시값으로 대체됩니다. 여러 URLs는 수직 바 | 에서 나누어 집니다.</translation>
+        <translation>Naslovi URL tretjih oseb (npr. raziskovalec blokov), ki bodo navedeni v kontekstnem meniju seznama transakcij. Niz %s iz naslova URL je nadomeščen s hash vrednostjo transakcije. Več zaporednih naslovov URL je med seboj ločenih z znakom |.</translation>
     </message>
     <message>
         <source>Open the %1 configuration file from the working directory.</source>
-        <translation>작업 디렉토리에서 %1 설정 파일을 엽니다.</translation>
+        <translation>Odpri %1 konfiguracijsko datoteko iz delovne podatkovne mape.</translation>
     </message>
     <message>
         <source>Open Configuration File</source>
-        <translation>설정 파일 열기</translation>
+        <translation>Odpri konfiguracijsko datoteko</translation>
     </message>
     <message>
         <source>Reset all client options to default.</source>
-        <translation>모든 클라이언트 옵션을 기본값으로 재설정합니다.</translation>
+        <translation>Ponastavi vse nastavitve programa na privzete vrednosti.</translation>
     </message>
     <message>
         <source>&amp;Reset Options</source>
-        <translation>옵션 재설정(&amp;R)</translation>
+        <translation>&amp;Ponastavi nastavitve</translation>
     </message>
     <message>
         <source>&amp;Network</source>
-        <translation>네트워크(&amp;N)</translation>
+        <translation>&amp;Omrežje</translation>
     </message>
     <message>
         <source>Disables some advanced features but all blocks will still be fully validated. Reverting this setting requires re-downloading the entire blockchain. Actual disk usage may be somewhat higher.</source>
-        <translation>일부분의 고급 기능을 취소 하지만 모든 블록들은 검증될 것입니다. 이 설정을 되돌리려면 처음부터 블록체인을 다시 다운로드 받아야 합니다. 실제 디스크 사용량은 더 많을수도 있습니다.</translation>
+        <translation>Onemogoči nekatere napredne funkcije, vendar bodo vsi bloki še vedno v celoti potrjeni. Če spremenite to nastavitev, morate ponovno naložiti celoten blok. Dejanska poraba diskov je morda nekoliko večja.</translation>
     </message>
     <message>
         <source>Prune &amp;block storage to</source>
-        <translation>블록 데이터를 지정된 크기로 축소합니다: </translation>
+        <translation>Obreži velikost podatkovne baze na </translation>
     </message>
     <message>
         <source>GB</source>
@@ -1088,7 +1160,7 @@
     </message>
     <message>
         <source>Reverting this setting requires re-downloading the entire blockchain.</source>
-        <translation>이 설정을 되돌리려면 처음주터 블록체인을 다시 다운로드 받아야 합니다.</translation>
+        <translation>Če spremenite to nastavitev, morate ponovno naložiti celotno verigo blokov.</translation>
     </message>
     <message>
         <source>MiB</source>
@@ -1096,67 +1168,67 @@
     </message>
     <message>
         <source>(0 = auto, &lt;0 = leave that many cores free)</source>
-        <translation>(0 = 자동, &lt;0 = 지정된 코어 개수만큼 사용 안함)</translation>
+        <translation>(0 = samodejno, &lt;0 = toliko procesorskih jeder naj ostane prostih)</translation>
     </message>
     <message>
         <source>W&amp;allet</source>
-        <translation>지갑(&amp;A)</translation>
+        <translation>&amp;Denarnica</translation>
     </message>
     <message>
         <source>Expert</source>
-        <translation>전문가</translation>
+        <translation>Napredne možnosti</translation>
     </message>
     <message>
         <source>Enable coin &amp;control features</source>
-        <translation>코인 상세 제어기능을 활성화합니다 (&amp;C)</translation>
+        <translation>Omogoči upravljanje s kovanci</translation>
     </message>
     <message>
         <source>If you disable the spending of unconfirmed change, the change from a transaction cannot be used until that transaction has at least one confirmation. This also affects how your balance is computed.</source>
-        <translation>검증되지 않은 잔돈 쓰기를 비활성화하면 거래가 적어도 1회 이상 검증되기 전까지 그 거래의 거스름돈은 사용할 수 없습니다. 이는 잔액 계산 방법에도 영향을 미칩니다.</translation>
+        <translation>Če onemogočite trošenje drobiža iz še nepotrjenih transakcij, potem vrnjenega drobiža ne morete uporabiti, dokler plačilo ni vsaj enkrat potrjeno. Ta opcija vpliva tudi na izračun stanja sredstev.</translation>
     </message>
     <message>
         <source>&amp;Spend unconfirmed change</source>
-        <translation>검증되지 않은 잔돈 쓰기 (&amp;S)</translation>
+        <translation>Omogoči &amp;trošenje drobiža iz še nepotrjenih plačil</translation>
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>라우터에서 비트코인 클라이언트 포트를 자동적으로 엽니다. 라우터에서 UPnP를 지원하고 활성화 했을 경우에만 동작합니다.</translation>
+        <translation>Program samodejno odpre ustrezna vrata na usmerjevalniku. To deluje samo, če vaš usmerjevalnik podpira in ima omogočen UPnP.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
-        <translation>&amp;UPnP를 이용해 포트 매핑</translation>
+        <translation>Preslikaj vrata z uporabo &amp;UPnP</translation>
     </message>
     <message>
         <source>Accept connections from outside.</source>
-        <translation>외부로부터의 연결을 승인합니다.</translation>
+        <translation>Sprejmi zunanje povezave</translation>
     </message>
     <message>
         <source>Allow incomin&amp;g connections</source>
-        <translation>연결 요청을 허용 (&amp;G)</translation>
+        <translation>&amp;Dovoli dohodne povezave</translation>
     </message>
     <message>
         <source>Connect to the Bitcoin network through a SOCKS5 proxy.</source>
-        <translation>SOCKS5 프록시를 통해 비트코인 네트워크에 연결합니다.</translation>
+        <translation>Poveži se v omrežje Bitcoin preko posredniškega strežnika SOCKS5.</translation>
     </message>
     <message>
         <source>&amp;Connect through SOCKS5 proxy (default proxy):</source>
-        <translation>SOCKS5 프록시를 거쳐 연결합니다(&amp;C) (기본 프록시):</translation>
+        <translation>&amp;Poveži se preko posredniškega strežnika SOCKS5 (privzeti strežnik):</translation>
     </message>
     <message>
         <source>Proxy &amp;IP:</source>
-        <translation>프록시 &amp;IP:</translation>
+        <translation>Naslov &amp;IP posredniškega strežnika:</translation>
     </message>
     <message>
         <source>&amp;Port:</source>
-        <translation>포트(&amp;P):</translation>
+        <translation>&amp;Vrata:</translation>
     </message>
     <message>
         <source>Port of the proxy (e.g. 9050)</source>
-        <translation>프록시의 포트번호 (예: 9050)</translation>
+        <translation>Vrata posredniškega strežnika (npr. 9050)</translation>
     </message>
     <message>
         <source>Used for reaching peers via:</source>
-        <translation>피어에 연결하기 위해 사용된 방법:</translation>
+        <translation>Uporabljano za povezovanje s soležniki preko:</translation>
     </message>
     <message>
         <source>IPv4</source>
@@ -1172,347 +1244,347 @@
     </message>
     <message>
         <source>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor hidden services.</source>
-        <translation>Tor 서비스를 경유하여 비트코인 네트워크에 연결하기 위해 분리된 SOCKS5 프록시를 사용합니다.</translation>
+        <translation>Poveži se v omrežje Bitcoin preko posredniškega strežnika SOCKS5 za skrite storitve Tor.</translation>
     </message>
     <message>
         <source>&amp;Window</source>
-        <translation>창(&amp;W)</translation>
+        <translation>O&amp;kno</translation>
     </message>
     <message>
         <source>Show only a tray icon after minimizing the window.</source>
-        <translation>창을 최소화 하면 트레이에 아이콘만 표시합니다.</translation>
+        <translation>Po minimiranju okna samo prikaži ikono programa na pladnju.</translation>
     </message>
     <message>
         <source>&amp;Minimize to the tray instead of the taskbar</source>
-        <translation>작업 표시줄 대신 트레이로 최소화(&amp;M)</translation>
+        <translation>&amp;Minimiraj na pladenj namesto na opravilno vrstico</translation>
     </message>
     <message>
         <source>M&amp;inimize on close</source>
-        <translation>닫을때 최소화(&amp;I)</translation>
+        <translation>Ob zapiranju okno zgolj m&amp;inimiraj</translation>
     </message>
     <message>
         <source>&amp;Display</source>
-        <translation>표시(&amp;D)</translation>
+        <translation>&amp;Prikaz</translation>
     </message>
     <message>
         <source>User Interface &amp;language:</source>
-        <translation>사용자 인터페이스 언어(&amp;L):</translation>
+        <translation>&amp;Jezik uporabniškega vmesnika:</translation>
     </message>
     <message>
         <source>The user interface language can be set here. This setting will take effect after restarting %1.</source>
-        <translation>사용자 인터페이스 언어를 여기서 설정할 수 있습니다. 이 설정은 %1을 다시 시작할때 적용됩니다.</translation>
+        <translation>Tukaj je mogoče nastaviti uporabniški vmesnik za jezike. Ta nastavitev bo prikazana šele, ko boste znova zagnali %1.</translation>
     </message>
     <message>
         <source>&amp;Unit to show amounts in:</source>
-        <translation>금액을 표시할 단위(&amp;U):</translation>
+        <translation>&amp;Enota za prikaz zneskov:</translation>
     </message>
     <message>
         <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>인터페이스에 표시하고 코인을 보낼때 사용할 기본 최소화 단위를 선택하십시오.</translation>
+        <translation>Izberite privzeto mersko enoto za prikaz v uporabniškem vmesniku in pri pošiljanju kovancev.</translation>
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
-        <translation>코인 상세 제어기능에 대한 표시 여부를 선택할 수 있습니다.</translation>
+        <translation>Omogoči dodatno možnost podrobnega nadzora nad posameznimi kovanci v transakcijah.</translation>
     </message>
     <message>
         <source>&amp;Third party transaction URLs</source>
-        <translation>제 3자 거래 URL들 (&amp;T)</translation>
+        <translation>URL nakazila tretjih oseb</translation>
     </message>
     <message>
         <source>Options set in this dialog are overridden by the command line or in the configuration file:</source>
-        <translation>이 다이얼로그에서 설정한 옵션은 커맨드라인이나 설정파일에 의해 바뀔수 있습니다:</translation>
+        <translation>Možnosti, nastavljene v tem pogovornem oknu so preglašene v ukazni vrstici ali konfiguracijski datoteki:</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;Potrdi</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Prekliči</translation>
     </message>
     <message>
         <source>default</source>
-        <translation>기본값</translation>
+        <translation>privzeto</translation>
     </message>
     <message>
         <source>none</source>
-        <translation>없음</translation>
+        <translation>nič</translation>
     </message>
     <message>
         <source>Confirm options reset</source>
-        <translation>옵션 초기화를 확인</translation>
+        <translation>Potrditev ponastavitve</translation>
     </message>
     <message>
         <source>Client restart required to activate changes.</source>
-        <translation>변경 사항을 적용하기 위해서는 프로그램이 종료 후 재시작되어야 합니다.</translation>
+        <translation>Za uveljavitev sprememb je potreben ponoven zagon programa.</translation>
     </message>
     <message>
         <source>Client will be shut down. Do you want to proceed?</source>
-        <translation>클라이언트가 종료됩니다, 계속 진행하시겠습니까?</translation>
+        <translation>Program bo zaustavljen. Želite nadaljevati z izhodom?</translation>
     </message>
     <message>
         <source>Configuration options</source>
-        <translation>설정 옵션</translation>
+        <translation>Možnosti konfiguracije</translation>
     </message>
     <message>
         <source>The configuration file is used to specify advanced user options which override GUI settings. Additionally, any command-line options will override this configuration file.</source>
-        <translation>설정 파일은 GUI 설정을 우선하는 고급 사용자 옵션을 지정하는 데 사용됩니다. 또한 모든 명령 줄 옵션이 설정 파일보다 우선합니다.</translation>
+        <translation>Konfiguracijska datoteka se uporablja za določanje naprednih uporabniških možnosti, ki preglasijo nastavitve GUI-ja. Poleg tega bodo vse možnosti ukazne vrstice preglasile to konfiguracijsko datoteko.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation>오류</translation>
+        <translation>Napaka</translation>
     </message>
     <message>
         <source>The configuration file could not be opened.</source>
-        <translation>설정 파일을 열 수 없습니다.</translation>
+        <translation>Konfiguracijske datoteke ni bilo moč odpreti.</translation>
     </message>
     <message>
         <source>This change would require a client restart.</source>
-        <translation>이 변경 사항 적용을 위해 프로그램 재시작이 필요합니다. </translation>
+        <translation>Ta sprememba zahteva ponoven zagon programa.</translation>
     </message>
     <message>
         <source>The supplied proxy address is invalid.</source>
-        <translation>지정한 프록시 주소가 잘못되었습니다.</translation>
+        <translation>Vnešeni naslov posredniškega strežnika ni veljaven.</translation>
     </message>
 </context>
 <context>
     <name>OverviewPage</name>
     <message>
         <source>Form</source>
-        <translation>유형</translation>
+        <translation>Oblika</translation>
     </message>
     <message>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>표시된 정보가 오래된 것 같습니다. 비트코인 네트워크에 연결하고 난 다음에 지갑을 자동으로 동기화 하지만, 아직 과정이 끝나지는 않았습니다.</translation>
+        <translation>Prikazani podatki so morda zastareli. Program ob vzpostavitvi povezave samodejno sinhronizira denarnico z omrežjem Bitcoin, a trenutno ta proces še ni zaključen.</translation>
     </message>
     <message>
         <source>Watch-only:</source>
-        <translation>조회전용:</translation>
+        <translation>Opazovano:</translation>
     </message>
     <message>
         <source>Available:</source>
-        <translation>사용 가능:</translation>
+        <translation>Na voljo:</translation>
     </message>
     <message>
         <source>Your current spendable balance</source>
-        <translation>당신의 현재 사용 가능한 잔액</translation>
+        <translation>Skupni znesek vaših sredstev, s katerimi lahko prosto razpolagate</translation>
     </message>
     <message>
         <source>Pending:</source>
-        <translation>미확정:</translation>
+        <translation>Nepotrjeno:</translation>
     </message>
     <message>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</source>
-        <translation>아직 확인되지 않아 사용가능한 잔액에 반영되지 않은 거래 총액</translation>
+        <translation>Skupni znesek sredstev s katerimi še ne razpolagate prosto, ker so del še nepotrjenih transakcij.</translation>
     </message>
     <message>
         <source>Immature:</source>
-        <translation>아직 사용 불가능:</translation>
+        <translation>Nedozorelo:</translation>
     </message>
     <message>
         <source>Mined balance that has not yet matured</source>
-        <translation>아직 사용 가능하지 않은 채굴된 잔액</translation>
+        <translation>Nedozorel narudarjeni znesek</translation>
     </message>
     <message>
         <source>Balances</source>
-        <translation>잔액</translation>
+        <translation>Stanje sredstev</translation>
     </message>
     <message>
         <source>Total:</source>
-        <translation>총액:</translation>
+        <translation>Skupaj:</translation>
     </message>
     <message>
         <source>Your current total balance</source>
-        <translation>당신의 현재 총액</translation>
+        <translation>Trenutna vsota vseh vaših sredstev</translation>
     </message>
     <message>
         <source>Your current balance in watch-only addresses</source>
-        <translation>조회전용 주소의 현재 잔액</translation>
+        <translation>Trenutno stanje vaših sredstev na opazovanih naslovih</translation>
     </message>
     <message>
         <source>Spendable:</source>
-        <translation>사용가능:</translation>
+        <translation>Na voljo:</translation>
     </message>
     <message>
         <source>Recent transactions</source>
-        <translation>최근 거래</translation>
+        <translation>Nedavne transakcije</translation>
     </message>
     <message>
         <source>Unconfirmed transactions to watch-only addresses</source>
-        <translation>조회전용 주소의 검증되지 않은 거래</translation>
+        <translation>Nepotrjene transakcije na opazovanih naslovih</translation>
     </message>
     <message>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
-        <translation>조회전용 주소의 채굴된 잔액 중 사용가능하지 않은 금액</translation>
+        <translation>Nedozoreli narudarjeni znesek na opazovanih naslovih</translation>
     </message>
     <message>
         <source>Current total balance in watch-only addresses</source>
-        <translation>조회전용 주소의 현재 잔액</translation>
+        <translation>Trenutno skupno stanje sredstev na opazovanih naslovih</translation>
     </message>
 </context>
 <context>
     <name>PaymentServer</name>
     <message>
         <source>Payment request error</source>
-        <translation>지불 요청 오류</translation>
+        <translation>Napaka pri zahtevi plačila</translation>
     </message>
     <message>
         <source>Cannot start bitcoin: click-to-pay handler</source>
-        <translation>bitcoin: 핸들러를 시작할 수 없음</translation>
+        <translation>Ni mogoče zagnati rokovalca plačilnih povezav tipa bitcoin:.</translation>
     </message>
     <message>
         <source>URI handling</source>
-        <translation>URI 핸들링</translation>
+        <translation>Rokovanje z URI</translation>
     </message>
     <message>
         <source>'bitcoin://' is not a valid URI. Use 'bitcoin:' instead.</source>
-        <translation>'bitcoin://"은 잘못된 URI입니다. 'bitcoin:'을 사용하십시오.</translation>
+        <translation>'bitcoin://' ni veljaven URI. Uporabite raje 'bitcoin:' .</translation>
     </message>
     <message>
         <source>You are using a BIP70 URL which will be unsupported in the future.</source>
-        <translation>지금 사용하고 있는 BIP70 URL은 나중에 지원되지 않을 수 있습니다.</translation>
+        <translation>Uporabljate BIP70 URL, ki v prihodnosti ne bo podprt.</translation>
     </message>
     <message>
         <source>Payment request fetch URL is invalid: %1</source>
-        <translation>지불 요청의 URL이 올바르지 않습니다: %1</translation>
+        <translation>Naslov URL za pridobitev zahtevka za plačilo ni veljaven: %1</translation>
     </message>
     <message>
         <source>Cannot process payment request because BIP70 support was not compiled in.</source>
-        <translation>BIP70 기능이 포함되지 않아서 지불 요청을 처리할 수 없습니다.</translation>
+        <translation>Zahteve za plačilo ni mogoče obdelati, ker podpora za BIP70 ni bila sestavljena v Bitcoin Core.</translation>
     </message>
     <message>
         <source>Invalid payment address %1</source>
-        <translation>잘못된 지불 주소 %1</translation>
+        <translation>Neveljaven naslov za plačilo %1</translation>
     </message>
     <message>
         <source>URI cannot be parsed! This can be caused by an invalid Bitcoin address or malformed URI parameters.</source>
-        <translation>URI의 파싱에 문제가 발생했습니다. 잘못된 비트코인 주소나 URI 파라미터 구성에 오류가 존재할 수 있습니다.</translation>
+        <translation>URI je neprepoznaven! Možno je, da je naslov Bitcoin neveljaven, ali da so parametri v URI napačno oblikovani.</translation>
     </message>
     <message>
         <source>Payment request file handling</source>
-        <translation>지불 요청 파일 처리중</translation>
+        <translation>Rokovanje z datoteko z zahtevkom za plačilo</translation>
     </message>
     <message>
         <source>Payment request file cannot be read! This can be caused by an invalid payment request file.</source>
-        <translation>지불 요청 파일을 읽을 수 없습니다. 이것은 잘못된 지불 요청 파일에 의해 발생하는 오류일 수 있습니다.</translation>
+        <translation>Datoteke z zahtevkom za plačilo ni mogoče prebrati! Možno je, da datoteka ni veljavna.</translation>
     </message>
     <message>
         <source>Payment request rejected</source>
-        <translation>지불 요청이 거부됨</translation>
+        <translation>Zahtevek za plačilo zavrnjen</translation>
     </message>
     <message>
         <source>Payment request network doesn't match client network.</source>
-        <translation>지불 요청 네트워크가 클라이언트 네트워크와 일치하지 않습니다.</translation>
+        <translation>Zahtevek za plačilo in vaš odjemalec se nahajata na dveh različnih omrežjih.</translation>
     </message>
     <message>
         <source>Payment request expired.</source>
-        <translation>지불 요청이 만료되었습니다.</translation>
+        <translation>Zahtevek za plačilo je potekel.</translation>
     </message>
     <message>
         <source>Payment request is not initialized.</source>
-        <translation>지불 요청이 초기화 되지 않았습니다.</translation>
+        <translation>Zahtevek za plačilo ni inicializiran.</translation>
     </message>
     <message>
         <source>Unverified payment requests to custom payment scripts are unsupported.</source>
-        <translation>임의로 변경한 결제 스크립트 기반의 지불 요청 양식은 검증되기 전까지는 지원되지 않습니다.</translation>
+        <translation>Nepreverjeni zahtevki za plačilo, namenjeni plačilni skripti po meri, niso podprti.</translation>
     </message>
     <message>
         <source>Invalid payment request.</source>
-        <translation>잘못된 지불 요청입니다.</translation>
+        <translation>Neveljaven zahtevek za plačilo.</translation>
     </message>
     <message>
         <source>Requested payment amount of %1 is too small (considered dust).</source>
-        <translation>요청한 금액 %1의 양이 너무 적습니다. (더스트로 간주)</translation>
+        <translation>Znesek %1 v zahtevku za plačilo je prenizek (smatran za prah).</translation>
     </message>
     <message>
         <source>Refund from %1</source>
-        <translation>%1 으로부터의 환불</translation>
+        <translation>Povračilo od %1</translation>
     </message>
     <message>
         <source>Payment request %1 is too large (%2 bytes, allowed %3 bytes).</source>
-        <translation>지불 요청 %1은 너무 큽니다 (%2 바이트, %3 바이트까지 허용됩니다).</translation>
+        <translation>Zahtevek za plačilo %1 je prevelik (%2 bajtov, dovoljenih je %3 bajtov.)</translation>
     </message>
     <message>
         <source>Error communicating with %1: %2</source>
-        <translation>%1과의 통신 오류: %2</translation>
+        <translation>Napaka pri povezavi z  %1: %2</translation>
     </message>
     <message>
         <source>Payment request cannot be parsed!</source>
-        <translation>지불요청을 파싱할 수 없습니다.</translation>
+        <translation>Zahtevek za plačilo je neprepoznaven!</translation>
     </message>
     <message>
         <source>Bad response from server %1</source>
-        <translation>서버 %1로 부터 잘못된 반응</translation>
+        <translation>Napačen odziv strežnika %1</translation>
     </message>
     <message>
         <source>Network request error</source>
-        <translation>네트워크 요청 오류</translation>
+        <translation>Napaka pri zahtevku za plačilo</translation>
     </message>
     <message>
         <source>Payment acknowledged</source>
-        <translation>지불이 승인됨</translation>
+        <translation>Plačilo potrjeno</translation>
     </message>
 </context>
 <context>
     <name>PeerTableModel</name>
     <message>
         <source>User Agent</source>
-        <translation>유저 에이전트</translation>
+        <translation>Ime agenta</translation>
     </message>
     <message>
         <source>Node/Service</source>
-        <translation>노드/서비스</translation>
+        <translation>Naslov</translation>
     </message>
     <message>
         <source>NodeId</source>
-        <translation>노드 ID</translation>
+        <translation>NodeId</translation>
     </message>
     <message>
         <source>Ping</source>
-        <translation>핑</translation>
+        <translation>Odzivni čas (Ping)</translation>
     </message>
     <message>
         <source>Sent</source>
-        <translation>보냄</translation>
+        <translation>Oddano</translation>
     </message>
     <message>
         <source>Received</source>
-        <translation>받음</translation>
+        <translation>Prejeto</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>Amount</source>
-        <translation>금액</translation>
+        <translation>Znesek</translation>
     </message>
     <message>
         <source>Enter a Bitcoin address (e.g. %1)</source>
-        <translation>비트코인 주소를 입력하세요 (예. %1)</translation>
+        <translation>Vnesite naslov Bitcoin (npr. %1):</translation>
     </message>
     <message>
         <source>%1 d</source>
-        <translation>%1 일</translation>
+        <translation>%1 d</translation>
     </message>
     <message>
         <source>%1 h</source>
-        <translation>%1 시간</translation>
+        <translation>%1 h</translation>
     </message>
     <message>
         <source>%1 m</source>
-        <translation>%1 분</translation>
+        <translation>%1 m</translation>
     </message>
     <message>
         <source>%1 s</source>
-        <translation>%1 초</translation>
+        <translation>%1 s</translation>
     </message>
     <message>
         <source>None</source>
-        <translation>없음</translation>
+        <translation>Nič</translation>
     </message>
     <message>
         <source>N/A</source>
-        <translation>없음</translation>
+        <translation>Neznano</translation>
     </message>
     <message>
         <source>%1 ms</source>
@@ -1520,523 +1592,531 @@
     </message>
     <message numerus="yes">
         <source>%n second(s)</source>
-        <translation><numerusform>%n 초</numerusform></translation>
+        <translation><numerusform>%n sekunda</numerusform><numerusform>%n sekundi</numerusform><numerusform>%n sekunde</numerusform><numerusform>%n sekund</numerusform></translation>
     </message>
     <message numerus="yes">
         <source>%n minute(s)</source>
-        <translation><numerusform>%n 분</numerusform></translation>
+        <translation><numerusform>%n minuta</numerusform><numerusform>%n minuti</numerusform><numerusform>%n minute</numerusform><numerusform>%n minut</numerusform></translation>
     </message>
     <message numerus="yes">
         <source>%n hour(s)</source>
-        <translation><numerusform>%n 시간</numerusform></translation>
+        <translation><numerusform>%n ura</numerusform><numerusform>%n uri</numerusform><numerusform>%n ure</numerusform><numerusform>%n ur</numerusform></translation>
     </message>
     <message numerus="yes">
         <source>%n day(s)</source>
-        <translation><numerusform>&amp;n 일</numerusform></translation>
+        <translation><numerusform>%n dan</numerusform><numerusform>%n dni</numerusform><numerusform>%n dni</numerusform><numerusform>%n dni</numerusform></translation>
     </message>
     <message numerus="yes">
         <source>%n week(s)</source>
-        <translation><numerusform>%n 주</numerusform></translation>
+        <translation><numerusform>%n teden</numerusform><numerusform>%n tedna</numerusform><numerusform>%n tedne</numerusform><numerusform>%n tednov</numerusform></translation>
     </message>
     <message>
         <source>%1 and %2</source>
-        <translation>%1 그리고 %2</translation>
+        <translation>%1 in %2</translation>
     </message>
     <message numerus="yes">
         <source>%n year(s)</source>
-        <translation><numerusform>%n 년</numerusform></translation>
+        <translation><numerusform>%n leto</numerusform><numerusform>%n leti</numerusform><numerusform>%n leta</numerusform><numerusform>%n let</numerusform></translation>
     </message>
     <message>
         <source>%1 B</source>
-        <translation>%1 바이트</translation>
+        <translation>%1 B</translation>
     </message>
     <message>
         <source>%1 KB</source>
-        <translation>%1 킬로바이트</translation>
+        <translation>%1 KiB</translation>
     </message>
     <message>
         <source>%1 MB</source>
-        <translation>%1 메가바이트</translation>
+        <translation>%1 MiB</translation>
     </message>
     <message>
         <source>%1 GB</source>
-        <translation>%1 기가바이트</translation>
+        <translation>%1 GiB</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" does not exist.</source>
-        <translation>오류: 지정한 데이터 폴더 "%1"은 존재하지 않습니다.</translation>
+        <translation>Napaka: Vnešena podatkovna mapa "%1" ne obstaja.</translation>
     </message>
     <message>
         <source>Error: Cannot parse configuration file: %1.</source>
-        <translation>오류: 설성 파일 %1을 파싱할 수 없습니다</translation>
+        <translation>Napaka: Ne morem razčleniti konfiguracijske datoteke: %1.</translation>
     </message>
     <message>
         <source>Error: %1</source>
-        <translation>오류: %1</translation>
+        <translation>Napaka: %1</translation>
     </message>
     <message>
         <source>%1 didn't yet exit safely...</source>
-        <translation>%1가 아직 안전하게 종료되지 않았습니다...</translation>
+        <translation>%1 se še ni varno zaprl ...</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation>알수없음</translation>
+        <translation>neznano</translation>
     </message>
 </context>
 <context>
     <name>QRImageWidget</name>
     <message>
         <source>&amp;Save Image...</source>
-        <translation>이미지 저장(&amp;S)...</translation>
+        <translation>&amp;Shrani sliko ...</translation>
     </message>
     <message>
         <source>&amp;Copy Image</source>
-        <translation>이미지 복사(&amp;C)</translation>
+        <translation>&amp;Kopiraj sliko</translation>
     </message>
     <message>
         <source>Resulting URI too long, try to reduce the text for label / message.</source>
-        <translation>URI 결과가 너무 깁니다. 라벨 / 메세지를 줄이세요.</translation>
+        <translation>Nastali URI je predolg. Skušajte skrajšati besedilo v oznaki/sporočilu.</translation>
     </message>
     <message>
         <source>Error encoding URI into QR Code.</source>
-        <translation>URI를 QR 코드로 인코딩하는 중 오류가 발생했습니다.</translation>
+        <translation>Napaka pri kodiranju URI naslova v QR kodo.</translation>
+    </message>
+    <message>
+        <source>QR code support not available.</source>
+        <translation>Podpora za QR kode ni na voljo.</translation>
     </message>
     <message>
         <source>Save QR Code</source>
-        <translation>QR코드 저장</translation>
+        <translation>Shrani QR kodo</translation>
     </message>
     <message>
         <source>PNG Image (*.png)</source>
-        <translation>PNG 이미지(*.png)</translation>
+        <translation>PNG slika (*.png)</translation>
     </message>
 </context>
 <context>
     <name>RPCConsole</name>
     <message>
         <source>N/A</source>
-        <translation>N/A</translation>
+        <translation>Neznano</translation>
     </message>
     <message>
         <source>Client version</source>
-        <translation>클라이언트 버전</translation>
+        <translation>Različica odjemalca</translation>
     </message>
     <message>
         <source>&amp;Information</source>
-        <translation>정보(&amp;I)</translation>
+        <translation>&amp;Informacije</translation>
     </message>
     <message>
         <source>Debug window</source>
-        <translation>디버그 창</translation>
+        <translation>Razhroščevalno okno</translation>
     </message>
     <message>
         <source>General</source>
-        <translation>일반</translation>
+        <translation>Splošno</translation>
     </message>
     <message>
         <source>Using BerkeleyDB version</source>
-        <translation>사용 중인 BerkeleyDB 버전</translation>
+        <translation>BerkeleyDB različica v rabi</translation>
     </message>
     <message>
         <source>Datadir</source>
-        <translation>데이터 폴더</translation>
+        <translation>Podatkovna mapa</translation>
     </message>
     <message>
         <source>To specify a non-default location of the data directory use the '%1' option.</source>
-        <translation>기본 위치가 아닌 곳으로 데이타 폴더를 지정하려면 '%1' 옵션을 사용하세요.</translation>
+        <translation>Za izbiranje ne-privzete lokacije podatkovne mape uporabite možnost '%1'.</translation>
     </message>
     <message>
         <source>Blocksdir</source>
-        <translation>Blocksdir</translation>
+        <translation>Podatkovna mapa blokov</translation>
     </message>
     <message>
         <source>To specify a non-default location of the blocks directory use the '%1' option.</source>
-        <translation>기본 위치가 아닌 곳으로 블럭 폴더를 지정하려면 '%1' 옵션을 사용하세요.</translation>
+        <translation>Če želite določiti neprivzeto lokacijo podatkovne mape blokov, uporabite možnost '%1'.</translation>
     </message>
     <message>
         <source>Startup time</source>
-        <translation>시작 시간</translation>
+        <translation>Čas zagona</translation>
     </message>
     <message>
         <source>Network</source>
-        <translation>네트워크</translation>
+        <translation>Omrežje</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>이름</translation>
+        <translation>Ime</translation>
     </message>
     <message>
         <source>Number of connections</source>
-        <translation>연결 수</translation>
+        <translation>Število povezav</translation>
     </message>
     <message>
         <source>Block chain</source>
-        <translation>블록 체인</translation>
+        <translation>Veriga blokov</translation>
     </message>
     <message>
         <source>Current number of blocks</source>
-        <translation>현재 블록 수</translation>
+        <translation>Trenutno število blokov</translation>
     </message>
     <message>
         <source>Memory Pool</source>
-        <translation>메모리 풀</translation>
+        <translation>Memory Pool</translation>
     </message>
     <message>
         <source>Current number of transactions</source>
-        <translation>현재 거래 수</translation>
+        <translation>Trenutno število transakcij</translation>
     </message>
     <message>
         <source>Memory usage</source>
-        <translation>메모리 사용량</translation>
+        <translation>Raba spomina</translation>
     </message>
     <message>
         <source>Wallet: </source>
-        <translation>지갑:</translation>
+        <translation>Denarnica:</translation>
     </message>
     <message>
         <source>(none)</source>
-        <translation>(없음)</translation>
+        <translation>(nič)</translation>
     </message>
     <message>
         <source>&amp;Reset</source>
-        <translation>리셋(&amp;R)</translation>
+        <translation>&amp;Ponastavi</translation>
     </message>
     <message>
         <source>Received</source>
-        <translation>받음</translation>
+        <translation>Prejeto</translation>
     </message>
     <message>
         <source>Sent</source>
-        <translation>보냄</translation>
+        <translation>Oddano</translation>
     </message>
     <message>
         <source>&amp;Peers</source>
-        <translation>피어(&amp;P)</translation>
+        <translation>&amp;Soležniki</translation>
     </message>
     <message>
         <source>Banned peers</source>
-        <translation>차단된 피어</translation>
+        <translation>Blokirani soležniki</translation>
     </message>
     <message>
         <source>Select a peer to view detailed information.</source>
-        <translation>자세한 정보를 보려면 피어를 선택하세요.</translation>
+        <translation>Izberite soležnika, o katerem si želite ogledati podrobnejše informacije.</translation>
     </message>
     <message>
         <source>Whitelisted</source>
-        <translation>화이트리스트에 포함</translation>
+        <translation>Dovoljeni</translation>
     </message>
     <message>
         <source>Direction</source>
-        <translation>방향</translation>
+        <translation>Smer povezave</translation>
     </message>
     <message>
         <source>Version</source>
-        <translation>버전</translation>
+        <translation>Različica</translation>
     </message>
     <message>
         <source>Starting Block</source>
-        <translation>시작된 블록</translation>
+        <translation>Začetni blok</translation>
     </message>
     <message>
         <source>Synced Headers</source>
-        <translation>동기화된 헤더</translation>
+        <translation>Sinhronizirane glave</translation>
     </message>
     <message>
         <source>Synced Blocks</source>
-        <translation>동기화된 블록</translation>
+        <translation>Sinhronizirani bloki</translation>
     </message>
     <message>
         <source>User Agent</source>
-        <translation>유저 에이전트</translation>
+        <translation>Ime agenta</translation>
     </message>
     <message>
         <source>Open the %1 debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>%1 디버그 로그파일을 현재 데이터 폴더에서 엽니다. 용량이 큰 로그 파일들은 몇 초가 걸릴 수 있습니다.</translation>
+        <translation>Odpre %1 razhroščevalni dnevnik debug.log, ki se nahaja v trenutni podatkovni mapi. Če je datoteka velika, lahko postopek traja nekaj sekund.</translation>
     </message>
     <message>
         <source>Decrease font size</source>
-        <translation>글자 크기 축소</translation>
+        <translation>Zmanjšaj velikost pisave</translation>
     </message>
     <message>
         <source>Increase font size</source>
-        <translation>글자 크기 확대</translation>
+        <translation>Povečaj velikost pisave</translation>
     </message>
     <message>
         <source>Services</source>
-        <translation>서비스</translation>
+        <translation>Storitve</translation>
     </message>
     <message>
         <source>Ban Score</source>
-        <translation>밴 스코어</translation>
+        <translation>Kazenske točke</translation>
     </message>
     <message>
         <source>Connection Time</source>
-        <translation>접속 시간</translation>
+        <translation>Trajanje povezave</translation>
     </message>
     <message>
         <source>Last Send</source>
-        <translation>마지막으로 보낸 시간</translation>
+        <translation>Nazadje oddano</translation>
     </message>
     <message>
         <source>Last Receive</source>
-        <translation>마지막으로 받은 시간</translation>
+        <translation>Nazadnje prejeto</translation>
     </message>
     <message>
         <source>Ping Time</source>
-        <translation>Ping 시간</translation>
+        <translation>Odzivni čas</translation>
     </message>
     <message>
         <source>The duration of a currently outstanding ping.</source>
-        <translation>현재 진행중인 PING에 걸린 시간.</translation>
+        <translation>Trajanje trenutnega pinga.</translation>
     </message>
     <message>
         <source>Ping Wait</source>
-        <translation>Ping 대기</translation>
+        <translation>Ping Wait</translation>
     </message>
     <message>
         <source>Min Ping</source>
-        <translation>최소 핑</translation>
+        <translation>Min Ping</translation>
     </message>
     <message>
         <source>Time Offset</source>
-        <translation>시간 오프셋</translation>
+        <translation>Časovni odklon</translation>
     </message>
     <message>
         <source>Last block time</source>
-        <translation>최종 블록 시각</translation>
+        <translation>Čas zadnjega bloka</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>열기(&amp;O)</translation>
+        <translation>&amp;Odpri</translation>
     </message>
     <message>
         <source>&amp;Console</source>
-        <translation>콘솔(&amp;C)</translation>
+        <translation>&amp;Konzola</translation>
     </message>
     <message>
         <source>&amp;Network Traffic</source>
-        <translation>네트워크 트래픽(&amp;N)</translation>
+        <translation>&amp;Omrežni promet</translation>
     </message>
     <message>
         <source>Totals</source>
-        <translation>총액</translation>
+        <translation>Promet</translation>
     </message>
     <message>
         <source>In:</source>
-        <translation>In:</translation>
+        <translation>Dohodnih:</translation>
     </message>
     <message>
         <source>Out:</source>
-        <translation>Out:</translation>
+        <translation>Odhodnih:</translation>
     </message>
     <message>
         <source>Debug log file</source>
-        <translation>로그 파일 디버그</translation>
+        <translation>Razhroščevalni dnevnik</translation>
     </message>
     <message>
         <source>Clear console</source>
-        <translation>콘솔 초기화</translation>
+        <translation>Počisti konzolo</translation>
     </message>
     <message>
         <source>1 &amp;hour</source>
-        <translation>1시간(&amp;H)</translation>
+        <translation>1 &amp;ura</translation>
     </message>
     <message>
         <source>1 &amp;day</source>
-        <translation>1일(&amp;D)</translation>
+        <translation>1 &amp;dan</translation>
     </message>
     <message>
         <source>1 &amp;week</source>
-        <translation>1주(&amp;W)</translation>
+        <translation>1 &amp;teden</translation>
     </message>
     <message>
         <source>1 &amp;year</source>
-        <translation>1년(&amp;Y)</translation>
+        <translation>1 &amp;leto</translation>
     </message>
     <message>
         <source>&amp;Disconnect</source>
-        <translation>접속 끊기(&amp;D)</translation>
+        <translation>&amp;Prekini povezavo</translation>
     </message>
     <message>
         <source>Ban for</source>
-        <translation>차단사유:</translation>
+        <translation>Blokiraj za</translation>
     </message>
     <message>
         <source>&amp;Unban</source>
-        <translation>노드 차단 취소(&amp;U)</translation>
+        <translation>&amp;Odblokiraj</translation>
     </message>
     <message>
         <source>Welcome to the %1 RPC console.</source>
-        <translation>%1 RPC 콘솔에 오신걸 환영합니다.</translation>
+        <translation>Dobrodošli v konzoli %1.</translation>
     </message>
     <message>
         <source>Use up and down arrows to navigate history, and %1 to clear screen.</source>
-        <translation>기록을 탐색하려면 위 / 아래 화살표를 사용하고 화면을 지우려면 %1을 사용하십시오.</translation>
+        <translation>Uporabite tipki gor in dol za navigacijo po zgodovini ukazov, in %1 za čiščenje zaslona.</translation>
     </message>
     <message>
         <source>Type %1 for an overview of available commands.</source>
-        <translation>사용할 수 있는 명령을 둘러보려면 %1 를 입력하십시요.</translation>
+        <translation>Vtipkajte %1 za pregled razpoložljivih ukazov.</translation>
     </message>
     <message>
         <source>For more information on using this console type %1.</source>
-        <translation>더 많은 정보를 보기 위해선 콘솔에 %1를 치세요.</translation>
+        <translation>Za več informacij o uporabi te konzole vpišite %1.</translation>
     </message>
     <message>
         <source>WARNING: Scammers have been active, telling users to type commands here, stealing their wallet contents. Do not use this console without fully understanding the ramifications of a command.</source>
-        <translation>경고 : 사기꾼이 사용자에게 여기에 명령을 입력하게 하여 지갑 내용을 훔칠수 있다는 사실을 알려드립니다. 명령어를 완전히 이해하지 못한다면 콘솔을 사용하지 마십시오.</translation>
+        <translation>OPOZORILO: Goljufi so bili aktivni! Uporabnikom svetujejo, naj tukaj vnašajo ukaze in jim tako kradejo vsebino denarnice. Te konzole ne uporabljajte, če ne popolnoma razumete posledic ukazov.</translation>
     </message>
     <message>
         <source>Network activity disabled</source>
-        <translation>네트워크 활동이 정지됨.</translation>
+        <translation>Omrežna aktivnost onemogočena.</translation>
     </message>
     <message>
         <source>Executing command without any wallet</source>
-        <translation>지갑 없이 명령 실행</translation>
+        <translation>Izvajam ukaz brez denarnice</translation>
     </message>
     <message>
         <source>Executing command using "%1" wallet</source>
-        <translation>"%1" 지갑을 사용하여 명령 실행</translation>
+        <translation>Izvajam ukaz v denarnici "%1"</translation>
     </message>
     <message>
         <source>(node id: %1)</source>
-        <translation>(노드 ID: %1)</translation>
+        <translation>(id vozlišča: %1)</translation>
     </message>
     <message>
         <source>via %1</source>
-        <translation>%1 경유</translation>
+        <translation>preko %1</translation>
     </message>
     <message>
         <source>never</source>
-        <translation>없음</translation>
+        <translation>nikoli</translation>
     </message>
     <message>
         <source>Inbound</source>
-        <translation>인바운드</translation>
+        <translation>Dohodna</translation>
     </message>
     <message>
         <source>Outbound</source>
-        <translation>아웃바운드</translation>
+        <translation>Odhodna</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>예</translation>
+        <translation>Da</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>아니오</translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation>알수없음</translation>
+        <translation>Neznano</translation>
     </message>
 </context>
 <context>
     <name>ReceiveCoinsDialog</name>
     <message>
         <source>&amp;Amount:</source>
-        <translation>거래액(&amp;A):</translation>
+        <translation>&amp;Znesek:</translation>
     </message>
     <message>
         <source>&amp;Label:</source>
-        <translation>라벨(&amp;L):</translation>
+        <translation>&amp;Oznaka:</translation>
     </message>
     <message>
         <source>&amp;Message:</source>
-        <translation>메시지(&amp;M):</translation>
+        <translation>&amp;Sporočilo:</translation>
     </message>
     <message>
         <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Bitcoin network.</source>
-        <translation>지불 요청에 첨부되는 선택가능한 메시지 입니다. 이 메세지는 요청이 열릴 때 표시될 것 입니다. 메모: 이 메시지는 비트코인 네트워크로 전송되지 않습니다.</translation>
+        <translation>Neobvezno sporočilo kot priponka zahtevku za plačilo, ki bo prikazano, ko bo zahtevek odprt. Opomba: Opravljeno plačilo.prek omrežja Bitcoin tega sporočila ne bo vsebovalo.</translation>
     </message>
     <message>
         <source>An optional label to associate with the new receiving address.</source>
-        <translation>새로운 받기 주소와 결합될 부가적인 라벨.</translation>
+        <translation>Oznaka novega sprejemnega naslova.</translation>
     </message>
     <message>
         <source>Use this form to request payments. All fields are &lt;b&gt;optional&lt;/b&gt;.</source>
-        <translation>지급을 요청하기 위해 아래 형식을 사용하세요. 입력값은 &lt;b&gt;선택 사항&lt;/b&gt; 입니다.</translation>
+        <translation>S tem obrazcem ustvarite nov zahtevek za plačilo. Vsa polja so &lt;b&gt;neobvezna&lt;/b&gt;.</translation>
     </message>
     <message>
         <source>An optional amount to request. Leave this empty or zero to not request a specific amount.</source>
-        <translation>요청할 금액 입력칸으로 선택 사항입니다. 빈 칸으로 두거나 특정 금액이 필요하지 않는 경우 0을 입력하세요. </translation>
+        <translation>Zahtevani znesek. Če ne zahtevate določenega zneska, pustite prazno ali nastavite vrednost na 0.</translation>
+    </message>
+    <message>
+        <source>&amp;Create new receiving address</source>
+        <translation>&amp;Ustvari nov naslov za prejemanje</translation>
     </message>
     <message>
         <source>Clear all fields of the form.</source>
-        <translation>양식의 모든 필드를 지웁니다.</translation>
+        <translation>Počisti vsa polja.</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>지우기</translation>
+        <translation>Počisti</translation>
     </message>
     <message>
         <source>Native segwit addresses (aka Bech32 or BIP-173) reduce your transaction fees later on and offer better protection against typos, but old wallets don't support them. When unchecked, an address compatible with older wallets will be created instead.</source>
-        <translation>세그윗 주소(Bech32 또는 BIP-173)는 거래 수수료를 줄여주고 오입력을 방지하지만 구버전 지갑은 이를 지원하지 않습니다. 체크하지 않으면 구버전 지갑과 호환되는 주소가 생성됩니다.</translation>
+        <translation>Nativni naslovi segwit (aka Bech32 ali BIP-173) kasneje znižajo vaše transakcijske stroške in nudijo boljšo zaščito pred tiskarskimi škrati, vendar jih stare denarnice ne podpirajo. Če ne izberete polja, bo namesto tega ustvarjen naslov združljiv s starejšimi denarnicami.</translation>
     </message>
     <message>
         <source>Generate native segwit (Bech32) address</source>
-        <translation>Bech32 세그윗 주소 생성</translation>
+        <translation>Ustvari domači segwit (Bech32) naslov</translation>
     </message>
     <message>
         <source>Requested payments history</source>
-        <translation>지불 요청 이력</translation>
+        <translation>Zgodovina zahtevkov za plačilo</translation>
     </message>
     <message>
         <source>Show the selected request (does the same as double clicking an entry)</source>
-        <translation>선택된 요청을 표시하기 (더블 클릭으로 항목을 표시할 수 있습니다)</translation>
+        <translation>Prikaz izbranega zahtevka. (Isto funkcijo opravi dvojni klik na zapis.)</translation>
     </message>
     <message>
         <source>Show</source>
-        <translation>보기</translation>
+        <translation>Pokaži</translation>
     </message>
     <message>
         <source>Remove the selected entries from the list</source>
-        <translation>목록에서 삭제할 항목을 선택하시오</translation>
+        <translation>Odstrani označene vnose iz seznama</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation>삭제</translation>
+        <translation>Odstrani</translation>
     </message>
     <message>
         <source>Copy URI</source>
-        <translation>URI 복사</translation>
+        <translation>Kopireaj URI</translation>
     </message>
     <message>
         <source>Copy label</source>
-        <translation>라벨 복사</translation>
+        <translation>Kopiraj oznako</translation>
     </message>
     <message>
         <source>Copy message</source>
-        <translation>메시지 복사</translation>
+        <translation>Kopiraj sporočilo</translation>
     </message>
     <message>
         <source>Copy amount</source>
-        <translation>거래액 복사</translation>
+        <translation>Kopiraj znesek</translation>
     </message>
 </context>
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
         <source>QR Code</source>
-        <translation>QR 코드</translation>
+        <translation>QR Koda</translation>
     </message>
     <message>
         <source>Copy &amp;URI</source>
-        <translation>URI 복사(&amp;U)</translation>
+        <translation>Kopiraj &amp;URl</translation>
     </message>
     <message>
         <source>Copy &amp;Address</source>
-        <translation>주소 복사(&amp;A)</translation>
+        <translation>Kopiraj &amp;naslov</translation>
     </message>
     <message>
         <source>&amp;Save Image...</source>
-        <translation>이미지 저장(&amp;S)...</translation>
+        <translation>&amp;Shrani sliko ...</translation>
     </message>
     <message>
         <source>Request payment to %1</source>
-        <translation>%1에 지불을 요청했습니다</translation>
+        <translation>Zaprosi za plačilo na naslov %1</translation>
     </message>
     <message>
         <source>Payment information</source>
-        <translation>지불 정보</translation>
+        <translation>Informacije o plačilu</translation>
     </message>
     <message>
         <source>URI</source>
@@ -2044,364 +2124,371 @@
     </message>
     <message>
         <source>Address</source>
-        <translation>주소</translation>
+        <translation>Naslov</translation>
     </message>
     <message>
         <source>Amount</source>
-        <translation>거래액</translation>
+        <translation>Znesek</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation>라벨</translation>
+        <translation>Oznaka</translation>
     </message>
     <message>
         <source>Message</source>
-        <translation>메시지</translation>
+        <translation>Sporočilo</translation>
     </message>
     <message>
         <source>Wallet</source>
-        <translation>지갑</translation>
+        <translation>Denarnica</translation>
     </message>
 </context>
 <context>
     <name>RecentRequestsTableModel</name>
     <message>
         <source>Date</source>
-        <translation>날짜</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation>라벨</translation>
+        <translation>Oznaka</translation>
     </message>
     <message>
         <source>Message</source>
-        <translation>메시지</translation>
+        <translation>Sporočilo</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation>(라벨 없음)</translation>
+        <translation>(brez oznake)</translation>
     </message>
     <message>
         <source>(no message)</source>
-        <translation>(메세지가 없습니다)</translation>
+        <translation>(ni sporočila)</translation>
     </message>
     <message>
         <source>(no amount requested)</source>
-        <translation>(요청한 거래액 없음)</translation>
+        <translation>(brez zneska)</translation>
     </message>
     <message>
         <source>Requested</source>
-        <translation>요청됨</translation>
+        <translation>Zahtevana plačila</translation>
     </message>
 </context>
 <context>
     <name>SendCoinsDialog</name>
     <message>
         <source>Send Coins</source>
-        <translation>코인 전송내기</translation>
+        <translation>Pošlji</translation>
     </message>
     <message>
         <source>Coin Control Features</source>
-        <translation>코인 컨트롤 기능들</translation>
+        <translation>Upravljanje s kovanci</translation>
     </message>
     <message>
         <source>Inputs...</source>
-        <translation>입력...</translation>
+        <translation>Vhodi ...</translation>
     </message>
     <message>
         <source>automatically selected</source>
-        <translation>자동 선택됨</translation>
+        <translation>samodejno izbrani</translation>
     </message>
     <message>
         <source>Insufficient funds!</source>
-        <translation>잔액이 부족합니다!</translation>
+        <translation>Premalo sredstev!</translation>
     </message>
     <message>
         <source>Quantity:</source>
-        <translation>수량:</translation>
+        <translation>Št.vhodov:</translation>
     </message>
     <message>
         <source>Bytes:</source>
-        <translation>바이트:</translation>
+        <translation>Št.bajtov:</translation>
     </message>
     <message>
         <source>Amount:</source>
-        <translation>거래액:</translation>
+        <translation>Znesek:</translation>
     </message>
     <message>
         <source>Fee:</source>
-        <translation>수수료:</translation>
+        <translation>Provizija:</translation>
     </message>
     <message>
         <source>After Fee:</source>
-        <translation>수수료 이후:</translation>
+        <translation>Po proviziji:</translation>
     </message>
     <message>
         <source>Change:</source>
-        <translation>잔돈:</translation>
+        <translation>Vračilo:</translation>
     </message>
     <message>
         <source>If this is activated, but the change address is empty or invalid, change will be sent to a newly generated address.</source>
-        <translation>이 기능이 활성화되면 거스름돈 주소가 공란이거나 무효인 경우, 거스름돈은 새롭게 생성된 주소로 송금됩니다.</translation>
+        <translation>Če to vključite, nato pa vnesete neveljaven naslov, ali pa pustite polje prazno, bo vrnjen drobiž poslan na novo ustvarjen naslov.</translation>
     </message>
     <message>
         <source>Custom change address</source>
-        <translation>주소변경</translation>
+        <translation>Naslov za vračilo drobiža po meri</translation>
     </message>
     <message>
         <source>Transaction Fee:</source>
-        <translation>거래 수수료:</translation>
+        <translation>Provizija:</translation>
     </message>
     <message>
         <source>Choose...</source>
-        <translation>선택 하기...</translation>
+        <translation>Izberi ...</translation>
     </message>
     <message>
         <source>Using the fallbackfee can result in sending a transaction that will take several hours or days (or never) to confirm. Consider choosing your fee manually or wait until you have validated the complete chain.</source>
-        <translation>Fallbackfee를 사용하게 될 경우 보낸 거래가 승인이 완료 될 때까지 몇 시간 혹은 몇 일 (혹은 영원히) 이 걸릴 수 있습니다. 수동으로 수수료를 선택하거나 전체 체인의 유효성이 검증될 때까지 기다리십시오.</translation>
+        <translation>Uporaba nadomestnega nadomestila lahko pošlje transakcijo, ki bo trajala več ur ali dni (ali nikoli) za potrditev. Razmislite o ročni izbiri ali počakajte, da potrdite celotno verigo.</translation>
     </message>
     <message>
         <source>Warning: Fee estimation is currently not possible.</source>
-        <translation>경고: 지금은 수수료 예측이 불가능합니다.</translation>
+        <translation>Opozorilo: ocena provizije trenutno ni mogoča.</translation>
     </message>
     <message>
         <source>collapse fee-settings</source>
-        <translation>수수료 설정 접기</translation>
+        <translation>Skrije nastavitve provizije</translation>
     </message>
     <message>
         <source>Specify a custom fee per kB (1,000 bytes) of the transaction's virtual size.
 
 Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis per kB" for a transaction size of 500 bytes (half of 1 kB) would ultimately yield a fee of only 50 satoshis.</source>
-        <translation>거래 가상 크기의 kB (1,000 바이트)당 수수료을 지정하십시오.
-
-참고 : 수수료는 바이트 단위로 계산되므로 거래 크기가 500 바이트 (1kB의 절반)일때에 수수료가 "100 satoshis / kB"이면 궁극적으로 50사토시의 수수료만 발생합니다.</translation>
+        <translation>Določite poljubno provizijo na kB (1000 bajtov) navidezne velikosti transakcije.
+Opomba: Ker se provizija izračuna na bajt, bi provizija "100 satoshijev na kB" za transakcijo velikosti 500 bajtov (polovica enega kB) znašala 50 satoshijev.</translation>
     </message>
     <message>
         <source>per kilobyte</source>
-        <translation>킬로바이트 당</translation>
+        <translation>na KiB</translation>
     </message>
     <message>
         <source>Hide</source>
-        <translation>숨기기</translation>
+        <translation>Skrij</translation>
     </message>
     <message>
         <source>Recommended:</source>
-        <translation>권장:</translation>
+        <translation>Priporočena:</translation>
     </message>
     <message>
         <source>Custom:</source>
-        <translation>사용자 정의:</translation>
+        <translation>Po meri:</translation>
     </message>
     <message>
         <source>(Smart fee not initialized yet. This usually takes a few blocks...)</source>
-        <translation>(Smart fee가 아직 초기화 되지 않았습니다. 블록 분석이 완전하게 끝날 때 까지 기다려주십시오...)</translation>
+        <translation>(Samodejni obračun provizije še ni pripravljen. Po navadi izračun traja nekaj blokov ...)</translation>
     </message>
     <message>
         <source>Send to multiple recipients at once</source>
-        <translation>다수의 수령인들에게 한번에 보내기</translation>
+        <translation>Pošlji več prejemnikom hkrati</translation>
     </message>
     <message>
         <source>Add &amp;Recipient</source>
-        <translation>수령인 추가하기(&amp;R)</translation>
+        <translation>Dodaj &amp;prejemnika</translation>
     </message>
     <message>
         <source>Clear all fields of the form.</source>
-        <translation>양식의 모든 필드를 지웁니다.</translation>
+        <translation>Počisti vsa polja.</translation>
     </message>
     <message>
         <source>Dust:</source>
-        <translation>더스트:</translation>
+        <translation>Prah:</translation>
     </message>
     <message>
         <source>When there is less transaction volume than space in the blocks, miners as well as relaying nodes may enforce a minimum fee. Paying only this minimum fee is just fine, but be aware that this can result in a never confirming transaction once there is more demand for bitcoin transactions than the network can process.</source>
-        <translation>거래량이 블록에 남은 공간보다 적은 경우에는 채굴자나 중계 노드들이 최소 수수료를 허용할 수 있습니다. 최소 수수료만 지불하는건 괜찮지만, 네트워크가 처리할 수 있는 용량을 넘는 비트코인 거래가 있을 경우에는 이 거래가 승인이 안될 수 있다는 점을 유의하세요.</translation>
+        <translation>Kadar je v blokih manj volumna transakcij kot prostora v blokih, lahko rudarji in preusmeritvena vozlišča (relay nodes) uveljavijo minimalno provizijo. Plačilo le te minimalne provizije je čisto v redu, vendar se zavedajte, da lahko to povzroči nikoli potrjeno transakcijo, ko bo po bitcoin transakcijah večje povpraševanje, kot ga lahko obdela omrežje.</translation>
     </message>
     <message>
         <source>A too low fee might result in a never confirming transaction (read the tooltip)</source>
-        <translation>너무 적은 수수료로는 거래 승인이 안될 수도 있습니다 (툴팁을 참고하세요)</translation>
+        <translation>Prenizka provizija lahko privede do nikoli potrjene transakcije (preberite namig)</translation>
     </message>
     <message>
         <source>Confirmation time target:</source>
-        <translation>승인 시간 목표:</translation>
+        <translation>Čas do potrditve:</translation>
     </message>
     <message>
         <source>Enable Replace-By-Fee</source>
-        <translation>Replace-By-Fee 옵션 활성화</translation>
+        <translation>Omogoči Replace-By-Fee</translation>
     </message>
     <message>
         <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Replace-By-Fee (BIP-125) 옵션은 보낸 거래의 수수료 상향을 지원해 줍니다. 이 옵션이 없을 경우 거래 지연을 방지하기 위해 더 높은 수수료가 권장됩니다.</translation>
+        <translation>Z zamenjavo plačila (BIP-125) lahko po pošiljanju povečate pristojbino za transakcijo. Brez tega se lahko priporoči višja pristojbina za nadomestilo povečanega tveganja zamude pri transakciji.</translation>
     </message>
     <message>
         <source>Clear &amp;All</source>
-        <translation>모두 지우기(&amp;A)</translation>
+        <translation>Počisti &amp;vse </translation>
     </message>
     <message>
         <source>Balance:</source>
-        <translation>잔액:</translation>
+        <translation>Stanje:</translation>
     </message>
     <message>
         <source>Confirm the send action</source>
-        <translation>전송 기능 확인</translation>
+        <translation>Potrdi pošiljanje</translation>
     </message>
     <message>
         <source>S&amp;end</source>
-        <translation>보내기(&amp;E)</translation>
+        <translation>&amp;Pošlji</translation>
     </message>
     <message>
         <source>Copy quantity</source>
-        <translation>수량 복사</translation>
+        <translation>Kopiraj količino</translation>
     </message>
     <message>
         <source>Copy amount</source>
-        <translation>거래액 복사</translation>
+        <translation>Kopiraj znesek</translation>
     </message>
     <message>
         <source>Copy fee</source>
-        <translation>수수료 복사</translation>
+        <translation>Kopiraj znesek provizije</translation>
     </message>
     <message>
         <source>Copy after fee</source>
-        <translation>수수료 이후 복사</translation>
+        <translation>Kopiraj po proviziji</translation>
     </message>
     <message>
         <source>Copy bytes</source>
-        <translation>bytes 복사</translation>
+        <translation>Kopiraj bajte</translation>
     </message>
     <message>
         <source>Copy dust</source>
-        <translation>더스트 복사</translation>
+        <translation>Kopiraj prah</translation>
     </message>
     <message>
         <source>Copy change</source>
-        <translation>잔돈 복사</translation>
+        <translation>Kopiraj vračilo</translation>
     </message>
     <message>
         <source>%1 (%2 blocks)</source>
-        <translation>%1(%2 블록)</translation>
+        <translation>%1 (%2 blokov)</translation>
+    </message>
+    <message>
+        <source> from wallet '%1'</source>
+        <translation>iz denarnice '%1'</translation>
+    </message>
+    <message>
+        <source>%1 to '%2'</source>
+        <translation>%1 do '%2'</translation>
     </message>
     <message>
         <source>%1 to %2</source>
-        <translation>%1을(를) %2(으)로</translation>
+        <translation>%1 do %2</translation>
     </message>
     <message>
         <source>Are you sure you want to send?</source>
-        <translation>정말로 보내시겠습니까?</translation>
+        <translation>Ali ste prepričani, da želite poslati?</translation>
     </message>
     <message>
         <source>or</source>
-        <translation>또는</translation>
+        <translation>ali</translation>
     </message>
     <message>
         <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>추후에 거래 수수료를 올릴 수 있습니다 (Replace-By-Fee, BIP-125 지원)</translation>
+        <translation>Provizijo lahko zvišate kasneje (signali Replace-By-Fee, BIP-125).</translation>
     </message>
     <message>
         <source>Please, review your transaction.</source>
-        <translation>거래를 재검토 하십시오</translation>
+        <translation>Prosimo, preglejte vaše transakcije.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
-        <translation>거래 수수료</translation>
+        <translation>Provizija transakcije</translation>
     </message>
     <message>
         <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Replace-By-Fee, BIP-125 지원 안함</translation>
+        <translation>Not signalling Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
-        <translation>총액</translation>
+        <translation>Skupni znesek</translation>
     </message>
     <message>
         <source>Confirm send coins</source>
-        <translation>코인 전송을 확인</translation>
+        <translation>Potrdi pošiljanje kovancev</translation>
     </message>
     <message>
         <source>The recipient address is not valid. Please recheck.</source>
-        <translation>수령인 주소가 정확하지 않습니다. 재확인 바랍니다</translation>
+        <translation>Naslov prejemnika je neveljaven. Prosimo, preverite.</translation>
     </message>
     <message>
         <source>The amount to pay must be larger than 0.</source>
-        <translation>지불하는 금액은 0 보다 커야 합니다.</translation>
+        <translation>Znesek plačila mora biti večji od 0.</translation>
     </message>
     <message>
         <source>The amount exceeds your balance.</source>
-        <translation>잔고를 초과하였습니다.</translation>
+        <translation>Znesek presega vaše dobroimetje.</translation>
     </message>
     <message>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation>%1 의 거래수수료를 포함하면 잔고를 초과합니다.</translation>
+        <translation>Celotni znesek z vključeno provizijo %1 je večji od stanja sredstev, s katerimi razpolagate.</translation>
     </message>
     <message>
         <source>Duplicate address found: addresses should only be used once each.</source>
-        <translation>중복된 주소 발견: 주소는 한번만 사용되어야 합니다.</translation>
+        <translation>Naslov je že bil uporabljen. Vsak naslov naj bi se uporabil samo enkrat.</translation>
     </message>
     <message>
         <source>Transaction creation failed!</source>
-        <translation>거래 생성에 실패했습니다!</translation>
+        <translation>Transakcije ni bilo mogoče ustvariti!</translation>
     </message>
     <message>
         <source>The transaction was rejected with the following reason: %1</source>
-        <translation>거래가 다음과 같은 이유로 거부되었습니다: %1</translation>
+        <translation>Transakcija je bila zavrnjena: %1</translation>
     </message>
     <message>
         <source>A fee higher than %1 is considered an absurdly high fee.</source>
-        <translation>%1 보다 큰 수수료는 지나치게 높은 수수료 입니다.</translation>
+        <translation>Provizija, ki je večja od %1, velja za nesmiselno veliko.</translation>
     </message>
     <message>
         <source>Payment request expired.</source>
-        <translation>지불 요청이 만료되었습니다.</translation>
+        <translation>Zahtevek za plačilo je potekel.</translation>
     </message>
     <message numerus="yes">
         <source>Estimated to begin confirmation within %n block(s).</source>
-        <translation><numerusform>%n 블록 안에 승인이 시작될 것으로 추정됩니다.</numerusform></translation>
+        <translation><numerusform>Predviden začetek potrditev po %n najdenemu bloku.</numerusform><numerusform>Predviden začetek potrditev po %n najdenih blokih.</numerusform><numerusform>Predviden začetek potrditev po %n najdenih blokih.</numerusform><numerusform>Predviden začetek potrditev po %n najdenih blokih.</numerusform></translation>
     </message>
     <message>
         <source>Warning: Invalid Bitcoin address</source>
-        <translation>경고: 잘못된 비트코인주소입니다</translation>
+        <translation>Opozorilo: Neveljaven Bitcoin naslov</translation>
     </message>
     <message>
         <source>Warning: Unknown change address</source>
-        <translation>경고: 알려지지 않은 주소변경입니다</translation>
+        <translation>Opozorilo: Neznan naslov za vračilo drobiža</translation>
     </message>
     <message>
         <source>Confirm custom change address</source>
-        <translation>맞춤 주소 변경 확인</translation>
+        <translation>Potrdi naslov za vračilo drobiža po meri</translation>
     </message>
     <message>
         <source>The address you selected for change is not part of this wallet. Any or all funds in your wallet may be sent to this address. Are you sure?</source>
-        <translation>거스름돈을 위해 선택한 주소는 이 지갑의 일부가 아닙니다. 지갑에 있는 일부 또는 모든 금액을 이 주소로 보낼 수 있습니다. 확실합니까?</translation>
+        <translation>Naslov, ki ste ga izbrali za spremembo, ni del te denarnice. Na ta naslov se lahko pošlje katero koli ali vsa sredstva v vaši denarnici. Ali ste prepričani?</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation>(라벨 없음)</translation>
+        <translation>(brez oznake)</translation>
     </message>
 </context>
 <context>
     <name>SendCoinsEntry</name>
     <message>
         <source>A&amp;mount:</source>
-        <translation>금액(&amp;M):</translation>
+        <translation>&amp;Znesek:</translation>
     </message>
     <message>
         <source>Pay &amp;To:</source>
-        <translation>송금할 대상(&amp;T):</translation>
+        <translation>Prejemnik &amp;plačila:</translation>
     </message>
     <message>
         <source>&amp;Label:</source>
-        <translation>라벨(&amp;L):</translation>
+        <translation>&amp;Oznaka:</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
-        <translation>이전에 사용한 주소를 선택하기</translation>
+        <translation>Izberite enega od že uporabljenih naslovov</translation>
     </message>
     <message>
         <source>This is a normal payment.</source>
-        <translation>이것은 정상적인 지불입니다.</translation>
+        <translation>Plačilo je navadne vrste.</translation>
     </message>
     <message>
         <source>The Bitcoin address to send the payment to</source>
-        <translation>이 비트코인 주소로 송금됩니다</translation>
+        <translation>Naslov Bitcoin, na katerega bo plačilo poslano</translation>
     </message>
     <message>
         <source>Alt+A</source>
@@ -2409,7 +2496,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Paste address from clipboard</source>
-        <translation>클립보드로 부터 주소 붙여넣기</translation>
+        <translation>Prilepite naslov iz odložišča</translation>
     </message>
     <message>
         <source>Alt+P</source>
@@ -2417,92 +2504,92 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Remove this entry</source>
-        <translation>입력된 항목 삭제</translation>
+        <translation>Izpraznite vsebino polja</translation>
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>수수료가 송금되는 금액에서 공제됩니다. 수령자는 금액 필드에서 입력한 금액보다 적은 금액을 전송받게 됩니다. 받는 사람이 여러 명인 경우 수수료는 균등하게 나누어집니다.</translation>
+        <translation>Znesek plačila bo zmanjšan za znesek provizije. Prejemnik bo prejel manjše število kovancev, kot je bil vnešeni znesek. Če je prejemnikov več, bo provizija med njih enakomerno porazdeljena.</translation>
     </message>
     <message>
         <source>S&amp;ubtract fee from amount</source>
-        <translation>송금액에서 수수료 공제(&amp;U)</translation>
+        <translation>O&amp;dštej provizijo od zneska</translation>
     </message>
     <message>
         <source>Use available balance</source>
-        <translation>잔액 전부 사용하기</translation>
+        <translation>Uporabi dobroimetje na voljo</translation>
     </message>
     <message>
         <source>Message:</source>
-        <translation>메시지:</translation>
+        <translation>Sporočilo:</translation>
     </message>
     <message>
         <source>This is an unauthenticated payment request.</source>
-        <translation>인증 되지 않은 지불 요청입니다.</translation>
+        <translation>Zahtevek za plačilo je neoverjen.</translation>
     </message>
     <message>
         <source>This is an authenticated payment request.</source>
-        <translation>인증 된 지불 요청 입니다.</translation>
+        <translation>Zahtevek za plačilo je overjen.</translation>
     </message>
     <message>
         <source>Enter a label for this address to add it to the list of used addresses</source>
-        <translation>이 주소에 라벨을 입력하면 사용된 주소 목록에 라벨이 표시됩니다</translation>
+        <translation>Če vnesete oznako za zgornji naslov, se bo skupaj z naslovom shranila v imenk že uporabljenih naslovov</translation>
     </message>
     <message>
         <source>A message that was attached to the bitcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
-        <translation>bitcoin: URI에 추가된 메시지는 참고를 위해 거래내역과 함께 저장될 것입니다. Note: 이 메시지는 비트코인 네트워크로 전송되지 않습니다.</translation>
+        <translation>Sporočilo, ki ste ga pripeli na URI tipa bitcoin:. Shranjeno bo skupaj s podatki o transakciji. Opomba: Sporočilo ne bo poslano preko omrežja Bitcoin.</translation>
     </message>
     <message>
         <source>Pay To:</source>
-        <translation>보낼 주소:</translation>
+        <translation>Prejemnik:</translation>
     </message>
     <message>
         <source>Memo:</source>
-        <translation>메모:</translation>
+        <translation>Opomba:</translation>
     </message>
     <message>
         <source>Enter a label for this address to add it to your address book</source>
-        <translation>주소록에 추가하려면 라벨을 입력하세요</translation>
+        <translation>Vnesite oznako, pod katero bo zgornji naslov shranjen v imenik</translation>
     </message>
 </context>
 <context>
     <name>SendConfirmationDialog</name>
     <message>
         <source>Yes</source>
-        <translation>예</translation>
+        <translation>Da</translation>
     </message>
 </context>
 <context>
     <name>ShutdownWindow</name>
     <message>
         <source>%1 is shutting down...</source>
-        <translation>%1이 종료 중입니다...</translation>
+        <translation>%1 se zapira ...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
-        <translation>이 창이 사라지기 전까지 컴퓨터를 끄지 마세요.</translation>
+        <translation>Dokler to okno ne izgine, ne zaustavljajte računalnika.</translation>
     </message>
 </context>
 <context>
     <name>SignVerifyMessageDialog</name>
     <message>
         <source>Signatures - Sign / Verify a Message</source>
-        <translation>서명 - 싸인 / 메시지 검증</translation>
+        <translation>Podpiši / preveri sporočilo</translation>
     </message>
     <message>
         <source>&amp;Sign Message</source>
-        <translation>메시지 서명(&amp;S)</translation>
+        <translation>&amp;Podpiši sporočilo</translation>
     </message>
     <message>
         <source>You can sign messages/agreements with your addresses to prove you can receive bitcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation>당신이 해당 주소로 비트코인을 받을 수 있다는 것을 증명하기 위해 메시지/합의문을 그 주소로 서명할 수 있습니다. 피싱 공격이 당신을 속일 수 있으므로 임의의 내용이나 모호한 내용에 서명하지 않도록 주의하세요. 당신이 동의하는 명확한 조항들에만 서명하세요.</translation>
+        <translation>S svojimi naslovi lahko podpisujete sporočila ali pogodbe in s tem dokazujete, da na teh naslovih lahko prejemate kovance. Bodite previdni in ne podpisujte ničesar nejasnega ali naključnega, ker vas zlikovci preko ribarjenja (phishing) lahko prelisičijo, da na njih prepišete svojo identiteto. Podpisujte samo podrobno opisane izjave, s katerimi se strinjate.</translation>
     </message>
     <message>
         <source>The Bitcoin address to sign the message with</source>
-        <translation>메세지를 서명할 비트코인 주소</translation>
+        <translation>Naslov Bitcoin, s katerim podpisujete sporočilo</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
-        <translation>이전에 사용한 주소 선택</translation>
+        <translation>Izberite enega od že uporabljenih naslovov</translation>
     </message>
     <message>
         <source>Alt+A</source>
@@ -2510,7 +2597,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Paste address from clipboard</source>
-        <translation>클립보드에서 주소 복사</translation>
+        <translation>Prilepite naslov iz odložišča</translation>
     </message>
     <message>
         <source>Alt+P</source>
@@ -2518,780 +2605,780 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Enter the message you want to sign here</source>
-        <translation>여기에 서명할 메시지를 입력하세요</translation>
+        <translation>Vnesite sporočilo, ki ga želite podpisati</translation>
     </message>
     <message>
         <source>Signature</source>
-        <translation>서명</translation>
+        <translation>Podpis</translation>
     </message>
     <message>
         <source>Copy the current signature to the system clipboard</source>
-        <translation>이 서명을 시스템 클립보드로 복사</translation>
+        <translation>Kopiranje trenutnega podpisa na sistemsko odložišče.</translation>
     </message>
     <message>
         <source>Sign the message to prove you own this Bitcoin address</source>
-        <translation>당신이 이 비트코인 주소를 소유한다는 증명을 위해 메시지를 서명합니다</translation>
+        <translation>Podpišite sporočilo, da dokažete lastništvo nad zgornjim naslovom.</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
-        <translation>메시지 서명(&amp;M)</translation>
+        <translation>Podpiši &amp;sporočilo</translation>
     </message>
     <message>
         <source>Reset all sign message fields</source>
-        <translation>모든 입력항목을 초기화합니다</translation>
+        <translation>Počisti vsa polja za vnos v oknu za podpisovanje</translation>
     </message>
     <message>
         <source>Clear &amp;All</source>
-        <translation>모두 지우기(&amp;A)</translation>
+        <translation>Počisti &amp;vse </translation>
     </message>
     <message>
         <source>&amp;Verify Message</source>
-        <translation>메시지 검증(&amp;V)</translation>
+        <translation>&amp;Preveri sporočilo</translation>
     </message>
     <message>
         <source>Enter the receiver's address, message (ensure you copy line breaks, spaces, tabs, etc. exactly) and signature below to verify the message. Be careful not to read more into the signature than what is in the signed message itself, to avoid being tricked by a man-in-the-middle attack. Note that this only proves the signing party receives with the address, it cannot prove sendership of any transaction!</source>
-        <translation>메시지를 검증하기 위해 아래 칸에 각각 지갑 주소와 메시지, 서명을 입력하세요 (메시지 원본의 띄어쓰기, 들여쓰기, 행 나눔 등이 정확하게 입력되어야 하므로 원본을 복사해서 입력하세요). 네트워크 침입자의 속임수에 넘어가지 않도록 서명된 메시지 내용 이외의 내용은 참고하지 않도록 유의하세요. 이 기능은 단순히 서명한 쪽에서 해당 주소로 송금을 받을 수 있다는 것을 증명하는 것 뿐이며 그 이상은 어떤 것도 보증하지 않습니다.</translation>
+        <translation>Da preverite verodostojnost sporočila, spodaj vnesite: prejemnikov naslov, prejeto sporočilo (pazljivo skopirajte vse prelome vrstic, presledke, tabulatorje ipd.,) in prejeti podpis. Da se izognete napadom tipa man-in-the-middle, vedite, da iz veljavnega podpisa ne sledi nič drugega, kot tisto, kar je navedeno v sporočilu. Podpis samo potrjuje dejstvo, da ima podpisnik v lasti prejemni naslov, ne more pa dokazati vira nobene transakcije!</translation>
     </message>
     <message>
         <source>The Bitcoin address the message was signed with</source>
-        <translation>메세지의 서명에 사용된 비트코인 주소</translation>
+        <translation>Naslov Bitcoin, s katerim je bilo sporočilo podpisano</translation>
     </message>
     <message>
         <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
-        <translation>입력된 비트코인 주소로 메시지가 서명되었는지 검증합니다</translation>
+        <translation>Preverite, ali je bilo sporočilo v resnici podpisano z navedenim naslovom Bitcoin.</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
-        <translation>메시지 검증(&amp;M)</translation>
+        <translation>Preveri &amp;sporočilo</translation>
     </message>
     <message>
         <source>Reset all verify message fields</source>
-        <translation>모든 입력 항목을 초기화합니다</translation>
+        <translation>Počisti vsa polja za vnos v oknu za preverjanje</translation>
     </message>
     <message>
         <source>Click "Sign Message" to generate signature</source>
-        <translation>서명을 만들려면 "메시지 서명"을 클릭하세요</translation>
+        <translation>Kliknite na "Podpiši sporočilo" za ustvarjanje podpisa</translation>
     </message>
     <message>
         <source>The entered address is invalid.</source>
-        <translation>입력한 주소가 잘못되었습니다.</translation>
+        <translation>Vnešen naslov je neveljaven.</translation>
     </message>
     <message>
         <source>Please check the address and try again.</source>
-        <translation>주소를 확인하고 다시 시도하십시오.</translation>
+        <translation>Prosimo, preglejte naslov in poskusite znova.</translation>
     </message>
     <message>
         <source>The entered address does not refer to a key.</source>
-        <translation>입력한 주소는 지갑내 키를 참조하지 않습니다.</translation>
+        <translation>Vnešeni naslov se ne nanaša na ključ.</translation>
     </message>
     <message>
         <source>Wallet unlock was cancelled.</source>
-        <translation>지갑 잠금 해제를 취소했습니다.</translation>
+        <translation>Odklepanje denarnice je bilo preklicano.</translation>
     </message>
     <message>
         <source>Private key for the entered address is not available.</source>
-        <translation>입력한 주소에 대한 개인키가 없습니다.</translation>
+        <translation>Zasebni ključ vnešenega naslova ni na voljo.</translation>
     </message>
     <message>
         <source>Message signing failed.</source>
-        <translation>메시지 서명에 실패했습니다.</translation>
+        <translation>Podpisovanje sporočila neuspešno.</translation>
     </message>
     <message>
         <source>Message signed.</source>
-        <translation>메시지를 서명했습니다.</translation>
+        <translation>Sporočilo podpisano.</translation>
     </message>
     <message>
         <source>The signature could not be decoded.</source>
-        <translation>서명을 해독할 수 없습니다.</translation>
+        <translation>Podpis ni bil dešifriran.</translation>
     </message>
     <message>
         <source>Please check the signature and try again.</source>
-        <translation>서명을 확인하고 다시 시도하십시오.</translation>
+        <translation>Prosimo, preglejte podpis in poskusite znova.</translation>
     </message>
     <message>
         <source>The signature did not match the message digest.</source>
-        <translation>메시지 다이제스트와 서명이 일치하지 않습니다.</translation>
+        <translation>Podpis ne ustreza rezultatu (digest) preverjanja.</translation>
     </message>
     <message>
         <source>Message verification failed.</source>
-        <translation>메시지 검증에 실패했습니다.</translation>
+        <translation>Potrditev sporočila neuspešna.</translation>
     </message>
     <message>
         <source>Message verified.</source>
-        <translation>메시지가 검증됐습니다.</translation>
+        <translation>Sporočilo potrjeno.</translation>
     </message>
 </context>
 <context>
     <name>TrafficGraphWidget</name>
     <message>
         <source>KB/s</source>
-        <translation>KB/s</translation>
+        <translation>KiB/s</translation>
     </message>
 </context>
 <context>
     <name>TransactionDesc</name>
     <message numerus="yes">
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>%n개의 더 많은 블록 열기</numerusform></translation>
+        <translation><numerusform>Odpri za %n blok več</numerusform><numerusform>Odpri za %n bloka več</numerusform><numerusform>Odpri za %n bloke več</numerusform><numerusform>Odpri za %n blokov več</numerusform></translation>
     </message>
     <message>
         <source>Open until %1</source>
-        <translation>%1 까지 열림</translation>
+        <translation>Odpri do %1</translation>
     </message>
     <message>
         <source>conflicted with a transaction with %1 confirmations</source>
-        <translation>%1 승인이 있는 거래와 충돌함</translation>
+        <translation>v sporu s transakcijo z %1 potrditvami</translation>
     </message>
     <message>
         <source>0/unconfirmed, %1</source>
-        <translation>0/미승인, %1</translation>
+        <translation>0/nepotrjenih, %1</translation>
     </message>
     <message>
         <source>in memory pool</source>
-        <translation>메모리 풀 안에 있음</translation>
+        <translation>v memory pool-u</translation>
     </message>
     <message>
         <source>not in memory pool</source>
-        <translation>메모리 풀 안에 없음</translation>
+        <translation>ni v memory pool-u</translation>
     </message>
     <message>
         <source>abandoned</source>
-        <translation>버려진</translation>
+        <translation>opuščen</translation>
     </message>
     <message>
         <source>%1/unconfirmed</source>
-        <translation>%1/미확인</translation>
+        <translation>%1/nepotrjeno</translation>
     </message>
     <message>
         <source>%1 confirmations</source>
-        <translation>%1 확인됨</translation>
+        <translation>%1 potrditev</translation>
     </message>
     <message>
         <source>Status</source>
-        <translation>상태</translation>
+        <translation>Status</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>날짜</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Source</source>
-        <translation>소스</translation>
+        <translation>Izvor</translation>
     </message>
     <message>
         <source>Generated</source>
-        <translation>생성됨</translation>
+        <translation>Ustvarjeno</translation>
     </message>
     <message>
         <source>From</source>
-        <translation>보낸 주소</translation>
+        <translation>Pošiljatelj</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation>알수없음</translation>
+        <translation>neznano</translation>
     </message>
     <message>
         <source>To</source>
-        <translation>받는 주소</translation>
+        <translation>Prejemnik</translation>
     </message>
     <message>
         <source>own address</source>
-        <translation>자신의 주소</translation>
+        <translation>lasten naslov</translation>
     </message>
     <message>
         <source>watch-only</source>
-        <translation>조회전용</translation>
+        <translation>opazovano</translation>
     </message>
     <message>
         <source>label</source>
-        <translation>라벨</translation>
+        <translation>oznaka</translation>
     </message>
     <message>
         <source>Credit</source>
-        <translation>입금액</translation>
+        <translation>Kredit</translation>
     </message>
     <message numerus="yes">
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>%n개의 블록검증이 더 필요함</numerusform></translation>
+        <translation><numerusform>dozori po %n. najdenem bloku</numerusform><numerusform>dozori po %n. najdenih blokih</numerusform><numerusform>dozori po %n. najdenih blokih</numerusform><numerusform>dozori po %n. najdenih blokih</numerusform></translation>
     </message>
     <message>
         <source>not accepted</source>
-        <translation>승인되지 않음</translation>
+        <translation>ni sprejeto</translation>
     </message>
     <message>
         <source>Debit</source>
-        <translation>출금액</translation>
+        <translation>Debit</translation>
     </message>
     <message>
         <source>Total debit</source>
-        <translation>총 출금액</translation>
+        <translation>Skupni debit</translation>
     </message>
     <message>
         <source>Total credit</source>
-        <translation>총 입금액</translation>
+        <translation>Skupni kredit</translation>
     </message>
     <message>
         <source>Transaction fee</source>
-        <translation>거래 수수료</translation>
+        <translation>Provizija transakcije</translation>
     </message>
     <message>
         <source>Net amount</source>
-        <translation>총 거래액</translation>
+        <translation>Neto znesek</translation>
     </message>
     <message>
         <source>Message</source>
-        <translation>메시지</translation>
+        <translation>Sporočilo</translation>
     </message>
     <message>
         <source>Comment</source>
-        <translation>설명</translation>
+        <translation>Komentar</translation>
     </message>
     <message>
         <source>Transaction ID</source>
-        <translation>거래 ID</translation>
+        <translation>ID transakcije</translation>
     </message>
     <message>
         <source>Transaction total size</source>
-        <translation>거래 총 크기</translation>
+        <translation>Skupna velikost transakcije</translation>
     </message>
     <message>
         <source>Transaction virtual size</source>
-        <translation>가상 거래 사이즈</translation>
+        <translation>Virtualna velikost transakcije</translation>
     </message>
     <message>
         <source>Output index</source>
-        <translation>출력 인덱스</translation>
+        <translation>Indeks izhoda</translation>
     </message>
     <message>
         <source>Merchant</source>
-        <translation>상점</translation>
+        <translation>Trgovec</translation>
     </message>
     <message>
         <source>Generated coins must mature %1 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to "not accepted" and it won't be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>신규 채굴된 코인이 사용되기 위해서는 %1 개의 블록이 경과되어야 합니다. 블록을 생성할 때 블록체인에 추가되도록 네트워크에 전파되는 과정을 거치는데, 블록체인에 포함되지 못하고 실패한다면 해당 블록의 상태는 '미승인'으로 표현되고 비트코인 또한 사용될 수 없습니다. 이 현상은 다른 노드가 비슷한 시간대에 동시에 블록을 생성할 때 종종 발생할 수 있습니다. </translation>
+        <translation>Ustvarjeni kovanci morajo zoreti %1 blokov, preden jih lahko porabite. Ko ste ta blok ustvarili, je bil posredovan v omrežje, da bo dodan v verigo blokov. Če se bloku ni uspelo uvrstiti v verigo, se bo njegovo stanje spremenilo v "ni bilo sprejeto" in kovancev ne bo mogoče porabiti. To se včasih zgodi, če kak drug rudar v roku nekaj sekund hkrati z vami odkrije drug blok.</translation>
     </message>
     <message>
         <source>Debug information</source>
-        <translation>디버깅 정보</translation>
+        <translation>Informacije za razhroščanje</translation>
     </message>
     <message>
         <source>Transaction</source>
-        <translation>거래</translation>
+        <translation>Transakcija</translation>
     </message>
     <message>
         <source>Inputs</source>
-        <translation>입력</translation>
+        <translation>Vnosi</translation>
     </message>
     <message>
         <source>Amount</source>
-        <translation>거래액</translation>
+        <translation>Znesek</translation>
     </message>
     <message>
         <source>true</source>
-        <translation>참</translation>
+        <translation>pravilno</translation>
     </message>
     <message>
         <source>false</source>
-        <translation>거짓</translation>
+        <translation>nepravilno</translation>
     </message>
 </context>
 <context>
     <name>TransactionDescDialog</name>
     <message>
         <source>This pane shows a detailed description of the transaction</source>
-        <translation>이 창은 거래의 세부내역을 보여줍니다</translation>
+        <translation>V tem podoknu so prikazane podrobnosti o transakciji</translation>
     </message>
     <message>
         <source>Details for %1</source>
-        <translation>%1에 대한 세부 정보</translation>
+        <translation>Detajli za %1</translation>
     </message>
 </context>
 <context>
     <name>TransactionTableModel</name>
     <message>
         <source>Date</source>
-        <translation>날짜</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Type</source>
-        <translation>형식</translation>
+        <translation>Vrsta</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation>라벨</translation>
+        <translation>Oznaka</translation>
     </message>
     <message numerus="yes">
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>%n개의 더 많은 블록 열기</numerusform></translation>
+        <translation><numerusform>Odpri za %n blok več</numerusform><numerusform>Odpri za %n bloka več</numerusform><numerusform>Odpri za %n več blokov</numerusform><numerusform>Odpri za %n več blokov</numerusform></translation>
     </message>
     <message>
         <source>Open until %1</source>
-        <translation>%1 까지 열림</translation>
+        <translation>Odpri do %1</translation>
     </message>
     <message>
         <source>Unconfirmed</source>
-        <translation>미확인</translation>
+        <translation>Nepotrjeno</translation>
     </message>
     <message>
         <source>Abandoned</source>
-        <translation>버려진</translation>
+        <translation>Opuščeno</translation>
     </message>
     <message>
         <source>Confirming (%1 of %2 recommended confirmations)</source>
-        <translation>승인 중 (권장되는 승인 회수 %2 대비 현재 승인 수 %1)</translation>
+        <translation>Potrjevanje (%1 od %2 priporočenih potrditev)</translation>
     </message>
     <message>
         <source>Confirmed (%1 confirmations)</source>
-        <translation>승인됨 (%1 확인됨)</translation>
+        <translation>Potrjeno (%1 potrditev)</translation>
     </message>
     <message>
         <source>Conflicted</source>
-        <translation>충돌</translation>
+        <translation>V konfliktu</translation>
     </message>
     <message>
         <source>Immature (%1 confirmations, will be available after %2)</source>
-        <translation>충분히 숙성되지 않은 상태 (%1 승인, %2 후에 사용 가능합니다)</translation>
+        <translation>Nedozorelo (št. potrditev: %1, na voljo šele po: %2)</translation>
     </message>
     <message>
         <source>Generated but not accepted</source>
-        <translation>생성되었으나 거절됨</translation>
+        <translation>Generirano, toda ne sprejeto</translation>
     </message>
     <message>
         <source>Received with</source>
-        <translation>받음(받은 주소)</translation>
+        <translation>Prejeto s</translation>
     </message>
     <message>
         <source>Received from</source>
-        <translation>받음(보낸 주소)</translation>
+        <translation>Prejeto iz</translation>
     </message>
     <message>
         <source>Sent to</source>
-        <translation>보냄(받는 주소)</translation>
+        <translation>Poslano</translation>
     </message>
     <message>
         <source>Payment to yourself</source>
-        <translation>자신에게 지불</translation>
+        <translation>Plačilo sebi</translation>
     </message>
     <message>
         <source>Mined</source>
-        <translation>채굴</translation>
+        <translation>Narudarjeno</translation>
     </message>
     <message>
         <source>watch-only</source>
-        <translation>조회전용</translation>
+        <translation>opazovano</translation>
     </message>
     <message>
         <source>(n/a)</source>
-        <translation>(없음)</translation>
+        <translation>(ni na voljo)</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation>(라벨 없음)</translation>
+        <translation>(brez oznake)</translation>
     </message>
     <message>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
-        <translation>거래상황. 마우스를 올리면 검증횟수가 표시됩니다.</translation>
+        <translation>Stanje transakcije. Zapeljite z miško čez to polje za prikaz števila potrdil. </translation>
     </message>
     <message>
         <source>Date and time that the transaction was received.</source>
-        <translation>거래가 이루어진 날짜와 시각.</translation>
+        <translation>Datum in čas, ko je transakcija bila prejeta.</translation>
     </message>
     <message>
         <source>Type of transaction.</source>
-        <translation>거래의 종류.</translation>
+        <translation>Vrsta transakcije</translation>
     </message>
     <message>
         <source>Whether or not a watch-only address is involved in this transaction.</source>
-        <translation>조회전용 주소가 이 거래에 참여하는지 여부입니다.</translation>
+        <translation>Ali je v transakciji udeležen kateri od opazovanih naslovov.</translation>
     </message>
     <message>
         <source>User-defined intent/purpose of the transaction.</source>
-        <translation>거래에 대해 사용자가 정의한 의도나 목적.</translation>
+        <translation>Uporabniško določen namen transakcije.</translation>
     </message>
     <message>
         <source>Amount removed from or added to balance.</source>
-        <translation>늘어나거나 줄어든 액수.</translation>
+        <translation>Znesek spremembe stanja sredstev.</translation>
     </message>
 </context>
 <context>
     <name>TransactionView</name>
     <message>
         <source>All</source>
-        <translation>전체</translation>
+        <translation>Vse</translation>
     </message>
     <message>
         <source>Today</source>
-        <translation>오늘</translation>
+        <translation>Danes</translation>
     </message>
     <message>
         <source>This week</source>
-        <translation>이번주</translation>
+        <translation>Ta teden</translation>
     </message>
     <message>
         <source>This month</source>
-        <translation>이번 달</translation>
+        <translation>Ta mesec</translation>
     </message>
     <message>
         <source>Last month</source>
-        <translation>지난 달</translation>
+        <translation>Prejšnji mesec</translation>
     </message>
     <message>
         <source>This year</source>
-        <translation>올 해</translation>
+        <translation>To leto</translation>
     </message>
     <message>
         <source>Range...</source>
-        <translation>범위...</translation>
+        <translation>Območje ...</translation>
     </message>
     <message>
         <source>Received with</source>
-        <translation>받은 주소</translation>
+        <translation>Prejeto z</translation>
     </message>
     <message>
         <source>Sent to</source>
-        <translation>보낸 주소</translation>
+        <translation>Poslano</translation>
     </message>
     <message>
         <source>To yourself</source>
-        <translation>자기거래</translation>
+        <translation>Sebi</translation>
     </message>
     <message>
         <source>Mined</source>
-        <translation>채굴</translation>
+        <translation>Narudarjeno</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation>기타</translation>
+        <translation>Drugo</translation>
     </message>
     <message>
         <source>Enter address, transaction id, or label to search</source>
-        <translation>검색하기 위한 주소, 거래 아이디 또는 라벨 입력</translation>
+        <translation>Vnesi naslov, ID transakcije, ali oznako za iskanje</translation>
     </message>
     <message>
         <source>Min amount</source>
-        <translation>최소 거래액</translation>
+        <translation>Najmanjši znesek</translation>
     </message>
     <message>
         <source>Abandon transaction</source>
-        <translation>버려진 거래</translation>
+        <translation>Opusti transakcijo</translation>
     </message>
     <message>
         <source>Increase transaction fee</source>
-        <translation>거래 수수료 증가</translation>
+        <translation>Povečaj provizijo transakcije</translation>
     </message>
     <message>
         <source>Copy address</source>
-        <translation>주소 복사</translation>
+        <translation>Kopiraj naslov</translation>
     </message>
     <message>
         <source>Copy label</source>
-        <translation>라벨 복사</translation>
+        <translation>Kopiraj oznako</translation>
     </message>
     <message>
         <source>Copy amount</source>
-        <translation>거래액 복사</translation>
+        <translation>Kopiraj znesek</translation>
     </message>
     <message>
         <source>Copy transaction ID</source>
-        <translation>거래 아이디 복사</translation>
+        <translation>Kopiraj ID transakcije</translation>
     </message>
     <message>
         <source>Copy raw transaction</source>
-        <translation>거래 원본(raw transaction) 복사</translation>
+        <translation>Kopiraj neobdelano (raw) transakcijo</translation>
     </message>
     <message>
         <source>Copy full transaction details</source>
-        <translation>거래 세부 내역 복사</translation>
+        <translation>Kopiraj vse detajle transakcije</translation>
     </message>
     <message>
         <source>Edit label</source>
-        <translation>라벨 수정</translation>
+        <translation>Uredi oznako</translation>
     </message>
     <message>
         <source>Show transaction details</source>
-        <translation>거래 세부 내역 보기</translation>
+        <translation>Pokaži podrobnosti transakcije</translation>
     </message>
     <message>
         <source>Export Transaction History</source>
-        <translation>거래 기록 내보내기</translation>
+        <translation>Izvoz zgodovine transakcij</translation>
     </message>
     <message>
         <source>Comma separated file (*.csv)</source>
-        <translation>쉼표로 구분된 파일 (*.csv)</translation>
+        <translation>Podatki ločenimi z vejico (*.csv)</translation>
     </message>
     <message>
         <source>Confirmed</source>
-        <translation>확인됨</translation>
+        <translation>Potrjeno</translation>
     </message>
     <message>
         <source>Watch-only</source>
-        <translation>조회전용</translation>
+        <translation>Opazovano</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>날짜</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Type</source>
-        <translation>형식</translation>
+        <translation>Vrsta</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation>라벨</translation>
+        <translation>Oznaka</translation>
     </message>
     <message>
         <source>Address</source>
-        <translation>주소</translation>
+        <translation>Naslov</translation>
     </message>
     <message>
         <source>ID</source>
-        <translation>아이디</translation>
+        <translation>ID</translation>
     </message>
     <message>
         <source>Exporting Failed</source>
-        <translation>내보내기 실패</translation>
+        <translation>Podatkov ni bilo mogoče izvoziti.</translation>
     </message>
     <message>
         <source>There was an error trying to save the transaction history to %1.</source>
-        <translation>%1으로 거래 기록을 저장하는데 에러가 있었습니다.</translation>
+        <translation>Prišlo je do napake med shranjevanjem zgodovine transakcij v datoteko %1.</translation>
     </message>
     <message>
         <source>Exporting Successful</source>
-        <translation>내보내기 성공</translation>
+        <translation>Izvoz uspešen</translation>
     </message>
     <message>
         <source>The transaction history was successfully saved to %1.</source>
-        <translation>거래 기록이 성공적으로 %1에 저장되었습니다.</translation>
+        <translation>Zgodovina poteklih transakcij je bila uspešno shranjena v datoteko %1.</translation>
     </message>
     <message>
         <source>Range:</source>
-        <translation>범위:</translation>
+        <translation>Območje:</translation>
     </message>
     <message>
         <source>to</source>
-        <translation>상대방</translation>
+        <translation>za</translation>
     </message>
 </context>
 <context>
     <name>UnitDisplayStatusBarControl</name>
     <message>
         <source>Unit to show amounts in. Click to select another unit.</source>
-        <translation>거래액을 표시하는 단위. 클릭해서 다른 단위를 선택할 수 있습니다.</translation>
+        <translation>Merska enota za prikaz zneskov. Kliknite za izbiro druge enote.</translation>
     </message>
 </context>
 <context>
     <name>WalletController</name>
     <message>
         <source>Close wallet</source>
-        <translation>지갑 닫기</translation>
+        <translation>Zapri denarnico</translation>
+    </message>
+    <message>
+        <source>Are you sure you wish to close the wallet &lt;i&gt;%1&lt;/i&gt;?</source>
+        <translation>Ali ste prepričani da želite zapreti denarnico &lt;i&gt;%1&lt;/i&gt;?</translation>
     </message>
     <message>
         <source>Closing the wallet for too long can result in having to resync the entire chain if pruning is enabled.</source>
-        <translation>블록축소를 하고 지갑을 너무 오랫동안 닫으면 체인 전체를 다시 동기화해야 할 수도 있습니다.</translation>
+        <translation>Predolgo zapiranje denarnice lahko povzroči ponovno sinhronizacijo celotne verige, če je obrezovanje omogočeno.</translation>
     </message>
 </context>
 <context>
     <name>WalletFrame</name>
     <message>
         <source>No wallet has been loaded.</source>
-        <translation>지갑 불러오기가 안됩니다.</translation>
+        <translation>Nobena denarnica ni bila naložena.</translation>
     </message>
 </context>
 <context>
     <name>WalletModel</name>
     <message>
         <source>Send Coins</source>
-        <translation>코인 보내기</translation>
+        <translation>Pošlji kovance</translation>
     </message>
     <message>
         <source>Fee bump error</source>
-        <translation>수수료 상향 오류</translation>
+        <translation>Fee bump error</translation>
     </message>
     <message>
         <source>Increasing transaction fee failed</source>
-        <translation>거래 수수료 상향 실패</translation>
+        <translation>Povečanje provizije transakcije neuspešno</translation>
     </message>
     <message>
         <source>Do you want to increase the fee?</source>
-        <translation>수수료를 올리시겠습니까?</translation>
+        <translation>Ali hočete povišati provizijo?</translation>
     </message>
     <message>
         <source>Current fee:</source>
-        <translation>현재 수수료:</translation>
+        <translation>Trenutna provizija:</translation>
     </message>
     <message>
         <source>Increase:</source>
-        <translation>증가:</translation>
+        <translation>Povečaj:</translation>
     </message>
     <message>
         <source>New fee:</source>
-        <translation>새로운 수수료:</translation>
+        <translation>Nova provizija:</translation>
     </message>
     <message>
         <source>Confirm fee bump</source>
-        <translation>수수료 상향 승인</translation>
+        <translation>Confirm fee bump</translation>
     </message>
     <message>
         <source>Can't sign transaction.</source>
-        <translation>거래에 서명 할 수 없습니다.</translation>
+        <translation>Ne morem podpisati transakcije.</translation>
     </message>
     <message>
         <source>Could not commit transaction</source>
-        <translation>거래를 커밋 할 수 없습니다.</translation>
+        <translation>Transakcije ni mogoče izvesti</translation>
     </message>
     <message>
         <source>default wallet</source>
-        <translation>기본 지갑</translation>
+        <translation>privzeta denarnica</translation>
     </message>
 </context>
 <context>
     <name>WalletView</name>
     <message>
         <source>&amp;Export</source>
-        <translation>내보내기 (&amp;E)</translation>
+        <translation>&amp;Izvozi</translation>
     </message>
     <message>
         <source>Export the data in the current tab to a file</source>
-        <translation>현재 탭에 있는 데이터를 파일로 내보내기</translation>
+        <translation>Izvozi podatke v trenutnem zavihku v datoteko</translation>
     </message>
     <message>
         <source>Backup Wallet</source>
-        <translation>지갑 백업</translation>
+        <translation>Izdelava varnostne kopije denarnice</translation>
     </message>
     <message>
         <source>Wallet Data (*.dat)</source>
-        <translation>지갑 데이터 (*.dat)</translation>
+        <translation>Denarnica (*.dat)</translation>
     </message>
     <message>
         <source>Backup Failed</source>
-        <translation>백업 실패</translation>
+        <translation>Varnostne kopije ni bilo mogoče izdelati.</translation>
     </message>
     <message>
         <source>There was an error trying to save the wallet data to %1.</source>
-        <translation>지갑 데이터를 %1 폴더에 저장하는 동안 오류가 발생했습니다. </translation>
+        <translation>Prišlo je do napake pri shranjevanju podatkov denarnice v datoteko %1.</translation>
     </message>
     <message>
         <source>Backup Successful</source>
-        <translation>백업 성공</translation>
+        <translation>Izdelava varnostne kopije uspešna</translation>
     </message>
     <message>
         <source>The wallet data was successfully saved to %1.</source>
-        <translation>지갑 정보가 %1에 성공적으로 저장되었습니다.</translation>
+        <translation>Denarnica uspešno shranjena v %1.</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>취소</translation>
+        <translation>Prekliči</translation>
     </message>
 </context>
 <context>
     <name>bitcoin-core</name>
     <message>
         <source>Distributed under the MIT software license, see the accompanying file %s or %s</source>
-        <translation>MIT 소프트웨어 라이센스에 따라 배포 됨, 첨부 파일 %s 또는 %s을 참조하십시오.</translation>
+        <translation>Distribuirano v okviru programske licence MIT. Podrobnosti so navedene v  priloženi datoteki %s ali %s</translation>
     </message>
     <message>
         <source>Prune configured below the minimum of %d MiB.  Please use a higher number.</source>
-        <translation>블록 축소가 최소치인 %d MiB 밑으로 설정되어 있습니다. 더 높은 값을 사용해 주세요.</translation>
+        <translation>Obrezovanje konfigurirano pod minimalnimi %d miB. Prosimo, uporabite večjo številko.</translation>
     </message>
     <message>
         <source>Prune: last wallet synchronisation goes beyond pruned data. You need to -reindex (download the whole blockchain again in case of pruned node)</source>
-        <translation>블록 축소: 마지막 지갑 동기화 지점이 축소된 데이터보다 과거의 것 입니다. -reindex가 필요합니다 (축소된 노드의 경우 모든 블록체인을 재다운로드합니다)</translation>
+        <translation>Obrezovanje: zadnja sinhronizacija denarnice presega obrezane podatke. Izvesti morate -reindex (v primeru obrezave morate znova naložiti celoten blockchain)</translation>
     </message>
     <message>
         <source>Rescans are not possible in pruned mode. You will need to use -reindex which will download the whole blockchain again.</source>
-        <translation>블록 축소 모드에서는 재검색이 불가능 합니다. -reindex 명령을 사용해서 모든 블록체인을 다시 다운로드 해야 합니다.</translation>
+        <translation>RPonovno skeniranje (rescans) v obrezovalnem načinu niso možni. Uporabiti boste morali -reindex, ki bo znova naložil celoten blockchain.</translation>
     </message>
     <message>
         <source>Error: A fatal internal error occurred, see debug.log for details</source>
-        <translation>오류: 치명적인 내부 오류가 발생했습니다, 자세한 내용은 debug.log 를 확인해주세요.</translation>
+        <translation>Napaka: Med izvajanjem je prišlo do nepopravljive napake. Podrobnosti so v datoteki debug.log</translation>
     </message>
     <message>
         <source>Pruning blockstore...</source>
-        <translation>블록 데이터를 축소 중입니다..</translation>
+        <translation>Obrezujem ...</translation>
     </message>
     <message>
         <source>Unable to start HTTP server. See debug log for details.</source>
-        <translation>HTTP 서버를 시작할 수 없습니다. 자세한 사항은 디버그 로그를 확인 하세요.</translation>
+        <translation>Zagon HTTP strežnika neuspešen. Poglejte razhroščevalni dnevnik za podrobnosti (debug.log).</translation>
     </message>
     <message>
         <source>The %s developers</source>
-        <translation>%s 개발자</translation>
+        <translation>%s razvijalci</translation>
     </message>
     <message>
         <source>Can't generate a change-address key. No keys in the internal keypool and can't generate any keys.</source>
-        <translation>거스름돈 주소 생성 불가. 내장 지갑 열쇠 보관함에 열쇠가 없으면 새로운 열쇠를 생성할 수 없습니다.</translation>
+        <translation>Ne morem ustvariti ključa change-address. V keypool-u ni ključev.</translation>
     </message>
     <message>
         <source>Cannot obtain a lock on data directory %s. %s is probably already running.</source>
-        <translation>%s 데이터 디렉토리에 락을 걸 수 없었습니다. %s가 이미 실행 중인 것으로 보입니다.</translation>
+        <translation>Ne morem zakleniti podatkovne mape %s. %s je verjetno že zagnan.</translation>
     </message>
     <message>
         <source>Cannot provide specific connections and have addrman find outgoing connections at the same.</source>
-        <translation>특정 연결을 제공 할 수없고 addrman이 나가는 연결을 찾을 수 없습니다.</translation>
+        <translation>Ne morem zagotoviti določenih povezav in hkrati iskati odhodne povezave z adrman.</translation>
     </message>
     <message>
         <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation>%s 불러오기 오류: 주소 키는 모두 정확하게 로드되었으나 거래 데이터와 주소록 필드에서 누락이나 오류가 존재할 수 있습니다.</translation>
+        <translation>Napaka pri branju %s! Vsi ključi so bili prebrani pravilno, vendar so lahko vnosi o transakcijah ali vnosi naslovov nepravilni ali manjkajo.</translation>
     </message>
     <message>
         <source>Please check that your computer's date and time are correct! If your clock is wrong, %s will not work properly.</source>
-        <translation>컴퓨터의 날짜와 시간이 올바른지 확인하십시오! 시간이 잘못되면 %s은 제대로 동작하지 않습니다.</translation>
+        <translation>Opozorilo: Preverite, če sta datum in ura na vašem računalniku točna! %s ne bo deloval pravilno, če je nastavljeni čas nepravilen.</translation>
     </message>
     <message>
         <source>Please contribute if you find %s useful. Visit %s for further information about the software.</source>
-        <translation>%s가 유용하다고 생각한다면 프로젝트에 공헌해주세요. 이 소프트웨어에 대한 보다 자세한 정보는 %s를 방문해주십시오.</translation>
+        <translation>Prosimo, prispevajte, če se vam zdi %s uporaben. Za dodatne informacije o programski opremi obiščite %s.</translation>
     </message>
     <message>
         <source>The block database contains a block which appears to be from the future. This may be due to your computer's date and time being set incorrectly. Only rebuild the block database if you are sure that your computer's date and time are correct</source>
-        <translation>블록 데이터베이스에 미래의 블록이 포함되어 있습니다. 이것은 사용자의 컴퓨터의 날짜와 시간이 올바르게 설정되어 있지 않을때 나타날 수 있습니다. 만약 사용자의 컴퓨터의 날짜와 시간이 올바르다고 확신할 때에만 블록 데이터 베이스의 재구성을 하십시오</translation>
+        <translation>Baza podatkov blokov vsebuje blok, za katerega se zdi, da bo iz prihodnosti. To je lahko posledica napačnega nastavitve datuma in časa vašega računalnika. Znova obnovijte bazo podatkov samo, če ste prepričani, da sta datum in čas računalnika pravilna</translation>
     </message>
     <message>
         <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
-        <translation>출시 전의 테스트 빌드 입니다. 스스로의 책임하에 사용하십시오. 채굴이나 상업적 용도로 사용하지 마십시오.</translation>
+        <translation>To je preizkusna različica še neizdanega programa. Uporabljate jo na lastno odgovornost. Programa ne uporabljajte je za rudarjenje ali trgovske aplikacije.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may discard if change is smaller than dust at this level</source>
-        <translation>이것은 거스름돈이 현재 레벨의 더스트보다 적은 경우 버릴 수 있는 수수료입니다.</translation>
+        <translation>To je transakcijska provizija, ki jo lahko zavržete, če je sprememba manjša od prahu na tej ravni</translation>
     </message>
     <message>
         <source>Unable to replay blocks. You will need to rebuild the database using -reindex-chainstate.</source>
-        <translation>블록을 재생할 수 없습니다. -reindex-chainstate를 사용하여 데이터베이스를 다시 빌드 해야 합니다.</translation>
+        <translation>Ne morem ponoviti blokov. Podatkovno bazo bo potrebno ponovno zgraditi z uporabo ukaza -reindex-chainstate.</translation>
     </message>
     <message>
         <source>Unable to rewind the database to a pre-fork state. You will need to redownload the blockchain</source>
-        <translation>데이터베이스를 포크 전 상태로 돌리지 못했습니다. 블록체인을 다시 다운로드 해주십시오.</translation>
+        <translation>Baze podatkov ni mogoče vrniti v stanje pred forkom. Morali boste znova naložiti verigo blokov</translation>
     </message>
     <message>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
-        <translation>경고 : 모든 네트워크가 동의해야 하나, 일부 채굴자들에게 문제가 있는 것으로 보입니다. </translation>
+        <translation>Opozorilo: Trenutno na omrežju ni videti konsenza! Videti je, kot da bi imeli nekateri rudarji težave.</translation>
     </message>
     <message>
         <source>Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.</source>
-        <translation>경고: 현재 비트코인 버전이 다른 네트워크 참여자들과 동일하지 않은 것 같습니다. 당신 또는 다른 참여자들이 동일한 비트코인 버전으로 업그레이드 할 필요가 있습니다.</translation>
+        <translation>Opozorilo: Trenutno se s soležniki ne strinjamo v popolnosti! Mogoče bi morali vi ali drugi udeleženci posodobiti odjemalce.</translation>
     </message>
     <message>
         <source>%d of last 100 blocks have unexpected version</source>
-        <translation>지난 100개의 블록 중 %d개에 예상치 못한 버전이 있습니다.</translation>
+        <translation>%d od zadnjih 100 blokov imajo nepričakovano verzijo</translation>
     </message>
     <message>
         <source>%s corrupt, salvage failed</source>
-        <translation>%s 손상되었고 복구가 실패하였습니다</translation>
+        <translation>%s poškodovana, obnova neuspešna</translation>
     </message>
     <message>
         <source>-maxmempool must be at least %d MB</source>
-        <translation>-maxmempool은 최소한 %d MB 이어야 합니다</translation>
+        <translation>-maxmempool mora biti vsaj %d MB</translation>
     </message>
     <message>
         <source>Cannot resolve -%s address: '%s'</source>
-        <translation>%s 주소를 확인할 수 없습니다: '%s'</translation>
+        <translation>Naslova -%s ni mogoče razrešiti: '%s'</translation>
     </message>
     <message>
         <source>Change index out of range</source>
-        <translation>범위 밖의 인덱스 변경</translation>
-    </message>
-    <message>
-        <source>Config setting for %s only applied on %s network when in [%s] section.</source>
-        <translation>%s의 설정은 [%s] 항목에 있을 때 %s 네트워크에만 적용됩니다.</translation>
+        <translation>Indeks drobiža izven dovoljenega območja</translation>
     </message>
     <message>
         <source>Copyright (C) %i-%i</source>
@@ -3299,365 +3386,377 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Corrupted block database detected</source>
-        <translation>손상된 블록 데이터베이스가 감지되었습니다</translation>
+        <translation>Podatkovna baza blokov je okvarjena</translation>
     </message>
     <message>
         <source>Do you want to rebuild the block database now?</source>
-        <translation>블록 데이터베이스를 다시 생성하시겠습니까?</translation>
+        <translation>Želite zdaj obnoviti podatkovno bazo blokov?</translation>
     </message>
     <message>
         <source>Error initializing block database</source>
-        <translation>블록 데이터베이스를 초기화하는데 오류</translation>
+        <translation>Napaka pri inicializaciji podatkovne baze blokov</translation>
     </message>
     <message>
         <source>Error initializing wallet database environment %s!</source>
-        <translation>지갑 데이터베이스 환경 초기화하는데 오류 %s</translation>
+        <translation>Napaka pri inicializaciji okolja podatkovne baze denarnice %s!</translation>
     </message>
     <message>
         <source>Error loading %s</source>
-        <translation>%s 불러오기 오류</translation>
+        <translation>Napaka pri nalaganju %s</translation>
     </message>
     <message>
         <source>Error loading %s: Private keys can only be disabled during creation</source>
-        <translation>%s 로딩 실패: 개인키는 생성할때만 비활성화 할 수 있습니다</translation>
+        <translation>Napaka pri nalaganju %s: Zasebne ključe se lahko onemogoči samo ob ustvaritvi</translation>
     </message>
     <message>
         <source>Error loading %s: Wallet corrupted</source>
-        <translation>%s 불러오기 오류: 지갑이 손상됨</translation>
+        <translation>Napaka pri nalaganju %s: Denarnica pokvarjena</translation>
     </message>
     <message>
         <source>Error loading %s: Wallet requires newer version of %s</source>
-        <translation>%s 불러오기 에러: 지갑은 새 버전의 %s이 필요합니다</translation>
+        <translation>Napaka pri nalaganju %s: denarnica zahteva novejšo različico %s</translation>
     </message>
     <message>
         <source>Error loading block database</source>
-        <translation>블록 데이터베이스를 불러오는데 오류</translation>
+        <translation>Napaka pri nalaganju podatkovne baze blokov</translation>
     </message>
     <message>
         <source>Error opening block database</source>
-        <translation>블록 데이터베이스를 여는데 오류</translation>
+        <translation>Napaka pri odpiranju podatkovne baze blokov</translation>
     </message>
     <message>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation>어떤 포트도 열지 못했습니다. 필요하다면 -listen=0 옵션을 사용하세요.</translation>
+        <translation>Ni mogoče poslušati na nobenih vratih. Če to zares želite, uporabite opcijo -listen=0.</translation>
     </message>
     <message>
         <source>Failed to rescan the wallet during initialization</source>
-        <translation>지갑 스캔 오류</translation>
+        <translation>Med inicializacijo denarnice ni bilo mogoče preveriti zgodovine (rescan failed).</translation>
     </message>
     <message>
         <source>Importing...</source>
-        <translation>불러오는 중...</translation>
+        <translation>Uvažam ...</translation>
     </message>
     <message>
         <source>Incorrect or no genesis block found. Wrong datadir for network?</source>
-        <translation>제네시스 블록이 없거나 잘못됐습니다. 네트워크의 datadir이 잘못됐을수도 있습니다.</translation>
+        <translation>Izvornega bloka ni mogoče najti ali pa je neveljaven. Preverite, če ste izbrali pravo podatkovno mapo za izbrano omrežje.</translation>
     </message>
     <message>
         <source>Initialization sanity check failed. %s is shutting down.</source>
-        <translation>무결성 확인 초기화가 실패했습니다. %s가 종료됩니다.</translation>
+        <translation>Začetni sanity check neuspešen. %s se zapira.</translation>
     </message>
     <message>
         <source>Invalid amount for -%s=&lt;amount&gt;: '%s'</source>
-        <translation>유효하지 않은 금액 -%s=&lt;amount&gt;: '%s'</translation>
+        <translation>Neveljavna količina za -%s=&lt;amount&gt;: '%s'</translation>
     </message>
     <message>
         <source>Invalid amount for -discardfee=&lt;amount&gt;: '%s'</source>
-        <translation>유효하지 않은 금액 -discardfee=&lt;amount&gt;: '%s'</translation>
+        <translation>Neveljavna količina za -discardfee=&lt;amount&gt;: '%s'</translation>
     </message>
     <message>
         <source>Invalid amount for -fallbackfee=&lt;amount&gt;: '%s'</source>
-        <translation>유효하지 않은 금액 -fallbackfee=&lt;amount&gt;: '%s'</translation>
+        <translation>Neveljavna količina za -fallbackfee=&lt;amount&gt;: '%s'</translation>
     </message>
     <message>
         <source>Specified blocks directory "%s" does not exist.</source>
-        <translation>지정한 블록 디렉토리 "%s" 가 존재하지 않습니다.</translation>
+        <translation>Vnešena podatkovna mapa za bloke "%s" ne obstaja.</translation>
+    </message>
+    <message>
+        <source>Unknown address type '%s'</source>
+        <translation>Neznan tip naslova '%s'</translation>
+    </message>
+    <message>
+        <source>Unknown change type '%s'</source>
+        <translation>Neznan tip drobiža '%s'</translation>
     </message>
     <message>
         <source>Upgrading txindex database</source>
-        <translation>txindex 데이터베이스 업테이트중</translation>
+        <translation>Nadgrajujem txindex podatkovno bazo</translation>
     </message>
     <message>
         <source>Loading P2P addresses...</source>
-        <translation>P2P 주소 불러오는 중...</translation>
+        <translation>Nalagam P2P naslove ...</translation>
+    </message>
+    <message>
+        <source>Error: Disk space is too low!</source>
+        <translation>Napaka: premalo prostora na disku!</translation>
     </message>
     <message>
         <source>Loading banlist...</source>
-        <translation>추방리스트를 불러오는 중...</translation>
+        <translation>Nalaganje liste blokiranih ...</translation>
     </message>
     <message>
         <source>Not enough file descriptors available.</source>
-        <translation>파일 디스크립터가 부족합니다. </translation>
+        <translation>Na voljo ni dovolj deskriptorjev datotek.</translation>
     </message>
     <message>
         <source>Prune cannot be configured with a negative value.</source>
-        <translation>블록 축소는 음수로 설정할 수 없습니다.</translation>
+        <translation>Negativne vrednosti parametra funkcije obrezovanja niso sprejemljive.</translation>
     </message>
     <message>
         <source>Prune mode is incompatible with -txindex.</source>
-        <translation>블록 축소 모드는 -txindex와 호환되지 않습니다.</translation>
+        <translation>Funkcija obrezovanja ni združljiva z opcijo -txindex.</translation>
     </message>
     <message>
         <source>Replaying blocks...</source>
-        <translation>블록 재생중...</translation>
+        <translation>Ponavljam bloke ...</translation>
     </message>
     <message>
         <source>Rewinding blocks...</source>
-        <translation>블록 되감는중...</translation>
+        <translation>Previjam bloke ...</translation>
     </message>
     <message>
         <source>The source code is available from %s.</source>
-        <translation>소스코드는 %s 에서 확인하실 수 있습니다.</translation>
+        <translation>Izvorna koda je dosegljiva na %s.</translation>
     </message>
     <message>
         <source>Transaction fee and change calculation failed</source>
-        <translation>거래 수수료 및 잔돈 계산에 실패했습니다.</translation>
+        <translation>Izračun provizije za transakcijo in droviža ni uspel</translation>
     </message>
     <message>
         <source>Unable to bind to %s on this computer. %s is probably already running.</source>
-        <translation>이 컴퓨터의 %s에 바인딩 할 수 없습니다. 아마도 %s이 실행중인 것 같습니다.</translation>
+        <translation>Na tem računalniku ni bilo mogoče vezati naslova %s. %s je verjetno že zagnan.</translation>
     </message>
     <message>
         <source>Unable to generate keys</source>
-        <translation>키 생성 불가</translation>
+        <translation>Ne zmorem ustvariti ključev</translation>
     </message>
     <message>
         <source>Unsupported logging category %s=%s.</source>
-        <translation>지원되지 않는 로깅 카테고리 %s = %s.</translation>
+        <translation>Nepodprta kategorija beleženja %s=%s.</translation>
     </message>
     <message>
         <source>Upgrading UTXO database</source>
-        <translation>UTXO 데이터베이스 업그레이드</translation>
+        <translation>Nadgrajujem UTXO podatkovno bazo</translation>
     </message>
     <message>
         <source>User Agent comment (%s) contains unsafe characters.</source>
-        <translation>사용자 정의 코멘트 (%s)에 안전하지 못한 글자가 포함되어 있습니다.</translation>
+        <translation>Komentar uporabniškega agenta (%s) vsebuje nevarne znake.</translation>
     </message>
     <message>
         <source>Verifying blocks...</source>
-        <translation>블록 검증중...</translation>
+        <translation>Preverjam celovitost blokov ...</translation>
     </message>
     <message>
         <source>Wallet needed to be rewritten: restart %s to complete</source>
-        <translation>지갑을 새로 써야 합니다:  진행을 위해 %s 를 다시 시작하세요.</translation>
+        <translation>Denarnica mora biti prepisana: ponovno zaženite %s za dokončanje.</translation>
     </message>
     <message>
         <source>Error: Listening for incoming connections failed (listen returned error %s)</source>
-        <translation>오류: 들어오는 연결을 허용하는데 실패했습니다 (listen returned error %s)</translation>
+        <translation>Napaka: Ni mogoče sprejemati dohodnih povezav (vrnjena napaka: %s)</translation>
     </message>
     <message>
         <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>유효하지 않은 금액 -maxtxfee=&lt;amount&gt;: '%s' (거래가 막히는 상황을 방지하게 위해 적어도 %s 의 중계 수수료를 지정해야 합니다)</translation>
+        <translation>Neveljaven znesek za -maxtxfee=&lt;amount&gt;: '%s' (mora biti najmanj provizija za %s, da se prepreči zataknjene transakcije)</translation>
     </message>
     <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
-        <translation>거래액이 수수료를 지불하기엔 너무 작습니다</translation>
+        <translation>Znesek transakcije je premajhen za pošiljanje po odbitku provizije</translation>
     </message>
     <message>
         <source>You need to rebuild the database using -reindex to go back to unpruned mode.  This will redownload the entire blockchain</source>
-        <translation>블록 축소 모드를 해제하려면 데이터베이스를 재구성하기 위해 -reindex를 사용해야 합니다. 이 명령은 전체 블록체인을 다시 다운로드합니다.</translation>
+        <translation>Za vrnitev v nepredviden način morate obnoviti bazo z uporabo -reindex. To bo ponovno naložilo celoten blockchain</translation>
     </message>
     <message>
         <source>Error reading from database, shutting down.</source>
-        <translation>블록 데이터베이스를 불러오는데 오류가 발생하였습니다, 종료됩니다.</translation>
+        <translation>Napaka pri branju podarkovne baze, zapiram.</translation>
     </message>
     <message>
         <source>Error upgrading chainstate database</source>
-        <translation>체인 상태 데이터베이스 업그레이드 중 오류가 발생했습니다.</translation>
+        <translation>Napaka pri nadgradnji chainstate baze podatkov</translation>
     </message>
     <message>
         <source>Error: Disk space is low for %s</source>
-        <translation>오류: %s 하기엔 저장공간이 부족합니다</translation>
+        <translation>Opozorilo: premalo prostora na disku za %s</translation>
     </message>
     <message>
         <source>Invalid -onion address or hostname: '%s'</source>
-        <translation>올바르지 않은 -onion 주소 또는 호스트 이름: '%s'</translation>
+        <translation>Neveljaven -onion naslov ali ime gostitelja: '%s'</translation>
     </message>
     <message>
         <source>Invalid -proxy address or hostname: '%s'</source>
-        <translation>올바르지 않은 -proxy 주소 또는 호스트 이름: '%s'</translation>
+        <translation>Neveljaven -proxy naslov ali ime gostitelja: '%s'</translation>
     </message>
     <message>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: '%s' (must be at least %s)</source>
-        <translation>유효하지 않은 금액 -paytxfee=&lt;amount&gt;: "%s" (최소 %s 이상이어야 됨)</translation>
+        <translation>Neveljaven znesek za -paytxfee=&lt;amount&gt;: '%s' (mora biti vsaj %s)</translation>
     </message>
     <message>
         <source>Invalid netmask specified in -whitelist: '%s'</source>
-        <translation>유효하지 않은 넷마스크가 -whitelist: '%s" 를 통해 지정됨</translation>
+        <translation>Neveljavna omrežna maska je navedena v -whitelist: '%s'</translation>
     </message>
     <message>
         <source>Need to specify a port with -whitebind: '%s'</source>
-        <translation>-whitebind: '%s' 를 이용하여 포트를 지정해야 합니다</translation>
+        <translation>Pri opciji -whitebind morate navesti vrata: %s</translation>
+    </message>
+    <message>
+        <source>Prune mode is incompatible with -blockfilterindex.</source>
+        <translation>Obrezovanje ni kompatibilno z -blockfilterindex.</translation>
     </message>
     <message>
         <source>Reducing -maxconnections from %d to %d, because of system limitations.</source>
-        <translation>시스템 한계로 인하여 -maxconnections를 %d 에서 %d로 줄였습니다.</translation>
+        <translation>Zmanjšujem maksimalno število povezav (-maxconnections) iz %d na %d, zaradi sistemskih omejitev.</translation>
     </message>
     <message>
         <source>Section [%s] is not recognized.</source>
-        <translation>[%s] 항목은 인정되지 않습니다.</translation>
+        <translation>Sekcija [%s] niu prepoznana.</translation>
     </message>
     <message>
         <source>Signing transaction failed</source>
-        <translation>거래 서명에 실패했습니다</translation>
+        <translation>Transakcije ni bilo mogoče podpisati.</translation>
     </message>
     <message>
         <source>Specified -walletdir "%s" does not exist</source>
-        <translation>지정한 -walletdir "%s"은 존재하지 않습니다</translation>
+        <translation>Določena -walletdir "%s" ne obstaja</translation>
     </message>
     <message>
         <source>Specified -walletdir "%s" is a relative path</source>
-        <translation>지정한 -walletdir "%s"은 상대 경로입니다</translation>
+        <translation>Določena -walletdir "%s" je relativna</translation>
     </message>
     <message>
         <source>Specified -walletdir "%s" is not a directory</source>
-        <translation>지정한 -walletdir "%s"은 디렉토리가 아닙니다</translation>
+        <translation>Določena -walletdir "%s" ni podatkovna mapa</translation>
     </message>
     <message>
         <source>The specified config file %s does not exist
 </source>
-        <translation>지정한 설정 파일 "%s"는 존재하지 않습니다
+        <translation>Določena konfiguracijska datoteka %s ne obstaja
 </translation>
     </message>
     <message>
         <source>The transaction amount is too small to pay the fee</source>
-        <translation>거래액이 수수료를 지불하기엔 너무 작습니다</translation>
+        <translation>Znesek transakcije je prenizek za plačilo provizije</translation>
     </message>
     <message>
         <source>This is experimental software.</source>
-        <translation>이 소프트웨어는 시험적입니다.</translation>
+        <translation>Program je eksperimentalne narave.</translation>
     </message>
     <message>
         <source>Transaction amount too small</source>
-        <translation>거래액이 너무 적습니다</translation>
+        <translation>Znesek je pramajhen</translation>
     </message>
     <message>
         <source>Transaction too large</source>
-        <translation>거래가 너무 큽니다</translation>
+        <translation>Transkacija je prevelika</translation>
     </message>
     <message>
         <source>Unable to bind to %s on this computer (bind returned error %s)</source>
-        <translation>이 컴퓨터의 %s 에 바인딩할 수 없습니다 (바인딩 과정에 %s 오류 발생)</translation>
+        <translation>Na tem računalniku ni bilo mogoče vezati naslova %s (vrnjena napaka: %s)</translation>
     </message>
     <message>
         <source>Unable to create the PID file '%s': %s</source>
-        <translation>PID 파일 생성 실패 '%s': %s</translation>
+        <translation>Ne morem ustvariti PID datoteke '%s': %s</translation>
     </message>
     <message>
         <source>Unable to generate initial keys</source>
-        <translation>초기 키값 생성 불가</translation>
+        <translation>Ne zmorem ustvariti začetnih ključev</translation>
     </message>
     <message>
         <source>Verifying wallet(s)...</source>
-        <translation>지갑 검증중...</translation>
+        <translation>Preverjam denarnice ...</translation>
     </message>
     <message>
         <source>Warning: unknown new rules activated (versionbit %i)</source>
-        <translation>경고: 알려지지 않은 새로운 규칙이 활성화되었습니다. (버전비트 %i)</translation>
+        <translation>Opozorilo: neznana nova pravila aktivirana (verzija %i)</translation>
     </message>
     <message>
         <source>Zapping all transactions from wallet...</source>
-        <translation>지갑의 모든거래내역 건너뛰기...</translation>
+        <translation>Brišem vse transakcije iz denarnice ...</translation>
     </message>
     <message>
         <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee 값이 너무 큽니다!  하나의 거래에 너무 큰 수수료가 지불 됩니다.</translation>
+        <translation>-maxtxfee je nastavljen zelo visoko!</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>
-        <translation>이것은 수수료 추정을 이용할 수 없을 때 사용되는 거래 수수료입니다.</translation>
-    </message>
-    <message>
-        <source>This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.</source>
-        <translation>이 제품에는 OpenSSL 프로젝트에서 OpenSSL Toolkit %s으로 사용하기 위해 개발 한 소프트웨어와 에릭 영이 작성한 암호화 소프트웨어 및 토머스 버나드가 작성한 UPnP 소프트웨어가 포함되어 있습니다.</translation>
+        <translation>To je transakcijska provizija, ki jo lahko plačate, kadar ocene provizij niso na voljo.</translation>
     </message>
     <message>
         <source>Total length of network version string (%i) exceeds maximum length (%i). Reduce the number or size of uacomments.</source>
-        <translation>네트워크 버전 문자 (%i)의 길이가 최대길이 (%i)를 초과합니다. uacomments의 갯수나 길이를 줄이세요.</translation>
+        <translation>Skupna dolžina niza različice omrežja (%i) presega največjo dolžino (%i). Zmanjšajte število ali velikost ur.</translation>
     </message>
     <message>
         <source>Warning: Wallet file corrupt, data salvaged! Original %s saved as %s in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation>경고 : 지갑파일이 손상되어 데이터가 복구되었습니다. 원래의 %s 파일은 %s 후에 %s 이름으로 저장됩니다. 잔액과 거래 내역이 정확하지 않다면 백업 파일로 부터 복원해야 합니다. </translation>
+        <translation>Opozorilo: Datoteka denarnice je poškodovana, podatki so shranjeni! Izvirnik %s je bil shranjen kot %s v %s; če je stanje ali transakcije napačno, ga morate obnoviti iz varnostne kopije.</translation>
     </message>
     <message>
         <source>%s is set very high!</source>
-        <translation>%s가 매우 높게 설정되었습니다!</translation>
+        <translation>%s je postavljen zelo visoko!</translation>
     </message>
     <message>
         <source>Error loading wallet %s. Duplicate -wallet filename specified.</source>
-        <translation>지갑 %s 로딩 에러,  중복된 -wallet 파일이름을 입력했습니다.</translation>
+        <translation>Napaka pri nalaganju denarnice %s. Ime denarnice je bilo že uporabljeno.</translation>
     </message>
     <message>
         <source>Starting network threads...</source>
-        <translation>네트워크 스레드 시작중...</translation>
+        <translation>Začenjam omrežne niti ...</translation>
     </message>
     <message>
         <source>The wallet will avoid paying less than the minimum relay fee.</source>
-        <translation>지갑은 최소 중계 수수료보다 적은 금액을 지불하는 것을 피할 것입니다.</translation>
+        <translation>Denarnica se bo izognila plačilu proviziji, manjši od minimalne relay provizije (relay fee).</translation>
     </message>
     <message>
         <source>This is the minimum transaction fee you pay on every transaction.</source>
-        <translation>이것은 모든 거래에서 지불하는 최소 거래 수수료입니다.</translation>
+        <translation>To je minimalna transakcijska provizija, ki jo plačate za vsako transakcijo.</translation>
     </message>
     <message>
         <source>This is the transaction fee you will pay if you send a transaction.</source>
-        <translation>이것은 거래를 보낼 경우 지불 할 거래 수수료입니다.</translation>
+        <translation>To je provizija, ki jo boste plačali, če pošljete transakcijo.</translation>
     </message>
     <message>
         <source>Transaction amounts must not be negative</source>
-        <translation>거래액은 반드시 0보다 큰 값이어야 합니다.</translation>
+        <translation>Znesek transkacije mora biti pozitiven</translation>
     </message>
     <message>
         <source>Transaction has too long of a mempool chain</source>
-        <translation>거래가 너무 긴 mempool 체인을 갖고 있습니다</translation>
+        <translation>Transakcija ima predolgo verigo spominov</translation>
     </message>
     <message>
         <source>Transaction must have at least one recipient</source>
-        <translation>거래에는 최소한 한명의 수령인이 있어야 합니다.</translation>
+        <translation>Transakcija mora imeti vsaj enega prejemnika.</translation>
     </message>
     <message>
         <source>Unknown network specified in -onlynet: '%s'</source>
-        <translation>-onlynet: '%s' 에 알수없는 네트워크가 지정되었습니다</translation>
+        <translation>Neznano omrežje določeno v -onlynet: '%s'.</translation>
     </message>
     <message>
         <source>Insufficient funds</source>
-        <translation>잔액이 부족합니다</translation>
+        <translation>Premalo sredstev</translation>
     </message>
     <message>
         <source>Cannot upgrade a non HD split wallet without upgrading to support pre split keypool. Please use -upgradewallet=169900 or -upgradewallet with no version specified.</source>
-        <translation>HD split을 하지 않은 지갑은 pre split keypool로 업그레이드 하지 않은 이상 업그레이드가 불가능합니다. -upgradewallet=169900 이나 -upgradewallet (버전을 정하지 않고) 명령을 사용하십시오.</translation>
+        <translation>Ne morete nadgraditi denarnice, ki ni ločena z HD, brez nadgradnje na podporo pred razdeljenim ključem. Uporabite -upgradewallet=169900 ali -upgradewallet brez določene različice.</translation>
     </message>
     <message>
         <source>Fee estimation failed. Fallbackfee is disabled. Wait a few blocks or enable -fallbackfee.</source>
-        <translation>수수료 추정이 실패했습니다. Fallbackfee가 비활성화 상태입니다. 몇 블록을 기다리거나 -fallbackfee를 활성화 하세요.</translation>
+        <translation>Ocena provizije ni uspela. Fallbackfee je onemogočen. Počakajte nekaj blokov ali omogočite -fallbackfee.</translation>
     </message>
     <message>
         <source>Warning: Private keys detected in wallet {%s} with disabled private keys</source>
-        <translation>경고: 비활성화된 개인키 지갑 {%s} 에서 개인키들이 발견되었습니다</translation>
+        <translation>Opozorilo: zasebni ključi odkriti v denarnici %s z onemogočenimi zasebnimi ključi.</translation>
     </message>
     <message>
         <source>Cannot write to data directory '%s'; check permissions.</source>
-        <translation>"%s" 데이터 폴더에 기록하지 못했습니다. 접근권한을 확인하세요.</translation>
+        <translation>Nimam dostopa za pisanje v podatkovni mapi '%s'; preveri dovoljenja.</translation>
     </message>
     <message>
         <source>Loading block index...</source>
-        <translation>블록 인덱스를 불러오는 중...</translation>
+        <translation>Nalagam kazalo blokov ...</translation>
     </message>
     <message>
         <source>Loading wallet...</source>
-        <translation>지갑을 불러오는 중...</translation>
+        <translation>Nalagam denarnico ...</translation>
     </message>
     <message>
         <source>Cannot downgrade wallet</source>
-        <translation>지갑을 다운그레이드 할 수 없습니다</translation>
+        <translation>Ne morem </translation>
     </message>
     <message>
         <source>Rescanning...</source>
-        <translation>재스캔 중...</translation>
+        <translation>Ponovno pregledujem verigo ...</translation>
     </message>
     <message>
         <source>Done loading</source>
-        <translation>로딩 완료</translation>
+        <translation>Nalaganje končano</translation>
     </message>
 </context>
 </TS>

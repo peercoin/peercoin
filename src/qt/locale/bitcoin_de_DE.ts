@@ -562,10 +562,6 @@
         <translation>&amp;Adresse</translation>
     </message>
     <message>
-        <source>New receiving address</source>
-        <translation>Neue Empfangsadresse</translation>
-    </message>
-    <message>
         <source>New sending address</source>
         <translation>Neue Sendeadresse</translation>
     </message>
@@ -697,6 +693,10 @@
     <message>
         <source>Label</source>
         <translation>Etikett</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Brieftasche</translation>
     </message>
     </context>
 <context>
@@ -873,10 +873,6 @@
     </context>
 <context>
     <name>bitcoin-core</name>
-    <message>
-        <source>Options:</source>
-        <translation>Optionen:</translation>
-    </message>
     <message>
         <source>Information</source>
         <translation>Information</translation>

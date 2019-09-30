@@ -730,10 +730,6 @@
         <translation>&amp;Cím</translation>
     </message>
     <message>
-        <source>New receiving address</source>
-        <translation>Új fogadási cím</translation>
-    </message>
-    <message>
         <source>New sending address</source>
         <translation>Új küldési cím</translation>
     </message>
@@ -748,10 +744,6 @@
     <message>
         <source>The entered address "%1" is not a valid Peercoin address.</source>
         <translation>A megadott cím"%1" nem egy érvényes Peercoin cím.</translation>
-    </message>
-    <message>
-        <source>The entered address "%1" is already in the address book.</source>
-        <translation>A megadott cím "%1" már szerepel a címlistában.</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -802,42 +794,6 @@
     <message>
         <source>Command-line options</source>
         <translation>Parancssor beállításai</translation>
-    </message>
-    <message>
-        <source>Usage:</source>
-        <translation>Használat:</translation>
-    </message>
-    <message>
-        <source>command-line options</source>
-        <translation>parancssor beállításai</translation>
-    </message>
-    <message>
-        <source>UI Options:</source>
-        <translation>Felhasználói felület beállításai</translation>
-    </message>
-    <message>
-        <source>Choose data directory on startup (default: %u)</source>
-        <translation>Adja meg az indításkor használt adat könyvtárat (alapbeállítás: %u)</translation>
-    </message>
-    <message>
-        <source>Set language, for example "de_DE" (default: system locale)</source>
-        <translation>Nyelv beállítása, például "de_DE" (alaphelyzetben: a helyi rendszer nyelve)</translation>
-    </message>
-    <message>
-        <source>Start minimized</source>
-        <translation>Indítás rejtett ablakkal</translation>
-    </message>
-    <message>
-        <source>Set SSL root certificates for payment request (default: -system-)</source>
-        <translation>A fizetési kérelmek SSL tanúsítványainak beállítása (alaphelyzetben: -a rendszer beállításai szerint-)</translation>
-    </message>
-    <message>
-        <source>Show splash screen on startup (default: %u)</source>
-        <translation>Mutassa a kezdő képet indításkor (alaphelyzetben: %u)</translation>
-    </message>
-    <message>
-        <source>Reset all settings changed in the GUI</source>
-        <translation>A grafikus felület összes megváltoztatott beállításának a visszaállítása</translation>
     </message>
 </context>
 <context>
@@ -1951,6 +1907,10 @@
         <translation>Üzenet</translation>
     </message>
     <message>
+        <source>Wallet</source>
+        <translation>Tárca</translation>
+    </message>
+    <message>
         <source>Resulting URI too long, try to reduce the text for label / message.</source>
         <translation>A keletkezett URI túl hosszú, próbálja meg csökkenteni a cimke / üzenet szövegének méretét.</translation>
     </message>
@@ -2135,6 +2095,10 @@
     <message>
         <source>or</source>
         <translation>vagy</translation>
+    </message>
+    <message>
+        <source>Transaction fee</source>
+        <translation>Tranzakciós díj</translation>
     </message>
     <message>
         <source>The amount to pay must be larger than 0.</source>
@@ -2424,10 +2388,6 @@
         <translation>Címke</translation>
     </message>
     <message>
-        <source>Offline</source>
-        <translation>Offline</translation>
-    </message>
-    <message>
         <source>Unconfirmed</source>
         <translation>Nem megerősített</translation>
     </message>
@@ -2618,20 +2578,8 @@
 <context>
     <name>bitcoin-core</name>
     <message>
-        <source>Options:</source>
-        <translation>Beállítások:</translation>
-    </message>
-    <message>
-        <source>Accept command line and JSON-RPC commands</source>
-        <translation>Parancssoros és JSON-RPC parancsok elfogadása</translation>
-    </message>
-    <message>
-        <source>Peercoin Core</source>
-        <translation>Peercoin Mag</translation>
-    </message>
-    <message>
-        <source>Debugging/Testing options:</source>
-        <translation>Hibakeresési/Tesztelési beállítások:</translation>
+        <source>Peercoin</source>
+        <translation>Peercoin</translation>
     </message>
     <message>
         <source>Do you want to rebuild the block database now?</source>
@@ -2662,20 +2610,8 @@
         <translation>Blokkok megerősítése...</translation>
     </message>
     <message>
-        <source>Wallet debugging/testing options:</source>
-        <translation>Tárca hibakeresési/tesztelési beállítások:</translation>
-    </message>
-    <message>
-        <source>Wallet options:</source>
-        <translation>Tárca beállítások:</translation>
-    </message>
-    <message>
         <source>Information</source>
         <translation>Információ</translation>
-    </message>
-    <message>
-        <source>Show all debugging options (usage: --help -help-debug)</source>
-        <translation>Összes hibakeresési beállítás mutatása (használat: --help -help-debug)</translation>
     </message>
     <message>
         <source>Signing transaction failed</source>
@@ -2694,14 +2630,6 @@
         <translation>A tranzakció túl nagy</translation>
     </message>
     <message>
-        <source>Upgrade wallet to latest format on startup</source>
-        <translation>Tárca fejlesztése a legfrissebb formátumra az indításnál</translation>
-    </message>
-    <message>
-        <source>Username for JSON-RPC connections</source>
-        <translation>Felhasználónév a JSON-RPC kapcsolódásokhoz</translation>
-    </message>
-    <message>
         <source>Verifying wallet(s)...</source>
         <translation>Tárca/Tárcák megerősítése</translation>
     </message>
@@ -2710,20 +2638,8 @@
         <translation>Figyelmeztetés</translation>
     </message>
     <message>
-        <source>Password for JSON-RPC connections</source>
-        <translation>Jelszó a JSON-RPC kapcsolódásokhoz</translation>
-    </message>
-    <message>
         <source>%s is set very high!</source>
         <translation>%s túl magasra van állítva!</translation>
-    </message>
-    <message>
-        <source>Error loading wallet %s. Invalid characters in -wallet filename.</source>
-        <translation>Hiba a tárca betöltésekor %s. Érvénytelen karakterek a tárca fájlnévben.</translation>
-    </message>
-    <message>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: %u or testnet: %u)</source>
-        <translation>Figyelés a JSON-RPC kapcsolatokra itt: &lt;port&gt; (alapértelmezett:  %u vagy tesztnet: %u)</translation>
     </message>
     <message>
         <source>Starting network threads...</source>

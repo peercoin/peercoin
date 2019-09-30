@@ -156,6 +156,10 @@
 </context>
 <context>
     <name>ReceiveRequestDialog</name>
+    <message>
+        <source>Wallet</source>
+        <translation>ארנק</translation>
+    </message>
     </context>
 <context>
     <name>RecentRequestsTableModel</name>
