@@ -1,5 +1,5 @@
 ---
-name: "peercoin-osx-0.19"
+name: "peercoin-osx-0.20"
 enable_cache: true
 distro: "ubuntu"
 suites:
