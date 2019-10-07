@@ -58,6 +58,7 @@ bool AddWallet(const std::shared_ptr<CWallet>& wallet)
     std::vector<std::shared_ptr<CWallet>>::const_iterator i = std::find(vpwallets.begin(), vpwallets.end(), wallet);
     if (i != vpwallets.end()) return false;
     vpwallets.push_back(wallet);
+    wallet->ConnectScriptPubKeyManNotifiers();
     return true;
 }
 
@@ -4235,6 +4236,14 @@ const CKeyingMaterial& CWallet::GetEncryptionKey() const
 bool CWallet::HasEncryptionKeys() const
 {
     return !mapMasterKeys.empty();
+}
+
+void CWallet::ConnectScriptPubKeyManNotifiers()
+{
+    for (const auto& spk_man : GetActiveScriptPubKeyMans()) {
+        spk_man->NotifyWatchonlyChanged.connect(NotifyWatchonlyChanged);
+        spk_man->NotifyCanGetAddressesChanged.connect(NotifyCanGetAddressesChanged);
+    }
 }
 
 // peercoin: create coin stake transaction
