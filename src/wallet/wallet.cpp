@@ -884,7 +884,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransactionRef& ptx, CWalletTx::St
                         WalletLogPrintf("%s: Detected a used keypool key, mark all keypool key up to this key as used\n", __func__);
                         MarkReserveKeysAsUsed(mi->second);
 
-                        if (!m_spk_man->TopUpKeyPool()) {
+                        if (!m_spk_man->TopUp()) {
                             WalletLogPrintf("%s: Topping up keypool failed (locked wallet)\n", __func__);
                         }
                     }
@@ -3064,7 +3064,7 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
 {
     bool res = true;
     if (auto spk_man = m_spk_man.get()) {
-        res &= spk_man->TopUpKeyPool(kpSize);
+        res &= spk_man->TopUp(kpSize);
     }
     return res;
 }
@@ -3084,7 +3084,7 @@ bool CWallet::GetNewChangeDestination(const OutputType type, CTxDestination& des
 {
     error.clear();
 
-    m_spk_man->TopUpKeyPool();
+    m_spk_man->TopUp();
 
     ReserveDestination reservedest(this);
     if (!reservedest.GetReservedDestination(type, dest, true)) {
@@ -3266,7 +3266,7 @@ bool ReserveDestination::GetReservedDestination(const OutputType type, CTxDestin
     if (nIndex == -1)
     {
         CKeyPool keypool;
-        if (!m_spk_man->ReserveKeyFromKeyPool(nIndex, keypool, internal)) {
+        if (!m_spk_man->GetReservedDestination(type, internal, nIndex, keypool)) {
             return false;
         }
         vchPubKey = keypool.vchPubKey;
@@ -3282,7 +3282,7 @@ bool ReserveDestination::GetReservedDestination(const OutputType type, CTxDestin
 void ReserveDestination::KeepDestination()
 {
     if (nIndex != -1)
-        m_spk_man->KeepKey(nIndex);
+        m_spk_man->KeepDestination(nIndex);
     nIndex = -1;
     vchPubKey = CPubKey();
     address = CNoDestination();
@@ -3291,7 +3291,7 @@ void ReserveDestination::KeepDestination()
 void ReserveDestination::ReturnDestination()
 {
     if (nIndex != -1) {
-        m_spk_man->ReturnKey(nIndex, fInternal, vchPubKey);
+        m_spk_man->ReturnDestination(nIndex, fInternal, vchPubKey);
     }
     nIndex = -1;
     vchPubKey = CPubKey();
@@ -3660,7 +3660,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
         }
         // Regenerate the keypool if upgraded to HD
         if (hd_upgrade) {
-            if (!walletInstance->m_spk_man->TopUpKeyPool()) {
+            if (!walletInstance->m_spk_man->TopUp()) {
                 error = _("Unable to generate keys").translated;
                 return nullptr;
             }
@@ -3680,7 +3680,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
         }
 
         // Top up the keypool
-        if (walletInstance->m_spk_man->CanGenerateKeys() && !walletInstance->m_spk_man->TopUpKeyPool()) {
+        if (walletInstance->m_spk_man->CanGenerateKeys() && !walletInstance->m_spk_man->TopUp()) {
             error = _("Unable to generate initial keys").translated;
             return nullptr;
         }
