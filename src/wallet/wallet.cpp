@@ -3335,14 +3335,13 @@ bool ReserveDestination::GetReservedDestination(CTxDestination& dest, bool inter
     if (nIndex == -1)
     {
         CKeyPool keypool;
-        if (!m_spk_man->GetReservedDestination(type, internal, nIndex, keypool)) {
+        if (!m_spk_man->GetReservedDestination(type, internal, address, nIndex, keypool)) {
             return false;
         }
         vchPubKey = keypool.vchPubKey;
         fInternal = keypool.fInternal;
     }
     assert(vchPubKey.IsValid());
-    address = GetDestinationForKey(vchPubKey, type);
     dest = address;
     return true;
 }
@@ -3351,7 +3350,6 @@ void ReserveDestination::KeepDestination()
 {
     if (nIndex != -1) {
         m_spk_man->KeepDestination(nIndex, type, vchPubKey);
-        m_spk_man->LearnRelatedScripts(vchPubKey, type);
     }
     nIndex = -1;
     vchPubKey = CPubKey();
