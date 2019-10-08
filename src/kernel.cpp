@@ -584,11 +584,11 @@ bool CheckProofOfStake(CValidationState &state, CBlockIndex* pindexPrev, const C
         TransactionSignatureChecker checker(&(*tx), nIn, prevOut.nValue, PrecomputedTransactionData(*tx));
 
         if (!VerifyScript(tx->vin[nIn].scriptSig, prevOut.scriptPubKey, &(tx->vin[nIn].scriptWitness), SCRIPT_VERIFY_P2SH, checker, nullptr))
-            return state.DoS(100, false, REJECT_INVALID, "invalid-pos-script", false, strprintf("%s: VerifyScript failed on coinstake %s", __func__, tx->GetHash().ToString()));
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, strprintf("%s: VerifyScript failed on coinstake %s", __func__, tx->GetHash().ToString()), false, "invalid-pos-script");
     }
 
     if (!CheckStakeKernelHash(nBits, pindexPrev, header, postx.nTxOffset + CBlockHeader::NORMAL_SERIALIZE_SIZE, txPrev, txin.prevout, tx->nTime, hashProofOfStake, gArgs.GetBoolArg("-debug", false)))
-        return state.DoS(1, error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s", tx->GetHash().ToString(), hashProofOfStake.ToString())); // may occur during initial download or if behind on block chain sync
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s", tx->GetHash().ToString(), hashProofOfStake.ToString())); // may occur during initial download or if behind on block chain sync
 
     return true;
 }

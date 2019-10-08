@@ -7,7 +7,7 @@
 #include <primitives/transaction.h>
 #include <consensus/validation.h>
 
-bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fCheckDuplicateInputs)
+bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
@@ -33,17 +33,18 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
         // v0.5 protocol: zero amount allowed
         if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT &&
             !(IsProtocolV05(tx.nTime) && (txout.nValue == 0)))
-            return state.DoS(100, false, REJECT_INVALID, "bad-txns-txoutvalue-belowminimum");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-txoutvalue-belowminimum");
     }
 
-    // Check for duplicate inputs - note that this check is slow so we skip it in CheckBlock
-    if (fCheckDuplicateInputs) {
-        std::set<COutPoint> vInOutPoints;
-        for (const auto& txin : tx.vin)
-        {
-            if (!vInOutPoints.insert(txin.prevout).second)
-                return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-inputs-duplicate");
-        }
+    // Check for duplicate inputs (see CVE-2018-17144)
+    // While Consensus::CheckTxInputs does check if all inputs of a tx are available, and UpdateCoins marks all inputs
+    // of a tx as spent, it does not check if the tx has duplicate inputs.
+    // Failure to run this check will result in either a crash or an inflation bug, depending on the implementation of
+    // the underlying coins database.
+    std::set<COutPoint> vInOutPoints;
+    for (const auto& txin : tx.vin) {
+        if (!vInOutPoints.insert(txin.prevout).second)
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-inputs-duplicate");
     }
 
     if (tx.IsCoinBase())

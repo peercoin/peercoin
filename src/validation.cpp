@@ -631,7 +631,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     }
 
     if (nFees < GetMinFee(tx))
-        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INSUFFICIENTFEE, "fee is below minimum");
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "fee is below minimum");
 
     // Check for non-standard pay-to-script-hash in inputs
     if (fRequireStandard && !AreInputsStandard(tx, m_view))
@@ -3150,40 +3150,39 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // peercoin: only the second transaction can be the optional coinstake
     for (unsigned int i = 2; i < block.vtx.size(); i++)
         if (block.vtx[i]->IsCoinStake())
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cs-missing", false, "coinstake in wrong position");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-cs-missing", false, "coinstake in wrong position");
 
     // peercoin: first coinbase output should be empty if proof-of-stake block
     if (block.IsProofOfStake() && !block.vtx[0]->vout[0].IsEmpty())
-        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cb-notempty", false, "coinbase output not empty in PoS block");
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-cb-notempty", false, "coinbase output not empty in PoS block");
 
     // Check coinbase timestamp
     if (block.GetBlockTime() > (int64_t)block.vtx[0]->nTime + (IsProtocolV09(block.GetBlockTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9))
-        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cb-time", false, "coinbase timestamp is too early");
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-cb-time", false, "coinbase timestamp is too early");
 
     // Check coinstake timestamp
     if (block.IsProofOfStake() && !CheckCoinStakeTimestamp(block.GetBlockTime(), (int64_t)block.vtx[1]->nTime))
-        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cs-time", false, "coinstake timestamp violation");
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-cs-time", false, "coinstake timestamp violation");
 
     // Check coinbase reward
     CAmount nCoinbaseCost = 0;
     if (block.IsProofOfWork())
         nCoinbaseCost = (GetMinFee(*block.vtx[0]) < PERKB_TX_FEE)? 0 : (GetMinFee(*block.vtx[0]) - PERKB_TX_FEE);
     if (block.vtx[0]->GetValueOut() > (block.IsProofOfWork()? (GetProofOfWorkReward(block.nBits) - nCoinbaseCost) : 0))
-        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cb-amount", false,
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-cb-amount", false,
                 strprintf("CheckBlock() : coinbase reward exceeded %s > %s",
                    FormatMoney(block.vtx[0]->GetValueOut()),
                    FormatMoney(block.IsProofOfWork()? GetProofOfWorkReward(block.nBits) : 0)));
 
     // Check transactions
-    // Must check for duplicate inputs (see CVE-2018-17144)
     for (const auto& tx : block.vtx)
     {
-        if (!CheckTransaction(*tx, state, true))
+        if (!CheckTransaction(*tx, state))
             return state.Invalid(state.GetReason(), false, state.GetRejectReason(),
                                  strprintf("Transaction check failed (tx hash %s) %s", tx->GetHash().ToString(), state.GetDebugMessage()));
         // peercoin: check transaction timestamp
         if (block.GetBlockTime() < (int64_t)tx->nTime)
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-tx-time", false, strprintf("%s : block timestamp earlier than transaction timestamp", __func__));
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-tx-time", false, strprintf("%s : block timestamp earlier than transaction timestamp", __func__));
     }
 
     unsigned int nSigOps = 0;
@@ -3201,7 +3200,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // Only check block signature if check merkle root, c.f. commit 3cd01fdf
     // rfc6: validate signatures of proof of stake blocks only after 0.8 fork
     if (fCheckMerkleRoot && fCheckSignature && (block.IsProofOfStake() || !IsBTC16BIPsEnabled(block.GetBlockTime())) && !CheckBlockSignature(block))
-        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-blk-sign", false, strprintf("%s : bad block signature", __func__));
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-blk-sign", false, strprintf("%s : bad block signature", __func__));
 
     return true;
 }
@@ -3439,7 +3438,7 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, CValidationState
         }
 
         if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state)), REJECT_INVALID, "high-hash");
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state)), "high-hash");
 
         // Get prev block index
         CBlockIndex* pindexPrev = nullptr;
@@ -3641,7 +3640,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     if (fCheckPoS && !PeercoinContextualBlockChecks(block, state, pindex, false)) {
         pindex->nStatus |= BLOCK_FAILED_VALID;
         setDirtyBlockIndex.insert(pindex);
-        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-pos", false, "proof of stake is incorrect");
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-pos", false, "proof of stake is incorrect");
     }
 
     // Header is valid/has work, merkle tree and segwit merkle tree are good...RELAY NOW
