@@ -15,9 +15,6 @@
 #include <test/setup_common.h>
 
 #ifdef ENABLE_WALLET
-#ifdef ENABLE_BIP70
-#include <qt/test/paymentservertests.h>
-#endif // ENABLE_BIP70
 #include <qt/test/wallettests.h>
 #endif // ENABLE_WALLET
 
@@ -78,12 +75,6 @@ int main(int argc, char *argv[])
     if (QTest::qExec(&test1) != 0) {
         fInvalid = true;
     }
-#if defined(ENABLE_WALLET) && defined(ENABLE_BIP70)
-    PaymentServerTests test2;
-    if (QTest::qExec(&test2) != 0) {
-        fInvalid = true;
-    }
-#endif
     RPCNestedTests test3;
     if (QTest::qExec(&test3) != 0) {
         fInvalid = true;
