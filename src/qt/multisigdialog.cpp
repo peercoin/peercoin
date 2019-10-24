@@ -538,7 +538,7 @@ void MultisigDialog::on_sendTransactionButton_clicked()
 
     // Send the transaction to the local node
     bool fMissingInputs = false;
-    CValidationState state;
+    BlockValidationState state;
     if (!AcceptToMemoryPool(mempool, state, tx, &fMissingInputs, false /* bypass_limits */))
         return;
 
