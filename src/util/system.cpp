@@ -304,7 +304,7 @@ NODISCARD static bool InterpretOption(std::string key, std::string val, unsigned
             LogPrintf("Warning: parsed potentially confusing double-negative %s=%s\n", key, val);
             val = "1";
         } else {
-            error = strprintf("Negating of %s is meaningless and therefore forbidden", key.c_str());
+            error = strprintf("Negating of %s is meaningless and therefore forbidden", key);
             return false;
         }
     }
@@ -413,7 +413,7 @@ bool ArgsManager::ParseParameters(int argc, const char* const argv[], std::strin
                 return false;
             }
         } else {
-            error = strprintf("Invalid parameter %s", key.c_str());
+            error = strprintf("Invalid parameter %s", key);
             return false;
         }
     }
@@ -687,7 +687,7 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 {
     std::string message = FormatException(pex, pszThread);
     LogPrintf("\n\n************************\n%s\n", message);
-    tfm::format(std::cerr, "\n\n************************\n%s\n", message.c_str());
+    tfm::format(std::cerr, "\n\n************************\n%s\n", message);
 }
 
 fs::path GetDefaultDataDir()
@@ -869,7 +869,7 @@ bool ArgsManager::ReadConfigStream(std::istream& stream, const std::string& file
             if (ignore_invalid_keys) {
                 LogPrintf("Ignoring unknown configuration value %s\n", option.first);
             } else {
-                error = strprintf("Invalid configuration value %s", option.first.c_str());
+                error = strprintf("Invalid configuration value %s", option.first);
                 return false;
             }
         }
@@ -924,7 +924,7 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
                     if (!ReadConfigStream(include_config, to_include, error, ignore_invalid_keys)) {
                         return false;
                     }
-                    LogPrintf("Included configuration file %s\n", to_include.c_str());
+                    LogPrintf("Included configuration file %s\n", to_include);
                 } else {
                     error = "Failed to include configuration file " + to_include;
                     return false;
@@ -944,7 +944,7 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
                 }
             }
             for (const std::string& to_include : includeconf) {
-                tfm::format(std::cerr, "warning: -includeconf cannot be used from included files; ignoring -includeconf=%s\n", to_include.c_str());
+                tfm::format(std::cerr, "warning: -includeconf cannot be used from included files; ignoring -includeconf=%s\n", to_include);
             }
         }
     }
@@ -952,7 +952,7 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
     // If datadir is changed in .conf file:
     ClearDatadirCache();
     if (!CheckDataDirOption()) {
-        error = strprintf("specified data directory \"%s\" does not exist.", gArgs.GetArg("-datadir", "").c_str());
+        error = strprintf("specified data directory \"%s\" does not exist.", gArgs.GetArg("-datadir", ""));
         return false;
     }
     return true;
