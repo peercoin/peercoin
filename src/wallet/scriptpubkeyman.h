@@ -594,6 +594,11 @@ public:
     */
     bool SetupDescriptor(std::unique_ptr<Descriptor>desc);
 
+    /** Provide a descriptor at setup time
+    * Returns false if already setup or setup fails, true if setup is successful
+    */
+    bool SetupDescriptor(std::unique_ptr<Descriptor>desc);
+
     bool HavePrivateKeys() const override;
 
     std::optional<int64_t> GetOldestKeyPoolTime() const override;
