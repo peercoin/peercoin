@@ -781,14 +781,13 @@ public:
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
-    std::unique_ptr<CRollingBloomFilter> m_addr_known;
+    const std::unique_ptr<CRollingBloomFilter> m_addr_known;
     bool fGetAddr{false};
     uint256 hashCheckpointKnown; // peercoin: known sent sync-checkpoint
     int64_t nNextAddrSend GUARDED_BY(cs_sendProcessing){0};
     int64_t nNextLocalAddrSend GUARDED_BY(cs_sendProcessing){0};
 
-    const bool m_addr_relay_peer;
-    bool IsAddrRelayPeer() const { return m_addr_relay_peer; }
+    bool IsAddrRelayPeer() const { return m_addr_known != nullptr; }
 
     // List of block ids we still have announce.
     // There is no final sorting before sending, as they are always sent immediately
