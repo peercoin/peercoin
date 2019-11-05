@@ -42,8 +42,6 @@
 #include <kernel.h>
 #include <validation.h>
 
-#include <boost/thread/thread.hpp> // boost::thread::interrupt
-
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -1841,7 +1839,6 @@ bool FindScriptPubKey(std::atomic<int>& scan_progress, const std::atomic<bool>& 
         Coin coin;
         if (!cursor->GetKey(key) || !cursor->GetValue(coin)) return false;
         if (++count % 8192 == 0) {
-            boost::this_thread::interruption_point();
             if (should_abort) {
                 // allow to abort the scan via the abort reference
                 return false;
