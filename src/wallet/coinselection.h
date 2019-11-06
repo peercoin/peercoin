@@ -225,6 +225,15 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
  */
 std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value);
 
+/** Select coins by Single Random Draw. OutputGroups are selected randomly from the eligible
+ * outputs until the target is satisfied
+ *
+ * @param[in]  utxo_pool    The positive effective value OutputGroups eligible for selection
+ * @param[in]  target_value The target value to select for
+ * @returns If successful, a pair of set of outputs and total selected value, otherwise, std::nullopt
+ */
+std::optional<std::pair<std::set<CInputCoin>, CAmount>> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value);
+
 // Original coin selection algorithm as a fallback
 std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue);
 } // namespace wallet
