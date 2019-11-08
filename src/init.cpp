@@ -268,6 +268,7 @@ void Shutdown(NodeContext& node)
     GetMainSignals().UnregisterWithMempoolSignals(mempool);
     globalVerifyHandle.reset();
     ECC_Stop();
+    if (node.mempool) node.mempool = nullptr;
     LogPrintf("%s: done\n", __func__);
 }
 
@@ -1526,6 +1527,11 @@ bool AppInitMain(NodeContext& node)
         LogPrintf("Shutdown requested. Exiting.\n");
         return false;
     }
+
+    // Now that the chain state is loaded, make mempool generally available in the node context. For example the
+    // connection manager, wallet, or RPC threads, which are all started after this, may use it from the node context.
+    assert(!node.mempool);
+    node.mempool = &::mempool;
 
     // ********************************************************* Step 8: start indexers
     if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
