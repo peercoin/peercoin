@@ -49,7 +49,6 @@
 #include <util/system.h>
 #include <util/threadnames.h>
 #include <util/translation.h>
-#include <util/validation.h>
 #include <util/asmap.h>
 #include <validation.h>
 #include <hash.h>
@@ -648,7 +647,7 @@ static void ThreadImport(std::vector<fs::path> vImportFiles)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
     BlockValidationState state;
     if (!ActivateBestChain(state, chainparams)) {
-        LogPrintf("Failed to connect best block (%s)\n", FormatStateMessage(state));
+        LogPrintf("Failed to connect best block (%s)\n", state.ToString());
         StartShutdown();
         return;
     }

@@ -26,7 +26,6 @@
 #include <util/fees.h>
 #include <util/moneystr.h>
 #include <util/translation.h>
-#include <util/validation.h>
 #include <bignum.h>
 #include <kernel.h>
 #include <txdb.h>

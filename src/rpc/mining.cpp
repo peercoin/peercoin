@@ -27,7 +27,6 @@
 #include <util/fees.h>
 #include <util/strencodings.h>
 #include <util/system.h>
-#include <util/validation.h>
 #include <validation.h>
 #include <validationinterface.h>
 #include <versionbitsinfo.h>
@@ -320,7 +319,7 @@ static UniValue BIP22ValidationResult(const BlockValidationState& state)
         return NullUniValue;
 
     if (state.IsError())
-        throw JSONRPCError(RPC_VERIFY_ERROR, FormatStateMessage(state));
+        throw JSONRPCError(RPC_VERIFY_ERROR, state.ToString());
     if (state.IsInvalid())
     {
         std::string strRejectReason = state.GetRejectReason();
@@ -735,7 +734,7 @@ static UniValue submitblock(const JSONRPCRequest& request)
     // peercoin: check block before attempting to sign it
     BlockValidationState state;
     if (!CheckBlock(block, state, Params().GetConsensus(), true,  true, false)) {
-        LogPrintf("SubmitBlock: %s\n", FormatStateMessage(state));
+        LogPrintf("SubmitBlock: %s\n", state.ToString());
         throw JSONRPCError(-100, "Block failed CheckBlock() function.");
         }
 
@@ -798,7 +797,7 @@ static UniValue submitheader(const JSONRPCRequest& request)
     ProcessNewBlockHeaders({h}, state, Params());
     if (state.IsValid()) return NullUniValue;
     if (state.IsError()) {
-        throw JSONRPCError(RPC_VERIFY_ERROR, FormatStateMessage(state));
+        throw JSONRPCError(RPC_VERIFY_ERROR, state.ToString());
     }
     throw JSONRPCError(RPC_VERIFY_ERROR, state.GetRejectReason());
 }
