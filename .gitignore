@@ -8,8 +8,9 @@ src/peercoind
 src/peercoin-cli
 src/peercoin-tx
 src/peercoin-wallet
+src/test/fuzz
+!src/test/fuzz/*.*
 src/test/test_peercoin
-src/test/test_peercoin_fuzzy
 src/qt/test/test_peercoin-qt
 
 # autoreconf
