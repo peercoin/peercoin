@@ -128,9 +128,6 @@ arith_uint256 nMinimumChainWork;
 
 CTxMemPool mempool;
 
-/** Constant stuff for coinbase transactions we create: */
-CScript COINBASE_FLAGS;
-
 // Internal stuff
 namespace {
     CBlockIndex* pindexBestInvalid = nullptr;
