@@ -3141,6 +3141,7 @@ bool CWallet::GetNewDestination(const OutputType type, const std::string label, 
     bool result = false;
     auto spk_man = m_spk_man.get();
     if (spk_man) {
+        spk_man->TopUp();
         result = spk_man->GetNewDestination(type, dest, error);
     }
     if (result) {
@@ -3331,6 +3332,8 @@ bool ReserveDestination::GetReservedDestination(CTxDestination& dest, bool inter
 
     if (nIndex == -1)
     {
+        m_spk_man->TopUp();
+
         CKeyPool keypool;
         if (!m_spk_man->GetReservedDestination(type, internal, address, nIndex, keypool)) {
             return false;
