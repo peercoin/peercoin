@@ -10,6 +10,7 @@
 
 #include <qt/addresstablemodel.h>
 #include <qt/guiconstants.h>
+#include <qt/guiutil.h>
 #include <qt/optionsmodel.h>
 #include <qt/paymentserver.h>
 #include <qt/recentrequeststablemodel.h>
@@ -481,8 +482,6 @@ bool WalletModel::saveReceiveRequest(const std::string &sAddress, const int64_t 
         return m_wallet->eraseDestData(dest, key);
     else
         return m_wallet->addDestData(dest, key, sRequest);
-}
-
 }
 
 bool WalletModel::isWalletEnabled()
