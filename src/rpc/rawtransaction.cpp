@@ -626,6 +626,7 @@ static UniValue combinerawtransaction(const JSONRPCRequest& request)
     CCoinsView viewDummy;
     CCoinsViewCache view(&viewDummy);
     {
+        const CTxMemPool& mempool = EnsureMemPool();
         LOCK(cs_main);
         LOCK(mempool.cs);
         CCoinsViewCache &viewChain = ::ChainstateActive().CoinsTip();
@@ -880,6 +881,7 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
         max_raw_tx_fee_rate = CFeeRate(AmountFromValue(request.params[1]));
     }
 
+    CTxMemPool& mempool = EnsureMemPool();
     int64_t virtual_size = GetVirtualTransactionSize(*tx);
     CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
 
@@ -1494,6 +1496,7 @@ UniValue utxoupdatepsbt(const JSONRPCRequest& request)
     CCoinsView viewDummy;
     CCoinsViewCache view(&viewDummy);
     {
+        const CTxMemPool& mempool = EnsureMemPool();
         LOCK2(cs_main, mempool.cs);
         CCoinsViewCache &viewChain = ::ChainstateActive().CoinsTip();
         CCoinsViewMemPool viewMempool(&viewChain, mempool);

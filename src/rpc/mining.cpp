@@ -288,6 +288,7 @@ static UniValue getmininginfo(const JSONRPCRequest& request)
             }.Check(request);
 
     LOCK(cs_main);
+    const CTxMemPool& mempool = EnsureMemPool();
 
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("blocks",           (int)::ChainActive().Height());
@@ -475,6 +476,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, PACKAGE_NAME " is in initial sync and waiting for blocks...");
 
     static unsigned int nTransactionsUpdatedLast;
+    const CTxMemPool& mempool = EnsureMemPool();
 
     if (!lpval.isNull())
     {
@@ -509,7 +511,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
                 if (g_best_block_cv.wait_until(lock, checktxtime) == std::cv_status::timeout)
                 {
                     // Timeout: Check transactions for update
-                    // without holding ::mempool.cs to avoid deadlocks
+                    // without holding the mempool lock to avoid deadlocks
                     if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLastLP)
                         break;
                     checktxtime += std::chrono::seconds(10);
