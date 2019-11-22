@@ -13,7 +13,7 @@
 #include <scheduler.h>
 #include <script/descriptor.h>
 #include <util/check.h>
-#include <util/message.h> // For strMessageMagic, MessageVerify()
+#include <util/message.h> // For MessageSign(), MessageVerify()
 #include <util/strencodings.h>
 #include <util/system.h>
 
@@ -324,15 +324,13 @@ static UniValue signmessagewithprivkey(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
     }
 
-    CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
-    ss << strMessage;
+    std::string signature;
 
-    std::vector<unsigned char> vchSig;
-    if (!key.SignCompact(ss.GetHash(), vchSig))
+    if (!MessageSign(key, strMessage, signature)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
+    }
 
-    return EncodeBase64(vchSig.data(), vchSig.size());
+    return signature;
 }
 
 static UniValue setmocktime(const JSONRPCRequest& request)
