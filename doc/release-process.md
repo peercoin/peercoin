@@ -44,7 +44,8 @@ Release Process
 
 #### After branch-off (on the major release branch)
 
-- Update the versions and the link to the release notes draft in `doc/release-notes.md`.
+- Update the versions.
+- Create a pinned meta-issue for testing the release candidate (see [this issue](https://github.com/bitcoin/bitcoin/issues/17079) for an example) and provide a link to it in the release announcements where useful.
 
 #### Before final release
 
@@ -315,7 +316,7 @@ bitcoin.org (see below for bitcoin.org update instructions).
     instructions: https://github.com/bitcoin-dot-org/bitcoin.org/blob/master/docs/adding-events-release-notes-and-alerts.md#release-notes
 
   - After the pull request is merged, the website will automatically show the newest version within 15 minutes, as well
-    as update the OS download links. Ping @saivann/@harding (saivann/harding on Freenode) in case anything goes wrong
+    as update the OS download links.
 
 - Update other repositories and websites for new version
 
@@ -330,7 +331,12 @@ bitcoin.org (see below for bitcoin.org update instructions).
 
   - Optionally twitter, reddit /r/Peercoin, ... but this will usually sort out itself
 
-      - Create a new branch for the major release "release-0.xx" (used to build the snap package)
+      - Push the flatpak to flathub, e.g. https://github.com/flathub/org.bitcoincore.bitcoin-qt/pull/2
+
+      - Push the latest version to master (if applicable), e.g. https://github.com/bitcoin-core/packaging/pull/32
+
+      - Create a new branch for the major release "0.xx" from master (used to build the snap package) and request the
+        track (if applicable), e.g. https://forum.snapcraft.io/t/track-request-for-bitcoin-core-snap/10112/7
 
   - This repo
 
@@ -338,7 +344,6 @@ bitcoin.org (see below for bitcoin.org update instructions).
 
   - Create a [new GitHub release](https://github.com/peercoin/peercoin/releases/new) with a link to the archived release notes.
 
-      - Create a pinned meta-issue for testing the release candidate (see [this issue](https://github.com/bitcoin/bitcoin/issues/15555) for an example) and provide a link to it in the release announcements where useful
 
   - Celebrate
 
