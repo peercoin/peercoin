@@ -220,6 +220,7 @@ bool LegacyScriptPubKeyMan::CheckDecryptionKey(const CKeyingMaterial& master_key
         bool keyPass = mapCryptedKeys.empty(); // Always pass when there are no encrypted keys
         bool keyFail = false;
         CryptedKeyMap::const_iterator mi = mapCryptedKeys.begin();
+        WalletBatch batch(m_storage.GetDatabase());
         for (; mi != mapCryptedKeys.end(); ++mi)
         {
             const CPubKey &vchPubKey = (*mi).second.first;
@@ -233,6 +234,10 @@ bool LegacyScriptPubKeyMan::CheckDecryptionKey(const CKeyingMaterial& master_key
             keyPass = true;
             if (fDecryptionThoroughlyChecked)
                 break;
+            else {
+                // Rewrite these encrypted keys with checksums
+                batch.WriteCryptedKey(vchPubKey, vchCryptedSecret, mapKeyMetadata[vchPubKey.GetID()]);
+            }
         }
         if (keyPass && keyFail)
         {
