@@ -4020,15 +4020,9 @@ std::vector<OutputGroup> CWallet::GroupOutputs(const std::vector<COutput>& outpu
     return groups;
 }
 
-bool CWallet::SetCrypted()
+bool CWallet::IsCrypted() const
 {
-    LOCK(cs_KeyStore);
-    if (fUseCrypto)
-        return true;
-    if (!mapKeys.empty())
-        return false;
-    fUseCrypto = true;
-    return true;
+    return HasEncryptionKeys();
 }
 
 bool CWallet::IsLocked() const
@@ -4042,7 +4036,7 @@ bool CWallet::IsLocked() const
 
 bool CWallet::Lock()
 {
-    if (!SetCrypted())
+    if (!IsCrypted())
         return false;
 
     {
