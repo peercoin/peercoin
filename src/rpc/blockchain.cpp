@@ -1158,7 +1158,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
 
     obj.pushKV("softforks",             softforks);
 
-    obj.pushKV("warnings", GetWarnings("statusbar"));
+    obj.pushKV("warnings", GetWarnings(false));
     return obj;
 }
 

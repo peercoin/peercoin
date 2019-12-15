@@ -42,26 +42,26 @@ void SetfLargeWorkInvalidChainFound(bool flag)
     fLargeWorkInvalidChainFound = flag;
 }
 
-std::string GetWarnings(const std::string& strFor)
+std::string GetWarnings(bool verbose)
 {
     int nPriority = 0;
-    std::string strStatusBar;
-    std::string strGUI;
+    std::string warnings_concise;
+    std::string warnings_verbose;
     const std::string uiAlertSeperator = "<hr />";
 
     LOCK(cs_warnings);
 
     if (!CLIENT_VERSION_IS_RELEASE) {
-        strStatusBar = "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications";
-        strGUI = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications").translated;
+        warnings_concise = "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications";
+        warnings_verbose = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications").translated;
     }
 
     // peercoin: wallet lock warning for minting
     if (strMintWarning != "")
     {
         nPriority = 0;
-        strStatusBar = strMintWarning;
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _(strMintWarning.c_str());
+        warnings_concise = strMintWarning;
+        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _(strMintWarning.c_str());
     }
 
 #ifdef ENABLE_CHECKPOINTS
@@ -70,8 +70,8 @@ std::string GetWarnings(const std::string& strFor)
     if (strCheckpointWarning != "")
     {
         nPriority = 900;
-        strStatusBar = strCheckpointWarning;
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _(strMintWarning.c_str());
+        warnings_concise = strCheckpointWarning;
+        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _(strCheckpointWarning.c_str());
     }
 #endif
 
@@ -79,29 +79,29 @@ std::string GetWarnings(const std::string& strFor)
     if (strMiscWarning != "")
     {
         nPriority = 1000;
-        strStatusBar = strMiscWarning;
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + strMiscWarning;
+        warnings_concise = strMiscWarning;
+        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + strMiscWarning;
     }
 
     if (fLargeWorkForkFound)
     {
         nPriority = 2000;
-        strStatusBar = "Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.";
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.").translated;
+        warnings_concise = "Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.";
+        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.").translated;
     }
     else if (fLargeWorkInvalidChainFound)
     {
         nPriority = 2000;
-        strStatusBar = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.").translated;
+        warnings_concise = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
+        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.").translated;
     }
 #ifdef ENABLE_CHECKPOINTS
     // peercoin: detect invalid checkpoint
     if (hashInvalidCheckpoint != uint256())
     {
         nPriority = 3000;
-        strStatusBar = "WARNING: Inconsistent checkpoint found! Stop enforcing checkpoints and notify developers to resolve the issue.";
-        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _("WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers of the issue.");
+        warnings_concise = "WARNING: Inconsistent checkpoint found! Stop enforcing checkpoints and notify developers to resolve the issue.";
+        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _("WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers of the issue.");
     }
 #endif
     // Alerts
@@ -113,16 +113,12 @@ std::string GetWarnings(const std::string& strFor)
             if (alert.AppliesToMe() && alert.nPriority > nPriority)
             {
                 nPriority = alert.nPriority;
-                strStatusBar = alert.strStatusBar;
-                strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + _(strStatusBar.c_str());
+                warnings_concise = alert.strStatusBar;
+                warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _(warnings_concise.c_str());
             }
         }
     }
 
-    if (strFor == "gui")
-        return strGUI;
-    else if (strFor == "statusbar")
-        return strStatusBar;
-    assert(!"GetWarnings(): invalid parameter");
-    return "error";
+    if (verbose) return warnings_verbose;
+    else return warnings_concise;
 }
