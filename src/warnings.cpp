@@ -47,10 +47,11 @@ std::string GetWarnings(bool verbose)
     int nPriority = 0;
     std::string warnings_concise;
     std::string warnings_verbose;
-    const std::string uiAlertSeperator = "<hr />";
+    const std::string warning_separator = "<hr />";
 
     LOCK(cs_warnings);
 
+    // Pre-release build warning
     if (!CLIENT_VERSION_IS_RELEASE) {
         warnings_concise = "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications";
         warnings_verbose = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications").translated;
@@ -76,24 +77,20 @@ std::string GetWarnings(bool verbose)
 #endif
 
     // Misc warnings like out of disk space and clock is wrong
-    if (strMiscWarning != "")
-    {
+    if (strMiscWarning != "") {
         nPriority = 1000;
         warnings_concise = strMiscWarning;
-        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + strMiscWarning;
+        warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + strMiscWarning;
     }
 
-    if (fLargeWorkForkFound)
-    {
+    if (fLargeWorkForkFound) {
         nPriority = 2000;
         warnings_concise = "Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.";
-        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.").translated;
-    }
-    else if (fLargeWorkInvalidChainFound)
-    {
+        warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.").translated;
+    } else if (fLargeWorkInvalidChainFound) {
         nPriority = 2000;
         warnings_concise = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
-        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.").translated;
+        warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.").translated;
     }
 #ifdef ENABLE_CHECKPOINTS
     // peercoin: detect invalid checkpoint
