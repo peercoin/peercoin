@@ -134,7 +134,7 @@ UniValue getnetworkghps(const JSONRPCRequest& request)
     return dNetworkGhps;
 }
 
-static UniValue generateBlocks(const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries, CWallet * const pwallet)
+static UniValue generateBlocks(const CTxMemPool& mempool, const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries, CWallet * const pwallet)
 {
     int nHeightEnd = 0;
     int nHeight = 0;
@@ -148,7 +148,7 @@ static UniValue generateBlocks(const CScript& coinbase_script, int nGenerate, ui
     UniValue blockHashes(UniValue::VARR);
     while (nHeight < nHeightEnd && !ShutdownRequested())
     {
-        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbase_script));
+        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(mempool, Params()).CreateNewBlock(coinbase_script));
         if (!pblocktemplate.get())
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Couldn't create new block");
         CBlock *pblock = &pblocktemplate->block;
@@ -217,9 +217,16 @@ static UniValue generatetodescriptor(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Cannot derive script without private keys"));
     }
 
+    const CTxMemPool& mempool = EnsureMemPool();
+
     CHECK_NONFATAL(coinbase_script.size() == 1);
 
-    return generateBlocks(coinbase_script.at(0), num_blocks, max_tries);
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    return generateBlocks(mempool, coinbase_script.at(0), num_blocks, max_tries, pwallet);
 }
 
 static UniValue generatetoaddress(const JSONRPCRequest& request)
@@ -258,9 +265,11 @@ static UniValue generatetoaddress(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
     }
 
+    const CTxMemPool& mempool = EnsureMemPool();
+
     CScript coinbase_script = GetScriptForDestination(destination);
 
-    return generateBlocks(coinbase_script, nGenerate, nMaxTries, pwallet);
+    return generateBlocks(mempool, coinbase_script, nGenerate, nMaxTries, pwallet);
 }
 
 static UniValue getmininginfo(const JSONRPCRequest& request)
@@ -547,7 +556,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
 
         // Create new block
         CScript scriptDummy = CScript() << OP_TRUE;
-        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(scriptDummy);
+        pblocktemplate = BlockAssembler(mempool, Params()).CreateNewBlock(scriptDummy);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 

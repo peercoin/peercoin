@@ -30,6 +30,7 @@ struct MinerTestingSetup : public TestingSetup {
     {
         return CheckSequenceLocks(*m_node.mempool, tx, flags);
     }
+    BlockAssembler AssemblerForTest(const CChainParams& params);
 };
 } // namespace miner_tests
 
@@ -46,11 +47,12 @@ private:
     const std::string m_reason;
 };
 
-static BlockAssembler AssemblerForTest(const CChainParams& params) {
+BlockAssembler MinerTestingSetup::AssemblerForTest(const CChainParams& params)
+{
     BlockAssembler::Options options;
 
     options.nBlockMaxWeight = MAX_BLOCK_WEIGHT;
-    return BlockAssembler(params, options);
+    return BlockAssembler(*m_node.mempool, params, options);
 }
 
 constexpr static struct {
