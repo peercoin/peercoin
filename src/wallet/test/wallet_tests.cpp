@@ -729,6 +729,7 @@ BOOST_FIXTURE_TEST_CASE(CreateWallet, TestChain100Setup)
     BOOST_CHECK(m_node.chain->broadcastTransaction(MakeTransactionRef(mempool_tx), false, error));
 
 
+
     // Reload wallet and make sure new transactions are detected despite events
     // being blocked
     wallet = TestLoadWallet(context);
@@ -820,6 +821,7 @@ BOOST_FIXTURE_TEST_CASE(ZapSelectTx, TestChain100Setup)
         BOOST_CHECK(!wallet->HasWalletSpend(prev_hash));
         BOOST_CHECK_EQUAL(wallet->mapWallet.count(block_hash), 0u);
     }
+
 
     TestUnloadWallet(std::move(wallet));
 }
