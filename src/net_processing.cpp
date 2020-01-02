@@ -29,6 +29,7 @@
 #include <util/validation.h>
 
 #include <memory>
+#include <typeinfo>
 
 #include <checkpointsync.h>
 
