@@ -76,6 +76,7 @@ bool WalletFrame::addView(WalletView* walletView)
 
     walletView->setClientModel(clientModel);
     walletView->showOutOfSyncWarning(bOutOfSync);
+    walletView->setPrivacy(gui->isPrivacyModeActivated());
 
     WalletView* current_wallet_view = currentWalletView();
     if (current_wallet_view) {
