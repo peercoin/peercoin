@@ -19,7 +19,7 @@ class CNode;
 class uint256;
 
 extern std::map<uint256, CAlert> mapAlerts;
-extern CCriticalSection cs_mapAlerts;
+extern RecursiveMutex cs_mapAlerts;
 
 /** Alerts are for notifying old versions if they become too obsolete and
  * need to upgrade.  The message is displayed in the status bar.

@@ -75,7 +75,7 @@ uint256 hashPendingCheckpoint = uint256();
 CSyncCheckpoint checkpointMessage;
 CSyncCheckpoint checkpointMessagePending;
 uint256 hashInvalidCheckpoint = uint256();
-CCriticalSection cs_hashSyncCheckpoint;
+RecursiveMutex cs_hashSyncCheckpoint;
 std::string strCheckpointWarning;
 
 // peercoin: get last synchronized checkpoint
