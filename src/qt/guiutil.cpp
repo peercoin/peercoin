@@ -60,7 +60,6 @@
 #include <QShortcut>
 #include <QSize>
 #include <QString>
-#include <QShortcut>
 #include <QTextDocument> // for Qt::mightBeRichText
 #include <QThread>
 #include <QUrlQuery>
