@@ -545,3 +545,8 @@ CBlockIndex* WalletModel::getTip() const
 {
     return m_node.chainman().ActiveChain().Tip();
 }
+
+void WalletModel::refresh(bool pk_hash_only)
+{
+    addressTableModel = new AddressTableModel(this, pk_hash_only);
+}

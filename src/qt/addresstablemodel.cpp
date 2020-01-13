@@ -11,6 +11,7 @@
 #include <wallet/wallet.h>
 
 #include <algorithm>
+#include <typeinfo>
 
 #include <QFont>
 #include <QDebug>
