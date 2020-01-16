@@ -28,6 +28,8 @@
 
 
 
+using interfaces::FoundBlock;
+
 std::string static EncodeDumpString(const std::string &str) {
     std::stringstream ret;
     for (const unsigned char c : str) {
