@@ -33,7 +33,7 @@ public:
             // Required to maintain compatibility with older undo format.
             ::Serialize(s, (unsigned char)0);
         }
-        ::Serialize(s, CTxOutCompressor(REF(txout->out)));
+        ::Serialize(s, Using<TxOutCompression>(REF(txout->out)));
     }
 
     explicit TxInUndoSerializer(const Coin* coin) : txout(coin) {}
@@ -59,7 +59,7 @@ public:
             unsigned int nVersionDummy;
             ::Unserialize(s, VARINT(nVersionDummy));
         }
-        ::Unserialize(s, CTxOutCompressor(REF(txout->out)));
+        ::Unserialize(s, Using<TxOutCompression>(REF(txout->out)));
     }
 
     explicit TxInUndoDeserializer(Coin* coin) : txout(coin) {}
