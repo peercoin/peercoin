@@ -1097,7 +1097,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
     progressBar->setToolTip(tooltip);
 }
 
-void BitcoinGUI::message(const QString& title, QString message, unsigned int style)
+void BitcoinGUI::message(const QString& title, QString message, unsigned int style, bool* ret)
 {
     // Default title. On macOS, the window title is ignored (as required by the macOS Guidelines).
     QString strTitle{PACKAGE_NAME};
@@ -1151,7 +1151,9 @@ void BitcoinGUI::message(const QString& title, QString message, unsigned int sty
         showNormalIfMinimized();
         QMessageBox mBox(static_cast<QMessageBox::Icon>(nMBoxIcon), strTitle, message, buttons, this);
         mBox.setTextFormat(Qt::PlainText);
-        mBox.exec();
+        int r = mBox.exec();
+        if (ret != nullptr)
+            *ret = r == QMessageBox::Ok;
     } else {
         notificator->notify(static_cast<Notificator::Class>(nNotifyIcon), strTitle, message);
     }
