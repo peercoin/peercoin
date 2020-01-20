@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2019 The Peercoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2012-2020 The Peercoin developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <kernel.h>
@@ -51,6 +51,7 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints =
     (371850, 0x9b850bdfu )
     (407813, 0x46fe50b5u )
     (443561, 0x114a6e38u )
+    (455470, 0x9b7af181u )
     ;
 
 static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
@@ -63,6 +64,7 @@ static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
     (336000, 0x8330dc09u )
     (372751, 0xafb94e2fu )
     (382019, 0x7f5cf5ebu )
+    (408500, 0x68cadee2u )
     (412691, 0x93138e67u )
     ;
 

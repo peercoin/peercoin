@@ -1,7 +1,7 @@
 Peercoin 0.8.4 BETA
 
-Copyright (c) 2011-2019 Peercoin Developers
-Distributed under the MIT/X11 software license, see the accompanying
+Copyright (c) 2011-2020 Peercoin Developers
+Distributed under the MIT software license, see the accompanying
 file COPYING or http://www.opensource.org/licenses/mit-license.php.
 This product includes software developed by the OpenSSL Project for use in
 the OpenSSL Toolkit (http://www.openssl.org/).  This product includes
@@ -25,6 +25,6 @@ However, it downloads and stores the entire history of Peercoin transactions;
 depending on the speed of your computer and network connection, the synchronization
 process can take anywhere from a few hours to a day or more.
 
-See the bitcoin wiki at:
-  https://en.bitcoin.it/wiki/Main_Page
+See the peercoin documentation at:
+  https://docs.peercoin.net/
 for more help and information.
