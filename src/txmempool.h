@@ -69,6 +69,20 @@ struct CompareIteratorByHash {
     }
 };
 
+struct CompareIteratorByHash {
+    // SFINAE for T where T is either a pointer type (e.g., a txiter) or a reference_wrapper<T>
+    // (e.g. a wrapped CTxMemPoolEntry&)
+    template <typename T>
+    bool operator()(const std::reference_wrapper<T>& a, const std::reference_wrapper<T>& b) const
+    {
+        return a.get().GetTx().GetHash() < b.get().GetTx().GetHash();
+    }
+    template <typename T>
+    bool operator()(const T& a, const T& b) const
+    {
+        return a->GetTx().GetHash() < b->GetTx().GetHash();
+    }
+};
 /** \class CTxMemPoolEntry
  *
  * CTxMemPoolEntry stores data about the corresponding transaction, as well
