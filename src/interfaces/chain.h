@@ -174,6 +174,11 @@ public:
     //! the specified block hash are verified.
     virtual double guessVerificationProgress(const uint256& block_hash) = 0;
 
+    //! Return true if data is available for all blocks in the specified range
+    //! of blocks. This checks all blocks that are ancestors of block_hash in
+    //! the height range from min_height to max_height, inclusive.
+    virtual bool hasBlocks(const uint256& block_hash, int min_height = 0, Optional<int> max_height = {}) = 0;
+
     //! Check if transaction has descendants in mempool.
     virtual bool hasDescendantsInMempool(const uint256& txid) = 0;
 
