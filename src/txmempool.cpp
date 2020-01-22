@@ -983,18 +983,6 @@ void CTxMemPool::UpdateParent(txiter entry, txiter parent, bool add)
     }
 }
 
-const CTxMemPoolEntry::Parents & CTxMemPool::GetMemPoolParents(txiter entry) const
-{
-    assert(entry != mapTx.end());
-    return entry->GetMemPoolParentsConst();
-}
-
-const CTxMemPoolEntry::Children & CTxMemPool::GetMemPoolChildren(txiter entry) const
-{
-    assert(entry != mapTx.end());
-    return entry->GetMemPoolChildrenConst();
-}
-
 void CTxMemPool::TrimToSize(size_t sizelimit, std::vector<COutPoint>* pvNoSpendsRemaining) {
     AssertLockHeld(cs);
 
