@@ -1767,6 +1767,7 @@ CWallet::ScanResult CWallet::ScanForWalletTransactions(const uint256& start_bloc
             // could not scan block, keep scanning but record this block as the most recent failure
             result.last_failed_block = block_hash;
             result.status = ScanResult::FAILURE;
+            next_block = chain().findNextBlock(block_hash, block_height, FoundBlock().hash(next_block_hash), &reorg);
         }
         if (max_height && block_height >= *max_height) {
             break;
