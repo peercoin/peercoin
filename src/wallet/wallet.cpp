@@ -29,7 +29,6 @@
 #include <utilmoneystr.h>
 
 #include <kernel.h>
-#include <bignum.h>
 #include <txdb.h>
 
 #include <assert.h>
@@ -4250,7 +4249,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     static unsigned int nStakeSplitAge = (60 * 60 * 24 * 90);
     int64_t nCombineThreshold = GetProofOfWorkReward(GetLastBlockIndex(chainActive.Tip(), false)->nBits) / 3;
 
-    CBigNum bnTargetPerCoinDay;
+    arith_uint256 bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
 
     // Transaction index is required to get to block header

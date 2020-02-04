@@ -10,7 +10,6 @@
 #include <primitives/block.h>
 #include <uint256.h>
 
-#include <bignum.h>
 #include <chainparams.h>
 
 // peercoin: find last block index up to pindex
@@ -37,7 +36,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
     // peercoin: target change every block
     // peercoin: retarget with exponential moving toward target spacing
-    CBigNum bnNew;
+    arith_uint256 bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
     if (Params().NetworkIDString() != CBaseChainParams::REGTEST) {
         int64_t nTargetSpacing = fProofOfStake? params.nStakeTargetSpacing : std::min(params.nTargetSpacingWorkMax, params.nStakeTargetSpacing * (1 + pindexLast->nHeight - pindexPrev->nHeight));
@@ -46,8 +45,8 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
         bnNew /= ((nInterval + 1) * nTargetSpacing);
         }
 
-    if (bnNew > CBigNum(params.powLimit))
-        bnNew = CBigNum(params.powLimit);
+    if (bnNew > UintToArith256(params.powLimit))
+        bnNew = UintToArith256(params.powLimit);
 
     return bnNew.GetCompact();
 }

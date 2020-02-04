@@ -39,7 +39,6 @@
 #include <warnings.h>
 
 #include <kernel.h>
-#include <bignum.h>
 #include <checkpointsync.h>
 #include <keystore.h>
 
@@ -916,29 +915,29 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 int64_t GetProofOfWorkReward(unsigned int nBits)
 {
-    CBigNum bnSubsidyLimit = MAX_MINT_PROOF_OF_WORK;
-    CBigNum bnTarget;
+    arith_uint256 bnSubsidyLimit = MAX_MINT_PROOF_OF_WORK;
+    arith_uint256 bnTarget;
     bnTarget.SetCompact(nBits);
-    CBigNum bnTargetLimit(Params().GetConsensus().powLimit);
+    arith_uint256 bnTargetLimit = UintToArith256(Params().GetConsensus().powLimit);
     bnTargetLimit.SetCompact(bnTargetLimit.GetCompact());
 
     // peercoin: subsidy is cut in half every 16x multiply of difficulty
     // A reasonably continuous curve is used to avoid shock to market
     // (nSubsidyLimit / nSubsidy) ** 4 == bnProofOfWorkLimit / bnTarget
-    CBigNum bnLowerBound = CENT;
-    CBigNum bnUpperBound = bnSubsidyLimit;
+    arith_uint256 bnLowerBound = CENT;
+    arith_uint256 bnUpperBound = bnSubsidyLimit;
     while (bnLowerBound + CENT <= bnUpperBound)
     {
-        CBigNum bnMidValue = (bnLowerBound + bnUpperBound) / 2;
+        arith_uint256 bnMidValue = (bnLowerBound + bnUpperBound) / 2;
         if (gArgs.GetBoolArg("-printcreation", false))
-            LogPrintf("%s: lower=%lld upper=%lld mid=%lld\n", __func__, bnLowerBound.getuint64(), bnUpperBound.getuint64(), bnMidValue.getuint64());
+            LogPrintf("%s: lower=%lld upper=%lld mid=%lld\n", __func__, bnLowerBound.GetLow64(), bnUpperBound.GetLow64(), bnMidValue.GetLow64());
         if (bnMidValue * bnMidValue * bnMidValue * bnMidValue * bnTargetLimit > bnSubsidyLimit * bnSubsidyLimit * bnSubsidyLimit * bnSubsidyLimit * bnTarget)
             bnUpperBound = bnMidValue;
         else
             bnLowerBound = bnMidValue;
     }
 
-    int64_t nSubsidy = bnUpperBound.getuint64();
+    int64_t nSubsidy = bnUpperBound.GetLow64();
     nSubsidy = (nSubsidy / CENT) * CENT;
     if (gArgs.GetBoolArg("-printcreation", false))
         LogPrintf("%s: create=%s nBits=0x%08x nSubsidy=%lld\n", __func__, FormatMoney(nSubsidy), nBits, nSubsidy);
