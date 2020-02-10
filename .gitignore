@@ -93,7 +93,7 @@ src/qt/bitcoin-qt.includes
 *.qm
 Makefile
 !depends/Makefile
-peercoin-qt
+src/qt/peercoin-qt
 PPCoin-Qt.app
 Peercoin-Qt.app
 background.tiff*
