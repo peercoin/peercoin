@@ -21,6 +21,12 @@ void QValidatedLineEdit::setText(const QString& text)
     checkValidity();
 }
 
+void QValidatedLineEdit::setText(const QString& text)
+{
+    QLineEdit::setText(text);
+    checkValidity();
+}
+
 void QValidatedLineEdit::setValid(bool _valid)
 {
     if(_valid == this->valid)
