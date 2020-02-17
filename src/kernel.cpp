@@ -124,7 +124,7 @@ bool IsBTC16BIPsEnabled(uint32_t nTimeTx)
 // Whether a given block is subject to new v0.9 protocol
 bool IsProtocolV09(const CBlockIndex* pindexPrev)
 {
-  return (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV09TestSwitchTime : nProtocolV09SwitchTime));
+  return (pindexPrev->nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV09TestSwitchTime : nProtocolV09SwitchTime));
 }
 
 // Get the last stake modifier and its generation time from a given block
