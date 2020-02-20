@@ -46,7 +46,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
         if (fProofOfStake) {
             nTargetSpacing = params.nStakeTargetSpacing;
         } else {
-            if (IsProtocolV09(pindexLast)) {
+            if (IsProtocolV09(pindexLast->nTime)) {
                 // if difference between last block and next last pos greater than 4 hours, set target to minimum
                 const CBlockIndex* pindexPrevStake = GetLastBlockIndex(pindexLast->pprev, true);
                 int64_t nActualSpacingStake = pindexLast->GetBlockTime() - pindexPrevStake->GetBlockTime();

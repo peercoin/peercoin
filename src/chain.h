@@ -20,6 +20,7 @@
  * Maximum amount of time that a block timestamp is allowed to exceed the
  * current network-adjusted time before the block will be accepted.
  */
+static const int64_t MAX_FUTURE_BLOCK_TIME_PREV9 = 2 * 60 * 60;
 static const int64_t MAX_FUTURE_BLOCK_TIME = 15 * 60;
 
 /**
@@ -28,7 +29,7 @@ static const int64_t MAX_FUTURE_BLOCK_TIME = 15 * 60;
  * to block timestamps. This should be set at least as high as
  * MAX_FUTURE_BLOCK_TIME.
  */
-static const int64_t TIMESTAMP_WINDOW = MAX_FUTURE_BLOCK_TIME;
+static const int64_t TIMESTAMP_WINDOW = MAX_FUTURE_BLOCK_TIME_PREV9;
 
 class CBlockFileInfo
 {

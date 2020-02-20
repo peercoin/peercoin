@@ -121,10 +121,10 @@ bool IsBTC16BIPsEnabled(uint32_t nTimeTx)
     return (nTimeTx >= (fTestNet? nBTC16BIPsTestSwitchTime : nBTC16BIPsSwitchTime));
 }
 
-// Whether a given block is subject to new v0.9 protocol
-bool IsProtocolV09(const CBlockIndex* pindexPrev)
+// Whether a given timestamp is subject to new v0.9 protocol
+bool IsProtocolV09(unsigned int nTime)
 {
-  return (pindexPrev->nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV09TestSwitchTime : nProtocolV09SwitchTime));
+  return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV09TestSwitchTime : nProtocolV09SwitchTime));
 }
 
 // Get the last stake modifier and its generation time from a given block
@@ -598,7 +598,7 @@ bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx)
     if (IsProtocolV03(nTimeTx))  // v0.3 protocol
         return (nTimeBlock == nTimeTx);
     else // v0.2 protocol
-        return ((nTimeTx <= nTimeBlock) && (nTimeBlock <= nTimeTx + MAX_FUTURE_BLOCK_TIME));
+        return ((nTimeTx <= nTimeBlock) && (nTimeBlock <= nTimeTx + IsProtocolV09(nTimeBlock) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9));
 }
 
 // Get stake modifier checksum
