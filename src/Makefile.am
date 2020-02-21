@@ -212,6 +212,7 @@ BITCOIN_CORE_H = \
   util/bytevectorhash.h \
   util/check.h \
   util/error.h \
+  util/golombrice.h \
   util/spanparsing.h \
   util/system.h \
   util/macros.h \
