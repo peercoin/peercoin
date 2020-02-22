@@ -1785,6 +1785,31 @@ else
   fi
 fi
 
+dnl Enable NAT-PMP support.
+AC_MSG_CHECKING([whether to build with support for NAT-PMP])
+if test "x$have_natpmp" = xno; then
+  if test "x$use_natpmp" = xyes; then
+     AC_MSG_ERROR([NAT-PMP requested but cannot be built. Use --without-natpmp])
+  fi
+  AC_MSG_RESULT([no])
+  use_natpmp=no
+else
+  if test "x$use_natpmp" != xno; then
+    AC_MSG_RESULT([yes])
+    AC_MSG_CHECKING([whether to build with NAT-PMP enabled by default])
+    use_natpmp=yes
+    natpmp_setting=0
+    if test "x$use_natpmp_default" != xno; then
+      use_natpmp_default=yes
+      natpmp_setting=1
+    fi
+    AC_MSG_RESULT($use_natpmp_default)
+    AC_DEFINE_UNQUOTED([USE_NATPMP], [$natpmp_setting], [NAT-PMP support not compiled if undefined, otherwise value (0 or 1) determines default state])
+  else
+    AC_MSG_RESULT([no])
+  fi
+fi
+
 dnl these are only used when qt is enabled
 BUILD_TEST_QT=""
 if test "$bitcoin_enable_qt" != "no"; then

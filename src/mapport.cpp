@@ -23,6 +23,11 @@
 #include <natpmp.h>
 #endif // USE_NATPMP
 
+#ifdef USE_NATPMP
+#include <compat.h>
+#include <natpmp.h>
+#endif // USE_NATPMP
+
 #ifdef USE_UPNP
 #include <miniupnpc/miniupnpc.h>
 #include <miniupnpc/upnpcommands.h>
