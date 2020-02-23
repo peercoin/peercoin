@@ -48,7 +48,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
 #endif
     connect(this, &QDialog::accepted, [this](){
         QSettings settings;
-        model->node().mapPort(settings.value("fUseUPnP").toBool());
+        model->node().mapPort(settings.value("fUseUPnP").toBool(), settings.value("fUseNatpmp").toBool());
     });
 
     ui->proxyIp->setEnabled(false);
