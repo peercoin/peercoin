@@ -351,39 +351,55 @@ static UniValue setlabel(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
+void ParseRecipients(const UniValue& address_amounts, const UniValue& subtract_fee_outputs, std::vector<CRecipient> &recipients) {
+    std::set<CTxDestination> destinations;
+    int i = 0;
+    for (const std::string& address: address_amounts.getKeys()) {
+        CTxDestination dest = DecodeDestination(address);
+        if (!IsValidDestination(dest)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + address);
+        }
 
-static CTransactionRef SendMoney(CWallet* const pwallet, const CTxDestination& address, CAmount nValue, bool fSubtractFeeFromAmount, const CCoinControl& coin_control, mapValue_t mapValue)
+        if (destinations.count(dest)) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ") + address);
+        }
+        destinations.insert(dest);
+
+        CScript script_pub_key = GetScriptForDestination(dest);
+        CAmount amount = AmountFromValue(address_amounts[i++]);
+
+        bool subtract_fee = false;
+        for (unsigned int idx = 0; idx < subtract_fee_outputs.size(); idx++) {
+            const UniValue& addr = subtract_fee_outputs[idx];
+            if (addr.get_str() == address) {
+                subtract_fee = true;
+            }
+        }
+
+        CRecipient recipient = {script_pub_key, amount, subtract_fee};
+        recipients.push_back(recipient);
+    }
+}
+
+UniValue SendMoney(CWallet* const pwallet, const CCoinControl &coin_control, std::vector<CRecipient> &recipients, mapValue_t map_value)
 {
-    CAmount curBalance = pwallet->GetBalance(0, coin_control.m_avoid_address_reuse).m_mine_trusted;
-
-    // Check amount
-    if (nValue <= 0)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
-
-    if (nValue > curBalance)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
-
+    EnsureWalletIsUnlocked(pwallet);
     if (fWalletUnlockMintOnly)
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: Wallet unlocked for block minting only, unable to create transaction.");
+    // Shuffle recipient list
+    std::shuffle(recipients.begin(), recipients.end(), FastRandomContext());
 
-    // Parse Peercoin address
-    CScript scriptPubKey = GetScriptForDestination(address);
-
-    // Create and send the transaction
+    // Send
     CAmount nFeeRequired = 0;
-    bilingual_str error;
-    std::vector<CRecipient> vecSend;
     int nChangePosRet = -1;
-    CRecipient recipient = {scriptPubKey, nValue, fSubtractFeeFromAmount};
-    vecSend.push_back(recipient);
+    bilingual_str error;
     CTransactionRef tx;
-    if (!pwallet->CreateTransaction(vecSend, tx, nFeeRequired, nChangePosRet, error, coin_control)) {
-        if (!fSubtractFeeFromAmount && nValue + nFeeRequired > curBalance)
-            error = strprintf(Untranslated("Error: This transaction requires a transaction fee of at least %s"), FormatMoney(nFeeRequired));
-        throw JSONRPCError(RPC_WALLET_ERROR, error.original);
+    bool fCreated = pwallet->CreateTransaction(recipients, tx, nFeeRequired, nChangePosRet, error, coin_control, !pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS));
+    if (!fCreated) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error.original);
     }
-    pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */);
-    return tx;
+    pwallet->CommitTransaction(tx, std::move(map_value), {} /* orderForm */);
+    return tx->GetHash().GetHex();
 }
 
 static UniValue sendtoaddress(const JSONRPCRequest& request)
@@ -429,18 +445,8 @@ static UniValue sendtoaddress(const JSONRPCRequest& request)
 
     LOCK(pwallet->cs_wallet);
 
-    CTxDestination dest = DecodeDestination(request.params[0].get_str());
-    if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
-    }
-
-    // Amount
-    CAmount nAmount = AmountFromValue(request.params[1]);
-    if (nAmount <= 0)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
     if (nAmount < MIN_TXOUT_AMOUNT)
         throw JSONRPCError(RPC_INSUFFICIENT_SEND_AMOUNT, "Send amount too small");
-
     // Wallet comments
     mapValue_t mapValue;
     if (!request.params[2].isNull() && !request.params[2].get_str().empty())
@@ -461,8 +467,18 @@ static UniValue sendtoaddress(const JSONRPCRequest& request)
 
     EnsureWalletIsUnlocked(pwallet);
 
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue));
-    return tx->GetHash().GetHex();
+    UniValue address_amounts(UniValue::VOBJ);
+    const std::string address = request.params[0].get_str();
+    address_amounts.pushKV(address, request.params[1]);
+    UniValue subtractFeeFromAmount(UniValue::VARR);
+    if (fSubtractFeeFromAmount) {
+        subtractFeeFromAmount.push_back(address);
+    }
+
+    std::vector<CRecipient> recipients;
+    ParseRecipients(address_amounts, subtractFeeFromAmount, recipients);
+
+    return SendMoney(pwallet, coin_control, recipients, mapValue);
 }
 
 static UniValue listaddressgroupings(const JSONRPCRequest& request)
@@ -845,54 +861,10 @@ static UniValue sendmany(const JSONRPCRequest& request)
 
     CCoinControl coin_control;
 
-    std::set<CTxDestination> destinations;
-    std::vector<CRecipient> vecSend;
+    std::vector<CRecipient> recipients;
+    ParseRecipients(sendTo, subtractFeeFromAmount, recipients);
 
-    std::vector<std::string> keys = sendTo.getKeys();
-    for (const std::string& name_ : keys) {
-        CTxDestination dest = DecodeDestination(name_);
-        if (!IsValidDestination(dest)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + name_);
-        }
-
-        if (destinations.count(dest)) {
-            throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ") + name_);
-        }
-        destinations.insert(dest);
-
-        CScript scriptPubKey = GetScriptForDestination(dest);
-        CAmount nAmount = AmountFromValue(sendTo[name_]);
-        if (nAmount <= 0)
-            throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
-        if (nAmount < MIN_TXOUT_AMOUNT)
-            throw JSONRPCError(RPC_INSUFFICIENT_SEND_AMOUNT, "Send amount too small");
-
-        bool fSubtractFeeFromAmount = false;
-        for (unsigned int idx = 0; idx < subtractFeeFromAmount.size(); idx++) {
-            const UniValue& addr = subtractFeeFromAmount[idx];
-            if (addr.get_str() == name_)
-                fSubtractFeeFromAmount = true;
-        }
-
-        CRecipient recipient = {scriptPubKey, nAmount, fSubtractFeeFromAmount};
-        vecSend.push_back(recipient);
-    }
-
-    EnsureWalletIsUnlocked(pwallet);
-
-    // Shuffle recipient list
-    std::shuffle(vecSend.begin(), vecSend.end(), FastRandomContext());
-
-    // Send
-    CAmount nFeeRequired = 0;
-    int nChangePosRet = -1;
-    bilingual_str error;
-    CTransactionRef tx;
-    bool fCreated = pwallet->CreateTransaction(vecSend, tx, nFeeRequired, nChangePosRet, error, coin_control);
-    if (!fCreated)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error.original);
-    pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */);
-    return tx->GetHash().GetHex();
+    return SendMoney(pwallet, coin_control, recipients, std::move(mapValue));
 }
 
 static UniValue addmultisigaddress(const JSONRPCRequest& request)
