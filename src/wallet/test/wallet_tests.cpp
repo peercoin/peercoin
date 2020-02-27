@@ -721,8 +721,8 @@ BOOST_FIXTURE_TEST_CASE(CreateWalletFromFile, TestChain100Setup)
     BOOST_CHECK_EQUAL(addtx_count, 2);
     {
         LOCK(wallet->cs_wallet);
-        BOOST_CHECK_EQUAL(wallet->mapWallet.count(block_tx.GetHash()), 1);
-        BOOST_CHECK_EQUAL(wallet->mapWallet.count(mempool_tx.GetHash()), 1);
+        BOOST_CHECK_EQUAL(wallet->mapWallet.count(block_tx.GetHash()), 1U);
+        BOOST_CHECK_EQUAL(wallet->mapWallet.count(mempool_tx.GetHash()), 1U);
     }
 
 
@@ -758,8 +758,8 @@ BOOST_FIXTURE_TEST_CASE(CreateWalletFromFile, TestChain100Setup)
     BOOST_CHECK_EQUAL(addtx_count, 4);
     {
         LOCK(wallet->cs_wallet);
-        BOOST_CHECK_EQUAL(wallet->mapWallet.count(block_tx.GetHash()), 1);
-        BOOST_CHECK_EQUAL(wallet->mapWallet.count(mempool_tx.GetHash()), 1);
+        BOOST_CHECK_EQUAL(wallet->mapWallet.count(block_tx.GetHash()), 1U);
+        BOOST_CHECK_EQUAL(wallet->mapWallet.count(mempool_tx.GetHash()), 1U);
     }
 
 
