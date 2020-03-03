@@ -122,7 +122,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     coinbaseTx.vout.resize(1);
     coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
 
-    if (pblock->IsProofOfWork()) {
+    if (pwallet == nullptr) {
         pblock->nBits = GetNextTargetRequired(pindexPrev, false, chainparams.GetConsensus());
         coinbaseTx.vout[0].nValue = GetProofOfWorkReward(pblock->nBits);
         }
