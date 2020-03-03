@@ -245,6 +245,11 @@ fs::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix);
 bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskBlockPos *dbp = nullptr);
 /** Ensures we have a genesis block in the block tree, possibly writing one to disk. */
 bool LoadGenesisBlock(const CChainParams& chainparams);
+/** Generate map of coinage spent minting per day over last year **/
+void LoadStakeMap();
+/** Return sum of coindays spent minting over a year before nTime **/
+long GetAnnualStake(uint32_t nTime);
+
 /** Load the block tree and coins database from disk,
  * initializing state if we're running with -reindex. */
 bool LoadBlockIndex(const CChainParams& chainparams);
@@ -455,8 +460,8 @@ bool LoadMempool();
 
 // peercoin:
 CAmount GetProofOfWorkReward(unsigned int nBits);
-CAmount GetProofOfStakeReward(int64_t nCoinAge);
-bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge); // peercoin: get transaction coin age
+CAmount GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime);
+bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, bool ignoreView = false); // peercoin: get transaction coin age
 bool SignBlock(CBlock& block, const CKeyStore& keystore);
 bool CheckBlockSignature(const CBlock& block);
 

@@ -1431,6 +1431,10 @@ bool AppInitMain()
         LogPrintf(" block index %15dms\n", GetTimeMillis() - nStart);
     }
 
+    // Fill mapStake
+    if (fLoaded && chainActive.Tip() != nullptr)
+        LoadStakeMap();
+
     // ********************************************************* Step 8: load wallet
 #ifdef ENABLE_WALLET
     if (!OpenWallets())

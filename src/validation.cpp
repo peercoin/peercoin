@@ -234,6 +234,9 @@ CTxMemPool mempool;
 CScript COINBASE_FLAGS;
 
 const std::string strMessageMagic = "Peercoin Signed Message:\n";
+std::map<int, long> mapStake;
+void LoadStakeMap();
+long GetAnnualStake(uint32_t nTime);
 
 // Internal stuff
 namespace {
@@ -935,10 +938,24 @@ int64_t GetProofOfWorkReward(unsigned int nBits)
 }
 
 // peercoin: miner's coin stake is rewarded based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int64_t nCoinAge)
+int64_t GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime)
 {
     static int64_t nRewardCoinYear = CENT;  // creation amount per coin-year
     int64_t nSubsidy = nCoinAge * 33 / (365 * 33 + 8) * nRewardCoinYear;
+
+    if (IsProtocolV09(nTime)) {
+        int64_t nAnnualStake = GetAnnualStake(nTime) * 1000000;
+        int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+        double nUnboundedInflationAdjustment = 365.0 * nMoneySupply / nAnnualStake;
+        double nInflationAdjustment = std::max(1.0, std::min(nUnboundedInflationAdjustment, 5.0));
+        int64_t nSubsidyNew = nSubsidy * nInflationAdjustment;
+
+        if (gArgs.GetBoolArg("-printcreation", false))
+            LogPrintf("%s: money supply %ld, annual stake %ld, unbound inflation %f, bound inflation %f, old subsidy %ld, new subsidy %ld\n", __func__, nMoneySupply, nAnnualStake, nUnboundedInflationAdjustment, nInflationAdjustment, nSubsidy, nSubsidyNew);
+
+        nSubsidy = nSubsidyNew;
+        }
+
     if (gArgs.GetBoolArg("-printcreation", false))
         LogPrintf("%s: create=%s nCoinAge=%lld\n", __func__, FormatMoney(nSubsidy), nCoinAge);
     return nSubsidy;
@@ -1406,6 +1423,14 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         }
     }
 
+    // peercoin: update map of steaks
+    if (block.IsProofOfStake()) {
+        uint64_t nCoinAge;
+        const CTransaction& tx = *block.vtx[1];
+        if (GetCoinAge(tx, NULL, nCoinAge, true))
+            mapStake[int(block.nTime / (24*60*60))] -= nCoinAge;
+    }
+
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
 
@@ -1804,6 +1829,14 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     // peercoin: track money supply and mint amount info
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
+
+    // peercoin: update map of steaks
+    if (block.IsProofOfStake()) {
+        uint64_t nCoinAge;
+        const CTransaction& tx = *block.vtx[1];
+        if (GetCoinAge(tx, NULL, nCoinAge, true))
+            mapStake[int(block.nTime / (24*60*60))] += nCoinAge;
+    }
 
     // peercoin: fees are not collected by miners as in bitcoin
     // peercoin: fees are destroyed to compensate the entire network
@@ -3456,6 +3489,61 @@ CBlockIndex * CChainState::InsertBlockIndex(const uint256& hash)
     return pindexNew;
 }
 
+void LoadStakeMap()
+{
+    CBlockIndex* startBlock = nullptr;
+    {
+        LOCK(cs_main);
+        startBlock = chainActive.FindEarliestAtLeast(chainActive.Tip()->nTime - 366 * 24 * 60 * 60);
+        LogPrintf("%s: Rescanning last %i blocks\n", __func__, startBlock ? chainActive.Height() - startBlock->nHeight + 1 : 0);
+    }
+
+    if (startBlock) {
+        CBlockIndex* pindex = startBlock;
+        while (pindex) {
+            CBlock block;
+            if (ReadBlockFromDisk(block, pindex, Params().GetConsensus())) {
+                    if (pindex->IsProofOfStake()) {
+                        //
+                        uint64_t nCoinAge;
+                        const CTransaction& tx = *block.vtx[1];
+                        if (GetCoinAge(tx, NULL, nCoinAge, true))
+                            mapStake[int(block.nTime / (24*60*60))] += nCoinAge;
+                    }
+            } else {
+                LogPrintf("%s: Rescanning failed with block read error\n");
+                break;
+            }
+
+            {
+                LOCK(cs_main);
+                pindex = chainActive.Next(pindex);
+            }
+        }
+    }
+    // dump mapStake for debug
+    uint64_t nAnnualStake = 0;
+    for (const auto& item : mapStake)
+        nAnnualStake += item.second;
+
+    LogPrintf("%s: %d elements hold %ld coindays\n", __func__, mapStake.size(), nAnnualStake);
+}
+
+long GetAnnualStake(uint32_t nTime)
+{
+    int64_t nStart = (nTime / (24*60*60)) - 366;
+    uint64_t nAnnualStake = 0;
+    int nDays = 0;
+    for (const auto& item : mapStake) {
+        nAnnualStake += ( item.first >= nStart ) ? item.second : 0;
+        nDays += ( item.first >= nStart ) ? 1 : 0;
+        }
+
+    if (gArgs.GetBoolArg("-debug", false))
+        LogPrintf("%s: mapStake of %d elements yielded %ld coindays after %d \n", __func__, nDays, nAnnualStake, nStart);
+    return nAnnualStake;
+}
+
 bool CChainState::LoadBlockIndex(const Consensus::Params& consensus_params, CBlockTreeDB& blocktree)
 {
     if (!blocktree.LoadBlockIndexGuts(consensus_params, [this](const uint256& hash){ return this->InsertBlockIndex(hash); }))
@@ -4427,7 +4515,7 @@ public:
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge)
+bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, bool ignoreView)
 {
     arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
     nCoinAge = 0;
@@ -4441,7 +4529,7 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
         const COutPoint &prevout = txin.prevout;
         Coin coin;
 
-        if (!view.GetCoin(prevout, coin))
+        if (!ignoreView && !view.GetCoin(prevout, coin))
             continue;  // previous transaction not in main chain
         if (tx.nTime < coin.nTime)
             return false;  // Transaction timestamp violation
