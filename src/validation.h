@@ -113,6 +113,13 @@ enum class SynchronizationState {
     POST_INIT
 };
 
+/** Current sync state passed to tip changed callbacks. */
+enum class SynchronizationState {
+    INIT_REINDEX,
+    INIT_DOWNLOAD,
+    POST_INIT
+};
+
 extern RecursiveMutex cs_main;
 extern Mutex g_best_block_mutex;
 extern std::condition_variable g_best_block_cv;
