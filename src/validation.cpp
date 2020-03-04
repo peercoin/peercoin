@@ -3492,14 +3492,18 @@ CBlockIndex * CChainState::InsertBlockIndex(const uint256& hash)
 void LoadStakeMap()
 {
     CBlockIndex* startBlock = nullptr;
+    int nBlocks = 0;
     {
         LOCK(cs_main);
         startBlock = chainActive.FindEarliestAtLeast(chainActive.Tip()->nTime - 366 * 24 * 60 * 60);
-        LogPrintf("%s: Rescanning last %i blocks\n", __func__, startBlock ? chainActive.Height() - startBlock->nHeight + 1 : 0);
+        nBlocks = startBlock ? chainActive.Height() - startBlock->nHeight + 1 : 0;
+        LogPrintf("%s: Rescanning last %i blocks\n", __func__, nBlocks);
+        uiInterface.ShowProgress(_("Loading stake map..."), 0, false);
     }
 
     if (startBlock) {
         CBlockIndex* pindex = startBlock;
+        int count = 0;
         while (pindex) {
             CBlock block;
             if (ReadBlockFromDisk(block, pindex, Params().GetConsensus())) {
@@ -3519,6 +3523,9 @@ void LoadStakeMap()
                 LOCK(cs_main);
                 pindex = chainActive.Next(pindex);
             }
+            count++;
+            if (count % 1000)
+                uiInterface.ShowProgress(_("Loading stake map..."), std::max(1, std::min(99, (int)(100 * count / nBlocks))), false);
         }
     }
     // dump mapStake for debug
@@ -3527,6 +3534,7 @@ void LoadStakeMap()
         nAnnualStake += item.second;
 
     LogPrintf("%s: %d elements hold %ld coindays\n", __func__, mapStake.size(), nAnnualStake);
+    uiInterface.ShowProgress("", 100, false);
 }
 
 long GetAnnualStake(uint32_t nTime)
