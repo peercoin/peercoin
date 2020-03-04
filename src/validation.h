@@ -102,6 +102,13 @@ struct BlockHasher
     size_t operator()(const uint256& hash) const { return ReadLE64(hash.begin()); }
 };
 
+/** Current sync state passed to tip changed callbacks. */
+enum class SynchronizationState {
+    INIT_REINDEX,
+    INIT_DOWNLOAD,
+    POST_INIT
+};
+
 extern RecursiveMutex cs_main;
 extern CTxMemPool mempool;
 typedef std::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
