@@ -335,13 +335,13 @@ static void registerSignalHandler(int signal, void(*handler)(int))
 static boost::signals2::connection rpc_notify_block_change_connection;
 static void OnRPCStarted()
 {
-    rpc_notify_block_change_connection = uiInterface.NotifyBlockTip_connect(&RPCNotifyBlockChange);
+    rpc_notify_block_change_connection = uiInterface.NotifyBlockTip_connect(std::bind(RPCNotifyBlockChange, std::placeholders::_2));
 }
 
 static void OnRPCStopped()
 {
     rpc_notify_block_change_connection.disconnect();
-    RPCNotifyBlockChange(false, nullptr);
+    RPCNotifyBlockChange(nullptr);
     g_best_block_cv.notify_all();
     LogPrint(BCLog::RPC, "RPC stopped.\n");
 }
@@ -1557,7 +1557,7 @@ bool AppInitMain(NodeContext& node)
                         uiInterface.InitMessage(_("Verifying blocks...").translated);
 
                         const CBlockIndex* tip = chainstate->m_chain.Tip();
-                        RPCNotifyBlockChange(true, tip);
+                        RPCNotifyBlockChange(tip);
                         if (tip && tip->nTime > GetAdjustedTime() + 2 * 60 * 60) {
                             strLoadError = _("The block database contains a block which appears to be from the future. "
                                     "This may be due to your computer's date and time being set incorrectly. "
