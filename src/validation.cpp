@@ -1427,7 +1427,7 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
     if (block.IsProofOfStake()) {
         uint64_t nCoinAge;
         const CTransaction& tx = *block.vtx[1];
-        if (GetCoinAge(tx, NULL, nCoinAge, true))
+        if (GetCoinAge(tx, NULL, nCoinAge, false /* isTrueCoinAge */))
             mapStake[int(block.nTime / (24*60*60))] -= nCoinAge;
     }
 
@@ -1834,7 +1834,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     if (block.IsProofOfStake()) {
         uint64_t nCoinAge;
         const CTransaction& tx = *block.vtx[1];
-        if (GetCoinAge(tx, NULL, nCoinAge, true))
+        if (GetCoinAge(tx, NULL, nCoinAge, false /* isTrueCoinAge */))
             mapStake[int(block.nTime / (24*60*60))] += nCoinAge;
     }
 
@@ -3511,7 +3511,7 @@ void LoadStakeMap()
                         //
                         uint64_t nCoinAge;
                         const CTransaction& tx = *block.vtx[1];
-                        if (GetCoinAge(tx, NULL, nCoinAge, true))
+                        if (GetCoinAge(tx, NULL, nCoinAge, false /* isTrueCoinAge */))
                             mapStake[int(block.nTime / (24*60*60))] += nCoinAge;
                     }
             } else {
@@ -4523,7 +4523,7 @@ public:
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, bool ignoreView)
+bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, bool isTrueCoinAge)
 {
     arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
     nCoinAge = 0;
@@ -4537,7 +4537,7 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
         const COutPoint &prevout = txin.prevout;
         Coin coin;
 
-        if (!ignoreView && !view.GetCoin(prevout, coin))
+        if (isTrueCoinAge && !view.GetCoin(prevout, coin))
             continue;  // previous transaction not in main chain
         if (tx.nTime < coin.nTime)
             return false;  // Transaction timestamp violation
@@ -4566,10 +4566,15 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
                 continue; // only count coins meeting min age requirement
 
             int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
-            bnCentSecond += arith_uint256(nValueIn) * (tx.nTime-txPrev->nTime) / CENT;
+            int nEffectiveAge = tx.nTime-txPrev->nTime;
+
+            if (!isTrueCoinAge || IsProtocolV09(tx.nTime))
+                nEffectiveAge = std::min(nEffectiveAge, 365 * 24 * 60 * 60);
+
+            bnCentSecond += arith_uint256(nValueIn) * nEffectiveAge / CENT;
 
             if (gArgs.GetBoolArg("-printcoinage", false))
-                LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, tx.nTime - txPrev->nTime, bnCentSecond.ToString());
+                LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, nEffectiveAge, bnCentSecond.ToString());
         }
         else
             return error("%s() : tx missing in tx index in GetCoinAge()", __PRETTY_FUNCTION__);
