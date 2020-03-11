@@ -32,6 +32,7 @@
 
 #include <miner.h>
 #include <kernel.h>
+#include <validation.h>
 
 #include <boost/thread/thread.hpp> // boost::thread::interrupt
 
@@ -1430,7 +1431,7 @@ UniValue getchaintxstats(const JSONRPCRequest& request)
             pindex = chainActive.Tip();
         }
     }
-    
+
     assert(pindex != nullptr);
 
     if (request.params[0].isNull()) {
@@ -1481,6 +1482,47 @@ UniValue savemempool(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
+UniValue getstakemap(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() > 1)
+        throw std::runtime_error(
+            "getstakemap ( timestamp )\n"
+            "\nReturns map of coinage spent minting per day.\n"
+            "\nArguments:\n"
+            "1. timestamp (integer, required) Unix seconds-since-epoch timestamp of the earliest map element\n"
+            "\nResult:\n"
+            "[                     (json array)\n"
+            "  [                   (json array)\n"
+            "    xxx,              (int) day\n"
+            "    yyy               (int) coinage\n"
+            "  ],...\n"
+            "]\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getstakemap", "")
+            + HelpExampleRpc("getstakemap", "")
+        );
+
+    RPCTypeCheck(request.params, {UniValue::VNUM});
+    int nStart = 0;
+    if (request.params.size() == 1)
+        nStart = request.params[0].get_int64() / (24*60*60);
+
+    UniValue result(UniValue::VARR);
+
+    for (const auto& item : mapStake) {
+        UniValue day(UniValue::VARR);
+
+        if (item.first >= nStart) {
+            day.push_back(item.first);
+            day.push_back((int64_t)item.second);
+            result.push_back(day);
+        }
+    }
+
+    return result;
+}
+
+
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
@@ -1498,6 +1540,7 @@ static const CRPCCommand commands[] =
     { "blockchain",         "getmempoolentry",        &getmempoolentry,        {"txid"} },
     { "blockchain",         "getmempoolinfo",         &getmempoolinfo,         {} },
     { "blockchain",         "getrawmempool",          &getrawmempool,          {"verbose"} },
+    { "blockchain",         "getstakemap",            &getstakemap,            {"timestamp"} },
     { "blockchain",         "gettxout",               &gettxout,               {"txid","n","include_mempool"} },
     { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        {} },
     { "blockchain",         "savemempool",            &savemempool,            {} },
