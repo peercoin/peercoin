@@ -142,7 +142,7 @@ namespace GUIUtil
         explicit ToolTipToRichTextFilter(int size_threshold, QObject *parent = nullptr);
 
     protected:
-        bool eventFilter(QObject *obj, QEvent *evt);
+        bool eventFilter(QObject *obj, QEvent *evt) override;
 
     private:
         int size_threshold;
@@ -224,7 +224,7 @@ namespace GUIUtil
          */
         void clicked(const QPoint& point);
     protected:
-        void mouseReleaseEvent(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event) override;
     };
 
     class ClickableProgressBar : public QProgressBar
@@ -237,7 +237,7 @@ namespace GUIUtil
          */
         void clicked(const QPoint& point);
     protected:
-        void mouseReleaseEvent(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event) override;
     };
 
     typedef ClickableProgressBar ProgressBar;
@@ -252,7 +252,7 @@ namespace GUIUtil
         void keyEscapePressed();
 
     private:
-        bool eventFilter(QObject *object, QEvent *event);
+        bool eventFilter(QObject *object, QEvent *event) override;
     };
 
     // Fix known bugs in QProgressDialog class.
