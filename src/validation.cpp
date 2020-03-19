@@ -938,14 +938,13 @@ int64_t GetProofOfWorkReward(unsigned int nBits)
 }
 
 // peercoin: miner's coin stake is rewarded based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime)
+int64_t GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneySupply)
 {
     static int64_t nRewardCoinYear = CENT;  // creation amount per coin-year
     int64_t nSubsidy = nCoinAge * 33 / (365 * 33 + 8) * nRewardCoinYear;
 
     if (IsProtocolV09(nTime)) {
         uint64_t nAnnualStake = GetAnnualStake(nTime);
-        uint64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
         CBigNum bnUnboundedInflationAdjustment = nMoneySupply;
         bnUnboundedInflationAdjustment *= 365;
         bnUnboundedInflationAdjustment /= nAnnualStake;
@@ -1764,7 +1763,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         else
         {
             CAmount txfee = 0;
-            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus())) {
+            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus()), pindex->nMoneySupply) {
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
             nValueIn += view.GetValueIn(tx);
