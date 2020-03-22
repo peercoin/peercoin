@@ -598,7 +598,7 @@ bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx)
     if (IsProtocolV03(nTimeTx))  // v0.3 protocol
         return (nTimeBlock == nTimeTx);
     else // v0.2 protocol
-        return ((nTimeTx <= nTimeBlock) && (nTimeBlock <= nTimeTx + IsProtocolV09(nTimeBlock) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9));
+        return ((nTimeTx <= nTimeBlock) && (nTimeBlock <= nTimeTx + (IsProtocolV09(nTimeBlock) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9)));
 }
 
 // Get stake modifier checksum
