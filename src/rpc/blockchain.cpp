@@ -1107,8 +1107,6 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.push_back(Pair("chainwork",             chainActive.Tip()->nChainTrust.GetHex()));
     obj.push_back(Pair("size_on_disk",          CalculateCurrentUsage()));
 
-    const Consensus::Params& consensusParams = Params().GetConsensus();
-    CBlockIndex* tip = chainActive.Tip();
     UniValue softforks(UniValue::VARR);
     obj.push_back(Pair("softforks",             softforks));
 
