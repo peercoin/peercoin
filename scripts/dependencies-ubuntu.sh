@@ -9,3 +9,5 @@ sudo apt-get install -y -qq qtbase5-dev qttools5-dev-tools
 sudo apt-get install -y -qq libdb++-dev
 #for debuild
 sudo apt-get install -y -qq libfakeroot fakeroot
+#for tests (hexdump)
+sudo apt-get install -y -qq bsdmainutils
