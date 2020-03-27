@@ -57,7 +57,6 @@ BITCOIN_TESTS =\
   test/net_tests.cpp \
   test/netbase_tests.cpp \
   test/pmt_tests.cpp \
-  test/policyestimator_tests.cpp \
   test/pow_tests.cpp \
   test/prevector_tests.cpp \
   test/raii_event_tests.cpp \
@@ -129,8 +128,13 @@ test_test_peercoin_fuzzy_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-test_test_peercoin_fuzzy_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+test_test_peercoin_fuzzy_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(LIBBITCOIN_CLI) $(LIBLEVELDB) $(LIBLEVELDB_SSE42) $(LIBMEMENV) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS) \
+  $(BDB_LIBS)
+
 #
+if ENABLE_WALLET
+test_test_peercoin_fuzzy_LDADD += $(LIBBITCOIN_WALLET)
+endif
 
 nodist_test_test_peercoin_SOURCES = $(GENERATED_TEST_FILES)
 
