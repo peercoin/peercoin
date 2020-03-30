@@ -2340,6 +2340,9 @@ static UniValue settxfee(const JSONRPCRequest& request)
                 },
             }.Check(request);
 
+    CFeeRate max_tx_fee_rate(pwallet->m_default_max_tx_fee, 1000);
+    } else if (tx_fee_rate > max_tx_fee_rate) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("txfee cannot be more than wallet max tx fee (%s)", max_tx_fee_rate.ToString()));
     return true;
 }
 
