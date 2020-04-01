@@ -25,10 +25,12 @@ static CBlock BuildBlockTestCase() {
     tx.vin.resize(1);
     tx.vin[0].scriptSig.resize(10);
     tx.vout.resize(1);
-    tx.vout[0].nValue = 42;
+    tx.vout[0].nValue = 42000;
+    tx.nTime = 1585412782;
 
     block.vtx.resize(3);
     block.vtx[0] = MakeTransactionRef(tx);
+    block.nTime = tx.nTime;
     block.nVersion = 42;
     block.hashPrevBlock = InsecureRand256();
     block.nBits = 0x207fffff;
@@ -280,7 +282,8 @@ BOOST_AUTO_TEST_CASE(EmptyBlockRoundTripTest)
     coinbase.vin.resize(1);
     coinbase.vin[0].scriptSig.resize(10);
     coinbase.vout.resize(1);
-    coinbase.vout[0].nValue = 42;
+    coinbase.vout[0].nValue = 42000;
+    coinbase.nTime = 1585412782;
 
     CBlock block;
     block.vtx.resize(1);
@@ -288,6 +291,7 @@ BOOST_AUTO_TEST_CASE(EmptyBlockRoundTripTest)
     block.nVersion = 42;
     block.hashPrevBlock = InsecureRand256();
     block.nBits = 0x207fffff;
+    block.nTime = coinbase.nTime;
 
     bool mutated;
     block.hashMerkleRoot = BlockMerkleRoot(block, &mutated);
