@@ -118,6 +118,7 @@ class TestHeaderAndShortIDs {
 public:
     CBlockHeader header;
     uint64_t nonce;
+    std::vector<unsigned char> vchBlockSig;
     std::vector<uint64_t> shorttxids;
     std::vector<PrefilledTransaction> prefilledtxn;
 
@@ -143,6 +144,7 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action) {
         READWRITE(header);
         READWRITE(nonce);
+        READWRITE(vchBlockSig);
         size_t shorttxids_size = shorttxids.size();
         READWRITE(VARINT(shorttxids_size));
         shorttxids.resize(shorttxids_size);
