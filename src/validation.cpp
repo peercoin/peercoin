@@ -950,10 +950,12 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneyS
         bnUnboundedInflationAdjustment /= nAnnualStake;
         uint64_t nUnboundedInflationAdjustment = bnUnboundedInflationAdjustment.getuint64();
         uint64_t nInflationAdjustment = std::max((uint64_t)1000000, std::min(nUnboundedInflationAdjustment, (uint64_t)5000000));
-        uint64_t nSubsidyNew = (nSubsidy * nInflationAdjustment) / 1000000;
+        uint64_t nDynamicSubsidy = (nSubsidy * nInflationAdjustment) / 1000000;
+        uint64_t nStaticSubsidy = nMoneySupply * 33 / (365 * 33 + 8) * 10 / 1440 * nRewardCoinYear / COIN;
+        uint64_t nSubsidyNew = (75 * nDynamicSubsidy + 25 * nStaticSubsidy) / 100;
 
         if (gArgs.GetBoolArg("-printcreation", false))
-            LogPrintf("%s: money supply %ld, annual stake %ld, unbound inflation %f, bound inflation %f, old subsidy %ld, new subsidy %ld\n", __func__, nMoneySupply, nAnnualStake, nUnboundedInflationAdjustment/1000000.0, nInflationAdjustment/1000000.0, nSubsidy, nSubsidyNew);
+            LogPrintf("%s: money supply %ld, annual stake %ld, unbound inflation %f, bound inflation %f, old subsidy %ld, new subsidy %ld, dynamic subsidy %ld, static subsidy %ld\n", __func__, nMoneySupply, nAnnualStake, nUnboundedInflationAdjustment/1000000.0, nInflationAdjustment/1000000.0, nSubsidy, nSubsidyNew, nDynamicSubsidy, nStaticSubsidy);
 
         nSubsidy = nSubsidyNew;
         }
@@ -1763,7 +1765,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         else
         {
             CAmount txfee = 0;
-            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus()), pindex->nMoneySupply) {
+            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus(), (pindex->pprev? pindex->pprev->nMoneySupply : 0))) {
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
             nValueIn += view.GetValueIn(tx);
