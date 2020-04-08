@@ -41,12 +41,17 @@ const std::string LIMIT_TO_MESSAGE_TYPE{TO_STRING(MESSAGE_TYPE)};
 const std::string LIMIT_TO_MESSAGE_TYPE;
 #endif
 
-const RegTestingSetup* g_setup;
+const TestingSetup* g_setup;
 } // namespace
 
 void initialize()
 {
-    static RegTestingSetup setup{};
+    static TestingSetup setup{
+        CBaseChainParams::REGTEST,
+        {
+            "-nodebuglogfile",
+        },
+    };
     g_setup = &setup;
 
     for (int i = 0; i < 2 * COINBASE_MATURITY; i++) {
