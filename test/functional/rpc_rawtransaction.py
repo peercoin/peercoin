@@ -547,8 +547,8 @@ class RawTransactionsTest(BitcoinTestFramework):
         addr1 = self.nodes[2].getnewaddress()
         addr2 = self.nodes[2].getnewaddress()
 
-        addr1Obj = self.nodes[2].getaddressinfo(addr1)
-        addr2Obj = self.nodes[2].getaddressinfo(addr2)
+            addr1Obj = self.nodes[2].getaddressinfo(addr1)
+            addr2Obj = self.nodes[2].getaddressinfo(addr2)
 
         # Tests for createmultisig and addmultisigaddress
         assert_raises_rpc_error(-5, "Invalid public key", self.nodes[0].createmultisig, 1, ["01020304"])
@@ -557,7 +557,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         # addmultisigaddress can take both pubkeys and addresses so long as they are in the wallet, which is tested here
         assert_raises_rpc_error(-5, "Invalid public key", self.nodes[0].createmultisig, 2, [addr1Obj['pubkey'], addr1])
 
-        mSigObj = self.nodes[2].addmultisigaddress(2, [addr1Obj['pubkey'], addr1])['address']
+            mSigObj = self.nodes[2].addmultisigaddress(2, [addr1Obj['pubkey'], addr1])['address']
 
         # use balance deltas instead of absolute values
         bal = self.nodes[2].getbalance()
@@ -570,17 +570,17 @@ class RawTransactionsTest(BitcoinTestFramework):
         assert_equal(self.nodes[2].getbalance(), bal + Decimal('1.200000'))
 
 
-        # 2of3 test from different nodes
-        bal = self.nodes[2].getbalance()
-        addr1 = self.nodes[1].getnewaddress()
-        addr2 = self.nodes[2].getnewaddress()
-        addr3 = self.nodes[2].getnewaddress()
+            # 2of3 test from different nodes
+            bal = self.nodes[2].getbalance()
+            addr1 = self.nodes[1].getnewaddress()
+            addr2 = self.nodes[2].getnewaddress()
+            addr3 = self.nodes[2].getnewaddress()
 
-        addr1Obj = self.nodes[1].getaddressinfo(addr1)
-        addr2Obj = self.nodes[2].getaddressinfo(addr2)
-        addr3Obj = self.nodes[2].getaddressinfo(addr3)
+            addr1Obj = self.nodes[1].getaddressinfo(addr1)
+            addr2Obj = self.nodes[2].getaddressinfo(addr2)
+            addr3Obj = self.nodes[2].getaddressinfo(addr3)
 
-        mSigObj = self.nodes[2].addmultisigaddress(2, [addr1Obj['pubkey'], addr2Obj['pubkey'], addr3Obj['pubkey']])['address']
+            mSigObj = self.nodes[2].addmultisigaddress(2, [addr1Obj['pubkey'], addr2Obj['pubkey'], addr3Obj['pubkey']])['address']
 
         txId = self.nodes[0].sendtoaddress(mSigObj, 2.2)
         decTx = self.nodes[0].gettransaction(txId)
@@ -592,9 +592,9 @@ class RawTransactionsTest(BitcoinTestFramework):
         # NODE2 HAS TWO OF THREE KEYS AND THE FUNDS SHOULD BE SPENDABLE AND COUNT AT BALANCE CALCULATION
         assert_equal(self.nodes[2].getbalance(), bal)  # for now, assume the funds of a 2of3 multisig tx are not marked as spendable
 
-        txDetails = self.nodes[0].gettransaction(txId, True)
-        rawTx = self.nodes[0].decoderawtransaction(txDetails['hex'])
-        vout = next(o for o in rawTx['vout'] if o['value'] == Decimal('2.20000000'))
+            txDetails = self.nodes[0].gettransaction(txId, True)
+            rawTx = self.nodes[0].decoderawtransaction(txDetails['hex'])
+            vout = next(o for o in rawTx['vout'] if o['value'] == Decimal('2.20000000'))
 
         bal = self.nodes[0].getbalance()
         inputs = [{"txid": txId, "vout": vout['n'], "scriptPubKey": vout['scriptPubKey']['hex'], "amount": vout['value']}]
@@ -611,17 +611,17 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.generate(self.nodes[0], 1)
         assert_equal(self.nodes[0].getbalance(), bal + Decimal('9754.14') + Decimal('2.190000'))  # block reward + tx
 
-        # 2of2 test for combining transactions
-        bal = self.nodes[2].getbalance()
-        addr1 = self.nodes[1].getnewaddress()
-        addr2 = self.nodes[2].getnewaddress()
+            # 2of2 test for combining transactions
+            bal = self.nodes[2].getbalance()
+            addr1 = self.nodes[1].getnewaddress()
+            addr2 = self.nodes[2].getnewaddress()
 
-        addr1Obj = self.nodes[1].getaddressinfo(addr1)
-        addr2Obj = self.nodes[2].getaddressinfo(addr2)
+            addr1Obj = self.nodes[1].getaddressinfo(addr1)
+            addr2Obj = self.nodes[2].getaddressinfo(addr2)
 
-        self.nodes[1].addmultisigaddress(2, [addr1Obj['pubkey'], addr2Obj['pubkey']])['address']
-        mSigObj = self.nodes[2].addmultisigaddress(2, [addr1Obj['pubkey'], addr2Obj['pubkey']])['address']
-        mSigObjValid = self.nodes[2].getaddressinfo(mSigObj)
+            self.nodes[1].addmultisigaddress(2, [addr1Obj['pubkey'], addr2Obj['pubkey']])['address']
+            mSigObj = self.nodes[2].addmultisigaddress(2, [addr1Obj['pubkey'], addr2Obj['pubkey']])['address']
+            mSigObjValid = self.nodes[2].getaddressinfo(mSigObj)
 
         txId = self.nodes[0].sendtoaddress(mSigObj, 2.2)
         decTx = self.nodes[0].gettransaction(txId)
@@ -631,9 +631,9 @@ class RawTransactionsTest(BitcoinTestFramework):
 
         assert_equal(self.nodes[2].getbalance(), bal)  # the funds of a 2of2 multisig tx should not be marked as spendable
 
-        txDetails = self.nodes[0].gettransaction(txId, True)
-        rawTx2 = self.nodes[0].decoderawtransaction(txDetails['hex'])
-        vout = next(o for o in rawTx2['vout'] if o['value'] == Decimal('2.20000000'))
+            txDetails = self.nodes[0].gettransaction(txId, True)
+            rawTx2 = self.nodes[0].decoderawtransaction(txDetails['hex'])
+            vout = next(o for o in rawTx2['vout'] if o['value'] == Decimal('2.20000000'))
 
         bal = self.nodes[0].getbalance()
         inputs = [{"txid": txId, "vout": vout['n'], "scriptPubKey": vout['scriptPubKey']['hex'], "redeemScript": mSigObjValid['hex'], "amount": vout['value']}]
