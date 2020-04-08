@@ -71,9 +71,11 @@ static inline bool InsecureRandBool() { return g_insecure_rand_ctx.randbool(); }
  */
 struct BasicTestingSetup {
     ECCVerifyHandle globalVerifyHandle;
+    NodeContext m_node;
 
     explicit BasicTestingSetup(const std::string& chainName = CBaseChainParams::MAIN);
     ~BasicTestingSetup();
+
 private:
     const fs::path m_path_root;
 };
@@ -82,7 +84,6 @@ private:
  * Included are coins database, script check threads setup.
  */
 struct TestingSetup : public BasicTestingSetup {
-    NodeContext m_node;
     boost::thread_group threadGroup;
 
     explicit TestingSetup(const std::string& chainName = CBaseChainParams::MAIN);
