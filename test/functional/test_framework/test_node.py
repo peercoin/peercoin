@@ -233,7 +233,11 @@ class TestNode():
                 # -342 Service unavailable, RPC server started but is shutting down due to error
                 if e.error['code'] != -28 and e.error['code'] != -342:
                     raise  # unknown JSON RPC exception
-            except ValueError as e:  # cookie file not found and no rpcuser or rpcassword. peercoind still starting
+            except ConnectionResetError:
+                # This might happen when the RPC server is in warmup, but shut down before the call to getblockcount
+                # succeeds. Try again to properly raise the FailedToStartError
+                pass
+            except ValueError as e:  # cookie file not found and no rpcuser or rpcassword. bitcoind still starting
                 if "No RPC credentials" not in str(e):
                     raise
             time.sleep(1.0 / poll_per_s)

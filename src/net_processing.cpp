@@ -3405,7 +3405,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
     }
 
 #ifdef ENABLE_CHECKPOINTS
-    if (strCommand == NetMsgType::CHECKPOINT)
+    if (msg_type == NetMsgType::CHECKPOINT)
     {
          CSyncCheckpoint checkpoint;
          vRecv >> checkpoint;
