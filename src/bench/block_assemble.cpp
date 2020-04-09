@@ -17,6 +17,7 @@
 
 static void AssembleBlock(benchmark::State& state)
 {
+    RegTestingSetup test_setup;
     const std::vector<unsigned char> op_true{OP_TRUE};
     CScriptWitness witness;
     witness.stack.push_back(op_true);
@@ -32,7 +33,7 @@ static void AssembleBlock(benchmark::State& state)
     txs.reserve(NUM_BLOCKS - ::Params().GetConsensus().nCoinbaseMaturity + 1);
     for (size_t b{0}; b < NUM_BLOCKS; ++b) {
         CMutableTransaction tx;
-        tx.vin.push_back(MineBlock(g_testing_setup->m_node, SCRIPT_PUB));
+        tx.vin.push_back(MineBlock(test_setup.m_node, SCRIPT_PUB));
         tx.vin.back().scriptWitness = witness;
         tx.vout.emplace_back(1337, SCRIPT_PUB);
         if (NUM_BLOCKS - b >= ::Params().GetConsensus().nCoinbaseMaturity)
@@ -49,7 +50,7 @@ static void AssembleBlock(benchmark::State& state)
     }
 
     while (state.KeepRunning()) {
-        PrepareBlock(g_testing_setup->m_node, SCRIPT_PUB);
+        PrepareBlock(test_setup.m_node, SCRIPT_PUB);
     }
 }
 
