@@ -165,11 +165,6 @@ ifneq ($(zmq_packages_),)
 packages += $(zmq_packages)
 endif
 
-ifeq ($(multiprocess_packages_),)
-packages += $(multiprocess_packages)
-native_packages += $(multiprocess_native_packages)
-endif
-
 all_packages = $(packages) $(native_packages)
 
 meta_depends = Makefile funcs.mk builders/default.mk hosts/default.mk hosts/$(host_os).mk builders/$(build_os).mk
