@@ -1495,7 +1495,13 @@ class msg_merkleblock:
     __slots__ = ("merkleblock",)
     msgtype = b"merkleblock"
     def deserialize(self, f):
-        pass  # Placeholder for now
+        self.merkleblock.deserialize(f)
+
+    def serialize(self):
+        return self.merkleblock.serialize()
+
+    def __repr__(self):
+        return "msg_merkleblock(merkleblock=%s)" % (repr(self.merkleblock))
 
     def __init__(self, merkleblock=None):
         if merkleblock is None:
