@@ -58,7 +58,7 @@ void CClientUIInterface::BannedListChanged() { return g_ui_signals.BannedListCha
 
 bool InitError(const bilingual_str& str)
 {
-    uiInterface.ThreadSafeMessageBox(Untranslated(str), "", CClientUIInterface::MSG_ERROR);
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
     return false;
 }
 
