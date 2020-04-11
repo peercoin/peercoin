@@ -20,6 +20,7 @@ class CScheduler;
 class Coin;
 class uint256;
 enum class MemPoolRemovalReason;
+struct bilingual_str;
 struct CBlockLocator;
 struct FeeCalculation;
 struct NodeContext;
@@ -201,7 +202,7 @@ public:
     virtual void initWarning(const std::string& message) = 0;
 
     //! Send init error.
-    virtual void initError(const std::string& message) = 0;
+    virtual void initError(const bilingual_str& message) = 0;
 
     //! Send progress indicator.
     virtual void showProgress(const std::string& title, int progress, bool resume_possible) = 0;
