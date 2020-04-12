@@ -138,9 +138,6 @@ public:
 
     UnlockContext requestUnlock();
 
-    void loadReceiveRequests(std::vector<std::string>& vReceiveRequests);
-    bool saveReceiveRequest(const std::string &sAddress, const int64_t nId, const std::string &sRequest);
-
     static bool isWalletEnabled();
     bool privateKeysDisabled() const;
     bool canGetAddresses() const;
