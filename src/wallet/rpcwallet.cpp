@@ -3203,6 +3203,9 @@ UniValue signrawtransactionwithwallet(const JSONRPCRequest& request)
     return result;
 }
 
+        if (!pwallet->chain().rpcEnableDeprecated("bumpfee")) {
+            throw JSONRPCError(RPC_METHOD_DEPRECATED, "Using bumpfee with wallets that have private keys disabled is deprecated. Use psbtbumpfee instead or restart bitcoind with -deprecatedrpc=bumpfee. This functionality will be removed in 0.22");
+        }
 
 UniValue rescanblockchain(const JSONRPCRequest& request)
 {
