@@ -217,10 +217,9 @@ class FilterTest(BitcoinTestFramework):
             assert not filter_node.merkleblock_received
             assert not filter_node.tx_received
 
-        self.log.info('Check that sending "filteradd" if no filter is set is treated as misbehavior (+100)')
-        assert_equal(self.nodes[0].getpeerinfo()[0]['banscore'], 0)
-        filter_node.send_and_ping(msg_filteradd(data=b'letsmisbehave'))
-        assert_equal(self.nodes[0].getpeerinfo()[0]['banscore'], 100)
+        self.log.info('Check that sending "filteradd" if no filter is set is treated as misbehavior')
+        with self.nodes[0].assert_debug_log(['Misbehaving']):
+            filter_node.send_and_ping(msg_filteradd(data=b'letsmisbehave'))
 
         self.log.info("Check that division-by-zero remote crash bug [CVE-2013-5700] is fixed")
         filter_peer.send_and_ping(msg_filterload(data=b'', nHashFuncs=1))
