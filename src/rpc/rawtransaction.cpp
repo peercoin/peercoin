@@ -645,7 +645,7 @@ static UniValue combinerawtransaction(const JSONRPCRequest& request)
     CCoinsView viewDummy;
     CCoinsViewCache view(&viewDummy);
     {
-        const CTxMemPool& mempool = EnsureMemPool();
+        const CTxMemPool& mempool = EnsureMemPool(request.context);
         LOCK(cs_main);
         LOCK(mempool.cs);
         CCoinsViewCache &viewChain = ::ChainstateActive().CoinsTip();
@@ -769,7 +769,8 @@ static UniValue signrawtransactionwithkey(const JSONRPCRequest& request)
     for (const CTxIn& txin : mtx.vin) {
         coins[txin.prevout]; // Create empty map entry keyed by prevout.
     }
-    FindCoins(*g_rpc_node, coins);
+    NodeContext& node = EnsureNodeContext(request.context);
+    FindCoins(node, coins);
 
     // Parse the prevtxs array
     ParsePrevouts(request.params[2], &keystore, coins);
@@ -817,8 +818,8 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
 
     std::string err_string;
     AssertLockNotHeld(cs_main);
-    const TransactionError err = BroadcastTransaction(*g_rpc_node, tx, err_string, /*relay*/ true, /*wait_callback*/ true);
-
+    NodeContext& node = EnsureNodeContext(request.context);
+    const TransactionError err = BroadcastTransaction(node, tx, err_string, /*relay*/ true, /*wait_callback*/ true);
     if (TransactionError::OK != err) {
         throw JSONRPCTransactionError(err, err_string);
     }
@@ -879,7 +880,7 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
     CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
     const uint256& tx_hash = tx->GetHash();
 
-    CTxMemPool& mempool = EnsureMemPool();
+    CTxMemPool& mempool = EnsureMemPool(request.context);
 
     UniValue result(UniValue::VARR);
     UniValue result_0(UniValue::VOBJ);
@@ -1527,7 +1528,7 @@ UniValue utxoupdatepsbt(const JSONRPCRequest& request)
     CCoinsView viewDummy;
     CCoinsViewCache view(&viewDummy);
     {
-        const CTxMemPool& mempool = EnsureMemPool();
+        const CTxMemPool& mempool = EnsureMemPool(request.context);
         LOCK2(cs_main, mempool.cs);
         CCoinsViewCache &viewChain = ::ChainstateActive().CoinsTip();
         CCoinsViewMemPool viewMempool(&viewChain, mempool);

@@ -725,16 +725,16 @@ static bool InitSanityCheck()
     return true;
 }
 
-static bool AppInitServers()
+static bool AppInitServers(const util::Ref& context)
 {
     RPCServer::OnStarted(&OnRPCStarted);
     RPCServer::OnStopped(&OnRPCStopped);
     if (!InitHTTPServer())
         return false;
     StartRPC();
-    if (!StartHTTPRPC())
+    if (!StartHTTPRPC(context))
         return false;
-    if (gArgs.GetBoolArg("-rest", DEFAULT_REST_ENABLE)) StartREST();
+    if (gArgs.GetBoolArg("-rest", DEFAULT_REST_ENABLE)) StartREST(context);
     StartHTTPServer();
     return true;
 }
@@ -1112,7 +1112,7 @@ bool AppInitLockDataDirectory()
     return true;
 }
 
-bool AppInitMain(NodeContext& node)
+bool AppInitMain(const util::Ref& context, NodeContext& node)
 {
     const CChainParams& chainparams = Params();
     // ********************************************************* Step 4a: application initialization
@@ -1227,7 +1227,7 @@ bool AppInitMain(NodeContext& node)
     if (gArgs.GetBoolArg("-server", false))
     {
         uiInterface.InitMessage_connect(SetRPCWarmupStatus);
-        if (!AppInitServers())
+        if (!AppInitServers(context))
             return InitError(_("Unable to start HTTP server. See debug log for details."));
     }
 
