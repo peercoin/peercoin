@@ -36,6 +36,7 @@
 #include <txdb.h>
 #include <txmempool.h>
 #include <undo.h>
+#include <util/ref.h>
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <util/translation.h>
