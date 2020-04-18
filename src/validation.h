@@ -451,9 +451,6 @@ enum class CoinsCacheSizeState
     OK = 0
 };
 
-// Defined below, but needed for `friend` usage in CChainState.
-class ChainstateManager;
-
 /**
  * CChainState stores and provides an API to update our local knowledge of the
  * current best chain.
