@@ -43,6 +43,7 @@ class CInv;
 class CConnman;
 class CScriptCheck;
 class CTxMemPool;
+class ChainstateManager;
 class TxValidationState;
 class CKeyStore;
 struct ChainTxData;
@@ -461,9 +462,6 @@ enum class CoinsCacheSizeState
     LARGE = 1,
     OK = 0
 };
-
-// Defined below, but needed for `friend` usage in CChainState.
-class ChainstateManager;
 
 /**
  * CChainState stores and provides an API to update our local knowledge of the

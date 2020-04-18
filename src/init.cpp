@@ -228,9 +228,9 @@ void Shutdown(NodeContext& node)
     }
 
     // FlushStateToDisk generates a ChainStateFlushed callback, which we should avoid missing
-    {
+    if (node.chainman) {
         LOCK(cs_main);
-        for (CChainState* chainstate : g_chainman.GetAll()) {
+        for (CChainState* chainstate : node.chainman->GetAll()) {
             if (chainstate->CanFlushToDisk()) {
                 chainstate->ForceFlushStateToDisk();
             }
@@ -255,9 +255,9 @@ void Shutdown(NodeContext& node)
     // up with our current chain to avoid any strange pruning edge cases and make
     // next startup faster by avoiding rescan.
 
-    {
+    if (node.chainman) {
         LOCK(cs_main);
-        for (CChainState* chainstate : g_chainman.GetAll()) {
+        for (CChainState* chainstate : node.chainman->GetAll()) {
             if (chainstate->CanFlushToDisk()) {
                 chainstate->ForceFlushStateToDisk();
                 chainstate->ResetCoinsViews();
@@ -283,7 +283,8 @@ void Shutdown(NodeContext& node)
     globalVerifyHandle.reset();
     ECC_Stop();
     node.args = nullptr;
-    if (node.mempool) node.mempool = nullptr;
+    node.mempool = nullptr;
+    node.chainman = nullptr;
     node.scheduler.reset();
 
     try {
@@ -630,7 +631,7 @@ struct CImportingNow
     }
 };
 
-static void ThreadImport(std::vector<fs::path> vImportFiles)
+static void ThreadImport(ChainstateManager& chainman, std::vector<fs::path> vImportFiles)
 {
     const CChainParams& chainparams = Params();
     util::ThreadRename("loadblk");
@@ -682,9 +683,9 @@ static void ThreadImport(std::vector<fs::path> vImportFiles)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
 
     // We can't hold cs_main during ActivateBestChain even though we're accessing
-    // the g_chainman unique_ptrs since ABC requires us not to be holding cs_main, so retrieve
+    // the chainman unique_ptrs since ABC requires us not to be holding cs_main, so retrieve
     // the relevant pointers before the ABC call.
-    for (CChainState* chainstate : WITH_LOCK(::cs_main, return g_chainman.GetAll())) {
+    for (CChainState* chainstate : WITH_LOCK(::cs_main, return chainman.GetAll())) {
         BlockValidationState state;
         if (!chainstate->ActivateBestChain(state, chainparams, nullptr)) {
             LogPrintf("Failed to connect best block (%s)\n", state.ToString());
@@ -1251,6 +1252,9 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
     // which are all started after this, may use it from the node context.
     assert(!node.mempool);
     node.mempool = &::mempool;
+    assert(!node.chainman);
+    node.chainman = &g_chainman;
+    ChainstateManager& chainman = EnsureChainman(node);
 
     node.peer_logic.reset(new PeerLogicValidation(node.connman.get(), node.banman.get(), *node.scheduler, *node.mempool));
     RegisterValidationInterface(node.peer_logic.get());
@@ -1429,7 +1433,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
             const int64_t load_block_index_start_time = GetTimeMillis();
             try {
                 LOCK(cs_main);
-                g_chainman.InitializeChainstate();
+                chainman.InitializeChainstate();
                 UnloadBlockIndex();
 
                 // new CBlockTreeDB tries to delete the existing file, which
@@ -1471,7 +1475,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
 
                 bool failed_chainstate_init = false;
 
-                for (CChainState* chainstate : g_chainman.GetAll()) {
+                for (CChainState* chainstate : chainman.GetAll()) {
                     LogPrintf("Initializing chainstate %s\n", chainstate->ToString());
                     chainstate->InitCoinsDB(
                         /* cache_size_bytes */ nCoinDBCache,
@@ -1526,7 +1530,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
             bool failed_rewind{false};
             // Can't hold cs_main while calling RewindBlockIndex, so retrieve the relevant
             // chainstates beforehand.
-            for (CChainState* chainstate : WITH_LOCK(::cs_main, return g_chainman.GetAll())) {
+            for (CChainState* chainstate : WITH_LOCK(::cs_main, return chainman.GetAll())) {
                 if (!fReset) {
                     // Note that RewindBlockIndex MUST run even if we're about to -reindex-chainstate.
                     // It both disconnects blocks based on the chainstate, and drops block data in
@@ -1551,7 +1555,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
             try {
                 LOCK(cs_main);
 
-                for (CChainState* chainstate : g_chainman.GetAll()) {
+                for (CChainState* chainstate : chainman.GetAll()) {
                     if (!is_coinsview_empty(chainstate)) {
                         uiInterface.InitMessage(_("Verifying blocks...").translated);
 
@@ -1671,7 +1675,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
         vImportFiles.push_back(strFile);
     }
 
-    threadGroup.create_thread(std::bind(&ThreadImport, vImportFiles));
+    threadGroup.create_thread([=, &chainman] { ThreadImport(chainman, vImportFiles); });
 
     // Wait for genesis block to be processed
     {
