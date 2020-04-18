@@ -21,6 +21,7 @@ class CBlock;
 class CBlockIndex;
 class CChainState;
 class CTxMemPool;
+class ChainstateManager;
 class UniValue;
 namespace node {
 struct NodeContext;
