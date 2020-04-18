@@ -31,6 +31,7 @@ enum class TransactionError;
 enum isminetype : unsigned int;
 struct CRecipient;
 struct PartiallySignedTransaction;
+struct bilingual_str;
 typedef uint8_t isminefilter;
 
 namespace interfaces {
@@ -136,7 +137,7 @@ public:
         bool sign,
         int& change_pos,
         CAmount& fee,
-        std::string& fail_reason) = 0;
+        bilingual_str& fail_reason) = 0;
 
     //! Commit transaction.
     virtual void commitTransaction(CTransactionRef tx,

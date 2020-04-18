@@ -335,16 +335,16 @@ static CTransactionRef SendMoney(CWallet* const pwallet, const CTxDestination& a
 
     // Create and send the transaction
     CAmount nFeeRequired = 0;
-    std::string strError;
+    bilingual_str error;
     std::vector<CRecipient> vecSend;
     int nChangePosRet = -1;
     CRecipient recipient = {scriptPubKey, nValue, fSubtractFeeFromAmount};
     vecSend.push_back(recipient);
     CTransactionRef tx;
-    if (!pwallet->CreateTransaction(vecSend, tx, nFeeRequired, nChangePosRet, strError, coin_control)) {
+    if (!pwallet->CreateTransaction(vecSend, tx, nFeeRequired, nChangePosRet, error, coin_control)) {
         if (!fSubtractFeeFromAmount && nValue + nFeeRequired > curBalance)
-            strError = strprintf("Error: This transaction requires a transaction fee of at least %s", FormatMoney(nFeeRequired));
-        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+            error = strprintf(Untranslated("Error: This transaction requires a transaction fee of at least %s"), FormatMoney(nFeeRequired));
+        throw JSONRPCError(RPC_WALLET_ERROR, error.original);
     }
     pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */);
     return tx;
@@ -873,11 +873,11 @@ static UniValue sendmany(const JSONRPCRequest& request)
     // Send
     CAmount nFeeRequired = 0;
     int nChangePosRet = -1;
-    std::string strFailReason;
+    bilingual_str error;
     CTransactionRef tx;
-    bool fCreated = pwallet->CreateTransaction(vecSend, tx, nFeeRequired, nChangePosRet, strFailReason, coin_control);
+    bool fCreated = pwallet->CreateTransaction(vecSend, tx, nFeeRequired, nChangePosRet, error, coin_control);
     if (!fCreated)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strFailReason);
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error.original);
     pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */);
     return tx->GetHash().GetHex();
 }
@@ -3071,10 +3071,10 @@ void FundTransaction(CWallet* const pwallet, CMutableTransaction& tx, CAmount& f
         setSubtractFeeFromOutputs.insert(pos);
     }
 
-    std::string strFailReason;
+    bilingual_str error;
 
-    if (!pwallet->FundTransaction(tx, fee_out, change_position, strFailReason, lockUnspents, setSubtractFeeFromOutputs, coinControl)) {
-        throw JSONRPCError(RPC_WALLET_ERROR, strFailReason);
+    if (!pwallet->FundTransaction(tx, fee_out, change_position, error, lockUnspents, setSubtractFeeFromOutputs, coinControl)) {
+        throw JSONRPCError(RPC_WALLET_ERROR, error.original);
     }
 }
 
