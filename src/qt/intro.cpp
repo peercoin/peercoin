@@ -160,7 +160,7 @@ void Intro::setDataDirectory(const QString &dataDir)
     }
 }
 
-bool Intro::showIfNeeded(bool& did_show_intro, bool& prune)
+bool Intro::showIfNeeded(bool& did_show_intro, int64_t& prune_MiB)
 {
     did_show_intro = false;
 
