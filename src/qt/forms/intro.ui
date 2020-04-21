@@ -201,6 +201,33 @@
     </layout>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="pruneOptLayout">
+     <item>
+      <widget class="QCheckBox" name="prune">
+       <property name="text">
+        <string>Limit block chain storage to</string>
+       </property>
+       <property name="toolTip">
+        <string>Reverting this setting requires re-downloading the entire blockchain. It is faster to download the full chain first and prune it later. Disables some advanced features.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QLabel" name="lblExplanation1">
      <property name="text">
       <string>When you click OK, %1 will begin to download and process the full %4 block chain (%2GB) starting with the earliest transactions in %3 when %4 initially launched.</string>

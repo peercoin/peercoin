@@ -18,6 +18,7 @@
 
 #include <interfaces/node.h>
 #include <util/system.h>
+#include <validation.h>
 
 #include <QFileDialog>
 #include <QSettings>
@@ -336,3 +337,5 @@ QString Intro::getPathToCheck()
     mutex.unlock();
     return retval;
 }
+
+    ui->pruneGB->setEnabled(prune_checked);
