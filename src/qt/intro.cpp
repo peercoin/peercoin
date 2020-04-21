@@ -130,6 +130,7 @@ Intro::Intro(QWidget *parent, int64_t blockchain_size_gb, int64_t chain_state_si
     );
     ui->lblExplanation2->setText(ui->lblExplanation2->text().arg(PACKAGE_NAME));
 
+    ui->lblPruneSuffix->setToolTip(ui->prune->toolTip());
     startThread();
 }
 
@@ -339,3 +340,7 @@ QString Intro::getPathToCheck()
 }
 
     ui->pruneGB->setEnabled(prune_checked);
+    static constexpr uint64_t nPowTargetSpacing = 10 * 60;  // from chainparams, which we don't have at this stage
+    static constexpr uint32_t expected_block_data_size = 2250000;  // includes undo data
+    const uint64_t expected_backup_days = m_prune_target_gb * 1e9 / (uint64_t(expected_block_data_size) * 86400 / nPowTargetSpacing);
+    ui->lblPruneSuffix->setText(tr("(sufficient to restore backups %n day(s) old)", "block chain pruning", expected_backup_days));
