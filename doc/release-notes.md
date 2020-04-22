@@ -193,6 +193,12 @@ Wallet
   transactions. Immature coinbase transactions are coinbase transactions that
   have 100 or fewer confirmations, and are not spendable. (#14707)
 
+- The `upgradewallet` RPC replaces the `-upgradewallet` command line option.
+  (#15761)
+- The `settxfee` RPC will fail if the fee was set higher than the `-maxtxfee`
+  command line setting. The wallet will already fail to create transactions
+  with fees higher than `-maxtxfee`. (#18467)
+
 GUI changes
 -----------
 
