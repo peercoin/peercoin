@@ -50,7 +50,7 @@ struct TestSubscriber : public CValidationInterface {
 std::shared_ptr<CBlock> Block(const uint256& prev_hash)
 {
     static int i = 0;
-    static uint64_t time = Params().GenesisBlock().nTime;
+    static uint64_t time = 1569931200;//Params().GenesisBlock().nTime;
 
     CScript pubKey;
     pubKey << i++ << OP_TRUE;
@@ -61,6 +61,7 @@ std::shared_ptr<CBlock> Block(const uint256& prev_hash)
     pblock->nTime = ++time;
 
     CMutableTransaction txCoinbase(*pblock->vtx[0]);
+    txCoinbase.nTime = pblock->nTime;
     txCoinbase.vout.resize(1);
     txCoinbase.vin[0].scriptWitness.SetNull();
     pblock->vtx[0] = MakeTransactionRef(std::move(txCoinbase));
