@@ -218,6 +218,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, TestChain100Setup)
     // enabled yet), even though there's no cache entry.
     CBlock block;
 
+    spend_tx.nTime = block.nTime;
     block = CreateAndProcessBlock({spend_tx}, p2pk_scriptPubKey);
     BOOST_CHECK(chainActive.Tip()->GetBlockHash() == block.GetHash());
     BOOST_CHECK(pcoinsTip->GetBestBlock() == block.GetHash());
