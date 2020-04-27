@@ -207,9 +207,7 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
     for (auto& t : threads) {
         t.join();
     }
-    while (GetMainSignals().CallbacksPending() > 0) {
-        UninterruptibleSleep(std::chrono::milliseconds{100});
-    }
+    SyncWithValidationInterfaceQueue();
 
     UnregisterSharedValidationInterface(sub);
 
