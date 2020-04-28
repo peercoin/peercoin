@@ -837,7 +837,6 @@ UniValue signrawtransaction(const JSONRPCRequest& request)
                         {"vout", UniValueType(UniValue::VNUM)},
                         {"scriptPubKey", UniValueType(UniValue::VSTR)},
                         {"redeemScript", UniValueType(UniValue::VSTR)},
-                        {"witnessScript", UniValueType(UniValue::VSTR)},
                     });
                 UniValue rs = find_value(prevOut, "redeemScript");
                 if (!rs.isNull()) {
