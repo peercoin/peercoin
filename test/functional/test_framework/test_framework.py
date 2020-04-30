@@ -246,6 +246,8 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         self.options.bitcoind = os.getenv("BITCOIND", default=fname_bitcoind)
         self.options.bitcoincli = os.getenv("BITCOINCLI", default=fname_bitcoincli)
 
+        self.options.previous_releases_path = os.getenv("PREVIOUS_RELEASES_DIR") or os.getcwd() + "/releases"
+
         os.environ['PATH'] = os.pathsep.join([
             os.path.join(config['environment']['BUILDDIR'], 'src'),
             os.path.join(config['environment']['BUILDDIR'], 'src', 'qt'), os.environ['PATH']
