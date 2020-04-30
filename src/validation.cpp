@@ -236,9 +236,6 @@ CTxMemPool mempool;
 CScript COINBASE_FLAGS;
 
 const std::string strMessageMagic = "Peercoin Signed Message:\n";
-std::map<int, long> mapStake;
-void LoadStakeMap();
-long GetAnnualStake(uint32_t nTime);
 
 // Internal stuff
 namespace {
@@ -946,18 +943,19 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneyS
     int64_t nSubsidy = nCoinAge * 33 / (365 * 33 + 8) * nRewardCoinYear;
 
     if (IsProtocolV09(nTime)) {
-        uint64_t nAnnualStake = GetAnnualStake(nTime);
-        CBigNum bnUnboundedInflationAdjustment = nMoneySupply;
-        bnUnboundedInflationAdjustment *= 365;
-        bnUnboundedInflationAdjustment /= nAnnualStake;
-        uint64_t nUnboundedInflationAdjustment = bnUnboundedInflationAdjustment.getuint64();
-        uint64_t nInflationAdjustment = std::max((uint64_t)1000000, std::min(nUnboundedInflationAdjustment, (uint64_t)5000000));
-        uint64_t nDynamicSubsidy = (nSubsidy * nInflationAdjustment) / 1000000;
-        uint64_t nStaticSubsidy = nMoneySupply * 33 / (365 * 33 + 8) * 10 / 1440 * nRewardCoinYear / COIN;
-        uint64_t nSubsidyNew = (75 * nDynamicSubsidy + 25 * nStaticSubsidy) / 100;
+        // rfc18
+        // YearlyBlocks = ((365 * 33 + 8) / 33) * 1440 / 10
+        // some efforts not to lose precision
+        CBigNum bnInflationAdjustment = nMoneySupply;
+        bnInflationAdjustment *= 25 * 33;
+        bnInflationAdjustment /= 10000 * 144;
+        bnInflationAdjustment /= (365 * 33 + 8);
+
+        uint64_t nInflationAdjustment = bnInflationAdjustment.getuint64();
+        uint64_t nSubsidyNew = (nSubsidy * 3) + nInflationAdjustment;
 
         if (gArgs.GetBoolArg("-printcreation", false))
-            LogPrintf("%s: money supply %ld, annual stake %ld, unbound inflation %f, bound inflation %f, old subsidy %ld, new subsidy %ld, dynamic subsidy %ld, static subsidy %ld\n", __func__, nMoneySupply, nAnnualStake, nUnboundedInflationAdjustment/1000000.0, nInflationAdjustment/1000000.0, nSubsidy, nSubsidyNew, nDynamicSubsidy, nStaticSubsidy);
+            LogPrintf("%s: money supply %ld, inflation adjustment %f, old subsidy %ld, new subsidy %ld\n", __func__, nMoneySupply, nInflationAdjustment/1000000.0, nSubsidy, nSubsidyNew);
 
         nSubsidy = nSubsidyNew;
         }
@@ -1429,14 +1427,6 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         }
     }
 
-    // peercoin: update map of steaks
-    if (block.IsProofOfStake()) {
-        uint64_t nCoinAge;
-        const CTransaction& tx = *block.vtx[1];
-        if (GetCoinAge(tx, NULL, nCoinAge, false /* isTrueCoinAge */))
-            mapStake[int(block.nTime / (24*60*60))] -= nCoinAge;
-    }
-
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
 
@@ -1835,14 +1825,6 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     // peercoin: track money supply and mint amount info
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
-
-    // peercoin: update map of steaks
-    if (block.IsProofOfStake()) {
-        uint64_t nCoinAge;
-        const CTransaction& tx = *block.vtx[1];
-        if (GetCoinAge(tx, NULL, nCoinAge, false /* isTrueCoinAge */))
-            mapStake[int(block.nTime / (24*60*60))] += nCoinAge;
-    }
 
     // peercoin: fees are not collected by miners as in bitcoin
     // peercoin: fees are destroyed to compensate the entire network
@@ -3507,69 +3489,6 @@ CBlockIndex * CChainState::InsertBlockIndex(const uint256& hash)
     pindexNew->phashBlock = &((*mi).first);
 
     return pindexNew;
-}
-
-void LoadStakeMap()
-{
-    CBlockIndex* startBlock = nullptr;
-    int nBlocks = 0;
-    {
-        LOCK(cs_main);
-        startBlock = chainActive.FindEarliestAtLeast(chainActive.Tip()->nTime - 366 * 24 * 60 * 60);
-        nBlocks = startBlock ? chainActive.Height() - startBlock->nHeight + 1 : 0;
-        LogPrintf("%s: Rescanning last %i blocks\n", __func__, nBlocks);
-        uiInterface.ShowProgress(_("Loading stake map..."), 0, false);
-    }
-
-    if (startBlock) {
-        CBlockIndex* pindex = startBlock;
-        int count = 0;
-        while (pindex) {
-            CBlock block;
-            if (ReadBlockFromDisk(block, pindex, Params().GetConsensus())) {
-                    if (pindex->IsProofOfStake()) {
-                        //
-                        uint64_t nCoinAge;
-                        const CTransaction& tx = *block.vtx[1];
-                        if (GetCoinAge(tx, NULL, nCoinAge, false /* isTrueCoinAge */))
-                            mapStake[int(block.nTime / (24*60*60))] += nCoinAge;
-                    }
-            } else {
-                LogPrintf("%s: Rescanning failed with block read error\n");
-                break;
-            }
-
-            {
-                LOCK(cs_main);
-                pindex = chainActive.Next(pindex);
-            }
-            count++;
-            if (count % 1000)
-                uiInterface.ShowProgress(_("Loading stake map..."), std::max(1, std::min(99, (int)(100 * count / nBlocks))), false);
-        }
-    }
-    // dump mapStake for debug
-    uint64_t nAnnualStake = 0;
-    for (const auto& item : mapStake)
-        nAnnualStake += item.second;
-
-    LogPrintf("%s: %d elements hold %ld coindays\n", __func__, mapStake.size(), nAnnualStake);
-    uiInterface.ShowProgress("", 100, false);
-}
-
-long GetAnnualStake(uint32_t nTime)
-{
-    int64_t nStart = (nTime / (24*60*60)) - 366;
-    uint64_t nAnnualStake = 0;
-    int nDays = 0;
-    for (const auto& item : mapStake) {
-        nAnnualStake += ( item.first >= nStart ) ? item.second : 0;
-        nDays += ( item.first >= nStart ) ? 1 : 0;
-        }
-
-    if (gArgs.GetBoolArg("-debug", false))
-        LogPrintf("%s: mapStake of %d elements yielded %ld coindays after %d \n", __func__, nDays, nAnnualStake, nStart);
-    return nAnnualStake;
 }
 
 bool CChainState::LoadBlockIndex(const Consensus::Params& consensus_params, CBlockTreeDB& blocktree)

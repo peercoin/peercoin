@@ -151,7 +151,6 @@ extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 typedef std::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
 extern BlockMap& mapBlockIndex;
-extern std::map<int, long> mapStake;
 extern uint64_t nLastBlockTx;
 extern uint64_t nLastBlockWeight;
 extern const std::string strMessageMagic;
@@ -246,10 +245,6 @@ fs::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix);
 bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskBlockPos *dbp = nullptr);
 /** Ensures we have a genesis block in the block tree, possibly writing one to disk. */
 bool LoadGenesisBlock(const CChainParams& chainparams);
-/** Generate map of coinage spent minting per day over last year **/
-void LoadStakeMap();
-/** Return sum of coindays spent minting over a year before nTime **/
-long GetAnnualStake(uint32_t nTime);
 
 /** Load the block tree and coins database from disk,
  * initializing state if we're running with -reindex. */
