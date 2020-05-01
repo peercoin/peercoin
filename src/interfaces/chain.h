@@ -170,6 +170,9 @@ public:
     //! Check if transaction is in mempool.
     virtual bool isInMempool(const uint256& txid) = 0;
 
+    //! Check if transaction is in mempool.
+    virtual bool isInMempool(const uint256& txid) = 0;
+
     //! Check if transaction has descendants in mempool.
     virtual bool hasDescendantsInMempool(const uint256& txid) = 0;
 
