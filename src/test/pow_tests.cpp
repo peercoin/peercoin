@@ -142,22 +142,22 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9)
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 2;
     pindexThirdLast.SetProofOfStake();
-    pindexThirdLast.nTime = 1588334400;
+    pindexThirdLast.nTime = 1598334400;
     pindexThirdLast.nBits = 0x1c00ffff;
 
     CBlockIndex pindexSecondLast;
     pindexSecondLast.nHeight = 3;
     pindexSecondLast.pprev = &pindexThirdLast;
-    pindexSecondLast.nTime = 1588334420;
+    pindexSecondLast.nTime = 1598334420;
     pindexSecondLast.nBits = 0x1c00ff7f;
 
     CBlockIndex pindexLast;
     pindexLast.nHeight = 4;
     pindexLast.pprev = &pindexSecondLast;
-    pindexLast.nTime = 1588334440;
+    pindexLast.nTime = 1598334440;
     pindexLast.nBits = 0x1c00ff4a;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00f94c);
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00fc48);
 }
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos)
@@ -167,29 +167,29 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos)
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
     pindexFourthLast.SetProofOfStake();
-    pindexFourthLast.nTime = 1588334400;
+    pindexFourthLast.nTime = 1598334400;
     pindexFourthLast.nBits = 0x1c00ffff;
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 3;
     pindexThirdLast.pprev = &pindexFourthLast;
-    pindexThirdLast.nTime = 1588334420;
+    pindexThirdLast.nTime = 1598334420;
     pindexThirdLast.nBits = 0x1c00ff7f;
 
     CBlockIndex pindexSecondLast;
     pindexSecondLast.nHeight = 4;
     pindexSecondLast.pprev = &pindexThirdLast;
-    pindexSecondLast.nTime = 1588334440;
+    pindexSecondLast.nTime = 1598334440;
     pindexSecondLast.nBits = 0x1c00ff4a;
 
     CBlockIndex pindexLast;
     pindexLast.nHeight = 5;
     pindexLast.SetProofOfStake();
     pindexLast.pprev = &pindexSecondLast;
-    pindexLast.nTime = 1588334441;
+    pindexLast.nTime = 1598334441;
     pindexLast.nBits = 0x1c00ff4a;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00f94c);
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00fc48);
 }
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos2)
@@ -199,36 +199,36 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos2)
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
     pindexFourthLast.SetProofOfStake();
-    pindexFourthLast.nTime = 1588334400;
+    pindexFourthLast.nTime = 1598334400;
     pindexFourthLast.nBits = 0x1c00ffff;
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 3;
     pindexThirdLast.pprev = &pindexFourthLast;
-    pindexThirdLast.nTime = 1588334420;
+    pindexThirdLast.nTime = 1598334420;
     pindexThirdLast.nBits = 0x1c00ff7f;
 
     CBlockIndex pindexSecondLast;
     pindexSecondLast.nHeight = 4;
     pindexSecondLast.pprev = &pindexThirdLast;
-    pindexSecondLast.nTime = 1588334440;
+    pindexSecondLast.nTime = 1598334440;
     pindexSecondLast.nBits = 0x1c00ff4a;
 
     CBlockIndex pindexPos;
     pindexPos.nHeight = 5;
     pindexPos.SetProofOfStake();
     pindexPos.pprev = &pindexSecondLast;
-    pindexPos.nTime = 1588334441;
+    pindexPos.nTime = 1598334441;
     pindexPos.nBits = 0x1c00ff4a;
 
     CBlockIndex pindexLast;
     pindexLast.nHeight = 6;
     pindexLast.SetProofOfStake();
     pindexLast.pprev = &pindexPos;
-    pindexLast.nTime = 1588334442;
+    pindexLast.nTime = 1598334442;
     pindexLast.nBits = 0x1c00ff4a;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00f94c);
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00fc48);
 }
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos7200)
@@ -238,44 +238,44 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos7200)
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
     pindexFourthLast.SetProofOfStake();
-    pindexFourthLast.nTime = 1588334400;
+    pindexFourthLast.nTime = 1598334400;
     pindexFourthLast.nBits = 0x1c00ffff;
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 3;
     pindexThirdLast.pprev = &pindexFourthLast;
-    pindexThirdLast.nTime = 1588334420;
+    pindexThirdLast.nTime = 1598334420;
     pindexThirdLast.nBits = 0x1c00ff7f;
 
     CBlockIndex pindexSecondLast;
     pindexSecondLast.nHeight = 4;
     pindexSecondLast.pprev = &pindexThirdLast;
-    pindexSecondLast.nTime = 1588334440;
+    pindexSecondLast.nTime = 1598334440;
     pindexSecondLast.nBits = 0x1c00ff4a;
 
     CBlockIndex pindexPos;
     pindexPos.nHeight = 5;
     pindexPos.SetProofOfStake();
     pindexPos.pprev = &pindexSecondLast;
-    pindexPos.nTime = 1588334441;
+    pindexPos.nTime = 1598334441;
     pindexPos.nBits = 0x1c00ff4a;
 
     CBlockIndex pindexLast;
     pindexLast.nHeight = 6;
     pindexLast.SetProofOfStake();
     pindexLast.pprev = &pindexPos;
-    pindexLast.nTime = 1588344442; // 10001 seconds after block 5
+    pindexLast.nTime = 1598344442; // 10001 seconds after block 5
     pindexLast.nBits = 0x1c00ff4a;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00fecc);
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexLast, false, chainParams->GetConsensus()), 0x1c00fc48);
 
     CBlockIndex pindexNext;
     pindexNext.nHeight = 7;
     pindexNext.pprev = &pindexLast;
-    pindexNext.nTime = 1588344460;
-    pindexNext.nBits = 0x1c00fecc;
+    pindexNext.nTime = 1598344460;
+    pindexNext.nBits = 0x1c00fc48;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexNext, false, chainParams->GetConsensus()), 0x1c010125);
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindexNext, false, chainParams->GetConsensus()), 0x1c01019b);
 }
 
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9real)
@@ -389,8 +389,6 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9real)
     pindex495506.nBits = 0x19024353;
 
     BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495506, false, chainParams->GetConsensus()), 0x1902423d);
-
-    printf("wtf final difficulty before v9 is %lf\n", pindex495506.GetBlockDifficulty());
 }
 
 
@@ -472,41 +470,39 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9real)
     pindex495502.nTime = 1598170817;
     pindex495502.nBits = 0x1c1f42a4;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495502, false, chainParams->GetConsensus()), 0x19023652); // was 0x19023ad3
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495502, false, chainParams->GetConsensus()), 0x19023d17); // was 0x19023ad3
 
     CBlockIndex pindex495503;
     pindex495503.nHeight = 495503;
     pindex495503.pprev = &pindex495502;
     pindex495503.nTime = 1598170876;
-    pindex495503.nBits = 0x19023652;
+    pindex495503.nBits = 0x19023d17;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495503, false, chainParams->GetConsensus()), 0x190233fe); // was 0x190244e6
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495503, false, chainParams->GetConsensus()), 0x19024180); // was 0x190244e6
 
     CBlockIndex pindex495504;
     pindex495504.nHeight = 495504;
     pindex495504.pprev = &pindex495503;
     pindex495504.nTime = 1598171246;
-    pindex495504.nBits = 0x190233fe;
+    pindex495504.nBits = 0x19024180;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495504, false, chainParams->GetConsensus()), 0x19022767); //was 0x19024475
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495504, false, chainParams->GetConsensus()), 0x19023b5e); //was 0x19024475
 
     CBlockIndex pindex495505;
     pindex495505.nHeight = 495505;
     pindex495505.pprev = &pindex495504;
     pindex495505.nTime = 1598171256;
-    pindex495505.nBits = 0x19022767;
+    pindex495505.nBits = 0x19023b5e;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495505, false, chainParams->GetConsensus()), 0x19021a72); // was 0x19024353
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495505, false, chainParams->GetConsensus()), 0x1902349f); // was 0x19024353
 
     CBlockIndex pindex495506;
     pindex495506.nHeight = 495506;
     pindex495506.pprev = &pindex495505;
     pindex495506.nTime = 1598171290;
-    pindex495506.nBits = 0x19021a72;
+    pindex495506.nBits = 0x1902349f;
 
-    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495506, false, chainParams->GetConsensus()), 0x19020dd5); // was 0x1902423d
-
-    printf("wtf final difficulty after v9 is %lf\n", pindex495506.GetBlockDifficulty());
+    BOOST_CHECK_EQUAL(GetNextTargetRequired(&pindex495506, false, chainParams->GetConsensus()), 0x19022e00); // was 0x1902423d
 }
 
 
