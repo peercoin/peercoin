@@ -38,7 +38,7 @@ const unsigned int nProtocolV07TestSwitchTime = 1541505600; // Tue 06 Nov 12:00:
 const uint32_t nBTC16BIPsSwitchTime = 1569931200; // Tue 01 Oct 12:00:00 UTC 2019
 const uint32_t nBTC16BIPsTestSwitchTime = 1554811200; // Tue 09 Apr 12:00:00 UTC 2019
 // Protocol switch time for v0.9 kernel protocol
-const unsigned int nProtocolV09SwitchTime     = 1590062400; // Thu 21 May 12:00:00 UTC 2020
+const unsigned int nProtocolV09SwitchTime     = 1591617600; // Mon  8 Jun 12:00:00 UTC 2020
 const unsigned int nProtocolV09TestSwitchTime = 1581940800; // Mon 17 Feb 12:00:00 UTC 2020
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
