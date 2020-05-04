@@ -47,10 +47,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
             nTargetSpacing = params.nStakeTargetSpacing;
         } else {
             if (IsProtocolV09(pindexLast->nTime)) {
-                // if difference between last block and next last pos greater than 4 hours, set target to minimum
-                const CBlockIndex* pindexPrevStake = GetLastBlockIndex(pindexLast->pprev, true);
-                int64_t nActualSpacingStake = pindexLast->GetBlockTime() - pindexPrevStake->GetBlockTime();
-                nTargetSpacing = (nActualSpacingStake > 7200) ? params.nStakeTargetSpacing : params.nTargetSpacingWorkMax;
+                nTargetSpacing = params.nStakeTargetSpacing * 6;
             } else {
                 nTargetSpacing = std::min(params.nTargetSpacingWorkMax, params.nStakeTargetSpacing * (1 + pindexLast->nHeight - pindexPrev->nHeight));
             }

@@ -48,7 +48,7 @@ void TestDifficulty(uint32_t nbits, double expected_difficulty)
      */
     CChain chain;
 
-    double difficulty = GetDifficulty(chain, block_index);
+    double difficulty = GetDifficulty(block_index);
     delete block_index;
 
     RejectDifficultyMismatch(difficulty, expected_difficulty);
@@ -79,48 +79,6 @@ BOOST_AUTO_TEST_CASE(get_difficulty_for_high_target)
 BOOST_AUTO_TEST_CASE(get_difficulty_for_very_high_target)
 {
     TestDifficulty(0x12345678, 5913134931067755359633408.0);
-}
-
-// Verify that difficulty is 1.0 for an empty chain.
-BOOST_AUTO_TEST_CASE(get_difficulty_for_null_tip)
-{
-    CChain chain;
-    double difficulty = GetDifficulty(chain, nullptr);
-    RejectDifficultyMismatch(difficulty, 1.0);
-}
-
-/* Verify that if difficulty is based upon the block index
- * in the chain, if no block index is explicitly specified.
- */
-BOOST_AUTO_TEST_CASE(get_difficulty_for_null_block_index)
-{
-    CChain chain = CreateChainWithNbits(0x1df88f6f);
-
-    double difficulty = GetDifficulty(chain, nullptr);
-    delete chain.Tip();
-
-    double expected_difficulty = 0.004023;
-
-    RejectDifficultyMismatch(difficulty, expected_difficulty);
-}
-
-/* Verify that difficulty is based upon the explicitly specified
- * block index rather than being taken from the provided chain,
- * when both are present.
- */
-BOOST_AUTO_TEST_CASE(get_difficulty_for_block_index_overrides_tip)
-{
-    CChain chain = CreateChainWithNbits(0x1df88f6f);
-    /* This block index's nbits should be used
-     * instead of the chain's when calculating difficulty.
-     */
-    CBlockIndex* override_block_index = CreateBlockIndexWithNbits(0x12345678);
-
-    double difficulty = GetDifficulty(chain, override_block_index);
-    delete chain.Tip();
-    delete override_block_index;
-
-    RejectDifficultyMismatch(difficulty, 5913134931067755359633408.0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

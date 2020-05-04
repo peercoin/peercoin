@@ -126,8 +126,9 @@ BOOST_AUTO_TEST_CASE(siphash)
     // Note these tests were originally written with tx.nVersion=1
     // and the test would be affected by default tx version bumps if not fixed.
     tx.nVersion = 1;
+    tx.nTime = 0;
     ss << tx;
-    BOOST_CHECK_EQUAL(SipHashUint256(1, 2, ss.GetHash()), 0x79751e980c2a0a35ULL);
+    BOOST_CHECK_EQUAL(SipHashUint256(1, 2, ss.GetHash()), 0x1708BAA2A6B3C73ULL);
 
     // Check consistency between CSipHasher and SipHashUint256[Extra].
     FastRandomContext ctx;
