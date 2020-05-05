@@ -12,6 +12,7 @@
 #include <QString>
 #include <QTimer>
 
+class CCoinControl;
 class ClientModel;
 class PlatformStyle;
 class SendCoinsEntry;
