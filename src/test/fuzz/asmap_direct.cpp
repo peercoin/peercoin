@@ -5,6 +5,7 @@
 #include <netaddress.h>
 #include <util/asmap.h>
 #include <test/fuzz/fuzz.h>
+#include <util/asmap.h>
 
 #include <cstdint>
 #include <optional>
