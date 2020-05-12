@@ -838,7 +838,7 @@ public:
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
-    const std::unique_ptr<CRollingBloomFilter> m_addr_known;
+    std::unique_ptr<CRollingBloomFilter> m_addr_known = nullptr;
     bool fGetAddr{false};
     std::set<uint256> setKnown;
     uint256 hashCheckpointKnown; // peercoin: known sent sync-checkpoint

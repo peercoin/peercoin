@@ -2767,7 +2767,6 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     // Don't relay addr messages to peers that we connect to as block-relay-only
     // peers (to prevent adversaries from inferring these links from addr
     // traffic).
-    m_addr_known{conn_type_in == ConnectionType::BLOCK_RELAY ? nullptr : MakeUnique<CRollingBloomFilter>(5000, 0.001)},
     id(idIn),
     nLocalHostNonce(nLocalHostNonceIn),
     nLocalServices(nLocalServicesIn),
@@ -2779,6 +2778,7 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     lastAcceptedHeader = uint256();
     if (conn_type_in != ConnectionType::BLOCK_RELAY) {
         m_tx_relay = MakeUnique<TxRelay>();
+        m_addr_known = MakeUnique<CRollingBloomFilter>(5000, 0.001);
     }
 
     for (const std::string &msg : getAllNetMessageTypes())
