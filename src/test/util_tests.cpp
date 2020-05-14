@@ -186,8 +186,6 @@ BOOST_AUTO_TEST_CASE(util_FormatMoney)
     BOOST_CHECK_EQUAL(FormatMoney(COIN/10000), "0.0001");
     BOOST_CHECK_EQUAL(FormatMoney(COIN/100000), "0.00001");
     BOOST_CHECK_EQUAL(FormatMoney(COIN/1000000), "0.000001");
-    BOOST_CHECK_EQUAL(FormatMoney(COIN/10000000), "0.0000001");
-    BOOST_CHECK_EQUAL(FormatMoney(COIN/100000000), "0.00000001");
 }
 
 BOOST_AUTO_TEST_CASE(util_ParseMoney)
@@ -231,10 +229,6 @@ BOOST_AUTO_TEST_CASE(util_ParseMoney)
     BOOST_CHECK_EQUAL(ret, COIN/100000);
     BOOST_CHECK(ParseMoney("0.000001", ret));
     BOOST_CHECK_EQUAL(ret, COIN/1000000);
-    BOOST_CHECK(ParseMoney("0.0000001", ret));
-    BOOST_CHECK_EQUAL(ret, COIN/10000000);
-    BOOST_CHECK(ParseMoney("0.00000001", ret));
-    BOOST_CHECK_EQUAL(ret, COIN/100000000);
 
     // Attempted 63 bit overflow should fail
     BOOST_CHECK(!ParseMoney("92233720368.54775808", ret));
@@ -538,9 +532,9 @@ BOOST_AUTO_TEST_CASE(test_FormatSubVersion)
     std::vector<std::string> comments2;
     comments2.push_back(std::string("comment1"));
     comments2.push_back(SanitizeString(std::string("Comment2; .,_?@-; !\"#$%&'()*+/<=>[]\\^`{|}~"), SAFE_CHARS_UA_COMMENT)); // Semicolon is discouraged but not forbidden by BIP-0014
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, std::vector<std::string>()),std::string("/Test:0.9.99/"));
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments),std::string("/Test:0.9.99(comment1)/"));
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments2),std::string("/Test:0.9.99(comment1; Comment2; .,_?@-; )/"));
+    BOOST_CHECK(FormatSubVersion("Test", 99900, std::vector<std::string>()).rfind(std::string("/Test:0.9.99/"))==0);
+    BOOST_CHECK(FormatSubVersion("Test", 99900, comments).rfind(std::string("/Test:0.9.99(comment1)/"))==0);
+    BOOST_CHECK(FormatSubVersion("Test", 99900, comments2).rfind(std::string("/Test:0.9.99(comment1; Comment2; .,_?@-; )/"))==0);
 }
 
 BOOST_AUTO_TEST_CASE(test_ParseFixedPoint)

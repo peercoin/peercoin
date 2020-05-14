@@ -12,6 +12,7 @@
 
 #include <bignum.h>
 #include <chainparams.h>
+#include <kernel.h>
 
 // peercoin: find last block index up to pindex
 const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake)
@@ -40,7 +41,18 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
     if (Params().NetworkIDString() != CBaseChainParams::REGTEST) {
-        int64_t nTargetSpacing = fProofOfStake? params.nStakeTargetSpacing : std::min(params.nTargetSpacingWorkMax, params.nStakeTargetSpacing * (1 + pindexLast->nHeight - pindexPrev->nHeight));
+        int64_t nTargetSpacing;
+
+        if (fProofOfStake) {
+            nTargetSpacing = params.nStakeTargetSpacing;
+        } else {
+            if (IsProtocolV09(pindexLast->nTime)) {
+                nTargetSpacing = params.nStakeTargetSpacing * 6;
+            } else {
+                nTargetSpacing = std::min(params.nTargetSpacingWorkMax, params.nStakeTargetSpacing * (1 + pindexLast->nHeight - pindexPrev->nHeight));
+            }
+        }
+
         int64_t nInterval = params.nTargetTimespan / nTargetSpacing;
         bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
         bnNew /= ((nInterval + 1) * nTargetSpacing);

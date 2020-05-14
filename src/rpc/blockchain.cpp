@@ -32,6 +32,7 @@
 
 #include <miner.h>
 #include <kernel.h>
+#include <validation.h>
 
 #include <boost/thread/thread.hpp> // boost::thread::interrupt
 
@@ -1106,12 +1107,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.push_back(Pair("chainwork",             chainActive.Tip()->nChainTrust.GetHex()));
     obj.push_back(Pair("size_on_disk",          CalculateCurrentUsage()));
 
-    const Consensus::Params& consensusParams = Params().GetConsensus();
-    CBlockIndex* tip = chainActive.Tip();
     UniValue softforks(UniValue::VARR);
-    softforks.push_back(SoftForkDesc("bip34", 2, tip, consensusParams));
-    softforks.push_back(SoftForkDesc("bip66", 3, tip, consensusParams));
-    softforks.push_back(SoftForkDesc("bip65", 4, tip, consensusParams));
     obj.push_back(Pair("softforks",             softforks));
 
     obj.push_back(Pair("warnings", GetWarnings("statusbar")));
@@ -1430,7 +1426,7 @@ UniValue getchaintxstats(const JSONRPCRequest& request)
             pindex = chainActive.Tip();
         }
     }
-    
+
     assert(pindex != nullptr);
 
     if (request.params[0].isNull()) {

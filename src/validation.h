@@ -245,6 +245,7 @@ fs::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix);
 bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskBlockPos *dbp = nullptr);
 /** Ensures we have a genesis block in the block tree, possibly writing one to disk. */
 bool LoadGenesisBlock(const CChainParams& chainparams);
+
 /** Load the block tree and coins database from disk,
  * initializing state if we're running with -reindex. */
 bool LoadBlockIndex(const CChainParams& chainparams);
@@ -269,22 +270,8 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex* pin
 /** Calculate the amount of disk space the block & undo files currently use */
 uint64_t CalculateCurrentUsage();
 
-/**
- *  Mark one block file as pruned.
- */
-void PruneOneBlockFile(const int fileNumber);
-
-/**
- *  Actually unlink the specified files
- */
-void UnlinkPrunedFiles(const std::set<int>& setFilesToPrune);
-
 /** Flush all state, indexes and buffers to disk. */
 void FlushStateToDisk();
-/** Prune block files and flush state to disk. */
-void PruneAndFlush();
-/** Prune block files up to a given height */
-void PruneBlockFilesManual(int nManualPruneHeight);
 
 /** (try to) add transaction to memory pool
  * plTxnReplaced will be appended to with all transactions replaced from mempool **/
@@ -455,8 +442,8 @@ bool LoadMempool();
 
 // peercoin:
 CAmount GetProofOfWorkReward(unsigned int nBits);
-CAmount GetProofOfStakeReward(int64_t nCoinAge);
-bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge); // peercoin: get transaction coin age
+CAmount GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneySupply);
+bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, bool isTrueCoinAge = true); // peercoin: get transaction coin age
 bool SignBlock(CBlock& block, const CKeyStore& keystore);
 bool CheckBlockSignature(const CBlock& block);
 

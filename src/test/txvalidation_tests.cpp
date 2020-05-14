@@ -27,7 +27,7 @@ BOOST_FIXTURE_TEST_CASE(tx_mempool_reject_coinbase, TestChain100Setup)
     coinbaseTx.vin.resize(1);
     coinbaseTx.vout.resize(1);
     coinbaseTx.vin[0].scriptSig = CScript() << OP_11 << OP_EQUAL;
-    coinbaseTx.vout[0].nValue = 1 * CENT;
+    coinbaseTx.vout[0].nValue = 10000 * CENT;
     coinbaseTx.vout[0].scriptPubKey = scriptPubKey;
 
     assert(CTransaction(coinbaseTx).IsCoinBase());
@@ -42,9 +42,7 @@ BOOST_FIXTURE_TEST_CASE(tx_mempool_reject_coinbase, TestChain100Setup)
             false,
             AcceptToMemoryPool(mempool, state, MakeTransactionRef(coinbaseTx),
                 nullptr /* pfMissingInputs */,
-                nullptr /* plTxnReplaced */,
-                true /* bypass_limits */,
-                0 /* nAbsurdFee */));
+                true /* bypass_limits */));
 
     // Check that the transaction hasn't been added to mempool.
     BOOST_CHECK_EQUAL(mempool.size(), initialPoolSize);

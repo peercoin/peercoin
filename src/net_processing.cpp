@@ -859,7 +859,6 @@ static bool fWitnessesPresentInMostRecentCompactBlock;
 
 void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std::shared_ptr<const CBlock>& pblock) {
     std::shared_ptr<CBlockHeaderAndShortTxIDs> pcmpctblock = std::make_shared<CBlockHeaderAndShortTxIDs> (*pblock, true);
-    pcmpctblock->header.nFlags = pindex->nFlags;
 
     const CNetMsgMaker msgMaker(PROTOCOL_VERSION);
 
@@ -3577,7 +3576,6 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                                 connman->PushMessage(pto, msgMaker.Make(nSendFlags, NetMsgType::CMPCTBLOCK, *most_recent_compact_block));
                             else {
                                 CBlockHeaderAndShortTxIDs cmpctblock(*most_recent_block, state.fWantsCmpctWitness);
-                                cmpctblock.header.nFlags = pBestIndex->nFlags;
                                 connman->PushMessage(pto, msgMaker.Make(nSendFlags, NetMsgType::CMPCTBLOCK, cmpctblock));
                             }
                             fGotBlockFromCache = true;

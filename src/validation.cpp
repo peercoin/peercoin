@@ -184,6 +184,8 @@ public:
     bool RewindBlockIndex(const CChainParams& params);
     bool LoadGenesisBlock(const CChainParams& chainparams);
 
+    void PruneBlockIndexCandidates();
+
     void UnloadBlockIndex();
 
 private:
@@ -537,7 +539,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         return false; // state filled in by CheckTransaction
     // Time (prevent mempool memory exhaustion attack)
     // moved from CheckTransaction() to here, because it makes no sense to make GetAdjustedTime() a part of the consensus rules - user can set his clock to whatever he wishes.
-    if (tx.nTime > GetAdjustedTime() + MAX_FUTURE_BLOCK_TIME)
+    if (tx.nTime > GetAdjustedTime() + (IsProtocolV09(GetAdjustedTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9))
         return state.DoS(10, error("CTransaction::CheckTransaction() : timestamp is too far into the future"));
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -935,10 +937,29 @@ int64_t GetProofOfWorkReward(unsigned int nBits)
 }
 
 // peercoin: miner's coin stake is rewarded based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int64_t nCoinAge)
+int64_t GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneySupply)
 {
     static int64_t nRewardCoinYear = CENT;  // creation amount per coin-year
     int64_t nSubsidy = nCoinAge * 33 / (365 * 33 + 8) * nRewardCoinYear;
+
+    if (IsProtocolV09(nTime)) {
+        // rfc18
+        // YearlyBlocks = ((365 * 33 + 8) / 33) * 1440 / 10
+        // some efforts not to lose precision
+        CBigNum bnInflationAdjustment = nMoneySupply;
+        bnInflationAdjustment *= 25 * 33;
+        bnInflationAdjustment /= 10000 * 144;
+        bnInflationAdjustment /= (365 * 33 + 8);
+
+        uint64_t nInflationAdjustment = bnInflationAdjustment.getuint64();
+        uint64_t nSubsidyNew = (nSubsidy * 3) + nInflationAdjustment;
+
+        if (gArgs.GetBoolArg("-printcreation", false))
+            LogPrintf("%s: money supply %ld, inflation adjustment %f, old subsidy %ld, new subsidy %ld\n", __func__, nMoneySupply, nInflationAdjustment/1000000.0, nSubsidy, nSubsidyNew);
+
+        nSubsidy = nSubsidyNew;
+        }
+
     if (gArgs.GetBoolArg("-printcreation", false))
         LogPrintf("%s: create=%s nCoinAge=%lld\n", __func__, FormatMoney(nSubsidy), nCoinAge);
     return nSubsidy;
@@ -1736,7 +1757,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         else
         {
             CAmount txfee = 0;
-            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus())) {
+            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee, chainparams.GetConsensus(), (pindex->pprev? pindex->pprev->nMoneySupply : 0))) {
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
             nValueIn += view.GetValueIn(tx);
@@ -2246,6 +2267,18 @@ CBlockIndex* CChainState::FindMostWorkChain() {
     } while(true);
 }
 
+/** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */
+void CChainState::PruneBlockIndexCandidates() {
+    // Note that we can't delete the current block itself, as we may need to return to it later in case a
+    // reorganization to a better block fails.
+    std::set<CBlockIndex*, CBlockIndexWorkComparator>::iterator it = setBlockIndexCandidates.begin();
+    while (it != setBlockIndexCandidates.end() && setBlockIndexCandidates.value_comp()(*it, chainActive.Tip())) {
+        setBlockIndexCandidates.erase(it++);
+    }
+    // Either the current tip or a successor of it we're working towards is left in setBlockIndexCandidates.
+    assert(!setBlockIndexCandidates.empty());
+}
+
 /**
  * Try to make some progress towards making pindexMostWork the active block.
  * pblock is either nullptr or a pointer to a CBlock corresponding to pindexMostWork.
@@ -2306,6 +2339,7 @@ bool CChainState::ActivateBestChainStep(CValidationState& state, const CChainPar
                     return false;
                 }
             } else {
+                PruneBlockIndexCandidates();
                 if (!pindexOldTip || chainActive.Tip()->nChainTrust > pindexOldTip->nChainTrust) {
                     // We're in a better position than we were. Return temporarily to release the lock.
                     fContinue = false;
@@ -2480,6 +2514,7 @@ bool CChainState::PreciousBlock(CValidationState& state, const CChainParams& par
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && pindex->nChainTx) {
             setBlockIndexCandidates.insert(pindex);
+            PruneBlockIndexCandidates();
         }
     }
 
@@ -2826,7 +2861,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         return state.DoS(100, false, REJECT_INVALID, "bad-cb-notempty", false, "coinbase output not empty in PoS block");
 
     // Check coinbase timestamp
-    if (block.GetBlockTime() > (int64_t)block.vtx[0]->nTime + MAX_FUTURE_BLOCK_TIME)
+    if (block.GetBlockTime() > (int64_t)block.vtx[0]->nTime + (IsProtocolV09(block.GetBlockTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9))
         return state.DoS(50, false, REJECT_INVALID, "bad-cb-time", false, "coinbase timestamp is too early");
 
     // Check coinstake timestamp
@@ -2971,11 +3006,11 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, bool fProofOfS
 #endif
 
     // Check timestamp against prev
-    if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast() || block.GetBlockTime() + MAX_FUTURE_BLOCK_TIME < pindexPrev->GetBlockTime())
+    if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast() || block.GetBlockTime() + (IsProtocolV09(block.GetBlockTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9) < pindexPrev->GetBlockTime())
         return state.Invalid(false, REJECT_INVALID, "time-too-old", "block's timestamp is too early");
 
     // Check timestamp
-    if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME)
+    if (block.GetBlockTime() > nAdjustedTime + (IsProtocolV09(block.GetBlockTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9))
         return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
@@ -3594,6 +3629,8 @@ bool LoadChainTip(const CChainParams& chainparams)
         return false;
     chainActive.SetTip(it->second);
 
+    g_chainstate.PruneBlockIndexCandidates();
+
     LogPrintf("Loaded best chain: hashBestChain=%s height=%d date=%s progress=%f\n",
         chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(),
         DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
@@ -3858,6 +3895,10 @@ bool CChainState::RewindBlockIndex(const CChainParams& params)
     }
 
     if (chainActive.Tip() != nullptr) {
+        // We can't prune block index candidates based on our tip if we have
+        // no tip due to chainActive being empty!
+        PruneBlockIndexCandidates();
+
         CheckBlockIndex(params.GetConsensus());
     }
 
@@ -4427,7 +4468,7 @@ public:
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge)
+bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, bool isTrueCoinAge)
 {
     arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
     nCoinAge = 0;
@@ -4441,7 +4482,7 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
         const COutPoint &prevout = txin.prevout;
         Coin coin;
 
-        if (!view.GetCoin(prevout, coin))
+        if (isTrueCoinAge && !view.GetCoin(prevout, coin))
             continue;  // previous transaction not in main chain
         if (tx.nTime < coin.nTime)
             return false;  // Transaction timestamp violation
@@ -4470,10 +4511,15 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
                 continue; // only count coins meeting min age requirement
 
             int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
-            bnCentSecond += arith_uint256(nValueIn) * (tx.nTime-txPrev->nTime) / CENT;
+            int nEffectiveAge = tx.nTime-txPrev->nTime;
+
+            if (!isTrueCoinAge || IsProtocolV09(tx.nTime))
+                nEffectiveAge = std::min(nEffectiveAge, 365 * 24 * 60 * 60);
+
+            bnCentSecond += arith_uint256(nValueIn) * nEffectiveAge / CENT;
 
             if (gArgs.GetBoolArg("-printcoinage", false))
-                LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, tx.nTime - txPrev->nTime, bnCentSecond.ToString());
+                LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, nEffectiveAge, bnCentSecond.ToString());
         }
         else
             return error("%s() : tx missing in tx index in GetCoinAge()", __PRETTY_FUNCTION__);
