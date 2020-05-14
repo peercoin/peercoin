@@ -34,10 +34,12 @@ const unsigned int nProtocolV06TestSwitchTime = 1508198400; // Tue 17 Oct 00:00:
 // Protocol switch time for 0.7 kernel protocol
 const unsigned int nProtocolV07SwitchTime     = 1552392000; // Tue 12 Mar 12:00:00 UTC 2019
 const unsigned int nProtocolV07TestSwitchTime = 1541505600; // Tue 06 Nov 12:00:00 UTC 2018
-
 // Switch time for new BIPs from bitcoin 0.16.x
 const uint32_t nBTC16BIPsSwitchTime = 1569931200; // Tue 01 Oct 12:00:00 UTC 2019
 const uint32_t nBTC16BIPsTestSwitchTime = 1554811200; // Tue 09 Apr 12:00:00 UTC 2019
+// Protocol switch time for v0.9 kernel protocol
+const unsigned int nProtocolV09SwitchTime     = 1591617600; // Mon  8 Jun 12:00:00 UTC 2020
+const unsigned int nProtocolV09TestSwitchTime = 1581940800; // Mon 17 Feb 12:00:00 UTC 2020
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
@@ -68,6 +70,7 @@ static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
     (408500, 0x68cadee2u )
     (412691, 0x93138e67u )
     (441667, 0x3303fc25u )
+    (444932, 0x4b8bf2e3u )
     ;
 
 // Whether the given coinstake is subject to new v0.3 protocol
@@ -117,6 +120,12 @@ bool IsBTC16BIPsEnabled(uint32_t nTimeTx)
 {
     bool fTestNet = Params().NetworkIDString() != CBaseChainParams::MAIN;
     return (nTimeTx >= (fTestNet? nBTC16BIPsTestSwitchTime : nBTC16BIPsSwitchTime));
+}
+
+// Whether a given timestamp is subject to new v0.9 protocol
+bool IsProtocolV09(unsigned int nTime)
+{
+  return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV09TestSwitchTime : nProtocolV09SwitchTime));
 }
 
 // Get the last stake modifier and its generation time from a given block
@@ -590,7 +599,7 @@ bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx)
     if (IsProtocolV03(nTimeTx))  // v0.3 protocol
         return (nTimeBlock == nTimeTx);
     else // v0.2 protocol
-        return ((nTimeTx <= nTimeBlock) && (nTimeBlock <= nTimeTx + MAX_FUTURE_BLOCK_TIME));
+        return ((nTimeTx <= nTimeBlock) && (nTimeBlock <= nTimeTx + MAX_FUTURE_BLOCK_TIME_PREV9));
 }
 
 // Get stake modifier checksum
