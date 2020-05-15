@@ -19,6 +19,7 @@ class CRPCCommand;
 class CScheduler;
 class Coin;
 class uint256;
+enum class MemPoolRemovalReason;
 struct CBlockLocator;
 struct FeeCalculation;
 struct NodeContext;
@@ -191,7 +192,7 @@ public:
     public:
         virtual ~Notifications() {}
         virtual void transactionAddedToMempool(const CTransactionRef& tx) {}
-        virtual void transactionRemovedFromMempool(const CTransactionRef& ptx) {}
+        virtual void transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRemovalReason reason) {}
         virtual void blockConnected(const CBlock& block, int height) {}
         virtual void blockDisconnected(const CBlock& block, int height) {}
         virtual void updatedBlockTip() {}
