@@ -1121,9 +1121,9 @@ void CWallet::transactionAddedToMempool(const CTransactionRef& tx) {
     }
 }
 
-void CWallet::transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRemovalReason reason) {
+void CWallet::transactionRemovedFromMempool(const CTransactionRef &ptx, MemPoolRemovalReason reason) {
     LOCK(cs_wallet);
-    auto it = mapWallet.find(tx->GetHash());
+    auto it = mapWallet.find(ptx->GetHash());
     if (it != mapWallet.end()) {
         it->second.fInMempool = false;
     }
@@ -1155,7 +1155,7 @@ void CWallet::transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRe
         // distinguishing between conflicted and unconfirmed transactions are
         // imperfect, and could be improved in general, see
         // https://github.com/bitcoin-core/bitcoin-devwiki/wiki/Wallet-Transaction-Conflict-Tracking
-        SyncTransaction(tx, {CWalletTx::Status::UNCONFIRMED, /* block height */ 0, /* block hash */ {}, /* index */ 0});
+        SyncTransaction(ptx, {CWalletTx::Status::UNCONFIRMED, /* block height  */ 0, /* block hash */ {}, /* index */ 0});
     }
 }
 
@@ -1167,7 +1167,8 @@ void CWallet::blockConnected(const CBlock& block, int height)
     m_last_block_processed_height = height;
     m_last_block_processed = block_hash;
     for (size_t index = 0; index < block.vtx.size(); index++) {
-        SyncTransaction(block.vtx[index], {CWalletTx::Status::CONFIRMED, height, block_hash, (int)index});
+        CWalletTx::Confirmation confirm(CWalletTx::Status::CONFIRMED, height, block_hash, index);
+        SyncTransaction(block.vtx[index], confirm);
         transactionRemovedFromMempool(block.vtx[index], MemPoolRemovalReason::BLOCK);
     }
 }
