@@ -114,6 +114,7 @@ FUZZ_TARGETS = \
   test/fuzz/script_descriptor_cache \
   test/fuzz/script_deserialize \
   test/fuzz/script_flags \
+  test/fuzz/script_interpreter \
   test/fuzz/service_deserialize \
   test/fuzz/signature_checker \
   test/fuzz/snapshotmetadata_deserialize \
@@ -963,6 +964,12 @@ test_fuzz_script_flags_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 test_fuzz_script_flags_LDADD = $(FUZZ_SUITE_LD_COMMON)
 test_fuzz_script_flags_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 test_fuzz_script_flags_SOURCES = test/fuzz/script_flags.cpp
+
+test_fuzz_script_interpreter_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+test_fuzz_script_interpreter_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+test_fuzz_script_interpreter_LDADD = $(FUZZ_SUITE_LD_COMMON)
+test_fuzz_script_interpreter_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+test_fuzz_script_interpreter_SOURCES = test/fuzz/script_interpreter.cpp
 
 # Disabled for now, as #18413 has not been backported.
 # test_fuzz_script_ops_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
