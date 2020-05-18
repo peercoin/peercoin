@@ -463,7 +463,7 @@ UniValue getnetworkinfo(const JSONRPCRequest& request)
 
     LOCK(cs_main);
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("version",       CLIENT_VERSION));
+    obj.push_back(Pair("version",       FormatFullVersion()));
     obj.push_back(Pair("subversion",    strSubVersion));
     obj.push_back(Pair("protocolversion",PROTOCOL_VERSION));
     if(g_connman)
