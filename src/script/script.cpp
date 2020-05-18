@@ -8,8 +8,9 @@
 #include <util/strencodings.h>
 
 #include <key.h>
+#include <string>
 
-const char* GetOpName(opcodetype opcode)
+std::string GetOpName(opcodetype opcode)
 {
     switch (opcode)
     {
