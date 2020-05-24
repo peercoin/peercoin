@@ -450,6 +450,7 @@ public:
          */
         std::vector<COutPoint>& m_coins_to_uncache;
         const bool m_test_accept;
+        CAmount* m_fee_out;
     };
 
     // Single transaction acceptance

@@ -857,6 +857,11 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
                         {
                             {RPCResult::Type::STR_HEX, "txid", "The transaction hash in hex"},
                             {RPCResult::Type::BOOL, "allowed", "If the mempool allows this tx to be inserted"},
+                            {RPCResult::Type::NUM, "vsize", "Virtual transaction size as defined in BIP 141. This is different from actual serialized size for witness transactions as witness data is discounted (only present when 'allowed' is true)"},
+                            {RPCResult::Type::OBJ, "fees", "Transaction fees (only present if 'allowed' is true)",
+                            {
+                                {RPCResult::Type::STR_AMOUNT, "base", "transaction fee in " + CURRENCY_UNIT},
+                            }},
                             {RPCResult::Type::STR, "reject-reason", "Rejection string (only present when 'allowed' is false)"},
                         }},
                     }
@@ -896,6 +901,7 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
 
     TxValidationState state;
     bool test_accept_res;
+    CAmount fee;
     {
         LOCK(cs_main);
         test_accept_res = AcceptToMemoryPool(mempool, state, std::move(tx),
