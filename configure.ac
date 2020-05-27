@@ -1377,6 +1377,9 @@ if test "$enable_wallet" != "no"; then
         fi
         enable_wallet=no
     fi
+
+    dnl Check for sqlite3
+    PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.7.17], , [AC_MSG_ERROR([sqlite3 not found.])])
 fi
 
 if test "$use_usdt" != "no"; then
