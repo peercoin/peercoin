@@ -77,8 +77,8 @@ static const unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
 static constexpr std::chrono::hours DATABASE_WRITE_INTERVAL{1};
 /** Time to wait between flushing chainstate to disk. */
 static constexpr std::chrono::hours DATABASE_FLUSH_INTERVAL{24};
-/** Maximum age of our tip in seconds for us to be considered current for fee estimation */
-static const int64_t MAX_FEE_ESTIMATION_TIP_AGE = 3 * 60 * 60;
+/** Maximum age of our tip for us to be considered current for fee estimation */
+static constexpr std::chrono::hours MAX_FEE_ESTIMATION_TIP_AGE{3};
 
 bool CBlockIndexWorkComparator::operator()(const CBlockIndex *pa, const CBlockIndex *pb) const {
     // First sort by most total work, ...
