@@ -11,6 +11,7 @@
 
 class ArgsManager;
 class CScheduler;
+struct WalletContext;
 
 namespace interfaces {
 class Chain;

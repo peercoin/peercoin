@@ -2873,9 +2873,9 @@ bool CWallet::AttachChain(const std::shared_ptr<CWallet>& walletInstance, interf
     }
 
     {
-        LOCK(cs_wallets);
-        for (auto& load_wallet : g_load_wallet_fns) {
-            load_wallet(interfaces::MakeWallet(walletInstance));
+        LOCK(context.wallets_mutex);
+        for (auto& load_wallet : context.wallet_load_fns) {
+            load_wallet(interfaces::MakeWallet(context, walletInstance));
         }
     }
 
