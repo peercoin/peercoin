@@ -952,6 +952,9 @@ bool SignPSBTInput(const SigningProvider& provider, PartiallySignedTransaction& 
 /** Counts the unsigned inputs of a PSBT. */
 size_t CountPSBTUnsignedInputs(const PartiallySignedTransaction& psbt);
 
+/** Counts the unsigned inputs of a PSBT. */
+size_t CountPSBTUnsignedInputs(const PartiallySignedTransaction& psbt);
+
 /** Updates a PSBTOutput with information from provider.
  *
  * This fills in the redeem_script, witness_script, and hd_keypaths where possible.
