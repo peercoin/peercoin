@@ -29,6 +29,7 @@
 #include <memory>
 #include <set>
 #include <stdint.h>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -140,6 +141,8 @@ extern arith_uint256 nMinimumChainWork;
 extern CBlockIndex *pindexBestHeader;
 
 
+/** Documentation for argument 'checklevel'. */
+extern const std::vector<std::string> CHECKLEVEL_DOC;
 
 /** Open a block file (blk?????.dat) */
 FILE* OpenBlockFile(const FlatFilePos &pos, bool fReadOnly = false);
