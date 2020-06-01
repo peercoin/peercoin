@@ -138,6 +138,12 @@ bool ExecuteWalletToolFunc(const ArgsManager& args, const std::string& command)
     const std::string name = args.GetArg("-wallet", "");
     const fs::path path = fsbridge::AbsPathJoin(GetWalletDir(), fs::PathFromString(name));
 
+    // -dumpfile is only allowed with dump and createfromdump. Disallow it for all other commands.
+    if (gArgs.IsArgSet("-dumpfile") && command != "dump" && command != "createfromdump") {
+        tfm::format(std::cerr, "The -dumpfile option can only be used with the \"dump\" and \"createfromdump\" commands.\n");
+        return false;
+    }
+
     if (command == "create") {
         DatabaseOptions options;
         options.require_create = true;
