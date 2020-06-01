@@ -244,6 +244,7 @@ BITCOIN_CORE_H = \
   wallet/context.h \
   wallet/crypter.h \
   wallet/db.h \
+  wallet/dump.h \
   wallet/ismine.h \
   wallet/load.h \
   wallet/rpcwallet.h \
@@ -354,6 +355,7 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/context.cpp \
   wallet/crypter.cpp \
   wallet/db.cpp \
+  wallet/dump.cpp \
   wallet/interfaces.cpp \
   wallet/load.cpp \
   wallet/rpcdump.cpp \
