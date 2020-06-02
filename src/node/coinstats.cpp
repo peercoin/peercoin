@@ -155,6 +155,10 @@ bool GetUTXOStats(CCoinsView* view, BlockManager& blockman, CCoinsStats& stats, 
         MuHash3072 muhash;
         return GetUTXOStats(view, blockman, stats, muhash, interruption_point, pindex);
     }
+    case(CoinStatsHashType::MUHASH): {
+        MuHash3072 muhash;
+        return GetUTXOStats(view, stats, muhash, interruption_point);
+    }
     case(CoinStatsHashType::NONE): {
         return GetUTXOStats(view, blockman, stats, nullptr, interruption_point, pindex);
     }
