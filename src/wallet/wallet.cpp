@@ -89,9 +89,9 @@ static void UpdateWalletSetting(interfaces::Chain& chain,
                                 std::vector<bilingual_str>& warnings)
 {
     if (load_on_startup == nullopt) return;
-    if (load_on_startup.get() && !AddWalletSetting(chain, wallet_name)) {
+    if (load_on_startup.value() && !AddWalletSetting(chain, wallet_name)) {
         warnings.emplace_back(Untranslated("Wallet load on startup setting could not be updated, so wallet may not be loaded next node startup."));
-    } else if (!load_on_startup.get() && !RemoveWalletSetting(chain, wallet_name)) {
+    } else if (!load_on_startup.value() && !RemoveWalletSetting(chain, wallet_name)) {
         warnings.emplace_back(Untranslated("Wallet load on startup setting could not be updated, so wallet may still be loaded next node startup."));
     }
 }
