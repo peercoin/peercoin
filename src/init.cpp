@@ -1301,7 +1301,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         if (Lookup(strAddr, addrLocal, GetListenPort(), fNameLookup) && addrLocal.IsValid())
             AddLocal(addrLocal, LOCAL_MANUAL);
         else
-            return InitError(Untranslated(ResolveErrMsg("externalip", strAddr)));
+            return InitError(ResolveErrMsg("externalip", strAddr));
     }
 
 #if ENABLE_ZMQ
