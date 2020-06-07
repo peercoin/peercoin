@@ -89,7 +89,6 @@ matrix:
 # https://travis-ci.community/t/macos-build-fails-because-of-homebrew-bundle-unknown-command/7296
 before_install:
  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install gmp valgrind gcc@9; fi
-
 before_script: ./autogen.sh
 
 # travis auto terminates jobs that go for 10 minutes without printing to stdout, but travis_wait doesn't work well with forking programs like valgrind (https://docs.travis-ci.com/user/common-build-problems/#build-times-out-because-no-output-was-received https://github.com/bitcoin-core/secp256k1/pull/750#issuecomment-623476860)
@@ -98,7 +97,6 @@ script:
   - keep_alive &
   - ./contrib/travis.sh
   - kill %keep_alive
-
 after_script:
     - cat ./tests.log
     - cat ./exhaustive_tests.log
