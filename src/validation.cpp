@@ -38,6 +38,7 @@
 #include <txmempool.h>
 #include <uint256.h>
 #include <undo.h>
+#include <util/check.h> // For NDEBUG compile time check
 #include <util/moneystr.h>
 #include <util/strencodings.h>
 #include <util/system.h>
@@ -52,10 +53,6 @@
 #include <string>
 
 #include <boost/algorithm/string/replace.hpp>
-
-#if defined(NDEBUG)
-# error "Peercoin cannot be compiled without assertions."
-#endif
 
 #define MICRO 0.000001
 #define MILLI 0.001
