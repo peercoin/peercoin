@@ -78,6 +78,7 @@ bool BanMan::IsBanned(const CNetAddr& net_addr)
 {
     auto current_time = GetTime();
     LOCK(m_cs_banned);
+    if (m_discouraged.contains(net_addr.GetAddrBytes())) return true;
     for (const auto& it : m_banned) {
         CSubNet sub_net = it.first;
         CBanEntry ban_entry = it.second;
@@ -105,6 +106,11 @@ bool BanMan::IsBanned(const CSubNet& sub_net)
 
 void BanMan::Ban(const CNetAddr& net_addr, int64_t ban_time_offset, bool since_unix_epoch)
 {
+    if (ban_reason == BanReasonNodeMisbehaving) {
+        LOCK(m_cs_banned);
+        m_discouraged.insert(net_addr.GetAddrBytes());
+        return;
+    }
     CSubNet sub_net(net_addr);
     Ban(sub_net, ban_time_offset, since_unix_epoch);
 }
@@ -117,7 +123,8 @@ void BanMan::Discourage(const CNetAddr& net_addr)
 
 void BanMan::Ban(const CSubNet& sub_net, int64_t ban_time_offset, bool since_unix_epoch)
 {
-    CBanEntry ban_entry(GetTime());
+    assert(ban_reason == BanReasonManuallyAdded);
+    CBanEntry ban_entry(GetTime(), ban_reason);
 
     int64_t normalized_ban_time_offset = ban_time_offset;
     bool normalized_since_unix_epoch = since_unix_epoch;
