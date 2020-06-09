@@ -31,6 +31,10 @@
 # include <valgrind/memcheck.h>
 #endif
 
+#if defined(VALGRIND)
+# include <valgrind/memcheck.h>
+#endif
+
 #define ARG_CHECK(cond) do { \
     if (EXPECT(!(cond), 0)) { \
         secp256k1_callback_call(&ctx->illegal_callback, #cond); \
