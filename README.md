@@ -26,6 +26,9 @@ lots of money.
 ### Automated Testing
 
 Developers are strongly encouraged to write unit tests for new code, and to submit new unit tests for old code.
+  * No use of floating types.
+  * Intended to be completely free of timing sidechannels for secret-key operations (on reasonable hardware/toolchains)
+  * The precomputed tables add and eventually subtract points for which no known scalar (secret key) is known, preventing even an attacker with control over the secret key used to control the data internally.
 
 Unit tests can be compiled and run (assuming they weren't disabled in configure) with:
   make check

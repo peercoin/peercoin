@@ -1,5 +1,6 @@
 *.tar.gz
 
+valgrind_ctime_test
 *.exe
 *.pdb
 src/*/*.exe
