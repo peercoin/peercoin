@@ -1230,6 +1230,14 @@ void CConnman::CreateNodeFromAcceptedSocket(std::unique_ptr<Sock>&& sock,
         return;
     }
 
+    // Only accept connections from discouraged peers if our inbound slots aren't (almost) full.
+    if (!NetPermissions::HasFlag(permissionFlags, NetPermissionFlags::PF_NOBAN) && nInbound + 1 >= nMaxInbound && bannedlevel >= 1)
+    {
+        LogPrint(BCLog::NET, "connection from %s dropped (discouraged)\n", addr.ToString());
+        CloseSocket(hSocket);
+        return;
+    }
+
     if (nInbound >= nMaxInbound)
     {
         if (!AttemptToEvictConnection()) {
