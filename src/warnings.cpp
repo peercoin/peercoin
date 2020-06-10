@@ -42,7 +42,7 @@ void SetfLargeWorkInvalidChainFound(bool flag)
     fLargeWorkInvalidChainFound = flag;
 }
 
-std::string GetWarnings(bool verbose)
+bilingual_str GetWarnings(bool verbose)
 {
     int nPriority = 0;
     bilingual_str warnings_concise;
@@ -82,8 +82,8 @@ std::string GetWarnings(bool verbose)
     }
 
     if (verbose) {
-        return Join(warnings_verbose, Untranslated("<hr />")).translated;
+        return Join(warnings_verbose, Untranslated("<hr />"));
     }
 
-    return warnings_concise.original;
+    return warnings_concise;
 }

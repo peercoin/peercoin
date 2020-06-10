@@ -30,6 +30,7 @@
 #include <util/ref.h>
 #include <util/strencodings.h>
 #include <util/system.h>
+#include <util/translation.h>
 #include <validation.h>
 #include <validationinterface.h>
 #include <warnings.h>
@@ -1162,7 +1163,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
 
     obj.pushKV("softforks",             softforks);
 
-    obj.pushKV("warnings", GetWarnings(false));
+    obj.pushKV("warnings", GetWarnings(false).original);
     return obj;
 }
 
