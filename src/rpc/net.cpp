@@ -713,8 +713,7 @@ static RPCHelpMan setban()
 
     if (strCommand == "add")
     {
-        if ((isSubnet && node.banman->IsBanned(subNet)) ||
-            (!isSubnet && node.banman->IsBannedLevel(netAddr) == BanReasonManuallyAdded)) {
+        if (isSubnet ? node.banman->IsBanned(subNet) : node.banman->IsBanned(netAddr)) {
             throw JSONRPCError(RPC_CLIENT_NODE_ALREADY_ADDED, "Error: IP/Subnet already banned");
         }
 
