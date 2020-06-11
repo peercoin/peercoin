@@ -3722,26 +3722,26 @@ void ProcessMessage(
     return;
 }
 
-bool PeerLogicValidation::CheckIfBanned(CNode& pnode)
+bool PeerLogicValidation::MaybeDiscourageAndDisconnect(CNode& pnode)
 {
     AssertLockHeld(cs_main);
     CNodeState &state = *State(pnode.GetId());
 
-    if (state.fShouldBan) {
-        state.fShouldBan = false;
-        if (pnode.HasPermission(PF_NOBAN))
+    if (state.m_should_discourage) {
+        state.m_should_discourage = false;
+        if (pnode.HasPermission(PF_NOBAN)) {
             LogPrintf("Warning: not punishing whitelisted peer %s!\n", pnode.addr.ToString());
-        else if (pnode.m_manual_connection)
+        } else if (pnode.m_manual_connection) {
             LogPrintf("Warning: not punishing manually-connected peer %s!\n", pnode.addr.ToString());
-        else if (pnode.addr.IsLocal()) {
+        } else if (pnode.addr.IsLocal()) {
             // Disconnect but don't discourage this local node
             LogPrintf("Warning: disconnecting but not discouraging local peer %s!\n", pnode.addr.ToString());
             pnode.fDisconnect = true;
         } else {
-            // Disconnect and ban all nodes sharing the address
+            // Disconnect and discourage all nodes sharing the address
             LogPrintf("Disconnecting and discouraging peer %s!\n", pnode.addr.ToString());
             if (m_banman) {
-                m_banman->Ban(pnode.addr, BanReasonNodeMisbehaving);
+                m_banman->Discourage(pnode.addr);
             }
             connman->DisconnectNode(pnode.addr);
         }
@@ -3841,7 +3841,7 @@ bool PeerLogicValidation::ProcessMessages(CNode* pfrom, std::atomic<bool>& inter
     }
 
     LOCK(cs_main);
-    CheckIfBanned(*pfrom);
+    MaybeDiscourageAndDisconnect(*pfrom);
 
     return fMoreWork;
 }
@@ -4044,7 +4044,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto)
         if (!lockMain)
             return true;
 
-        if (CheckIfBanned(*pto)) return true;
+        if (MaybeDiscourageAndDisconnect(*pto)) return true;
 
         CNodeState &state = *State(pto->GetId());
 
