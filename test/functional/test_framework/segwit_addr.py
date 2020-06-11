@@ -91,7 +91,7 @@ def convertbits(data, frombits, tobits, pad=True):
     return ret
 
 
-def decode(hrp, addr):
+def decode_segwit_address(hrp, addr):
     """Decode a segwit address."""
     encoding, hrpgot, data = bech32_decode(addr)
     if hrpgot != hrp:
@@ -108,11 +108,10 @@ def decode(hrp, addr):
     return (data[0], decoded)
 
 
-def encode(hrp, witver, witprog):
+def encode_segwit_address(hrp, witver, witprog):
     """Encode a segwit address."""
-    encoding = Encoding.BECH32 if witver == 0 else Encoding.BECH32M
-    ret = bech32_encode(encoding, hrp, [witver] + convertbits(witprog, 8, 5))
-    if decode(hrp, ret) == (None, None):
+    ret = bech32_encode(hrp, [witver] + convertbits(witprog, 8, 5))
+    if decode_segwit_address(hrp, ret) == (None, None):
         return None
     return ret
 
@@ -121,8 +120,8 @@ class TestFrameworkScript(unittest.TestCase):
         def test_python_bech32(addr):
             hrp = addr[:4]
             self.assertEqual(hrp, "bcrt")
-            (witver, witprog) = decode(hrp, addr)
-            self.assertEqual(encode(hrp, witver, witprog), addr)
+            (witver, witprog) = decode_segwit_address(hrp, addr)
+            self.assertEqual(encode_segwit_address(hrp, witver, witprog), addr)
 
         # P2WPKH
         test_python_bech32('bcrt1qthmht0k2qnh3wy7336z05lu2km7emzfpm3wg46')
