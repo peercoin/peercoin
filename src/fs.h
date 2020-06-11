@@ -93,22 +93,22 @@ static inline bool copy_file(const path& from, const path& to, copy_options opti
 
 // Disallow implicit std::string conversion for system_complete to avoid
 // locale-dependent encoding on windows.
-static inline path system_complete(const path& p)
+static inline path absolute(const path& p)
 {
-    return boost::filesystem::system_complete(p);
+    return std::filesystem::absolute(p);
 }
 
 // Disallow implicit std::string conversion for exists to avoid
 // locale-dependent encoding on windows.
 static inline bool exists(const path& p)
 {
-    return boost::filesystem::exists(p);
+    return std::filesystem::exists(p);
 }
 
 // Allow explicit quoted stream I/O.
 static inline auto quoted(const std::string& s)
 {
-    return boost::io::quoted(s, '&');
+    return std::quoted(s, '"', '&');
 }
 
 // Allow safe path append operations.
