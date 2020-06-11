@@ -126,6 +126,10 @@ RPCHelpMan importprivkey()
     std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
     if (!pwallet) return NullUniValue;
 
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return NullUniValue;
+    CWallet* const pwallet = wallet.get();
+
     if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Cannot import private keys to a wallet with private keys disabled");
     }
@@ -220,6 +224,10 @@ RPCHelpMan importaddress()
 {
     std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
     if (!pwallet) return NullUniValue;
+
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return NullUniValue;
+    CWallet* const pwallet = wallet.get();
 
     EnsureLegacyScriptPubKeyMan(*pwallet, true);
 
@@ -1515,6 +1523,10 @@ RPCHelpMan importdescriptors()
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
     wallet.BlockUntilSyncedToCurrentChain();
+
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(main_request);
+    if (!wallet) return NullUniValue;
+    CWallet* const pwallet = wallet.get();
 
     //  Make sure wallet is a descriptor wallet
     if (!pwallet->IsWalletFlagSet(WALLET_FLAG_DESCRIPTORS)) {
