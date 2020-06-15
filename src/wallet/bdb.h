@@ -89,6 +89,8 @@ std::shared_ptr<BerkeleyEnvironment> GetBerkeleyEnv(const fs::path& env_director
 
 class BerkeleyBatch;
 
+class BerkeleyBatch;
+
 /** An instance of this class represents one database.
  * For BerkeleyDB this is just a (env, strFile) tuple.
  **/
