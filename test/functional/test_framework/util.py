@@ -327,6 +327,7 @@ def get_rpc_proxy(url: str, node_number: int, *, timeout: int=None, coveragedir:
     return coverage.AuthServiceProxyWrapper(proxy, url, coverage_logfile)
 
 
+
 def p2p_port(n):
     assert n <= MAX_NODES
     return PORT_MIN + n + (MAX_NODES * PortSeed.n) % (PORT_RANGE - 1 - MAX_NODES)
@@ -448,6 +449,7 @@ def softfork_active(node, key):
     return node.getdeploymentinfo()['deployments'][key]['active']
 
 
+
 def set_node_times(nodes, t):
     for node in nodes:
         node.setmocktime(t)
@@ -473,6 +475,7 @@ def find_output(node, txid, amount, *, blockhash=None):
         if txdata["vout"][i]["value"] == amount:
             return i
     raise RuntimeError("find_output txid %s : %s not found" % (txid, str(amount)))
+
 
 
 # Helper to create at least "count" utxos
@@ -585,6 +588,7 @@ def mine_large_block(test_framework, node, utxos=None):
     fee = 100 * node.getnetworkinfo()["relayfee"]
     create_lots_of_big_transactions(node, txouts, utxos, num, fee=fee)
     test_framework.generate(node, 1)
+
 
 
 def find_vout_for_address(node, txid, addr):
