@@ -232,8 +232,8 @@ static RPCHelpMan getpeerinfo()
                 heights.push_back(height);
             }
             obj.pushKV("inflight", heights);
-            obj.pushKV("relaytxes", statestats.fRelayTxes);
-            obj.pushKV("minfeefilter", ValueFromAmount(statestats.minFeeFilter));
+            obj.pushKV("relaytxes", statestats.m_relay_txs);
+            obj.pushKV("minfeefilter", ValueFromAmount(statestats.m_fee_filter_received));
             obj.pushKV("addr_relay_enabled", statestats.m_addr_relay_enabled);
             obj.pushKV("addr_processed", statestats.m_addr_processed);
             obj.pushKV("addr_rate_limited", statestats.m_addr_rate_limited);
