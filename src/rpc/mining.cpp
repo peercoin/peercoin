@@ -10,6 +10,7 @@
 #include <consensus/params.h>
 #include <consensus/validation.h>
 #include <core_io.h>
+#include <deploymentstatus.h>
 #include <key_io.h>
 #include <miner.h>
 #include <net.h>

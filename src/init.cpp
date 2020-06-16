@@ -16,6 +16,7 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <compat/sanity.h>
+#include <deploymentstatus.h>
 #include <fs.h>
 #include <hash.h>
 #include <httprpc.h>

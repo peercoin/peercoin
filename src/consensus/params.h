@@ -11,6 +11,17 @@
 
 namespace Consensus {
 
+enum BuriedDeployment : int16_t
+{
+    // buried deployments get negative values to avoid overlap with DeploymentPos
+    DEPLOYMENT_HEIGHTINCB = std::numeric_limits<int16_t>::min(),
+    DEPLOYMENT_CLTV,
+    DEPLOYMENT_DERSIG,
+    DEPLOYMENT_CSV,
+    DEPLOYMENT_SEGWIT,
+};
+constexpr bool ValidDeployment(BuriedDeployment dep) { return DEPLOYMENT_HEIGHTINCB <= dep && dep <= DEPLOYMENT_SEGWIT; }
+
 enum DeploymentPos
 {
     DEPLOYMENT_TESTDUMMY,
@@ -81,6 +92,7 @@ struct Params {
     int64_t nModifierInterval;
     int nCoinbaseMaturity;  // Coinbase transaction outputs can only be spent after this number of new blocks (network rule)
 };
+
 } // namespace Consensus
 
 #endif // BITCOIN_CONSENSUS_PARAMS_H
