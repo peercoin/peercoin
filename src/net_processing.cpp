@@ -13,6 +13,7 @@
 #include <chainparams.h>
 #include <consensus/amount.h>
 #include <consensus/validation.h>
+#include <deploymentstatus.h>
 #include <hash.h>
 #include <index/blockfilterindex.h>
 #include <merkleblock.h>
