@@ -40,6 +40,20 @@ def test_load_unload(node, name):
                 got_loading_error = True
                 return
 
+got_loading_error = False
+def test_load_unload(node, name):
+    global got_loading_error
+    for i in range(10):
+        if got_loading_error:
+            return
+        try:
+            node.loadwallet(name)
+            node.unloadwallet(name)
+        except JSONRPCException as e:
+            if e.error['code'] == -4 and 'Wallet already being loading' in e.error['message']:
+                got_loading_error = True
+                return
+
 
 class MultiWalletTest(BitcoinTestFramework):
     def set_test_params(self):
