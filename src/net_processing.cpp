@@ -1430,10 +1430,9 @@ bool static AlreadyHave(const CInv& inv, const CTxMemPool& mempool) EXCLUSIVE_LO
 
 void RelayTransaction(const uint256& txid, const CConnman& connman)
 {
-    CInv inv(MSG_TX, txid);
-    connman.ForEachNode([&inv](CNode* pnode)
+    connman.ForEachNode([&txid](CNode* pnode)
     {
-        pnode->PushInventory(inv);
+        pnode->PushTxInventory(txid);
     });
 }
 
@@ -1619,7 +1618,7 @@ void static ProcessGetBlockData(CNode& pfrom, const CChainParams& chainparams, c
         // Trigger the peer node to send a getblocks request for the next batch of inventory
         if (inv.hash == pfrom.hashContinue)
         {
-            // Bypass PushInventory, this must send even if redundant,
+            // Bypass PushBlockInventory, this must send even if redundant,
             // and we want it right after the last block so they don't
             // wait for other stuff first.
             // peercoin: send latest proof-of-work block to allow the
@@ -2686,7 +2685,7 @@ bool ProcessMessage(CNode& pfrom, const std::string& msg_type, CDataStream& vRec
                     pfrom->PushInventory(CInv(MSG_BLOCK, ::ChainActive().Tip()->GetBlockHash()));
                 break;
             }
-            pfrom.PushInventory(CInv(MSG_BLOCK, pindex->GetBlockHash()));
+            pfrom.PushBlockInventory(pindex->GetBlockHash());
             if (--nLimit <= 0)
             {
                 // When this block is requested, we'll send an inv that'll
@@ -4243,7 +4242,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto)
 
                     // If the peer's chain has this block, don't inv it back.
                     if (!PeerHasHeader(&state, pindex)) {
-                        pto->PushInventory(CInv(MSG_BLOCK, hashToAnnounce));
+                        pto->PushBlockInventory(hashToAnnounce);
                         LogPrint(BCLog::NET, "%s: sending inv peer=%d hash=%s\n", __func__,
                             pto->GetId(), hashToAnnounce.ToString());
                     }
