@@ -21,14 +21,6 @@ class connection;
 }
 } // namespace boost
 
-/** General change type (added, updated, removed). */
-enum ChangeType
-{
-    CT_NEW,
-    CT_UPDATED,
-    CT_DELETED
-};
-
 /** Signals for UI communication. */
 class CClientUIInterface
 {
