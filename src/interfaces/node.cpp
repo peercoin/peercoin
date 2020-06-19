@@ -17,6 +17,7 @@
 #include <netaddress.h>
 #include <netbase.h>
 #include <node/context.h>
+#include <node/ui_interface.h>
 #include <policy/settings.h>
 #include <primitives/block.h>
 #include <rpc/server.h>
@@ -24,7 +25,6 @@
 #include <support/allocators/secure.h>
 #include <sync.h>
 #include <txmempool.h>
-#include <ui_interface.h>
 #include <util/ref.h>
 #include <util/system.h>
 #include <util/translation.h>

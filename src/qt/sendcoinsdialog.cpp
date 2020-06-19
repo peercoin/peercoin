@@ -21,11 +21,10 @@
 #include <chainparams.h>
 #include <interfaces/node.h>
 #include <key_io.h>
-
+#include <node/ui_interface.h>
 #include <consensus/tx_verify.h>
 #include <timedata.h>
 #include <txmempool.h>
-#include <ui_interface.h>
 #include <wallet/coincontrol.h>
 #include <wallet/wallet.h>
 
