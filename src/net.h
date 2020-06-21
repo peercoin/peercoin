@@ -264,7 +264,6 @@ public:
     mapMsgCmdSize mapRecvBytesPerMsgCmd;
     NetPermissionFlags m_permissionFlags;
     int64_t m_ping_usec;
-    int64_t m_ping_wait_usec;
     int64_t m_min_ping_usec;
     CAmount minFeeFilter;
     // Our address, as reported by the peer
@@ -597,17 +596,12 @@ public:
      * in CConnman::AttemptToEvictConnection. */
     std::atomic<int64_t> nLastTXTime{0};
 
-    // Ping time measurement:
-    // The pong reply we're expecting, or 0 if no pong expected.
-    std::atomic<uint64_t> nPingNonceSent{0};
-    /** When the last ping was sent, or 0 if no ping was ever sent */
-    std::atomic<std::chrono::microseconds> m_ping_start{0us};
-    // Last measured round-trip time.
+    /** Last measured round-trip time. Used only for RPC/GUI stats/debugging.*/
     std::atomic<int64_t> nPingUsecTime{0};
-    // Best measured round-trip time.
+
+    /** Lowest measured round-trip time. Used as an inbound peer eviction
+     * criterium in CConnman::AttemptToEvictConnection. */
     std::atomic<int64_t> nMinPingUsecTime{std::numeric_limits<int64_t>::max()};
-    // Whether a ping is requested.
-    std::atomic<bool> fPingQueued{false};
     // peercoin: used to detect branch switches
     uint256 lastAcceptedHeader;
 
@@ -728,6 +722,12 @@ public:
     void MaybeSetAddrName(const std::string& addrNameIn);
 
     std::string ConnectionTypeAsString() const { return ::ConnectionTypeAsString(m_conn_type); }
+
+    /** A ping-pong round trip has completed successfully. Update latest and minimum ping times. */
+    void PongReceived(std::chrono::microseconds ping_time) {
+        nPingUsecTime = count_microseconds(ping_time);
+        nMinPingUsecTime = std::min(nMinPingUsecTime.load(), count_microseconds(ping_time));
+    }
 
 private:
     const NodeId id;
