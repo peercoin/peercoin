@@ -33,7 +33,7 @@ class MempoolCompatibilityTest(BitcoinTestFramework):
             190100,  # oldest version with getmempoolinfo.loaded (used to avoid intermittent issues)
             None,
         ])
-        self.start_nodes()
+        self.start_nodes([[], ["-wallet="]])
         self.import_deterministic_coinbase_privkeys()
 
     def run_test(self):

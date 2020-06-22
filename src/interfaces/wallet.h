@@ -442,7 +442,7 @@ std::unique_ptr<WalletLoader> MakeWalletLoader(Chain& chain, ArgsManager& args);
 
 //! Return implementation of ChainClient interface for a wallet client. This
 //! function will be undefined in builds where ENABLE_WALLET is false.
-std::unique_ptr<WalletClient> MakeWalletClient(Chain& chain, ArgsManager& args, std::vector<std::string> wallet_filenames);
+std::unique_ptr<WalletClient> MakeWalletClient(Chain& chain, ArgsManager& args);
 
 } // namespace interfaces
 
