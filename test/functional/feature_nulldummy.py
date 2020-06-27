@@ -45,7 +45,8 @@ def invalidate_nulldummy_tx(tx):
 
 class NULLDUMMYTest(BitcoinTestFramework):
     def set_test_params(self):
-        self.num_nodes = 1
+        # Need two nodes only so GBT doesn't complain that it's not connected
+        self.num_nodes = 2
         self.setup_clean_chain = True
         # This script tests NULLDUMMY activation, which is part of the 'segwit' deployment, so we go through
         # normal segwit activation here (and don't use the default always-on behaviour).
