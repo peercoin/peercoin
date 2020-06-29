@@ -712,10 +712,10 @@ bool CNode::ReceiveMsgBytes(Span<const uint8_t> msg_bytes, bool& complete)
                 i = mapRecvBytesPerMsgCmd.find(NET_MESSAGE_COMMAND_OTHER);
             }
             assert(i != mapRecvBytesPerMsgCmd.end());
-            i->second += msg.m_raw_message_size;
+            i->second += result->m_raw_message_size;
 
             // push the message to the process queue,
-            vRecvMsg.push_back(std::move(msg));
+            vRecvMsg.push_back(std::move(*result));
 
             complete = true;
         }
@@ -794,7 +794,7 @@ CNetMessage V1TransportDeserializer::GetMessage(const std::chrono::microseconds 
     // Initialize out parameter
     reject_message = false;
     // decompose a single CNetMessage from the TransportDeserializer
-    CNetMessage msg(std::move(vRecv));
+    Optional<CNetMessage> msg(std::move(vRecv));
 
     // store command string, time, and sizes
     msg.m_type = hdr.GetCommand();
