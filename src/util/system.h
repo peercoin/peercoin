@@ -45,7 +45,6 @@ extern const char * const BITCOIN_CONF_FILENAME;
 void SetupEnvironment();
 bool SetupNetworking();
 
-        ALERT       = (1 << 30),
 template<typename... Args>
 bool error(const char* fmt, const Args&... args)
 {
