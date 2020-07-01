@@ -125,7 +125,7 @@ FUZZ_TARGETS = \
 if ENABLE_FUZZ
 noinst_PROGRAMS += $(FUZZ_TARGETS:=)
 else
-bin_PROGRAMS += test/test_bitcoin
+bin_PROGRAMS += test/test_peercoin
 endif
 
 TEST_SRCDIR = test
@@ -169,6 +169,7 @@ FUZZ_SUITE_LD_COMMON = \
  $(EVENT_LIBS) \
  $(EVENT_PTHREADS_LIBS)
 
+# test_peercoin binary #
 BITCOIN_TESTS =\
   test/arith_uint256_tests.cpp \
   test/scriptnum10.h \
@@ -242,7 +243,7 @@ BITCOIN_TESTS =\
   test/util_tests.cpp \
   test/validation_block_tests.cpp
   test/validation_flush_tests.cpp \
-  test/validationinterface_tests.cpp \
+  test/validationinterface_tests.cpp
 
 if ENABLE_WALLET
 BITCOIN_TESTS += \
@@ -268,6 +269,7 @@ test_test_peercoin_LDADD = $(LIBTEST_UTIL)
 if ENABLE_WALLET
 test_test_peercoin_LDADD += $(LIBBITCOIN_WALLET)
 endif
+
 test_test_peercoin_LDADD += $(LIBBITCOIN_SERVER) $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CONSENSUS) $(LIBBITCOIN_CRYPTO) $(LIBUNIVALUE) \
   $(LIBLEVELDB) $(LIBLEVELDB_SSE42) $(LIBMEMENV) $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS)
 test_test_peercoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
