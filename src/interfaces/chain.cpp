@@ -13,9 +13,7 @@
 #include <node/coin.h>
 #include <node/context.h>
 #include <node/transaction.h>
-#include <policy/fees.h>
 #include <policy/policy.h>
-#include <policy/rbf.h>
 #include <policy/settings.h>
 #include <primitives/block.h>
 #include <primitives/transaction.h>
@@ -92,20 +90,6 @@ class LockImpl : public Chain::Lock, public UniqueLock<RecursiveMutex>
         if (block) {
             if (hash) *hash = block->GetBlockHash();
             return block->nHeight;
-        }
-        return nullopt;
-    }
-    Optional<int> findPruned(int start_height, Optional<int> stop_height) override
-    {
-        LockAssertion lock(::cs_main);
-        if (::fPruneMode) {
-            CBlockIndex* block = stop_height ? ::ChainActive()[*stop_height] : ::ChainActive().Tip();
-            while (block && block->nHeight >= start_height) {
-                if ((block->nStatus & BLOCK_HAVE_DATA) == 0) {
-                    return block->nHeight;
-                }
-                block = block->pprev;
-            }
         }
         return nullopt;
     }
@@ -274,11 +258,6 @@ public:
         LOCK(cs_main);
         return GuessVerificationProgress(Params().TxData(), LookupBlockIndex(block_hash));
     }
-    RBFTransactionState isRBFOptIn(const CTransaction& tx) override
-    {
-        LOCK(::mempool.cs);
-        return IsRBFOptIn(tx, ::mempool);
-    }
     bool hasDescendantsInMempool(const uint256& txid) override
     {
         LOCK(::mempool.cs);
@@ -318,26 +297,6 @@ public:
         LOCK(::mempool.cs);
         return ::mempool.CalculateMemPoolAncestors(entry, ancestors, limit_ancestor_count, limit_ancestor_size,
             limit_descendant_count, limit_descendant_size, unused_error_string);
-    }
-    CFeeRate estimateSmartFee(int num_blocks, bool conservative, FeeCalculation* calc) override
-    {
-        return ::feeEstimator.estimateSmartFee(num_blocks, calc, conservative);
-    }
-    unsigned int estimateMaxBlocks() override
-    {
-        return ::feeEstimator.HighestTargetTracked(FeeEstimateHorizon::LONG_HALFLIFE);
-    }
-    CFeeRate mempoolMinFee() override
-    {
-        return ::mempool.GetMinFee(gArgs.GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000);
-    }
-    CFeeRate relayMinFee() override { return ::minRelayTxFee; }
-    CFeeRate relayIncrementalFee() override { return ::incrementalRelayFee; }
-    CFeeRate relayDustFee() override { return ::dustRelayFee; }
-    bool havePruned() override
-    {
-        LOCK(cs_main);
-        return ::fHavePruned;
     }
     bool isReadyToBroadcast() override { return !::fImporting && !::fReindex && !isInitialBlockDownload(); }
     bool isInitialBlockDownload() override { return ::ChainstateActive().IsInitialBlockDownload(); }

@@ -11,7 +11,7 @@
 #include "timedata.h"
 #include "ui_interface.h"
 #include "util.h"
-#include "utilstrencodings.h"
+#include "util/strencodings.h"
 #include "validation.h"
 
 #include <stdint.h>
@@ -125,7 +125,7 @@ bool CAlert::AppliesToMe() const
     return AppliesTo(PROTOCOL_VERSION, FormatSubVersion(CLIENT_NAME, PEERCOIN_VERSION, std::vector<std::string>()));
 }
 
-bool CAlert::RelayTo(CNode* pnode) const
+bool CAlert::RelayTo(CNode* pnode, CConnman* connman) const
 {
     if (!IsInEffect())
         return false;
@@ -135,12 +135,11 @@ bool CAlert::RelayTo(CNode* pnode) const
     // returns true if wasn't already contained in the set
     if (pnode->setKnown.insert(GetHash()).second)
     {
-        if (AppliesTo(pnode->nVersion, pnode->strSubVer) ||
+        if (AppliesTo(pnode->nVersion, pnode->cleanSubVer) ||
             AppliesToMe() ||
             GetAdjustedTime() < nRelayUntil)
         {
-            if (g_connman)
-                g_connman->PushMessage(pnode, CNetMsgMaker(pnode->GetSendVersion()).Make(NetMsgType::ALERT, *this));
+            connman->PushMessage(pnode, CNetMsgMaker(pnode->GetSendVersion()).Make(NetMsgType::ALERT, *this));
             return true;
         }
     }

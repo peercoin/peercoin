@@ -20,8 +20,10 @@
 #include <util/moneystr.h>
 #include <util/system.h>
 #include <kernel.h>
-
+#include <net.h>
+#include <node/context.h>
 #include <wallet/wallet.h>
+#include <wallet/coincontrol.h>
 #include <warnings.h>
 
 #include <algorithm>
@@ -494,30 +496,35 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
     return true;
 }
 
-void PoSMiner(CWallet *pwallet)
+void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* mempool)
 {
     LogPrintf("CPUMiner started for proof-of-stake\n");
-    RenameThread("peercoin-stake-minter");
+    util::ThreadRename("peercoin-stake-minter");
 
     unsigned int nExtraNonce = 0;
 
-    std::shared_ptr<CReserveScript> coinbaseScript;
-    pwallet->GetScriptForMining(coinbaseScript);
+    OutputType output_type = pwallet->m_default_change_type != OutputType::CHANGE_AUTO ? pwallet->m_default_change_type : pwallet->m_default_address_type;
+    ReserveDestination reservedest(pwallet.get(), output_type);
+    CTxDestination dest;
+    if (!reservedest.GetReservedDestination(dest, true))
+        throw std::runtime_error("Error: Keypool ran out, please call keypoolrefill first");
 
     // Compute timeout for pos as sqrt(numUTXO)
     unsigned int pos_timio;
     {
+        LOCK2(cs_main, pwallet->cs_wallet);
         std::vector<COutput> vCoins;
-        pwallet->AvailableCoins(vCoins, false);
+        CCoinControl coincontrol;
+        pwallet->AvailableCoins(*pwallet->chain().lock(), vCoins, false, &coincontrol);
         pos_timio = gArgs.GetArg("-staketimio", 500) + 30 * sqrt(vCoins.size());
         LogPrintf("Set proof-of-stake timeout: %ums for %u UTXOs\n", pos_timio, vCoins.size());
     }
 
-    std::string strMintMessage = _("Info: Minting suspended due to locked wallet.");
-    std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.");
-    std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.");
-    std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.");
-    std::string strMintEmpty = _("");
+    std::string strMintMessage = "Info: Minting suspended due to locked wallet.";
+    std::string strMintSyncMessage = "Info: Minting suspended while synchronizing wallet.";
+    std::string strMintDisabledMessage = "Info: Minting disabled by 'nominting' option.";
+    std::string strMintBlockMessage = "Info: Minting suspended due to block creation failure.";
+    std::string strMintEmpty = "";
     if (!gArgs.GetBoolArg("-minting", true) || !gArgs.GetBoolArg("-staking", true))
     {
         strMintWarning = strMintDisabledMessage;
@@ -526,47 +533,50 @@ void PoSMiner(CWallet *pwallet)
     }
 
     try {
-
-        // Throw an error if no script was provided.  This can happen
-        // due to some internal error but also if the keypool is empty.
-        // In the latter case, already the pointer is NULL.
-        if (!coinbaseScript || coinbaseScript->reserveScript.empty())
-            throw std::runtime_error("No coinbase script available (mining requires a wallet)");
-
         while (true) {
             while (pwallet->IsLocked()) {
-                strMintWarning = strMintMessage;
-                MilliSleep(5000);
+                if (strMintWarning != strMintMessage) {
+                    strMintWarning = strMintMessage;
+                    uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                }
+                UninterruptibleSleep(std::chrono::milliseconds{3000});
             }
+
             if (Params().MiningRequiresPeers()) {
                 // Busy-wait for the network to come online so we don't waste time mining
                 // on an obsolete chain. In regtest mode we expect to fly solo.
-                while(g_connman == nullptr || g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0 || IsInitialBlockDownload())
-                    MilliSleep(5 * 1000);
+                while(connman == nullptr || connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0 || ::ChainstateActive().IsInitialBlockDownload())
+                    UninterruptibleSleep(std::chrono::milliseconds{10000});
             }
+
             while (GuessVerificationProgress(Params().TxData(), ::ChainActive().Tip()) < 0.996)
             {
                 LogPrintf("Minter thread sleeps while sync at %f\n", GuessVerificationProgress(Params().TxData(), ::ChainActive().Tip()));
-                strMintWarning = strMintSyncMessage;
-                MilliSleep(10000);
+                if (strMintWarning != strMintSyncMessage) {
+                    strMintWarning = strMintSyncMessage;
+                    uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                }
+                UninterruptibleSleep(std::chrono::milliseconds{10000});
             }
 
             strMintWarning = strMintEmpty;
+            uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
 
             //
             // Create new block
             //
             CBlockIndex* pindexPrev = ::ChainActive().Tip();
             bool fPoSCancel = false;
-            std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbaseScript->reserveScript, true, pwallet, &fPoSCancel));
+            std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(*mempool, Params()).CreateNewBlock(GetScriptForDestination(dest), pwallet.get(), &fPoSCancel));
             if (!pblocktemplate.get())
             {
                 if (fPoSCancel == true)
                 {
-                    MilliSleep(pos_timio);
+                    UninterruptibleSleep(std::chrono::milliseconds{pos_timio});
                     continue;
                 }
                 strMintWarning = strMintBlockMessage;
+                uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
                 LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
                 return;
             }
@@ -576,18 +586,21 @@ void PoSMiner(CWallet *pwallet)
             // peercoin: if proof-of-stake block found then process block
             if (pblock->IsProofOfStake())
             {
-                pblock->nFlags = CBlockIndex::BLOCK_PROOF_OF_STAKE;
-                if (!SignBlock(*pblock, *pwallet))
                 {
-                    LogPrintf("PoSMiner(): failed to sign PoS block");
-                    continue;
+                    LOCK2(cs_main, pwallet->cs_wallet);
+                    if (!SignBlock(*pblock, *pwallet))
+                    {
+                        LogPrintf("PoSMiner(): failed to sign PoS block");
+                        continue;
+                    }
                 }
                 LogPrintf("CPUMiner : proof-of-stake block found %s\n", pblock->GetHash().ToString());
                 ProcessBlockFound(pblock, Params());
+                reservedest.KeepDestination();
                 // Rest for ~3 minutes after successful block to preserve close quick
-                MilliSleep(60 * 1000 + GetRand(4 * 60 * 1000));
+                UninterruptibleSleep(std::chrono::milliseconds{60 * 1000 + GetRand(4 * 60 * 1000)}); 
             }
-            MilliSleep(pos_timio);
+            UninterruptibleSleep(std::chrono::milliseconds{pos_timio});
 
             continue;
         }
@@ -606,13 +619,12 @@ void PoSMiner(CWallet *pwallet)
 }
 
 // peercoin: stake minter thread
-void static ThreadStakeMinter(void* parg)
+void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* mempool)
 {
     LogPrintf("ThreadStakeMinter started\n");
-    CWallet* pwallet = (CWallet*)parg;
     try
     {
-        PoSMiner(pwallet);
+        PoSMiner(pwallet, connman, mempool);
     }
     catch (std::exception& e) {
         PrintExceptionContinue(&e, "ThreadStakeMinter()");
@@ -623,9 +635,8 @@ void static ThreadStakeMinter(void* parg)
 }
 
 // peercoin: stake minter
-void MintStake(boost::thread_group& threadGroup)
+void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* mempool)
 {
     // peercoin: mint proof-of-stake blocks in the background
-    if (!vpwallets.empty())
-        threadGroup.create_thread(boost::bind(&ThreadStakeMinter, vpwallets[0]));
+    threadGroup.create_thread(boost::bind(&ThreadStakeMinter, pwallet, connman, mempool));
 }

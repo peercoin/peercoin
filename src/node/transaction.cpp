@@ -39,7 +39,7 @@ TransactionError BroadcastTransaction(NodeContext& node, const CTransactionRef t
         // Transaction is not already in the mempool. Submit it.
         TxValidationState state;
         if (!AcceptToMemoryPool(*node.mempool, state, std::move(tx),
-                nullptr /* plTxnReplaced */, false /* bypass_limits */, max_tx_fee)) {
+                false /* bypass_limits */)) {
             err_string = state.ToString();
             if (state.IsInvalid()) {
                 if (state.GetResult() == TxValidationResult::TX_MISSING_INPUTS) {

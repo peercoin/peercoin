@@ -9,10 +9,10 @@
 #include <addrman.h>
 #include <banman.h>
 #include <blockencodings.h>
+#include <chain.h>
 #include <chainparams.h>
 #include <consensus/validation.h>
 #include <hash.h>
-#include <validation.h>
 #include <merkleblock.h>
 #include <netmessagemaker.h>
 #include <netbase.h>
@@ -26,6 +26,7 @@
 #include <txmempool.h>
 #include <util/system.h>
 #include <util/strencodings.h>
+#include <validation.h>
 
 #include <memory>
 #include <typeinfo>
@@ -1745,13 +1746,15 @@ bool static ProcessHeadersMessage(CNode* pfrom, CConnman* connman, CTxMemPool& m
         }
     }
 
+    int32_t& nPoSTemperature = mapPoSTemperature[pfrom->addr];
     BlockValidationState state;
-    if (!ProcessNewBlockHeaders(headers, state, chainparams, &pindexLast)) {
+    if (!ProcessNewBlockHeaders(nPoSTemperature, pfrom->lastAcceptedHeader, headers, state, chainparams, &pindexLast)) {
         if (state.IsInvalid()) {
             MaybePunishNodeForBlock(pfrom->GetId(), state, via_compact_block, "invalid header received");
             return false;
         }
     }
+    pfrom->lastAcceptedHeader = headers.back().GetHash();
 
     {
         LOCK(cs_main);
@@ -2094,7 +2097,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
         {
             LOCK(cs_main);
             if (!checkpointMessage.IsNull())
-                checkpointMessage.RelayTo(pfrom);
+                checkpointMessage.RelayTo(pfrom, connman);
         }
 #endif
 
@@ -2102,7 +2105,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
         {
             LOCK(cs_mapAlerts);
             for (auto& item : mapAlerts)
-                item.second.RelayTo(pfrom);
+                item.second.RelayTo(pfrom, connman);
         }
 
         std::string remoteAddr;
@@ -2132,7 +2135,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
 
 #ifdef ENABLE_CHECKPOINTS
         // peercoin: ask for pending sync-checkpoint if any
-        if (!IsInitialBlockDownload())
+        if (!::ChainstateActive().IsInitialBlockDownload())
             AskForPendingSyncCheckpoint(pfrom);
 #endif
 
@@ -2719,7 +2722,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
         const CBlockIndex *pindex = nullptr;
         BlockValidationState state;
 
-        if (!ProcessNewBlockHeaders(nPoSTemperature, ::ChainActive().Tip()->GetBlockHash(), {cmpctblock.header}, false, state, chainparams, &pindex)) {
+        if (!ProcessNewBlockHeaders(nPoSTemperature, ::ChainActive().Tip()->GetBlockHash(), {cmpctblock.header}, state, chainparams, &pindex)) {
             if (state.IsInvalid()) {
                 MaybePunishNodeForBlock(pfrom->GetId(), state, /*via_compact_block*/ true, "invalid header via cmpctblock");
                 return true;
@@ -2729,7 +2732,8 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
         if (nPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
             nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
             if (Params().NetworkIDString() != "test") {
-                g_connman->Ban(pfrom->addr, BanReasonNodeMisbehaving, gArgs.GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME) * 7);
+                LOCK(cs_main);
+                Misbehaving(pfrom->GetId(), 100, "too many consecutive pos headers");
                 return error("too many consecutive pos headers");
             }
         }
@@ -3039,7 +3043,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
             if (nTmpPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
                 nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
                 if (Params().NetworkIDString() != "test") {
-                    g_connman->Ban(pfrom->addr, BanReasonNodeMisbehaving, gArgs.GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME) * 7);
+                    Misbehaving(pfrom->GetId(), 100, "too many consecutive pos headers");
                     return error("too many consecutive pos headers");
                 }
             }
@@ -3051,6 +3055,12 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
 
     if (msg_type == NetMsgType::BLOCK)
     {
+        // Ignore block received while importing
+        if (fImporting || fReindex) {
+            LogPrint(BCLog::NET, "Unexpected block message received from peer %d\n", pfrom->GetId());
+            return true;
+        }
+
         std::shared_ptr<CBlock> pblock2 = std::make_shared<CBlock>();
         vRecv >> *pblock2;
         int64_t nTimeNow = GetSystemTimeInSeconds();
@@ -3062,8 +3072,8 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
             LOCK(cs_main);
             bool fRequested = mapBlocksInFlight.count(hash2);
 
-            BlockMap::iterator miPrev = mapBlockIndex.find(pblock2->hashPrevBlock);
-            if (miPrev == mapBlockIndex.end()) {
+            CBlockIndex* headerPrev = LookupBlockIndex(pblock2->hashPrevBlock);
+            if (!headerPrev) {
                 return error("previous header not found");
             }
 
@@ -3072,22 +3082,22 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
                 if (nPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
                     nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
                     if (Params().NetworkIDString() != "test") {
-                        g_connman->Ban(pfrom->addr, BanReasonNodeMisbehaving, gArgs.GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME) * 7);
+                        Misbehaving(pfrom->GetId(), 100, "too many consecutive pos headers");
                         return error("too many consecutive pos headers");
                     }
                 }
 
-                if (pblock2->IsProofOfStake() && !IsInitialBlockDownload())
+                if (pblock2->IsProofOfStake() && !::ChainstateActive().IsInitialBlockDownload())
                     nPoSTemperature += 1;
 
-                if (!miPrev->second->IsValid(BLOCK_VALID_TRANSACTIONS)) {
+                if (!headerPrev->IsValid(BLOCK_VALID_TRANSACTIONS)) {
                     MarkBlockAsReceived(hash2);
                     return error("this block does not connect to any valid known blocks");
                 }
             }
             // peercoin: store in memory until we can connect it to some chain
             WaitElement we; we.pblock = pblock2; we.time = nTimeNow;
-            mapBlocksWait[miPrev->second] = we;
+            mapBlocksWait[headerPrev] = we;
         }
 
         static CBlockIndex* pindexLastAccepted = nullptr;
@@ -3382,7 +3392,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
         return true;
     }
 
-    if (fAlerts && strCommand == NetMsgType::ALERT)
+    if (fAlerts && msg_type == NetMsgType::ALERT)
     {
         CAlert alert;
         vRecv >> alert;
@@ -3394,10 +3404,9 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
             {
                 // Relay
                 pfrom->setKnown.insert(alertHash);
-                if (g_connman)
-                    g_connman->ForEachNode([&alert](CNode* pnode) {
-                        alert.RelayTo(pnode);
-                    });
+                connman->ForEachNode([&alert, connman](CNode* pnode) {
+                    alert.RelayTo(pnode, connman);
+                });
             }
             else {
                 // Small DoS penalty so peers that send us lots of
@@ -3406,6 +3415,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
                 // This isn't a Misbehaving(100) (immediate ban) because the
                 // peer might be an older or different implementation with
                 // a different signature key, etc.
+                LOCK(cs_main);
                 Misbehaving(pfrom->GetId(), 10);
             }
         }
@@ -3419,10 +3429,9 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
          vRecv >> checkpoint;
 
          if (checkpoint.ProcessSyncCheckpoint(pfrom))
-             if (g_connman)
-                 g_connman->ForEachNode([&checkpoint](CNode* pnode) {
-                     checkpoint.RelayTo(pnode);
-                 });
+             connman->ForEachNode([&checkpoint, connman](CNode* pnode) {
+                 checkpoint.RelayTo(pnode, connman);
+             });
         return true;
     }
 #endif
@@ -3501,12 +3510,8 @@ bool PeerLogicValidation::ProcessMessages(CNode* pfrom, std::atomic<bool>& inter
         ProcessGetData(pfrom, chainparams, connman, m_mempool, interruptMsgProc);
 
     if (!pfrom->orphan_work_set.empty()) {
-        std::list<CTransactionRef> removed_txn;
         LOCK2(cs_main, g_cs_orphans);
-        ProcessOrphanTx(connman, m_mempool, pfrom->orphan_work_set, removed_txn);
-        for (const CTransactionRef& removedTx : removed_txn) {
-            AddToCompactExtraTransactions(removedTx);
-        }
+        ProcessOrphanTx(connman, m_mempool, pfrom->orphan_work_set);
     }
 
     if (pfrom->fDisconnect)

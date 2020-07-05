@@ -10,7 +10,7 @@
 #include <primitives/block.h>
 #include <txmempool.h>
 #include <validation.h>
-
+#include <node/context.h>
 #include <memory>
 #include <stdint.h>
 
@@ -207,6 +207,7 @@ int64_t UpdateTime(CBlockHeader* pblock);
 namespace boost {
     class thread_group;
 } // namespace boost
-void MintStake(boost::thread_group& threadGroup);
+
+void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* mempool);
 
 #endif // BITCOIN_MINER_H

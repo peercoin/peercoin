@@ -49,6 +49,7 @@
 #include <bignum.h>
 #include <checkpointsync.h>
 #include <keystore.h>
+#include <wallet/wallet.h>
 
 #include <string>
 
@@ -4941,26 +4942,22 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
 
 // peercoin: sign block
 typedef std::vector<unsigned char> valtype;
-bool SignBlock(CBlock& block, const CKeyStore& keystore)
+bool SignBlock(CBlock& block, const CWallet& keystore)
 {
     std::vector<valtype> vSolutions;
-    txnouttype whichType;
     const CTxOut& txout = block.IsProofOfStake()? block.vtx[1]->vout[1] : block.vtx[0]->vout[0];
 
-    if (!Solver(txout.scriptPubKey, whichType, vSolutions))
+    if (Solver(txout.scriptPubKey, vSolutions) != TX_PUBKEY)
         return false;
-    if (whichType == TX_PUBKEY)
-    {
-        // Sign
-        const valtype& vchPubKey = vSolutions[0];
-        CKey key;
-        if (!keystore.GetKey(CKeyID(Hash160(vchPubKey)), key))
-            return false;
-        if (key.GetPubKey() != CPubKey(vchPubKey))
-            return false;
-        return key.Sign(block.GetHash(), block.vchBlockSig);
-    }
-    return false;
+
+    // Sign
+    const valtype& vchPubKey = vSolutions[0];
+    CKey key;
+    if (!keystore.GetKey(CKeyID(Hash160(vchPubKey)), key))
+        return false;
+    if (key.GetPubKey() != CPubKey(vchPubKey))
+        return false;
+    return key.Sign(block.GetHash(), block.vchBlockSig, 0);
 }
 
 // peercoin: check block signature
@@ -4970,18 +4967,14 @@ bool CheckBlockSignature(const CBlock& block)
         return block.vchBlockSig.empty();
 
     std::vector<valtype> vSolutions;
-    txnouttype whichType;
     const CTxOut& txout = block.IsProofOfStake()? block.vtx[1]->vout[1] : block.vtx[0]->vout[0];
 
-    if (!Solver(txout.scriptPubKey, whichType, vSolutions))
+    if (Solver(txout.scriptPubKey, vSolutions) != TX_PUBKEY)
         return false;
-    if (whichType == TX_PUBKEY)
-    {
-        const valtype& vchPubKey = vSolutions[0];
-        CPubKey key(vchPubKey);
-        if (block.vchBlockSig.empty())
-            return false;
-        return key.Verify(block.GetHash(), block.vchBlockSig);
-    }
-    return false;
+    
+    const valtype& vchPubKey = vSolutions[0];
+    CPubKey key(vchPubKey);
+    if (block.vchBlockSig.empty())
+        return false;
+    return key.Verify(block.GetHash(), block.vchBlockSig);
 }

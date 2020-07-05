@@ -8,7 +8,6 @@
 #include <attributes.h>
 #include <node/transaction.h>
 #include <optional.h>
-#include <policy/feerate.h>
 #include <primitives/transaction.h>
 #include <pubkey.h>
 #include <script/sign.h>

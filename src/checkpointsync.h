@@ -110,13 +110,13 @@ public:
         return Hash(this->vchMsg.begin(), this->vchMsg.end());
     }
 
-    bool RelayTo(CNode* pnode) const
+    bool RelayTo(CNode* pnode, CConnman* connman) const
     {
         // returns true if wasn't already sent
-        if (g_connman && pnode->hashCheckpointKnown != hashCheckpoint)
+        if (pnode->hashCheckpointKnown != hashCheckpoint)
         {
             pnode->hashCheckpointKnown = hashCheckpoint;
-            g_connman->PushMessage(pnode, CNetMsgMaker(pnode->GetSendVersion()).Make("checkpoint", *this));
+            connman->PushMessage(pnode, CNetMsgMaker(pnode->GetSendVersion()).Make("checkpoint", *this));
             return true;
         }
         return false;

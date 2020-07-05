@@ -157,7 +157,7 @@ void SetCheckpointEnforce(bool fEnforce)
     gArgs.ForceSetArg("-enforcecheckpoint", fEnforce ? "1" : "0");
 }
 
-bool AcceptPendingSyncCheckpoint()
+bool AcceptPendingSyncCheckpoint(CConnman* connman)
 {
     LOCK(cs_hashSyncCheckpoint);
     if (hashPendingCheckpoint != uint256() && mapBlockIndex.count(hashPendingCheckpoint))
@@ -188,8 +188,8 @@ bool AcceptPendingSyncCheckpoint()
         checkpointMessagePending.SetNull();
         LogPrintf("AcceptPendingSyncCheckpoint : sync-checkpoint at %s\n", hashSyncCheckpoint.ToString());
         // relay the checkpoint
-        if (g_connman && !checkpointMessage.IsNull())
-            g_connman->ForEachNode([](CNode* pnode) {
+        if (!checkpointMessage.IsNull())
+            connman->ForEachNode([](CNode* pnode) {
                 checkpointMessage.RelayTo(pnode);
             });
         return true;
@@ -321,7 +321,7 @@ bool SetCheckpointPrivKey(std::string strPrivKey)
     return true;
 }
 
-bool SendSyncCheckpoint(uint256 hashCheckpoint)
+bool SendSyncCheckpoint(uint256 hashCheckpoint, CConnman* connman)
 {
     CSyncCheckpoint checkpoint;
     checkpoint.hashCheckpoint = hashCheckpoint;
@@ -348,7 +348,7 @@ bool SendSyncCheckpoint(uint256 hashCheckpoint)
     }
 
     // Relay checkpoint
-    g_connman->ForEachNode([&checkpoint](CNode* pnode) {
+    connman->ForEachNode([&checkpoint](CNode* pnode) {
         checkpoint.RelayTo(pnode);
     });
     return true;

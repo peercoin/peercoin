@@ -13,7 +13,7 @@
 #include <tinyformat.h>
 #include <uint256.h>
 
-#include <utilmoneystr.h>
+#include <util/moneystr.h>
 
 #include <vector>
 
@@ -206,7 +206,7 @@ public:
     unsigned int nStakeModifierChecksum{0}; // checksum of index; in-memeory only
     COutPoint prevoutStake{};
     unsigned int nStakeTime{0};
-    uint256 hashProofOfStake{0};
+    uint256 hashProofOfStake{};
 
     bool IsProofOfWork() const
     {
@@ -437,21 +437,15 @@ public:
         if (obj.nStatus & BLOCK_HAVE_DATA) READWRITE(VARINT(obj.nDataPos));
         if (obj.nStatus & BLOCK_HAVE_UNDO) READWRITE(VARINT(obj.nUndoPos));
 
-        READWRITE(nMint);
-        READWRITE(nMoneySupply);
-        READWRITE(nFlags);
-        READWRITE(nStakeModifier);
-        if (IsProofOfStake())
+        READWRITE(obj.nMint);
+        READWRITE(obj.nMoneySupply);
+        READWRITE(obj.nFlags);
+        READWRITE(obj.nStakeModifier);
+        if (s.GetType() & SER_POSMARKER)
         {
-            READWRITE(prevoutStake);
-            READWRITE(nStakeTime);
-            READWRITE(hashProofOfStake);
-        }
-        else if (ser_action.ForRead())
-        {
-            const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
-            const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
-            const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = uint256();
+            READWRITE(obj.prevoutStake);
+            READWRITE(obj.nStakeTime);
+            READWRITE(obj.hashProofOfStake);
         }
 
         // block header
@@ -546,5 +540,7 @@ public:
     /** Find the earliest block with timestamp equal or greater than the given time and height equal or greater than the given height. */
     CBlockIndex* FindEarliestAtLeast(int64_t nTime, int height) const;
 };
+
+const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake);
 
 #endif // BITCOIN_CHAIN_H
