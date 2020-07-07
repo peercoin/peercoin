@@ -10,6 +10,7 @@
 #include <consensus/validation.h>
 #include <consensus/tx_verify.h>
 #include <fs.h>
+#include <index/txindex.h>
 #include <interfaces/chain.h>
 #include <interfaces/wallet.h>
 #include <key.h>
@@ -21,11 +22,13 @@
 #include <script/descriptor.h>
 #include <script/script.h>
 #include <script/signingprovider.h>
+#include <timedata.h>
 #include <util/bip32.h>
 #include <util/error.h>
 #include <util/fees.h>
 #include <util/moneystr.h>
 #include <util/translation.h>
+#include <validation.h>
 #include <bignum.h>
 #include <kernel.h>
 #include <txdb.h>
@@ -2311,13 +2314,14 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibil
     std::vector<OutputGroup> utxo_pool;
     if (coin_selection_params.use_bnb) {
         // Get long term estimate
+/*
         FeeCalculation feeCalc;
         CCoinControl temp;
         temp.m_confirm_target = 1008;
         CFeeRate long_term_feerate = GetMinimumFeeRate(*this, temp, &feeCalc);
-
+*/
         // Calculate cost of change
-        CAmount cost_of_change = GetDiscardRate(*this).GetFee(coin_selection_params.change_spend_size) + coin_selection_params.effective_fee.GetFee(coin_selection_params.change_output_size);
+        CAmount cost_of_change = GetMinFee(coin_selection_params.change_spend_size, GetAdjustedTime()) + GetMinFee(coin_selection_params.change_output_size, GetAdjustedTime());
 
         // Filter by the min conf specs and add to utxo_pool and calculate effective value
         for (OutputGroup& group : groups) {
@@ -2328,11 +2332,11 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibil
             group.effective_value = 0;
             for (auto it = group.m_outputs.begin(); it != group.m_outputs.end(); ) {
                 const CInputCoin& coin = *it;
-                CAmount effective_value = coin.txout.nValue - (coin.m_input_bytes < 0 ? 0 : coin_selection_params.effective_fee.GetFee(coin.m_input_bytes));
+                CAmount effective_value = coin.txout.nValue - (coin.m_input_bytes < 0 ? 0 : GetMinFee(coin.m_input_bytes, GetAdjustedTime()));
                 // Only include outputs that are positive effective value (i.e. not dust)
                 if (effective_value > 0) {
-                    group.fee += coin.m_input_bytes < 0 ? 0 : coin_selection_params.effective_fee.GetFee(coin.m_input_bytes);
-                    group.long_term_fee += coin.m_input_bytes < 0 ? 0 : long_term_feerate.GetFee(coin.m_input_bytes);
+                    group.fee += coin.m_input_bytes < 0 ? 0 : GetMinFee(coin.m_input_bytes, GetAdjustedTime());
+                    group.long_term_fee += coin.m_input_bytes < 0 ? 0 : GetMinFee(coin.m_input_bytes, GetAdjustedTime());
                     if (coin_selection_params.m_subtract_fee_outputs) {
                         group.effective_value += coin.txout.nValue;
                     } else {
@@ -2346,7 +2350,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibil
             if (group.effective_value > 0) utxo_pool.push_back(group);
         }
         // Calculate the fees for things that aren't inputs
-        CAmount not_input_fees = coin_selection_params.effective_fee.GetFee(coin_selection_params.tx_noinputs_size);
+        CAmount not_input_fees = GetMinFee(coin_selection_params.tx_noinputs_size, GetAdjustedTime());
         bnb_used = true;
         return SelectCoinsBnB(utxo_pool, nTargetValue, cost_of_change, setCoinsRet, nValueRet, not_input_fees);
     } else {
@@ -2403,7 +2407,7 @@ bool CWallet::SelectCoins(const std::vector<COutput>& vAvailableCoins, const CAm
             if (coin.m_input_bytes <= 0) {
                 return false; // Not solvable, can't estimate size for fee
             }
-            coin.effective_value = coin.txout.nValue - coin_selection_params.effective_fee.GetFee(coin.m_input_bytes);
+            coin.effective_value = coin.txout.nValue - GetMinFee(coin.m_input_bytes, GetAdjustedTime());
             if (coin_selection_params.use_bnb) {
                 value_to_select -= coin.effective_value;
             } else {
@@ -2471,7 +2475,7 @@ bool CWallet::SignTransaction(CMutableTransaction& tx) const
             return false;
         }
         const CWalletTx& wtx = mi->second;
-        coins[input.prevout] = Coin(wtx.tx->vout[input.prevout.n], wtx.m_confirm.block_height, wtx.IsCoinBase());
+        coins[input.prevout] = Coin(wtx.tx->vout[input.prevout.n], wtx.m_confirm.block_height, wtx.IsCoinBase(), wtx.IsCoinStake(), wtx.nTimeSmart);
     }
     std::map<int, std::string> input_errors;
     return SignTransaction(tx, coins, SIGHASH_ALL, input_errors);
@@ -2793,7 +2797,10 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
     }
 
     CMutableTransaction txNew;
-    txNew.nTime = wtxNew.tx->nTime;  // peercoin: set time
+
+    txNew.nLockTime = GetLocktimeForNewTransaction(chain(), locked_chain);
+
+    txNew.nTime = tx->nTime;  // peercoin: set time
 
     CAmount nFeeNeeded;
     int nBytes;
@@ -2838,7 +2845,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
                 scriptChange = GetScriptForDestination(dest);
             }
             CTxOut change_prototype_txout(0, scriptChange);
-            coin_selection_params.change_output_size = GetSerializeSize(change_prototype_txout);
+            coin_selection_params.change_output_size = GetSerializeSize(change_prototype_txout, SER_DISK);
 
             bool fNewFees = IsProtocolV07(txNew.nTime);
             nFeeRet = (fNewFees ? MIN_TX_FEE : MIN_TX_FEE_PREV7);
@@ -2900,7 +2907,6 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
                     } else {
                         coin_selection_params.change_spend_size = (size_t)change_spend_size;
                     }
-                    coin_selection_params.effective_fee = nFeeRateNeeded;
                     if (!SelectCoins(vAvailableCoins, nValueToSelect, setCoins, nValueIn, coin_control, coin_selection_params, bnb_used))
                     {
                         // If BnB was used, it was the first pass. No longer the first pass and continue loop with knapsack.
@@ -2984,8 +2990,10 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
 //                    nPayFee = (nBytes < 100) ? MIN_TX_FEE : (int64)(nBytes * (nTransactionFee / 1000));
 //                else
 //                    nPayFee = nTransactionFee * (1 + (int64)nBytes / 1000);
+                }
 
                 nFeeNeeded = GetMinFee(nBytes, txNew.nTime);
+
                 if (nFeeRet >= nFeeNeeded) {
                     // Reduce fee to only the needed amount if possible. This
                     // prevents potential overpayment in fees if the coins
@@ -3058,13 +3066,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
 
         // Note how the sequence number is set to non-maxint so that
         // the nLockTime set above actually works.
-        //
-        // BIP125 defines opt-in RBF as any nSequence < maxint-1, so
-        // we use the highest possible value in that range (maxint-2)
-        // to avoid conflicting with other possible uses of nSequence,
-        // and in the spirit of "smallest possible change from prior
-        // behavior."
-        const uint32_t nSequence = coin_control.m_signal_bip125_rbf.get_value_or(m_signal_rbf) ? MAX_BIP125_RBF_SEQUENCE : (CTxIn::SEQUENCE_FINAL - 1);
+        const uint32_t nSequence = CTxIn::SEQUENCE_FINAL - 1;
         for (const auto& coin : selected_coins) {
             txNew.vin.push_back(CTxIn(coin.outpoint, CScript(), nSequence));
         }
@@ -3084,7 +3086,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
             return false;
         }
     }
-
+    
     if (nFeeRet > m_default_max_tx_fee) {
         strFailReason = TransactionErrorString(TransactionError::MAX_FEE_EXCEEDED);
         return false;
@@ -3949,89 +3951,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
         return nullptr;
     }
 
-    if (gArgs.IsArgSet("-mintxfee")) {
-        CAmount n = 0;
-        if (!ParseMoney(gArgs.GetArg("-mintxfee", ""), n) || 0 == n) {
-            error = AmountErrMsg("mintxfee", gArgs.GetArg("-mintxfee", "")).translated;
-            return nullptr;
-        }
-        if (n > HIGH_TX_FEE_PER_KB) {
-            warnings.push_back(AmountHighWarn("-mintxfee").translated + " " +
-                              _("This is the minimum transaction fee you pay on every transaction.").translated);
-        }
-        walletInstance->m_min_fee = CFeeRate(n);
-    }
-
-    if (gArgs.IsArgSet("-fallbackfee")) {
-        CAmount nFeePerK = 0;
-        if (!ParseMoney(gArgs.GetArg("-fallbackfee", ""), nFeePerK)) {
-            error = strprintf(_("Invalid amount for -fallbackfee=<amount>: '%s'").translated, gArgs.GetArg("-fallbackfee", ""));
-            return nullptr;
-        }
-        if (nFeePerK > HIGH_TX_FEE_PER_KB) {
-            warnings.push_back(AmountHighWarn("-fallbackfee").translated + " " +
-                              _("This is the transaction fee you may pay when fee estimates are not available.").translated);
-        }
-        walletInstance->m_fallback_fee = CFeeRate(nFeePerK);
-    }
-    // Disable fallback fee in case value was set to 0, enable if non-null value
-    walletInstance->m_allow_fallback_fee = walletInstance->m_fallback_fee.GetFeePerK() != 0;
-
-    if (gArgs.IsArgSet("-discardfee")) {
-        CAmount nFeePerK = 0;
-        if (!ParseMoney(gArgs.GetArg("-discardfee", ""), nFeePerK)) {
-            error = strprintf(_("Invalid amount for -discardfee=<amount>: '%s'").translated, gArgs.GetArg("-discardfee", ""));
-            return nullptr;
-        }
-        if (nFeePerK > HIGH_TX_FEE_PER_KB) {
-            warnings.push_back(AmountHighWarn("-discardfee").translated + " " +
-                              _("This is the transaction fee you may discard if change is smaller than dust at this level").translated);
-        }
-        walletInstance->m_discard_rate = CFeeRate(nFeePerK);
-    }
-    if (gArgs.IsArgSet("-paytxfee")) {
-        CAmount nFeePerK = 0;
-        if (!ParseMoney(gArgs.GetArg("-paytxfee", ""), nFeePerK)) {
-            error = AmountErrMsg("paytxfee", gArgs.GetArg("-paytxfee", "")).translated;
-            return nullptr;
-        }
-        if (nFeePerK > HIGH_TX_FEE_PER_KB) {
-            warnings.push_back(AmountHighWarn("-paytxfee").translated + " " +
-                              _("This is the transaction fee you will pay if you send a transaction.").translated);
-        }
-        walletInstance->m_pay_tx_fee = CFeeRate(nFeePerK, 1000);
-        if (walletInstance->m_pay_tx_fee < chain.relayMinFee()) {
-            error = strprintf(_("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)").translated,
-                gArgs.GetArg("-paytxfee", ""), chain.relayMinFee().ToString());
-            return nullptr;
-        }
-    }
-
-    if (gArgs.IsArgSet("-maxtxfee")) {
-        CAmount nMaxFee = 0;
-        if (!ParseMoney(gArgs.GetArg("-maxtxfee", ""), nMaxFee)) {
-            error = AmountErrMsg("maxtxfee", gArgs.GetArg("-maxtxfee", "")).translated;
-            return nullptr;
-        }
-        if (nMaxFee > HIGH_MAX_TX_FEE) {
-            warnings.push_back(_("-maxtxfee is set very high! Fees this large could be paid on a single transaction.").translated);
-        }
-        if (CFeeRate(nMaxFee, 1000) < chain.relayMinFee()) {
-            error = strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)").translated,
-                                       gArgs.GetArg("-maxtxfee", ""), chain.relayMinFee().ToString());
-            return nullptr;
-        }
-        walletInstance->m_default_max_tx_fee = nMaxFee;
-    }
-
-    if (chain.relayMinFee().GetFeePerK() > HIGH_TX_FEE_PER_KB) {
-        warnings.push_back(AmountHighWarn("-minrelaytxfee").translated + " " +
-                    _("The wallet will avoid paying less than the minimum relay fee.").translated);
-    }
-
-    walletInstance->m_confirm_target = gArgs.GetArg("-txconfirmtarget", DEFAULT_TX_CONFIRM_TARGET);
     walletInstance->m_spend_zero_conf_change = gArgs.GetBoolArg("-spendzeroconfchange", DEFAULT_SPEND_ZEROCONF_CHANGE);
-    walletInstance->m_signal_rbf = gArgs.GetBoolArg("-walletrbf", DEFAULT_WALLET_RBF);
 
     walletInstance->WalletLogPrintf("Wallet completed loading in %15dms\n", GetTimeMillis() - nStart);
 
@@ -4406,18 +4326,18 @@ void CWallet::ConnectScriptPubKeyManNotifiers()
 
 // peercoin: create coin stake transaction
 typedef std::vector<unsigned char> valtype;
-bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew)
+bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew)
 {
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
     static unsigned int nStakeSplitAge = (60 * 60 * 24 * 90);
-    int64_t nCombineThreshold = GetProofOfWorkReward(GetLastBlockIndex(chainActive.Tip(), false)->nBits) / 3;
+    int64_t nCombineThreshold = GetProofOfWorkReward(GetLastBlockIndex(::ChainActive().Tip(), false)->nBits) / 3;
 
     CBigNum bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
 
     // Transaction index is required to get to block header
-    if (!fTxIndex)
+    if (!g_txindex)
         return error("CreateCoinStake : transaction index unavailable");
     const Consensus::Params& params = Params().GetConsensus();
 
@@ -4429,7 +4349,7 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
     scriptEmpty.clear();
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
     // Choose coins to use
-    CAmount nBalance = GetBalance();
+    CAmount nBalance = GetBalance().m_mine_trusted;
     CAmount nReserveBalance = 0;
     if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
@@ -4439,17 +4359,23 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
     std::vector<CTransactionRef> vwtxPrev;
     CAmount nValueIn = 0;
     std::vector<COutput> vAvailableCoins;
-    AvailableCoins(vAvailableCoins, true, nullptr, txNew.nTime, 1, MAX_MONEY, MAX_MONEY, 0, 0, 9999999);
-    if (!SelectCoins(vAvailableCoins, nBalance - nReserveBalance, setCoins, nValueIn, nullptr))
+    auto locked_chain = chain().lock();
+    CCoinControl temp;
+    CoinSelectionParams coin_selection_params;
+    bool bnb_used;
+    AvailableCoins(*locked_chain, vAvailableCoins, true, &temp, txNew.nTime, 1, MAX_MONEY, MAX_MONEY, 0);
+
+    if (!SelectCoins(vAvailableCoins, nBalance - nReserveBalance, setCoins, nValueIn, temp, coin_selection_params, bnb_used))
         return false;
     if (setCoins.empty())
         return false;
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
+
     for (const auto& pcoin : setCoins)
     {
         CDiskTxPos postx;
-        if (!pblocktree->ReadTxIndex(pcoin.outpoint.hash, postx))
+        if (!g_txindex->FindTxPosition(pcoin.outpoint.hash, postx))
             continue;
 
         // Read block header
@@ -4475,7 +4401,7 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
             // Search nSearchInterval seconds back up to nMaxStakeSearchInterval
             uint256 hashProofOfStake = uint256();
             COutPoint prevoutStake = pcoin.outpoint;
-            if (CheckStakeKernelHash(nBits, chainActive.Tip(), header, postx.nTxOffset + CBlockHeader::NORMAL_SERIALIZE_SIZE, tx, prevoutStake, txNew.nTime - n, hashProofOfStake))
+            if (CheckStakeKernelHash(nBits, ::ChainActive().Tip(), header, postx.nTxOffset + CBlockHeader::NORMAL_SERIALIZE_SIZE, tx, prevoutStake, txNew.nTime - n, hashProofOfStake))
             {
                 // Found a kernel
                 if (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false))
@@ -4484,12 +4410,8 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
                 txnouttype whichType;
                 CScript scriptPubKeyOut;
                 scriptPubKeyKernel = pcoin.txout.scriptPubKey;
-                if (!Solver(scriptPubKeyKernel, whichType, vSolutions))
-                {
-                    if (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false))
-                        LogPrintf("CreateCoinStake : failed to parse kernel type=%d\n", whichType);
-                    break;
-                }
+                whichType = Solver(scriptPubKeyKernel, vSolutions);
+
                 if (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false))
                     LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
                 if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && whichType != TX_WITNESS_V0_KEYHASH)
@@ -4502,7 +4424,7 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
                 {
                     // convert to pay to public key type
                     CKey key;
-                    if (!keystore.GetKey(CKeyID(uint160(vSolutions[0])), key))
+                    if (!pwallet->GetLegacyScriptPubKeyMan()->GetKey(CKeyID(Hash160(vSolutions[0])), key))
                     {
                         if (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false))
                             LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
@@ -4534,7 +4456,7 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
     for (const auto& pcoin : setCoins)
     {
         CDiskTxPos postx;
-        if (!pblocktree->ReadTxIndex(pcoin.outpoint.hash, postx))
+        if (!g_txindex->FindTxPosition(pcoin.outpoint.hash, postx))
             continue;
 
         // Read block header
@@ -4578,11 +4500,11 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
     // Calculate coin age reward
     {
         uint64_t nCoinAge;
-        CCoinsViewCache view(pcoinsTip.get());
-        if (!GetCoinAge(txNew, view, nCoinAge))
+        CCoinsViewCache view(&::ChainstateActive().CoinsTip());
+        if (!GetCoinAge((const CTransaction)txNew, view, nCoinAge, true))
             return error("CreateCoinStake : failed to calculate coin age");
 
-        CAmount nReward = GetProofOfStakeReward(nCoinAge, txNew.nTime, chainActive.Tip()->nMoneySupply);
+        CAmount nReward = GetProofOfStakeReward(nCoinAge, txNew.nTime, ::ChainActive().Tip()->nMoneySupply);
         // Refuse to create mint that has zero or negative reward
         if(nReward <= 0) {
           return false;
@@ -4607,7 +4529,7 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
         int nIn = 0;
         for (const auto& pcoin : vwtxPrev)
         {
-            if (!SignSignature(*this, *pcoin, txNew, nIn++, SIGHASH_ALL))
+            if (!SignSignature(*pwallet->GetSolvingProvider(scriptPubKeyKernel), *pcoin, txNew, nIn++, SIGHASH_ALL))
                 return error("CreateCoinStake : failed to sign coinstake");
         }
 
@@ -4617,9 +4539,9 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
             return error("CreateCoinStake : exceeded coinstake size limit");
 
         // Check enough fee is paid
-        if (nMinFee < GetMinFee(txNew) - nMinFeeBase)
+        if (nMinFee < GetMinFee(CTransaction(txNew)) - nMinFeeBase)
         {
-            nMinFee = GetMinFee(txNew) - nMinFeeBase;
+            nMinFee = GetMinFee(CTransaction(txNew)) - nMinFeeBase;
             continue; // try signing again
         }
         else
@@ -4631,3 +4553,5 @@ bool CWallet::CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64
     }
 
     // Successfully generated coinstake
+    return true;
+}

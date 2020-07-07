@@ -14,8 +14,8 @@
 #include <rpc/util.h>
 #include <script/descriptor.h>
 #include <script/sign.h>
+#include <timedata.h>
 #include <util/bip32.h>
-#include <util/fees.h>
 #include <util/message.h> // For MessageSign()
 #include <util/moneystr.h>
 #include <util/string.h>
@@ -416,9 +416,6 @@ static UniValue sendtoaddress(const JSONRPCRequest& request)
     }
 
     CCoinControl coin_control;
-    if (!request.params[6].isNull()) {
-        coin_control.m_confirm_target = ParseConfirmTarget(request.params[6], pwallet->chain().estimateMaxBlocks());
-    }
 
     coin_control.m_avoid_address_reuse = GetAvoidReuseFlag(pwallet, request.params[8]);
     // We also enable partial spend avoidance if reuse avoidance is set.
@@ -848,9 +845,6 @@ static UniValue sendmany(const JSONRPCRequest& request)
         subtractFeeFromAmount = request.params[4].get_array();
 
     CCoinControl coin_control;
-    if (!request.params[6].isNull()) {
-        coin_control.m_confirm_target = ParseConfirmTarget(request.params[6], pwallet->chain().estimateMaxBlocks());
-    }
 
     std::set<CTxDestination> destinations;
     std::vector<CRecipient> vecSend;
@@ -1252,11 +1246,11 @@ static void MaybePushAddress(UniValue & entry, const CTxDestination &dest)
 static void PushCoinStakeCategory(UniValue & entry, const CWalletTx &wtx)
 {
     if (wtx.GetDepthInMainChain() < 1)
-        entry.push_back(Pair("category", "stake-orphan"));
+        entry.pushKV("category", "stake-orphan");
     else if (wtx.GetBlocksToMaturity() > 0)
-        entry.push_back(Pair("category", "stake"));
+        entry.pushKV("category", "stake");
     else
-        entry.push_back(Pair("category", "stake-mint"));
+        entry.pushKV("category", "stake-mint");
 }
 
 /**
@@ -1894,7 +1888,7 @@ static UniValue walletpassphrase(const JSONRPCRequest& request)
                 {
                     {"passphrase", RPCArg::Type::STR, RPCArg::Optional::NO, "The wallet passphrase"},
                     {"timeout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The time to keep the decryption key in seconds; capped at 100000000 (~3 years)."},
-                    {"mintonly", RPCArg::Type::BOOL, RPCArg::Optional::YES, "Unlock for minting only"},
+                    {"mintonly", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED, "Unlock for minting only"},
                 },
                 RPCResult{RPCResult::Type::NONE, "", ""},
                 RPCExamples{
@@ -1978,7 +1972,7 @@ static UniValue walletpassphrase(const JSONRPCRequest& request)
         fWalletUnlockMintOnly = false;
 
     UniValue ret(UniValue::VOBJ);
-    ret.push_back(Pair("unlocked_minting_only", fWalletUnlockMintOnly));
+    ret.pushKV("unlocked_minting_only", fWalletUnlockMintOnly);
 
     return ret;
 }
@@ -2330,8 +2324,8 @@ static UniValue settxfee(const JSONRPCRequest& request)
     }
 
             RPCHelpMan{"settxfee",
-                "\nDeprecated method used to set the transaction fee per kB.\n",
-                "Minimum and default transaction fee per KB is 1 cent\n"
+                "\nDeprecated method used to set the transaction fee per kB.\n"
+                "Minimum and default transaction fee per KB is 1 cent\n",
                 {
                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The transaction fee in " + CURRENCY_UNIT + "/kB"},
                 },
@@ -2344,14 +2338,6 @@ static UniValue settxfee(const JSONRPCRequest& request)
                 },
             }.Check(request);
 
-    CFeeRate tx_fee_rate(nAmount, 1000);
-    if (tx_fee_rate == CFeeRate(0)) {
-        // automatic selection
-    } else if (tx_fee_rate < pwallet->chain().relayMinFee()) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("txfee cannot be less than min relay tx fee (%s)", pwallet->chain().relayMinFee().ToString()));
-    } else if (tx_fee_rate < pwallet->m_min_fee) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("txfee cannot be less than wallet min fee (%s)", pwallet->m_min_fee.ToString()));
-    }
     return true;
 }
 
@@ -3083,10 +3069,6 @@ void FundTransaction(CWallet* const pwallet, CMutableTransaction& tx, CAmount& f
 
         if (options.exists("subtractFeeFromOutputs"))
             subtractFeeFromOutputs = options["subtractFeeFromOutputs"].get_array();
-
-        if (options.exists("conf_target")) {
-            coinControl.m_confirm_target = ParseConfirmTarget(options["conf_target"], pwallet->chain().estimateMaxBlocks());
-        }
       }
     } else {
         // if options is null and not a bool
@@ -3369,12 +3351,19 @@ UniValue rescanblockchain(const JSONRPCRequest& request)
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "stop_height must be greater than start_height");
             }
         }
-
+        if (tip_height) {
+            start_block = locked_chain->getBlockHash(start_height);
             // If called with a stop_height, set the stop_height here to
             // trigger a rescan to that height.
             // If called without a stop height, leave stop_height as null here
             // so rescan continues to the tip (even if the tip advances during
             // rescan).
+            if (stop_height) {
+                stop_block = locked_chain->getBlockHash(*stop_height);
+            }
+        }
+    }
+
     CWallet::ScanResult result =
         pwallet->ScanForWalletTransactions(start_block, stop_block, reserver, true /* fUpdate */);
     switch (result.status) {
@@ -3394,7 +3383,9 @@ UniValue rescanblockchain(const JSONRPCRequest& request)
 
 UniValue listminting(const JSONRPCRequest& request)
 {
-    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    const CWallet* const pwallet = wallet.get();
+
     if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
         return NullUniValue;
     }
@@ -3414,13 +3405,14 @@ UniValue listminting(const JSONRPCRequest& request)
 
     UniValue ret(UniValue::VARR);
     LOCK2(cs_main, pwallet->cs_wallet);
-    const CBlockIndex *p = GetLastBlockIndex(chainActive.Tip(), true);
+    const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
     double difficulty = p->GetBlockDifficulty();
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
+    const CWallet::TxItems & txOrdered = pwallet->wtxOrdered;
 
-    for (std::map<uint256, CWalletTx>::iterator it = pwallet->mapWallet.begin(); it != pwallet->mapWallet.end(); ++it)
+    for (CWallet::TxItems::const_iterator it = txOrdered.begin(); it != txOrdered.end(); ++it)
     {
-        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(pwallet, it->second);
+        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(pwallet, *it->second);
         int64_t minAge = nStakeMinAge / 60 / 60 / 24;
         for (auto& kr : txList) {
             if(!kr.spent) {
@@ -3434,10 +3426,10 @@ UniValue listminting(const JSONRPCRequest& request)
                 std::string strAge = boost::lexical_cast<std::string>(kr.getAge());
                 std::string strCoinAge = boost::lexical_cast<std::string>(kr.coinAge);
 
-                JSONRPCRequest request2;
-                request2.params = UniValue(UniValue::VARR);
-                request2.params.push_back(kr.address);
-                std::string account = AccountFromValue(getaccount(request2));
+//                JSONRPCRequest request2;
+//                request2.params = UniValue(UniValue::VARR);
+//                request2.params.push_back(kr.address);
+//                std::string account = AccountFromValue(getaccount(request2));
 
                 std::string status = "immature";
                 int searchInterval = 0;
@@ -3450,21 +3442,21 @@ UniValue listminting(const JSONRPCRequest& request)
                 }
 
                 UniValue obj(UniValue::VOBJ);
-                obj.push_back(Pair("account",                   account));
-                obj.push_back(Pair("address",                   kr.address));
-                obj.push_back(Pair("input-txid",                kr.hash.ToString()));
-                obj.push_back(Pair("time",                      strTime));
-                obj.push_back(Pair("amount",                    strAmount));
-                obj.push_back(Pair("status",                    status));
-                obj.push_back(Pair("age-in-day",                strAge));
-                obj.push_back(Pair("coin-day-weight",           strCoinAge));
-                obj.push_back(Pair("proof-of-stake-difficulty", difficulty));
-                obj.push_back(Pair("minting-probability-10min", kr.getProbToMintWithinNMinutes(difficulty, 10)));
-                obj.push_back(Pair("minting-probability-24h",   kr.getProbToMintWithinNMinutes(difficulty, 60*24)));
-                obj.push_back(Pair("minting-probability-30d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*30)));
-                obj.push_back(Pair("minting-probability-90d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*90)));
-                obj.push_back(Pair("search-interval-in-sec",    searchInterval));
-                obj.push_back(Pair("attempts",                  attemps));
+//                obj.push_back(Pair("account",                   account));
+                obj.pushKV("address",                   kr.address);
+                obj.pushKV("input-txid",                kr.hash.ToString());
+                obj.pushKV("time",                      strTime);
+                obj.pushKV("amount",                    strAmount);
+                obj.pushKV("status",                    status);
+                obj.pushKV("age-in-day",                strAge);
+                obj.pushKV("coin-day-weight",           strCoinAge);
+                obj.pushKV("proof-of-stake-difficulty", difficulty);
+                obj.pushKV("minting-probability-10min", kr.getProbToMintWithinNMinutes(difficulty, 10));
+                obj.pushKV("minting-probability-24h",   kr.getProbToMintWithinNMinutes(difficulty, 60*24));
+                obj.pushKV("minting-probability-30d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*30));
+                obj.pushKV("minting-probability-90d",   kr.getProbToMintWithinNMinutes(difficulty, 60*24*90));
+                obj.pushKV("search-interval-in-sec",    searchInterval);
+                obj.pushKV("attempts",                  attemps);
                 ret.push_back(obj);
             }
         }
@@ -3499,8 +3491,8 @@ UniValue makekeypair(const JSONRPCRequest& request)
 
     CPrivKey vchPrivKey = key.GetPrivKey();
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("PrivateKey", HexStr<CPrivKey::iterator>(vchPrivKey.begin(), vchPrivKey.end())));
-    result.push_back(Pair("PublicKey", HexStr(key.GetPubKey())));
+    result.pushKV("PrivateKey", HexStr<CPrivKey::iterator>(vchPrivKey.begin(), vchPrivKey.end()));
+    result.pushKV("PublicKey", HexStr(key.GetPubKey()));
     return result;
 }
 
@@ -3515,12 +3507,7 @@ UniValue showkeypair(const JSONRPCRequest& request)
 
     std::string strPrivKey = request.params[0].get_str();
 
-    CBitcoinSecret vchSecret;
-    bool fGood = vchSecret.SetString(strPrivKey);
-
-    if (!fGood) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
-
-    CKey key = vchSecret.GetKey();
+    CKey key = DecodeSecret(strPrivKey);
     if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
 
     CPubKey pubkey = key.GetPubKey();
@@ -3535,10 +3522,10 @@ UniValue showkeypair(const JSONRPCRequest& request)
             "Failed to sign using the key, bad key?\n");
 
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("PublicKey", HexStr(key.GetPubKey())));
+    result.pushKV("PublicKey", HexStr(key.GetPubKey()));
     CPrivKey vchPrivKey = key.GetPrivKey();
-    result.push_back(Pair("PrivateKey", HexStr<CPrivKey::iterator>(vchPrivKey.begin(), vchPrivKey.end())));
-    result.push_back(Pair("PrivateKeyHex", strPrivKey));
+    result.pushKV("PrivateKey", HexStr<CPrivKey::iterator>(vchPrivKey.begin(), vchPrivKey.end()));
+    result.pushKV("PrivateKeyHex", strPrivKey);
     return result;
 }
 
@@ -3578,8 +3565,8 @@ UniValue reservebalance(const JSONRPCRequest& request)
     CAmount nReserveBalance = 0;
     if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
         throw std::runtime_error("invalid reserve balance amount\n");
-    result.push_back(Pair("reserve", (nReserveBalance > 0)));
-    result.push_back(Pair("amount", ValueFromAmount(nReserveBalance)));
+    result.pushKV("reserve", (nReserveBalance > 0));
+    result.pushKV("amount", ValueFromAmount(nReserveBalance));
     return result;
 }
 
@@ -4276,7 +4263,6 @@ static const CRPCCommand commands[] =
     { "wallet",             "listwallets",                      &listwallets,                   {} },
     { "wallet",             "loadwallet",                       &loadwallet,                    {"filename"} },
     { "wallet",             "lockunspent",                      &lockunspent,                   {"unlock","transactions"} },
-    { "wallet",             "removeprunedfunds",                &removeprunedfunds,             {"txid"} },
     { "wallet",             "rescanblockchain",                 &rescanblockchain,              {"start_height", "stop_height"} },
     { "wallet",             "sendmany",                         &sendmany,                      {"dummy","amounts","minconf","comment","subtractfeefrom","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendtoaddress",                    &sendtoaddress,                 {"address","amount","comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode","avoid_reuse"} },

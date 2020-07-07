@@ -963,7 +963,7 @@ public:
      * @param[in] orderForm BIP 70 / BIP 21 order form details to be set on the transaction.
      */
     void CommitTransaction(CTransactionRef tx, mapValue_t mapValue, std::vector<std::pair<std::string, std::string>> orderForm);
-    bool CreateCoinStake(const CWallet& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction &txNew);
+    bool CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction &txNew);
 
     bool DummySignTx(CMutableTransaction &txNew, const std::set<CTxOut> &txouts, bool use_max_sig = false) const
     {
@@ -978,6 +978,8 @@ public:
     bool ImportPrivKeys(const std::map<CKeyID, CKey>& privkey_map, const int64_t timestamp) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     bool ImportPubKeys(const std::vector<CKeyID>& ordered_pubkeys, const std::map<CKeyID, CPubKey>& pubkey_map, const std::map<CKeyID, std::pair<CPubKey, KeyOriginInfo>>& key_origins, const bool add_keypool, const bool internal, const int64_t timestamp) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     bool ImportScriptPubKeys(const std::string& label, const std::set<CScript>& script_pub_keys, const bool have_solving_data, const bool apply_label, const int64_t timestamp) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
+
+    bool m_spend_zero_conf_change{DEFAULT_SPEND_ZEROCONF_CHANGE};
 
     OutputType m_default_address_type{DEFAULT_ADDRESS_TYPE};
     OutputType m_default_change_type{DEFAULT_CHANGE_TYPE};

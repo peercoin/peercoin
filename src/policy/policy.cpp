@@ -33,7 +33,7 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
     return true;
 }
 
-bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason)
+bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string& reason)
 {
     if (tx.nVersion > CTransaction::MAX_STANDARD_VERSION || tx.nVersion < 1) {
         reason = "version";

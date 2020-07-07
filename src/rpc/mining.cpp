@@ -24,7 +24,6 @@
 #include <shutdown.h>
 #include <txmempool.h>
 #include <univalue.h>
-#include <util/fees.h>
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <util/system.h>
@@ -33,7 +32,9 @@
 #include <versionbitsinfo.h>
 #include <warnings.h>
 
+#include <wallet/rpcwallet.h>
 #include <wallet/wallet.h>
+
 #include <kernel.h>
 
 #include <memory>
@@ -115,8 +116,8 @@ UniValue getnetworkghps(const JSONRPCRequest& request)
     int64_t nTargetSpacingWorkMin = 30;
     int64_t nTargetSpacingWork = nTargetSpacingWorkMin;
     int64_t nInterval = 72;
-    CBlockIndex* pindex = chainActive.Genesis();
-    CBlockIndex* pindexPrevWork = chainActive.Genesis();
+    CBlockIndex* pindex = ::ChainActive().Genesis();
+    CBlockIndex* pindexPrevWork = ::ChainActive().Genesis();
     while (pindex)
     {
         // Exponential moving average of recent proof-of-work block spacing
@@ -127,13 +128,13 @@ UniValue getnetworkghps(const JSONRPCRequest& request)
             nTargetSpacingWork = std::max(nTargetSpacingWork, nTargetSpacingWorkMin);
             pindexPrevWork = pindex;
         }
-        pindex = chainActive.Next(pindex);
+        pindex = ::ChainActive().Next(pindex);
     }
-    double dNetworkGhps = GetDifficulty() * 4.294967296 / nTargetSpacingWork;
+    double dNetworkGhps = GetDifficulty(pindex) * 4.294967296 / nTargetSpacingWork;
     return dNetworkGhps;
 }
 
-static UniValue generateBlocks(const CTxMemPool& mempool, const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries, CWallet * const pwallet)
+static UniValue generateBlocks(const CTxMemPool& mempool, const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries, const CWallet * const pwallet)
 {
     int nHeightEnd = 0;
     int nHeight = 0;
@@ -224,7 +225,9 @@ static UniValue generatetodescriptor(const JSONRPCRequest& request)
 
     CHECK_NONFATAL(coinbase_script.size() == 1);
 
-    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    const CWallet* const pwallet = wallet.get();
+
     if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
         return NullUniValue;
     }
@@ -254,7 +257,8 @@ static UniValue generatetoaddress(const JSONRPCRequest& request)
                 },
             }.Check(request);
 
-    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    const CWallet* const pwallet = wallet.get();
     if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
         return NullUniValue;
     }
@@ -585,7 +589,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     pblock->nNonce = 0;
 
     // NOTE: If at some point we support pre-segwit miners post-segwit-activation, this needs to take segwit support into consideration
-    const bool fPreSegWit = !IsBTC16BIPsEnabled(chainActive.Tip()->nTime);
+    const bool fPreSegWit = !IsBTC16BIPsEnabled(::ChainActive().Tip()->nTime);
 
     UniValue aCaps(UniValue::VARR); aCaps.push_back("proposal");
 
@@ -704,7 +708,8 @@ protected:
 
 static UniValue submitblock(const JSONRPCRequest& request)
 {
-    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    const CWallet* const pwallet = wallet.get();
     if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
         return NullUniValue;
     }
@@ -810,7 +815,8 @@ static UniValue submitheader(const JSONRPCRequest& request)
     }
 
     BlockValidationState state;
-    ProcessNewBlockHeaders({h}, state, Params());
+    int tmpTemp;
+    ProcessNewBlockHeaders(tmpTemp, ::ChainActive().Tip()->GetBlockHash(), {h}, state, Params());
     if (state.IsValid()) return NullUniValue;
     if (state.IsError()) {
         throw JSONRPCError(RPC_VERIFY_ERROR, state.ToString());
@@ -860,8 +866,8 @@ static UniValue estimatesmartfee(const JSONRPCRequest& request)
     RPCTypeCheckArgument(request.params[0], UniValue::VNUM);
 
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("feerate", 0.01));
-    result.push_back(Pair("blocks", chainActive.Height()));
+    result.pushKV("feerate", 0.01);
+    result.pushKV("blocks", ::ChainActive().Height());
     return result;
 }
 

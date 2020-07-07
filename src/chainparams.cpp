@@ -63,7 +63,7 @@ class CMainParams : public CChainParams {
 public:
     CMainParams() {
         strNetworkID = CBaseChainParams::MAIN;
-        consensus.BIP16Height = 0;
+        //consensus.BIP16Height = 0;
         consensus.BIP34Height = 339994;
         consensus.BIP34Hash = uint256S("000000000000000237f50af4cfe8924e8693abc5bd8ae5abb95bc6d230f5953f");
         consensus.powLimit =            uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~arith_uint256(0) >> 32;
@@ -172,7 +172,7 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = CBaseChainParams::TESTNET;
-        consensus.BIP16Height = 0;
+        //consensus.BIP16Height = 0;
         consensus.BIP34Height = 293368;
         consensus.BIP34Hash = uint256S("00000002c0b976c7a5c9878f1cec63fb4d88d68d614aedeaf8158c42d904795e");
         consensus.powLimit =            uint256S("0000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~arith_uint256(0) >> 28;
@@ -343,16 +343,7 @@ public:
         fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;
-        fMineBlocksOnDemand = true;
-    }
-
-    /**
-     * Allows modifying the Version Bits regtest parameters.
-     */
-    void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
-    {
-        consensus.vDeployments[d].nStartTime = nStartTime;
-        consensus.vDeployments[d].nTimeout = nTimeout;
+        //fMineBlocksOnDemand = true;
     }
     void UpdateActivationParametersFromArgs(const ArgsManager& args);
 };
@@ -369,36 +360,7 @@ void CRegTestParams::UpdateActivationParametersFromArgs(const ArgsManager& args)
         }
         consensus.SegwitHeight = static_cast<int>(height);
     }
-
-    if (!args.IsArgSet("-vbparams")) return;
-
-    for (const std::string& strDeployment : args.GetArgs("-vbparams")) {
-        std::vector<std::string> vDeploymentParams;
-        boost::split(vDeploymentParams, strDeployment, boost::is_any_of(":"));
-        if (vDeploymentParams.size() != 3) {
-            throw std::runtime_error("Version bits parameters malformed, expecting deployment:start:end");
-        }
-        int64_t nStartTime, nTimeout;
-        if (!ParseInt64(vDeploymentParams[1], &nStartTime)) {
-            throw std::runtime_error(strprintf("Invalid nStartTime (%s)", vDeploymentParams[1]));
-        }
-        if (!ParseInt64(vDeploymentParams[2], &nTimeout)) {
-            throw std::runtime_error(strprintf("Invalid nTimeout (%s)", vDeploymentParams[2]));
-        }
-        bool found = false;
-        for (int j=0; j < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; ++j) {
-            if (vDeploymentParams[0] == VersionBitsDeploymentInfo[j].name) {
-                UpdateVersionBitsParameters(Consensus::DeploymentPos(j), nStartTime, nTimeout);
-                found = true;
-                LogPrintf("Setting version bits activation parameters for %s to start=%ld, timeout=%ld\n", vDeploymentParams[0], nStartTime, nTimeout);
-                break;
-            }
-        }
-        if (!found) {
-            throw std::runtime_error(strprintf("Invalid deployment (%s)", vDeploymentParams[0]));
-        }
-    }
-}
+ }
 
 static std::unique_ptr<const CChainParams> globalChainParams;
 

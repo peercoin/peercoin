@@ -1,7 +1,8 @@
 #include <kernelrecord.h>
-
+#include <key_io.h>
 #include <wallet/wallet.h>
 #include <base58.h>
+#include <chainparams.h>
 #include <timedata.h>
 
 #include <math.h>

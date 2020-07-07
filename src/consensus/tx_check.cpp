@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <consensus/tx_check.h>
-
+#include <kernel.h>
 #include <primitives/transaction.h>
 #include <consensus/validation.h>
 
@@ -33,7 +33,7 @@ bool CheckTransaction(const CTransaction& tx, TxValidationState& state)
         // v0.5 protocol: zero amount allowed
         if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT &&
             !(IsProtocolV05(tx.nTime) && (txout.nValue == 0)))
-            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, "bad-txns-txoutvalue-belowminimum");
+            return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-txoutvalue-belowminimum");
     }
 
     // Check for duplicate inputs (see CVE-2018-17144)

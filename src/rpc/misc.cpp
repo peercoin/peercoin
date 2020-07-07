@@ -28,7 +28,7 @@
 static UniValue validateaddress(const JSONRPCRequest& request)
 {
             RPCHelpMan{"validateaddress",
-                "\nReturn information about the given peercoin address.\n"
+                "\nReturn information about the given peercoin address.\n",
                 {
                     {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The peercoin address to validate"},
                 },

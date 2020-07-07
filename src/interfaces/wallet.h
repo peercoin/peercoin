@@ -36,6 +36,7 @@ struct CRecipient;
 namespace interfaces {
 
 class Handler;
+struct WalletAddress;
 struct WalletBalances;
 struct WalletTx;
 struct WalletTxOut;
@@ -96,11 +97,17 @@ public:
     //! Add or update address.
     virtual bool setAddressBook(const CTxDestination& dest, const std::string& name, const std::string& purpose) = 0;
 
+    // Remove address.
+    virtual bool delAddressBook(const CTxDestination& dest) = 0;
+
     //! Look up address in wallet, return whether exists.
     virtual bool getAddress(const CTxDestination& dest,
         std::string* name,
         isminetype* is_mine,
         std::string* purpose) = 0;
+
+    //! Get wallet address list.
+    virtual std::vector<WalletAddress> getAddresses() = 0;
 
     //! Add dest data.
     virtual bool addDestData(const CTxDestination& dest, const std::string& key, const std::string& value) = 0;
@@ -141,26 +148,6 @@ public:
 
     //! Abandon transaction.
     virtual bool abandonTransaction(const uint256& txid) = 0;
-
-    //! Return whether transaction can be bumped.
-    virtual bool transactionCanBeBumped(const uint256& txid) = 0;
-
-    //! Create bump transaction.
-    virtual bool createBumpTransaction(const uint256& txid,
-        const CCoinControl& coin_control,
-        std::vector<std::string>& errors,
-        CAmount& old_fee,
-        CAmount& new_fee,
-        CMutableTransaction& mtx) = 0;
-
-    //! Sign bump transaction.
-    virtual bool signBumpTransaction(CMutableTransaction& mtx) = 0;
-
-    //! Commit bump transaction.
-    virtual bool commitBumpTransaction(const uint256& txid,
-        CMutableTransaction&& mtx,
-        std::vector<std::string>& errors,
-        uint256& bumped_txid) = 0;
 
     //! Get a transaction.
     virtual CTransactionRef getTx(const uint256& txid) = 0;
@@ -225,7 +212,7 @@ public:
 
     //! Return wallet transaction output information.
     virtual std::vector<WalletTxOut> getCoins(const std::vector<COutPoint>& outputs) = 0;
-
+/*
     //! Get required fee.
     virtual CAmount getRequiredFee(unsigned int tx_bytes) = 0;
 
@@ -237,7 +224,7 @@ public:
 
     //! Get tx confirm target.
     virtual unsigned int getConfirmTarget() = 0;
-
+*/
     // Return whether HD enabled.
     virtual bool hdEnabled() = 0;
 
@@ -290,6 +277,20 @@ public:
     //! Register handler for keypool changed messages.
     using CanGetAddressesChangedFn = std::function<void()>;
     virtual std::unique_ptr<Handler> handleCanGetAddressesChanged(CanGetAddressesChangedFn fn) = 0;
+};
+
+//! Information about one wallet address.
+struct WalletAddress
+{
+    CTxDestination dest;
+    isminetype is_mine;
+    std::string name;
+    std::string purpose;
+
+    WalletAddress(CTxDestination dest, isminetype is_mine, std::string name, std::string purpose)
+        : dest(std::move(dest)), is_mine(is_mine), name(std::move(name)), purpose(std::move(purpose))
+    {
+    }
 };
 
 //! Collection of wallet balances.

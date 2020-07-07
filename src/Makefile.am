@@ -213,7 +213,6 @@ BITCOIN_CORE_H = \
   util/bytevectorhash.h \
   util/check.h \
   util/error.h \
-  util/fees.h \
   util/spanparsing.h \
   util/system.h \
   util/macros.h \
@@ -254,9 +253,9 @@ BITCOIN_CORE_H = \
   kernel.h \
   kernelrecord.h
 
-if ENABLE_CHECKPOINTS
-  BITCOIN_CORE_H += checkpointsync.h
-endif
+#if ENABLE_CHECKPOINTS
+#  BITCOIN_CORE_H += checkpointsync.h
+#endif
 
 
 obj/build.h: FORCE
@@ -320,9 +319,9 @@ libbitcoin_server_a_SOURCES = \
   kernel.cpp \
   $(BITCOIN_CORE_H)
 
-if ENABLE_CHECKPOINTS
-libbitcoin_server_a_SOURCES += checkpointsync.cpp
-endif
+#if ENABLE_CHECKPOINTS
+#libbitcoin_server_a_SOURCES += checkpointsync.cpp
+#endif
 if ENABLE_WALLET
 libbitcoin_server_a_SOURCES += wallet/init.cpp
 endif
@@ -516,7 +515,6 @@ libbitcoin_util_a_SOURCES = \
   util/bip32.cpp \
   util/bytevectorhash.cpp \
   util/error.cpp \
-  util/fees.cpp \
   util/system.cpp \
   util/message.cpp \
   util/moneystr.cpp \

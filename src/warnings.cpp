@@ -62,19 +62,8 @@ std::string GetWarnings(bool verbose)
     {
         nPriority = 0;
         warnings_concise = strMintWarning;
-        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _(strMintWarning.c_str());
+        warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + _(strMintWarning.c_str()).translated;
     }
-
-#ifdef ENABLE_CHECKPOINTS
-    // peercoin: checkpoint warning
-    // should not enter safe mode for longer invalid chain
-    if (strCheckpointWarning != "")
-    {
-        nPriority = 900;
-        warnings_concise = strCheckpointWarning;
-        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _(strCheckpointWarning.c_str());
-    }
-#endif
 
     // Misc warnings like out of disk space and clock is wrong
     if (strMiscWarning != "") {
@@ -92,15 +81,7 @@ std::string GetWarnings(bool verbose)
         warnings_concise = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
         warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.").translated;
     }
-#ifdef ENABLE_CHECKPOINTS
-    // peercoin: detect invalid checkpoint
-    if (hashInvalidCheckpoint != uint256())
-    {
-        nPriority = 3000;
-        warnings_concise = "WARNING: Inconsistent checkpoint found! Stop enforcing checkpoints and notify developers to resolve the issue.";
-        warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _("WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers of the issue.");
-    }
-#endif
+
     // Alerts
     {
         LOCK(cs_mapAlerts);
@@ -111,7 +92,7 @@ std::string GetWarnings(bool verbose)
             {
                 nPriority = alert.nPriority;
                 warnings_concise = alert.strStatusBar;
-                warnings_verbose += (warnings_verbose.empty() ? "" : uiAlertSeperator) + _(warnings_concise.c_str());
+                warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + warnings_concise;
             }
         }
     }

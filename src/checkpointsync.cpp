@@ -56,7 +56,6 @@
 #include <validation.h>
 #include <txdb.h>
 #include <consensus/validation.h>
-#include <checkpoints.h>
 #include <chainparams.h>
 #include <base58.h>
 

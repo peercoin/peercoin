@@ -549,7 +549,7 @@ void CTxMemPool::removeConflicts(const CTransaction &tx)
 /**
  * Called when a block is connected. Removes from mempool and updates the miner fee estimator.
  */
-void CTxMemPool::removeForBlock(const std::vector<CTransactionRef>& vtx)
+void CTxMemPool::removeForBlock(const std::vector<CTransactionRef>& vtx, unsigned int nBlockHeight)
 {
     AssertLockHeld(cs);
     std::vector<const CTxMemPoolEntry*> entries;
@@ -774,7 +774,7 @@ void CTxMemPool::queryHashes(std::vector<uint256>& vtxid) const
 }
 
 static TxMempoolInfo GetInfo(CTxMemPool::indexed_transaction_set::const_iterator it) {
-    return TxMempoolInfo{it->GetSharedTx(), it->GetTime(), it->GetFee(), it->GetModifiedFee() - it->GetFee()};
+    return TxMempoolInfo{it->GetSharedTx(), it->GetTime(), it->GetFee(), it->GetTxSize(), it->GetModifiedFee() - it->GetFee()};
 }
 
 std::vector<TxMempoolInfo> CTxMemPool::infoAll() const

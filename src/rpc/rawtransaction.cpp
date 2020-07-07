@@ -794,9 +794,6 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
                 "\nAlso see createrawtransaction and signrawtransactionwithkey calls.\n",
                 {
                     {"hexstring", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The hex string of the raw transaction"},
-                    {"maxfeerate", RPCArg::Type::AMOUNT, /* default */ FormatMoney(DEFAULT_MAX_RAW_TX_FEE_RATE.GetFeePerK()),
-                        "Reject transactions whose fee rate is higher than the specified value, expressed in " + CURRENCY_UNIT +
-                            "/kB.\nSet to 0 to accept any fee rate.\n"},
                 },
                 RPCResult{
                     RPCResult::Type::STR_HEX, "", "The transaction hash in hex"
@@ -815,7 +812,6 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
 
     RPCTypeCheck(request.params, {
         UniValue::VSTR,
-        UniValueType(), // NUM or BOOL, checked later
     });
 
     // parse hex string from parameter
@@ -824,20 +820,10 @@ static UniValue sendrawtransaction(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
     CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 
-    CFeeRate max_raw_tx_fee_rate = DEFAULT_MAX_RAW_TX_FEE_RATE;
-    // TODO: temporary migration code for old clients. Remove in v0.20
-    if (request.params[1].isBool()) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Second argument must be numeric (maxfeerate) and no longer supports a boolean. To allow a transaction with high fees, set maxfeerate to 0.");
-    } else if (!request.params[1].isNull()) {
-        max_raw_tx_fee_rate = CFeeRate(AmountFromValue(request.params[1]));
-    }
-
-    int64_t virtual_size = GetVirtualTransactionSize(*tx);
-    CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
-
     std::string err_string;
     AssertLockNotHeld(cs_main);
-    const TransactionError err = BroadcastTransaction(*g_rpc_node, tx, err_string, max_raw_tx_fee, /*relay*/ true, /*wait_callback*/ true);
+    const TransactionError err = BroadcastTransaction(*g_rpc_node, tx, err_string, 0, /*relay*/ true, /*wait_callback*/ true);
+
     if (TransactionError::OK != err) {
         throw JSONRPCTransactionError(err, err_string);
     }
@@ -858,7 +844,6 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
                             {"rawtx", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, ""},
                         },
                         },
-                    {"maxfeerate", RPCArg::Type::AMOUNT, /* default */ FormatMoney(DEFAULT_MAX_RAW_TX_FEE_RATE.GetFeePerK()), "Reject transactions whose fee rate is higher than the specified value, expressed in " + CURRENCY_UNIT + "/kB\n"},
                 },
                 RPCResult{
                     RPCResult::Type::ARR, "", "The result of the mempool acceptance test for each raw transaction in the input array.\n"
@@ -886,7 +871,6 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
 
     RPCTypeCheck(request.params, {
         UniValue::VARR,
-        UniValueType(), // NUM or BOOL, checked later
     });
 
     if (request.params[0].get_array().size() != 1) {
@@ -900,17 +884,7 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
     CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
     const uint256& tx_hash = tx->GetHash();
 
-    CFeeRate max_raw_tx_fee_rate = DEFAULT_MAX_RAW_TX_FEE_RATE;
-    // TODO: temporary migration code for old clients. Remove in v0.20
-    if (request.params[1].isBool()) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Second argument must be numeric (maxfeerate) and no longer supports a boolean. To allow a transaction with high fees, set maxfeerate to 0.");
-    } else if (!request.params[1].isNull()) {
-        max_raw_tx_fee_rate = CFeeRate(AmountFromValue(request.params[1]));
-    }
-
     CTxMemPool& mempool = EnsureMemPool();
-    int64_t virtual_size = GetVirtualTransactionSize(*tx);
-    CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
 
     UniValue result(UniValue::VARR);
     UniValue result_0(UniValue::VOBJ);
@@ -921,7 +895,7 @@ static UniValue testmempoolaccept(const JSONRPCRequest& request)
     {
         LOCK(cs_main);
         test_accept_res = AcceptToMemoryPool(mempool, state, std::move(tx),
-            nullptr /* plTxnReplaced */, false /* bypass_limits */, max_raw_tx_fee, /* test_accept */ true);
+            false /* bypass_limits */, /* test_accept */ true);
     }
     result_0.pushKV("allowed", test_accept_res);
     if (!test_accept_res) {
@@ -1784,9 +1758,6 @@ UniValue analyzepsbt(const JSONRPCRequest& request)
 
     if (psbta.estimated_vsize != nullopt) {
         result.pushKV("estimated_vsize", (int)*psbta.estimated_vsize);
-    }
-    if (psbta.estimated_feerate != nullopt) {
-        result.pushKV("estimated_feerate", ValueFromAmount(psbta.estimated_feerate->GetFeePerK()));
     }
     if (psbta.fee != nullopt) {
         result.pushKV("fee", ValueFromAmount(*psbta.fee));

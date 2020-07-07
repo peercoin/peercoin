@@ -27,7 +27,7 @@
 #include <warnings.h>
 
 #include <alert.h>
-#include <base58.h>
+#include <key_io.h>
 
 #include <univalue.h>
 
@@ -797,11 +797,9 @@ UniValue sendalert(const JSONRPCRequest& request)
     alert.vchMsg = std::vector<unsigned char>(sMsg.begin(), sMsg.end());
     
     // read & check key
-    CBitcoinSecret vchSecret;
-    if (!vchSecret.SetString(request.params[1].get_str()))
+    key = DecodeSecret(request.params[1].get_str());
+    if (!key.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
-    key = vchSecret.GetKey();
-    if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
     CPubKey pubkey = key.GetPubKey();
     assert(key.VerifyPubKey(pubkey));
 
@@ -809,19 +807,23 @@ UniValue sendalert(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to sign alert, check private key?");
     if (!alert.ProcessAlert(Params().AlertKey()))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Failed to process alert.");
+
     // Relay alert
-    g_connman->ForEachNode([&alert](CNode* pnode) {
-        alert.RelayTo(pnode);
+    if(!g_rpc_node->connman)
+        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
+    CConnman * connman = g_rpc_node->connman.get();
+    connman->ForEachNode([&alert, connman](CNode* pnode) {
+        alert.RelayTo(pnode, connman);
     });
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("strStatusBar", alert.strStatusBar));
-    result.push_back(Pair("nVersion", alert.nVersion));
-    result.push_back(Pair("nMinVer", alert.nMinVer));
-    result.push_back(Pair("nMaxVer", alert.nMaxVer));
-    result.push_back(Pair("nPriority", alert.nPriority));
-    result.push_back(Pair("nID", alert.nID));
+    result.pushKV("strStatusBar", alert.strStatusBar);
+    result.pushKV("nVersion", alert.nVersion);
+    result.pushKV("nMinVer", alert.nMinVer);
+    result.pushKV("nMaxVer", alert.nMaxVer);
+    result.pushKV("nPriority", alert.nPriority);
+    result.pushKV("nID", alert.nID);
     if (alert.nCancel > 0)
-        result.push_back(Pair("nCancel", alert.nCancel));
+        result.pushKV("nCancel", alert.nCancel);
     return result;
 }
 
@@ -838,16 +840,16 @@ UniValue getcheckpoint(const JSONRPCRequest& request)
     UniValue result(UniValue::VOBJ);
     CBlockIndex* pindexCheckpoint;
 
-    result.push_back(Pair("synccheckpoint", hashSyncCheckpoint.ToString()));
-    if (mapBlockIndex.count(hashSyncCheckpoint))
+    result.pushKV("synccheckpoint", hashSyncCheckpoint.ToString());
+    if (::BlockIndex().count(hashSyncCheckpoint))
     {
-        pindexCheckpoint = mapBlockIndex[hashSyncCheckpoint];
-        result.push_back(Pair("height", pindexCheckpoint->nHeight));
-        result.push_back(Pair("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime()));
+        pindexCheckpoint = ::BlockIndex()[hashSyncCheckpoint];
+        result.pushKV("height", pindexCheckpoint->nHeight);
+        result.pushKV("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime());
     }
-    result.push_back(Pair("subscribemode", IsSyncCheckpointEnforced()? "enforce" : "advisory"));
+    result.pushKV("subscribemode", IsSyncCheckpointEnforced()? "enforce" : "advisory");
     if (gArgs.IsArgSet("-checkpointkey"))
-        result.push_back(Pair("checkpointmaster", true));
+        result.pushKV("checkpointmaster", true);
 
     return result;
 }
@@ -871,16 +873,16 @@ UniValue sendcheckpoint(const JSONRPCRequest& request)
     UniValue result(UniValue::VOBJ);
     CBlockIndex* pindexCheckpoint;
 
-    result.push_back(Pair("synccheckpoint", hashSyncCheckpoint.ToString().c_str()));
-    if (mapBlockIndex.count(hashSyncCheckpoint))
+    result.pushKV("synccheckpoint", hashSyncCheckpoint.ToString().c_str());
+    if (::BlockIndex().count(hashSyncCheckpoint))
     {
-        pindexCheckpoint = mapBlockIndex[hashSyncCheckpoint];
-        result.push_back(Pair("height", pindexCheckpoint->nHeight));
-        result.push_back(Pair("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime()));
+        pindexCheckpoint = ::BlockIndex()[hashSyncCheckpoint];
+        result.pushKV("height", pindexCheckpoint->nHeight);
+        result.pushKV("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime());
     }
-    result.push_back(Pair("subscribemode", IsSyncCheckpointEnforced()? "enforce" : "advisory"));
+    result.pushKV("subscribemode", IsSyncCheckpointEnforced()? "enforce" : "advisory");
     if (gArgs.IsArgSet("-checkpointkey"))
-        result.push_back(Pair("checkpointmaster", true));
+        result.pushKV("checkpointmaster", true);
 
     return result;
 }

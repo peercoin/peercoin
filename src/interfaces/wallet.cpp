@@ -7,7 +7,6 @@
 #include <amount.h>
 #include <interfaces/chain.h>
 #include <interfaces/handler.h>
-#include <policy/fees.h>
 #include <primitives/transaction.h>
 #include <script/standard.h>
 #include <support/allocators/secure.h>
@@ -15,8 +14,6 @@
 #include <ui_interface.h>
 #include <uint256.h>
 #include <util/system.h>
-#include <wallet/feebumper.h>
-#include <wallet/fees.h>
 #include <wallet/ismine.h>
 #include <wallet/load.h>
 #include <wallet/rpcwallet.h>
@@ -248,28 +245,6 @@ public:
         LOCK(m_wallet->cs_wallet);
         return m_wallet->AbandonTransaction(txid);
     }
-    bool transactionCanBeBumped(const uint256& txid) override
-    {
-        return feebumper::TransactionCanBeBumped(*m_wallet.get(), txid);
-    }
-    bool createBumpTransaction(const uint256& txid,
-        const CCoinControl& coin_control,
-        std::vector<std::string>& errors,
-        CAmount& old_fee,
-        CAmount& new_fee,
-        CMutableTransaction& mtx) override
-    {
-        return feebumper::CreateRateBumpTransaction(*m_wallet.get(), txid, coin_control, errors, old_fee, new_fee, mtx) == feebumper::Result::OK;
-    }
-    bool signBumpTransaction(CMutableTransaction& mtx) override { return feebumper::SignTransaction(*m_wallet.get(), mtx); }
-    bool commitBumpTransaction(const uint256& txid,
-        CMutableTransaction&& mtx,
-        std::vector<std::string>& errors,
-        uint256& bumped_txid) override
-    {
-        return feebumper::CommitTransaction(*m_wallet.get(), txid, std::move(mtx), errors, bumped_txid) ==
-               feebumper::Result::OK;
-    }
     CTransactionRef getTx(const uint256& txid) override
     {
         auto locked_chain = m_wallet->chain().lock();
@@ -444,7 +419,7 @@ public:
         }
         return result;
     }
-    CAmount getRequiredFee(unsigned int tx_bytes) override { return GetRequiredFee(*m_wallet, tx_bytes); }
+/*
     CAmount getMinimumFee(unsigned int tx_bytes,
         const CCoinControl& coin_control,
         int* returned_target,
@@ -458,6 +433,7 @@ public:
         return result;
     }
     unsigned int getConfirmTarget() override { return m_wallet->m_confirm_target; }
+*/
     bool hdEnabled() override { return m_wallet->IsHDEnabled(); }
     bool canGetAddresses() override { return m_wallet->CanGetAddresses(); }
     bool privateKeysDisabled() override { return m_wallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS); }

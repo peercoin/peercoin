@@ -74,7 +74,6 @@ void RPCServer::OnStopped(std::function<void ()> slot)
     g_rpcSignals.Stopped.connect(slot);
 }
 
-    amount /= 100;
 std::string CRPCTable::help(const std::string& strCommand, const JSONRPCRequest& helpreq) const
 {
     std::string strRet;

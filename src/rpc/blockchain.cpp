@@ -18,7 +18,6 @@
 #include <node/context.h>
 #include <node/utxo_snapshot.h>
 #include <policy/policy.h>
-#include <policy/rbf.h>
 #include <primitives/transaction.h>
 #include <rpc/server.h>
 #include <rpc/util.h>
@@ -366,9 +365,9 @@ static UniValue getdifficulty(const JSONRPCRequest& request)
 
     LOCK(cs_main);
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("proof-of-work",        GetDifficulty(NULL)));
-    obj.push_back(Pair("proof-of-stake",       GetDifficulty(GetLastBlockIndex(::ChainActive().Tip(), true))));
-    obj.push_back(Pair("search-interval",      (int)nLastCoinStakeSearchInterval));
+    obj.pushKV("proof-of-work",        GetDifficulty(NULL));
+    obj.pushKV("proof-of-stake",       GetDifficulty(GetLastBlockIndex(::ChainActive().Tip(), true)));
+    obj.pushKV("search-interval",      (int)nLastCoinStakeSearchInterval);
     return obj;
 }
 
@@ -451,17 +450,6 @@ static void entryToJSON(const CTxMemPool& pool, UniValue& info, const CTxMemPool
     }
 
     info.pushKV("spentby", spent);
-
-    // Add opt-in RBF status
-    bool rbfStatus = false;
-    RBFTransactionState rbfState = IsRBFOptIn(tx, pool);
-    if (rbfState == RBFTransactionState::UNKNOWN) {
-        throw JSONRPCError(RPC_MISC_ERROR, "Transaction is not in mempool");
-    } else if (rbfState == RBFTransactionState::REPLACEABLE_BIP125) {
-        rbfStatus = true;
-    }
-
-    info.pushKV("bip125-replaceable", rbfStatus);
 }
 
 UniValue MempoolToJSON(const CTxMemPool& pool, bool verbose)
@@ -1135,9 +1123,9 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.pushKV("size_on_disk",          CalculateCurrentUsage());
 
     UniValue softforks(UniValue::VARR);
-    softforks.push_back(SoftForkDesc("bip34", 2, tip, consensusParams));
-    softforks.push_back(SoftForkDesc("bip66", 3, tip, consensusParams));
-    softforks.push_back(SoftForkDesc("bip65", 4, tip, consensusParams));
+    softforks.push_back(SoftForkDesc("bip34", 2, tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip66", 3, tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip65", 4, tip, Params().GetConsensus()));
 
     obj.pushKV("softforks",             softforks);
 
@@ -1770,7 +1758,7 @@ static UniValue getblockstats(const JSONRPCRequest& request)
     ret_all.pushKV("minfeerate", (minfeerate == MAX_MONEY) ? 0 : minfeerate);
     ret_all.pushKV("mintxsize", mintxsize == MAX_BLOCK_SERIALIZED_SIZE ? 0 : mintxsize);
     ret_all.pushKV("outs", outputs);
-    ret_all.pushKV("subsidy", GetBlockSubsidy(pindex->nHeight, Params().GetConsensus()));
+    ret_all.pushKV("subsidy", GetProofOfWorkReward(pindex->nBits));
     ret_all.pushKV("swtotal_size", swtotal_size);
     ret_all.pushKV("swtotal_weight", swtotal_weight);
     ret_all.pushKV("swtxs", swtxs);
