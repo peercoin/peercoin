@@ -187,8 +187,7 @@ public:
         bool bip32derivs,
         size_t* n_signed,
         PartiallySignedTransaction& psbtx,
-        bool& complete,
-        size_t* n_signed) = 0;
+        bool& complete) = 0;
 
     //! Get balances.
     virtual WalletBalances getBalances() = 0;
