@@ -66,21 +66,16 @@
         <translation>Adrese primalaca</translation>
     </message>
     <message>
-<<<<<<<< HEAD:src/qt/locale/bitcoin_bs.ts
-        <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Ovo su vaše Bitcoin adrese za slanje novca. Uvijek provjerite iznos i adresu primaoca prije slanja novca.</translation>
-    </message>
-    <message>
         <source>&amp;Copy Address</source>
         <translation>&amp;Kopirajte adresu</translation>
-========
+	</message>
+	<message>
         <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation>אלו הן כתובות הביטקוין שלך לשליחת תשלומים. תמיד בדוק את כתובת הארנק המקבל לפני שליחת מטבעות</translation>
     </message>
     <message>
         <source>These are your Peercoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation>אלו הן כתובות הביטקוין שלך לקבלת תשלומים. מומלץ להשתמש בכתובת חדשה בכל העברת מטבעות</translation>
->>>>>>>> 740614e3c... qt: Translations update pre-branch:src/qt/locale/bitcoin_he_IL.ts
     </message>
     <message>
         <source>Copy &amp;Label</source>

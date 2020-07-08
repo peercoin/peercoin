@@ -135,16 +135,9 @@ void WalletFrame::gotoHistoryPage()
         i.value()->gotoHistoryPage();
 }
 
-void WalletFrame::gotoMultisigPage()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoMultisigPage();
-}
-
 void WalletFrame::gotoMintingPage()
 {
-    QMap<QString, WalletView*>::const_iterator i;
+    QMap<WalletModel*, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
         i.value()->gotoMintingPage();
 }

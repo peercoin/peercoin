@@ -5,6 +5,7 @@
 #define PEERCOIN_KERNELRECORD_H
 
 #include <uint256.h>
+#include <interfaces/wallet.h>
 
 class CWallet;
 class CWalletTx;
@@ -30,8 +31,8 @@ public:
     {
     }
 
-    static bool showTransaction(const CWalletTx &wtx);
-    static std::vector<KernelRecord> decomposeOutput(const CWallet *wallet, const CWalletTx &wtx);
+    static bool showTransaction(bool isCoinbase, int depth);
+    static std::vector<KernelRecord> decomposeOutput(interfaces::Wallet &wallet, const interfaces::WalletTx &wtx);
 
 
     uint256 hash;

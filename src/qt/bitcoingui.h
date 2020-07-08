@@ -131,7 +131,6 @@ private:
     QAction* overviewAction = nullptr;
     QAction* historyAction = nullptr;
     QAction* mintingAction;
-    QAction* multisigAction;
     QAction* quitAction = nullptr;
     QAction* sendCoinsAction = nullptr;
     QAction* sendCoinsMenuAction = nullptr;
@@ -148,6 +147,7 @@ private:
     QAction* backupWalletAction = nullptr;
     QAction* changePassphraseAction = nullptr;
     QAction* decryptForMintingAction = nullptr;
+    QAction* aboutQtAction = nullptr;
     QAction* openRPCConsoleAction = nullptr;
     QAction* openAction = nullptr;
     QAction* showHelpMessageAction = nullptr;
@@ -268,8 +268,6 @@ public Q_SLOTS:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-    /** Switch to multisig page */
-    void gotoMultisigPage();
     /** Switch to minting page */
     void gotoMintingPage();
     /** Switch to receive coins page */

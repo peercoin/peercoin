@@ -21,7 +21,6 @@
 #include <interfaces/node.h>
 #include <ui_interface.h>
 
-#include <qt/multisigdialog.h>
 #include <qt/mintingview.h>
 #include <wallet/wallet.h>
 
@@ -64,7 +63,6 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     mintingPage->setLayout(vboxMinting);
 
     receiveCoinsPage = new ReceiveCoinsDialog(platformStyle);
-    multisigPage = new MultisigDialog(platformStyle);
     sendCoinsPage = new SendCoinsDialog(platformStyle);
 
     usedSendingAddressesPage = new AddressBookPage(platformStyle, AddressBookPage::ForEditing, AddressBookPage::SendingTab, this);
@@ -73,7 +71,6 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     addWidget(overviewPage);
     addWidget(transactionsPage);
     addWidget(mintingPage);
-    addWidget(multisigPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
 
@@ -115,7 +112,6 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
     // Put transaction list in tabs
     transactionView->setModel(_walletModel);
     mintingView->setModel(_walletModel);
-    multisigPage->setModel(_walletModel);
     overviewPage->setWalletModel(_walletModel);
     receiveCoinsPage->setModel(_walletModel);
     sendCoinsPage->setModel(_walletModel);
@@ -180,11 +176,6 @@ void WalletView::gotoHistoryPage()
 void WalletView::gotoMintingPage()
 {
     setCurrentWidget(mintingPage);
-}
-
-void WalletView::gotoMultisigPage()
-{
-    setCurrentWidget(multisigPage);
 }
 
 void WalletView::gotoReceiveCoinsPage()

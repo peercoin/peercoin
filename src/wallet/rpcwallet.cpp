@@ -6,6 +6,7 @@
 #include <amount.h>
 #include <core_io.h>
 #include <interfaces/chain.h>
+#include <interfaces/wallet.h>
 #include <key_io.h>
 #include <node/context.h>
 #include <outputtype.h>
@@ -3410,9 +3411,15 @@ UniValue listminting(const JSONRPCRequest& request)
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
     const CWallet::TxItems & txOrdered = pwallet->wtxOrdered;
 
+    std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(wallet);
+    const auto& vwtx = iwallet->getWalletTxs();
+    for(const auto& wtx : vwtx) {
+        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(*iwallet, wtx);
+/*
     for (CWallet::TxItems::const_iterator it = txOrdered.begin(); it != txOrdered.end(); ++it)
     {
-        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(pwallet, *it->second);
+        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(pwallet, MakeWalletTx(pwallet, *it->second));
+*/
         int64_t minAge = nStakeMinAge / 60 / 60 / 24;
         for (auto& kr : txList) {
             if(!kr.spent) {

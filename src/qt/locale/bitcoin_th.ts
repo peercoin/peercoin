@@ -254,8 +254,6 @@
         <translation>&amp;เปลี่ยนรหัสผ่าน...</translation>
     </message>
     <message>
-<<<<<<<< HEAD:src/qt/locale/bitcoin_th.ts
-========
         <source>&amp;Sending addresses...</source>
         <translation>&amp;ที่เก็บเงิน ที่จะส่ง peercoin</translation>
     </message>
@@ -264,7 +262,6 @@
         <translation>&amp;ที่เก็บเงิน ที่จะรับ peercoin</translation>
     </message>
     <message>
->>>>>>>> 977dd23e4... qt: Periodic translations update:src/qt/locale/bitcoin_th_TH.ts
         <source>Open &amp;URI...</source>
         <translation>เปิด &amp;URI</translation>
     </message>
@@ -293,8 +290,6 @@
         <translation>&amp;ยืนยันข้อความ...</translation>
     </message>
     <message>
-<<<<<<<< HEAD:src/qt/locale/bitcoin_th.ts
-========
         <source>Peercoin</source>
         <translation>Peercoin</translation>
     </message>
@@ -303,7 +298,6 @@
         <translation>กระเป๋าเงิน</translation>
     </message>
     <message>
->>>>>>>> 977dd23e4... qt: Periodic translations update:src/qt/locale/bitcoin_th_TH.ts
         <source>&amp;Send</source>
         <translation>&amp;ส่ง</translation>
     </message>

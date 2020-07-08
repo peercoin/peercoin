@@ -6,6 +6,7 @@
 
 #include <QAbstractTableModel>
 #include <QStringList>
+#include <interfaces/handler.h>
 
 class CWallet;
 class MintingTablePriv;
@@ -20,7 +21,7 @@ class MintingTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit MintingTableModel(CWallet* wallet, WalletModel *parent = 0);
+    explicit MintingTableModel(WalletModel *parent = 0);
     ~MintingTableModel();
 
     enum ColumnIndex {
@@ -43,8 +44,9 @@ public:
     void setMintingInterval(int interval);
 
 private:
-    CWallet* wallet;
     WalletModel *walletModel;
+    std::unique_ptr<interfaces::Handler> m_handler_transaction_changed;
+    std::unique_ptr<interfaces::Handler> m_handler_show_progress;
     QStringList columns;
     int mintingInterval;
     MintingTablePriv *priv;

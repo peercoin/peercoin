@@ -66,8 +66,6 @@ public:
 public Q_SLOTS:
     /** Switch to overview (home) page */
     void gotoOverviewPage();
-    /** Switch to multisig page */
-    void gotoMultisigPage();
     /** Switch to minting page */
     void gotoMintingPage();
     /** Switch to history (transactions) page */

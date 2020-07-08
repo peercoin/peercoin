@@ -884,11 +884,6 @@ void BitcoinGUI::gotoHistoryPage()
     if (walletFrame) walletFrame->gotoHistoryPage();
 }
 
-void BitcoinGUI::gotoMultisigPage()
-{
-    if (walletFrame) walletFrame->gotoMultisigPage();
-}
-
 void BitcoinGUI::gotoMintingPage()
 {
     if (walletFrame) walletFrame->gotoMintingPage();

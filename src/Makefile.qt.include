@@ -26,10 +26,11 @@ QT_FORMS_UI = \
   qt/forms/sendcoinsdialog.ui \
   qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
-  qt/forms/transactiondescdialog.ui \
-  qt/forms/multisigaddressentry.ui \
-  qt/forms/multisigdialog.ui \
-  qt/forms/multisiginputentry.ui
+  qt/forms/transactiondescdialog.ui 
+# \
+#  qt/forms/multisigaddressentry.ui \
+#  qt/forms/multisigdialog.ui \
+#  qt/forms/multisiginputentry.ui
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -83,10 +84,11 @@ QT_MOC_CPP = \
   qt/moc_walletview.cpp \
   qt/moc_mintingfilterproxy.cpp \
   qt/moc_mintingtablemodel.cpp \
-  qt/moc_mintingview.cpp \
-  qt/moc_multisigaddressentry.cpp \
-  qt/moc_multisigdialog.cpp \
-  qt/moc_multisiginputentry.cpp
+  qt/moc_mintingview.cpp
+# \
+#  qt/moc_multisigaddressentry.cpp \
+#  qt/moc_multisigdialog.cpp \
+#  qt/moc_multisiginputentry.cpp
 
 BITCOIN_MM = \
   qt/macdockiconhandler.mm \
@@ -164,10 +166,11 @@ BITCOIN_QT_H = \
   qt/winshutdownmonitor.h \
   qt/mintingfilterproxy.h \
   qt/mintingtablemodel.h \
-  qt/mintingview.h \
-  qt/multisigaddressentry.h \
-  qt/multisigdialog.h \
-  qt/multisiginputentry.h
+  qt/mintingview.h 
+# \
+#  qt/multisigaddressentry.h \
+#  qt/multisigdialog.h \
+#  qt/multisiginputentry.h
 
 
 RES_ICONS = \
@@ -203,7 +206,6 @@ RES_ICONS = \
   qt/res/icons/history.png \
   qt/res/icons/minting.png \
   qt/res/icons/sign.png \
-  qt/res/icons/multisig.png \
   qt/res/icons/lock_closed.png \
   qt/res/icons/lock_open.png \
   qt/res/icons/network_disabled.png \
@@ -332,10 +334,11 @@ BITCOIN_QT_WALLET_CPP = \
   qt/walletview.cpp \
   qt/mintingfilterproxy.cpp \
   qt/mintingtablemodel.cpp \
-  qt/mintingview.cpp \
-  qt/multisigaddressentry.cpp \
-  qt/multisigdialog.cpp \
-  qt/multisiginputentry.cpp
+  qt/mintingview.cpp 
+# \
+#  qt/multisigaddressentry.cpp \
+#  qt/multisigdialog.cpp \
+#  qt/multisiginputentry.cpp
 
 BITCOIN_QT_CPP = $(BITCOIN_QT_BASE_CPP)
 if TARGET_WINDOWS

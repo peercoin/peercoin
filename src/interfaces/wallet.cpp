@@ -52,6 +52,7 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
     result.time = wtx.GetTxTime();
     result.value_map = wtx.mapValue;
     result.is_coinbase = wtx.IsCoinBase();
+    result.is_coinstake = wtx.IsCoinStake();
     return result;
 }
 
@@ -68,6 +69,7 @@ WalletTxStatus MakeWalletTxStatus(interfaces::Chain::Lock& locked_chain, const C
     result.is_trusted = wtx.IsTrusted(locked_chain);
     result.is_abandoned = wtx.isAbandoned();
     result.is_coinbase = wtx.IsCoinBase();
+    result.is_coinstake = wtx.IsCoinStake();
     result.is_in_main_chain = wtx.IsInMainChain();
     return result;
 }
@@ -437,6 +439,7 @@ public:
     bool hdEnabled() override { return m_wallet->IsHDEnabled(); }
     bool canGetAddresses() override { return m_wallet->CanGetAddresses(); }
     bool privateKeysDisabled() override { return m_wallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS); }
+    bool IsWalletFlagSet(uint64_t flag) override { return m_wallet->IsWalletFlagSet(flag); }
     OutputType getDefaultAddressType() override { return m_wallet->m_default_address_type; }
     OutputType getDefaultChangeType() override { return m_wallet->m_default_change_type; }
     CAmount getDefaultMaxTxFee() override { return m_wallet->m_default_max_tx_fee; }
@@ -474,6 +477,25 @@ public:
     std::unique_ptr<Handler> handleCanGetAddressesChanged(CanGetAddressesChangedFn fn) override
     {
         return MakeHandler(m_wallet->NotifyCanGetAddressesChanged.connect(fn));
+    }
+
+    void relockWalletAfterDuration(int nDuration) override
+    {
+        // Keep a weak pointer to the wallet so that it is possible to unload the
+        // wallet before the following callback is called. If a valid shared pointer
+        // is acquired in the callback then the wallet is still loaded.
+        std::weak_ptr<CWallet> weak_wallet = m_wallet;
+        m_wallet->chain().rpcRunLater(strprintf("lockwallet(%s)", m_wallet->GetName()), [weak_wallet] {
+            if (auto shared_wallet = weak_wallet.lock()) {
+                LOCK(shared_wallet->cs_wallet);
+                shared_wallet->Lock();
+                shared_wallet->nRelockTime = 0;
+            }
+        }, nDuration);
+    }
+
+    virtual std::shared_ptr<CWallet> getWallet() override {
+        return m_wallet;
     }
 
     std::shared_ptr<CWallet> m_wallet;

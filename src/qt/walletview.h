@@ -16,7 +16,6 @@ class ReceiveCoinsDialog;
 class SendCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
-class MultisigDialog;
 class MintingView;
 class WalletModel;
 class AddressBookPage;
@@ -62,7 +61,6 @@ private:
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
     QWidget *mintingPage;
-    MultisigDialog *multisigPage;
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
     AddressBookPage *usedSendingAddressesPage;
@@ -79,8 +77,6 @@ public Q_SLOTS:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-    /** Switch to multisig page */
-    void gotoMultisigPage();
     /** Switch to minting page */
     void gotoMintingPage();
     /** Switch to receive coins page */

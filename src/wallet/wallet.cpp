@@ -25,7 +25,6 @@
 #include <timedata.h>
 #include <util/bip32.h>
 #include <util/error.h>
-#include <util/fees.h>
 #include <util/moneystr.h>
 #include <util/translation.h>
 #include <validation.h>

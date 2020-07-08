@@ -40,11 +40,6 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     ui->databaseCache->setMaximum(nMaxDbCache);
     ui->threadsScriptVerif->setMinimum(-GetNumCores());
     ui->threadsScriptVerif->setMaximum(MAX_SCRIPTCHECK_THREADS);
-    ui->pruneWarning->setVisible(false);
-    ui->pruneWarning->setStyleSheet("QLabel { color: red; }");
-
-    ui->pruneSize->setEnabled(false);
-    connect(ui->prune, &QPushButton::toggled, ui->pruneSize, &QWidget::setEnabled);
 
     /* Network elements init */
 #ifndef USE_UPNP
@@ -74,7 +69,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     /* hide launch at startup option on macOS */
     ui->bitcoinAtStartup->setVisible(false);
     ui->verticalLayout_Main->removeWidget(ui->bitcoinAtStartup);
-    ui->verticalLayout_Main->removeItem(ui->horizontalSpacer_0_Main);
+    //ui->verticalLayout_Main->removeItem(ui->horizontalSpacer_0_Main);
 #endif
 
     /* remove Wallet tab and 3rd party-URL textbox in case of -disablewallet */
@@ -152,10 +147,6 @@ void OptionsDialog::setModel(OptionsModel *_model)
         if (_model->isRestartRequired())
             showRestartWarning(true);
 
-        // Prune values are in GB to be consistent with intro.cpp
-        static constexpr uint64_t nMinDiskSpace = (MIN_DISK_SPACE_FOR_BLOCK_FILES / GB_BYTES) + (MIN_DISK_SPACE_FOR_BLOCK_FILES % GB_BYTES) ? 1 : 0;
-        ui->pruneSize->setRange(nMinDiskSpace, std::numeric_limits<int>::max());
-
         QString strLabel = _model->getOverriddenByCommandLine();
         if (strLabel.isEmpty())
             strLabel = tr("none");
@@ -171,9 +162,6 @@ void OptionsDialog::setModel(OptionsModel *_model)
     /* warn when one of the following settings changes by user action (placed here so init via mapper doesn't trigger them) */
 
     /* Main */
-    connect(ui->prune, &QCheckBox::clicked, this, &OptionsDialog::showRestartWarning);
-    connect(ui->prune, &QCheckBox::clicked, this, &OptionsDialog::togglePruneWarning);
-    connect(ui->pruneSize, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
     connect(ui->databaseCache, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
     connect(ui->threadsScriptVerif, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
     /* Wallet */
@@ -298,11 +286,6 @@ void OptionsDialog::on_hideTrayIcon_stateChanged(int fState)
     {
         ui->minimizeToTray->setEnabled(true);
     }
-}
-
-void OptionsDialog::togglePruneWarning(bool enabled)
-{
-    ui->pruneWarning->setVisible(!ui->pruneWarning->isVisible());
 }
 
 void OptionsDialog::showRestartWarning(bool fPersistent)

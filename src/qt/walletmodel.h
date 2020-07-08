@@ -65,7 +65,9 @@ public:
         AmountWithFeeExceedsBalance,
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
-        PaymentRequestExpired
+        TransactionCommitFailed,
+        PaymentRequestExpired,
+        MintOnlyMode
     };
 
     enum EncryptionStatus
@@ -81,7 +83,6 @@ public:
     TransactionTableModel *getTransactionTableModel();
     RecentRequestsTableModel *getRecentRequestsTableModel();
 
-    CAmount getStake() const;
     EncryptionStatus getEncryptionStatus() const;
 
     // Check address for validity
@@ -108,7 +109,7 @@ public:
     // Wallet encryption
     bool setWalletEncrypted(bool encrypted, const SecureString &passphrase);
     // Passphrase only needed when unlocking
-    bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString());
+    bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString(), int64_t nSeconds = 0, bool fMintOnly = false);
     bool changePassphrase(const SecureString &oldPass, const SecureString &newPass);
 
     // RAI object for unlocking wallet, returned by requestUnlock()
@@ -140,6 +141,8 @@ public:
     bool saveReceiveRequest(const std::string &sAddress, const int64_t nId, const std::string &sRequest);
 
     static bool isWalletEnabled();
+    bool privateKeysDisabled() const;
+    bool canGetAddresses() const;
 
     interfaces::Node& node() const { return m_node; }
     interfaces::Wallet& wallet() const { return *m_wallet; }
@@ -148,6 +151,8 @@ public:
     QString getDisplayName() const;
 
     bool isMultiwallet();
+    AddressTableModel* getAddressTableModel() const { return addressTableModel; }
+
 private:
     std::unique_ptr<interfaces::Wallet> m_wallet;
     std::unique_ptr<interfaces::Handler> m_handler_unload;
@@ -173,7 +178,6 @@ private:
 
     // Cache some values to be able to detect changes
     interfaces::WalletBalances m_cached_balances;
-    CAmount cachedStake;
     EncryptionStatus cachedEncryptionStatus;
     int cachedNumBlocks;
 

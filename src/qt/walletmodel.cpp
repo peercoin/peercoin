@@ -63,11 +63,6 @@ void WalletModel::startPollBalance()
     timer->start(MODEL_UPDATE_DELAY);
 }
 
-CAmount WalletModel::getStake() const
-{
-    return wallet->GetStake();
-}
-
 void WalletModel::updateStatus()
 {
     EncryptionStatus newEncryptionStatus = getEncryptionStatus();
@@ -133,6 +128,9 @@ bool WalletModel::validateAddress(const QString &address)
 
 WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransaction &transaction, const CCoinControl& coinControl)
 {
+    if (fWalletUnlockMintOnly)
+        return MintOnlyMode;
+
     CAmount total = 0;
     bool fSubtractFeeFromAmount = false;
     QList<SendCoinsRecipient> recipients = transaction.getRecipients();
@@ -313,7 +311,7 @@ bool WalletModel::setWalletEncrypted(bool encrypted, const SecureString &passphr
     }
 }
 
-bool WalletModel::setWalletLocked(bool locked, const SecureString &passPhrase)
+bool WalletModel::setWalletLocked(bool locked, const SecureString &passPhrase, int64_t nSeconds, bool fMintOnly)
 {
     if(locked)
     {
@@ -323,7 +321,15 @@ bool WalletModel::setWalletLocked(bool locked, const SecureString &passPhrase)
     else
     {
         // Unlock
-        return m_wallet->unlock(passPhrase);
+        if (!m_wallet->unlock(passPhrase))
+            return false;
+
+        fWalletUnlockMintOnly = fMintOnly;
+
+        if (nSeconds > 0 && nSeconds < std::numeric_limits<int>::max())  // seconds
+            m_wallet->relockWalletAfterDuration(nSeconds);
+
+        return true;
     }
 }
 
@@ -484,6 +490,16 @@ bool WalletModel::saveReceiveRequest(const std::string &sAddress, const int64_t 
 bool WalletModel::isWalletEnabled()
 {
    return !gArgs.GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET);
+}
+
+bool WalletModel::privateKeysDisabled() const
+{
+    return m_wallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
+}
+
+bool WalletModel::canGetAddresses() const
+{
+    return m_wallet->canGetAddresses();
 }
 
 QString WalletModel::getWalletName() const

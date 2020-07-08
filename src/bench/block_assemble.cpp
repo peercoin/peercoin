@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <bench/bench.h>
+#include <chainparams.h>
 #include <consensus/validation.h>
 #include <crypto/sha256.h>
 #include <test/util/mining.h>
@@ -27,7 +28,8 @@ static void AssembleBlock(benchmark::State& state)
 
     // Collect some loose transactions that spend the coinbases of our mined blocks
     constexpr size_t NUM_BLOCKS{200};
-    std::array<CTransactionRef, NUM_BLOCKS - ::Params().GetConsensus().nCoinbaseMaturity + 1> txs;
+    std::vector<CTransactionRef> txs;
+    txs.reserve(NUM_BLOCKS - ::Params().GetConsensus().nCoinbaseMaturity + 1);
     for (size_t b{0}; b < NUM_BLOCKS; ++b) {
         CMutableTransaction tx;
         tx.vin.push_back(MineBlock(g_testing_setup->m_node, SCRIPT_PUB));
@@ -41,7 +43,7 @@ static void AssembleBlock(benchmark::State& state)
 
         for (const auto& txr : txs) {
             TxValidationState state;
-            bool ret{::AcceptToMemoryPool(::mempool, state, txr, nullptr /* plTxnReplaced */, false /* bypass_limits */, /* nAbsurdFee */ 0)};
+            bool ret{::AcceptToMemoryPool(::mempool, state, txr, nullptr /* plTxnReplaced */, false /* bypass_limits */)};
             assert(ret);
         }
     }

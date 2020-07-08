@@ -261,12 +261,6 @@ void TransactionTableModel::updateConfirmations()
     Q_EMIT dataChanged(index(0, ToAddress), index(priv->size()-1, ToAddress));
 }
 
-void TransactionTableModel::refresh()
-{
-    priv->refreshWallet();
-    Q_EMIT dataChanged(index(0, 0), index(priv->size() - 1, Amount));
-}
-
 int TransactionTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
