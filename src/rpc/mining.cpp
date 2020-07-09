@@ -282,6 +282,17 @@ static UniValue generatetodescriptor(const JSONRPCRequest& request)
     return generateBlocks(chainman, mempool, coinbase_script, num_blocks, max_tries, pwallet);
 }
 
+static UniValue generate(const JSONRPCRequest& request)
+{
+    const std::string help_str{"generate ( nblocks maxtries ) has been replaced by the -generate cli option. Refer to -help for more information."};
+
+    if (request.fHelp) {
+        throw std::runtime_error(help_str);
+    } else {
+        throw JSONRPCError(RPC_METHOD_NOT_FOUND, help_str);
+    }
+}
+
 static UniValue generatetoaddress(const JSONRPCRequest& request)
 {
             RPCHelpMan{"generatetoaddress",
@@ -1046,6 +1057,7 @@ static const CRPCCommand commands[] =
     { "generating",         "generateblock",          &generateblock,          {"output","transactions"} },
 
     { "util",               "estimatesmartfee",       &estimatesmartfee,       {"conf_target", "estimate_mode"} },
+    { "hidden",             "generate",               &generate,               {} },
 };
 // clang-format on
     for (const auto& c : commands) {
