@@ -506,13 +506,14 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
     OutputType output_type = pwallet->m_default_change_type != OutputType::CHANGE_AUTO ? pwallet->m_default_change_type : pwallet->m_default_address_type;
     ReserveDestination reservedest(pwallet.get(), output_type);
     CTxDestination dest;
-    if (!reservedest.GetReservedDestination(dest, true))
-        throw std::runtime_error("Error: Keypool ran out, please call keypoolrefill first");
-
     // Compute timeout for pos as sqrt(numUTXO)
     unsigned int pos_timio;
     {
         LOCK2(cs_main, pwallet->cs_wallet);
+
+        if (!reservedest.GetReservedDestination(dest, true))
+            throw std::runtime_error("Error: Keypool ran out, please call keypoolrefill first");
+
         std::vector<COutput> vCoins;
         CCoinControl coincontrol;
         pwallet->AvailableCoins(*pwallet->chain().lock(), vCoins, false, &coincontrol);
