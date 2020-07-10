@@ -1201,7 +1201,9 @@ void PeerManagerImpl::InitializeNode(CNode *pnode)
         assert(m_txrequest.Count(nodeid) == 0);
     }
     {
-        PeerRef peer = std::make_shared<Peer>(nodeid);
+        // Addr relay is disabled for outbound block-relay-only peers to
+        // prevent adversaries from inferring these links from addr traffic.
+        PeerRef peer = std::make_shared<Peer>(nodeid, /* addr_relay = */ !pnode->IsBlockOnlyConn());
         LOCK(m_peer_mutex);
         m_peer_map.emplace_hint(m_peer_map.end(), nodeid, std::move(peer));
     }
