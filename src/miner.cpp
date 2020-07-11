@@ -540,14 +540,17 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                     strMintWarning = strMintMessage;
                     uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
                 }
-                UninterruptibleSleep(std::chrono::milliseconds{3000});
+                if (!connman->interruptNet.sleep_for(std::chrono::seconds(3)))
+                    return;
             }
 
             if (Params().MiningRequiresPeers()) {
                 // Busy-wait for the network to come online so we don't waste time mining
                 // on an obsolete chain. In regtest mode we expect to fly solo.
-                while(connman == nullptr || connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0 || ::ChainstateActive().IsInitialBlockDownload())
-                    UninterruptibleSleep(std::chrono::milliseconds{10000});
+                while(connman == nullptr || connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0 || ::ChainstateActive().IsInitialBlockDownload()) {
+                    if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                        return;
+                    }
             }
 
             while (GuessVerificationProgress(Params().TxData(), ::ChainActive().Tip()) < 0.996)
@@ -557,7 +560,8 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                     strMintWarning = strMintSyncMessage;
                     uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
                 }
-                UninterruptibleSleep(std::chrono::milliseconds{10000});
+                if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                        return;
             }
 
             strMintWarning = strMintEmpty;
@@ -573,8 +577,8 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
             {
                 if (fPoSCancel == true)
                 {
-                    UninterruptibleSleep(std::chrono::milliseconds{pos_timio});
-                    continue;
+                    if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
+                        return;
                 }
                 strMintWarning = strMintBlockMessage;
                 uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
@@ -599,9 +603,11 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                 ProcessBlockFound(pblock, Params());
                 reservedest.KeepDestination();
                 // Rest for ~3 minutes after successful block to preserve close quick
-                UninterruptibleSleep(std::chrono::milliseconds{60 * 1000 + GetRand(4 * 60 * 1000)}); 
+                if (!connman->interruptNet.sleep_for(std::chrono::seconds(60 + GetRand(4))))
+                    return;
             }
-            UninterruptibleSleep(std::chrono::milliseconds{pos_timio});
+            if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
+                return;
 
             continue;
         }

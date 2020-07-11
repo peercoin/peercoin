@@ -334,6 +334,7 @@ public:
 
     void SetAsmap(std::vector<bool> asmap) { addrman.m_asmap = std::move(asmap); }
 
+    CThreadInterrupt interruptNet;
 private:
     struct ListenSocket {
     public:
@@ -467,7 +468,7 @@ private:
     Mutex mutexMsgProc;
     std::atomic<bool> flagInterruptMsgProc{false};
 
-    CThreadInterrupt interruptNet;
+
 
     std::thread threadDNSAddressSeed;
     std::thread threadSocketHandler;
