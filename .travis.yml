@@ -26,8 +26,6 @@ cache:
     # macOS
     - $HOME/Library/Caches/Homebrew
     - /usr/local/Homebrew
-before_cache:
-  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew cleanup; fi
 stages:
   - lint
   - test
@@ -141,13 +139,9 @@ jobs:
       addons:
         homebrew:
           packages:
-          - libtool
           - berkeley-db4
-          - boost
           - miniupnpc
-          - qt
           - qrencode
-          - python3
           - ccache
           - zeromq
       env: >-
