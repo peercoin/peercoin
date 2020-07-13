@@ -1302,6 +1302,9 @@ extern std::function<void(const CAddress& addr,
                           bool is_incoming)>
     CaptureMessage;
 
+/** Dump binary message to file, with timestamp */
+void CaptureMessage(const CAddress& addr, const std::string& msg_type, const Span<const unsigned char>& data, bool is_incoming);
+
 struct NodeEvictionCandidate
 {
     NodeId id;
