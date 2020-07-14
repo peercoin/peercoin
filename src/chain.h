@@ -441,7 +441,7 @@ public:
         READWRITE(obj.nMoneySupply);
         READWRITE(obj.nFlags);
         READWRITE(obj.nStakeModifier);
-        if (s.GetType() & SER_POSMARKER)
+        if (obj.nFlags & BLOCK_PROOF_OF_STAKE)
         {
             READWRITE(obj.prevoutStake);
             READWRITE(obj.nStakeTime);

@@ -3715,7 +3715,7 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
             return error("%s: AcceptBlock FAILED (%s)", __func__, state.ToString());
         }
 
-        if (pindex->IsProofOfStake()) {
+        if (pindex->IsProofOfStake() && !::ChainstateActive().IsInitialBlockDownload()) {
             int32_t ndx = univHash(pindex->hashProofOfStake);
             if (fPoSDuplicate && vStakeSeen[ndx] == pindex->hashProofOfStake)
                 *fPoSDuplicate = true;

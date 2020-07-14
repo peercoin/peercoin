@@ -252,21 +252,19 @@ struct TransactionNotification2
 {
 public:
     TransactionNotification2() {}
-    TransactionNotification2(uint256 _hash, ChangeType _status, bool _showTransaction):
-        hash(_hash), status(_status), showTransaction(_showTransaction) {}
+    TransactionNotification2(uint256 _hash, ChangeType _status):
+        hash(_hash), status(_status) {}
 
     void invoke(QObject *ttm)
     {
         QString strHash = QString::fromStdString(hash.GetHex());
         QMetaObject::invokeMethod(ttm, "updateTransaction", Qt::QueuedConnection,
                                   Q_ARG(QString, strHash),
-                                  Q_ARG(int, status),
-                                  Q_ARG(bool, showTransaction));
+                                  Q_ARG(int, status));
     }
 private:
     uint256 hash;
     ChangeType status;
-    bool showTransaction;
 };
 
 static bool fQueueNotifications = false;
@@ -276,9 +274,9 @@ static void NotifyTransactionChanged(MintingTableModel *ttm, const uint256 &hash
 {
     // Find transaction in wallet
     // Determine whether to show transaction or not (determine this here so that no relocking is needed in GUI thread)
-    bool showTransaction = TransactionRecord::showTransaction();
+   // bool showTransaction = TransactionRecord::showTransaction();
 
-    TransactionNotification2 notification(hash, status, showTransaction);
+    TransactionNotification2 notification(hash, status);
 
     if (fQueueNotifications)
     {
