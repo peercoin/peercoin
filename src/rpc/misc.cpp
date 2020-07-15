@@ -801,6 +801,9 @@ static RPCHelpMan getindexinfo()
     };
 }
 
+static RPCHelpMan echo() { return echo("echo"); }
+static RPCHelpMan echojson() { return echo("echojson"); }
+
 void RegisterMiscRPCCommands(CRPCTable &t)
 {
 // clang-format off
