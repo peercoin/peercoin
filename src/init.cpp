@@ -352,6 +352,7 @@ void SetupServerArgs(NodeContext& node)
 {
     assert(!node.args);
     node.args = &gArgs;
+    ArgsManager& argsman = *node.args;
 
     SetupHelpOptions(gArgs);
     gArgs.AddArg("-help-debug", "Print help message with debugging options and exit", ArgsManager::ALLOW_ANY, OptionsCategory::DEBUG_TEST); // server-only for now
@@ -458,7 +459,7 @@ void SetupServerArgs(NodeContext& node)
         "CIDR-notated network (e.g. 1.2.3.0/24). Uses the same permissions as "
         "-whitebind. Can be specified multiple times." , ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
 
-    g_wallet_init_interface.AddWalletOptions();
+    g_wallet_init_interface.AddWalletOptions(argsman);
 
 #if ENABLE_ZMQ
     gArgs.AddArg("-zmqpubhashblock=<address>", "Enable publish hash block in <address>", ArgsManager::ALLOW_ANY, OptionsCategory::ZMQ);
@@ -514,7 +515,7 @@ void SetupServerArgs(NodeContext& node)
     gArgs.AddArg("-shrinkdebugfile", "Shrink debug.log file on client startup (default: 1 when no -debug)", ArgsManager::ALLOW_ANY, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-uacomment=<cmt>", "Append comment to the user agent string", ArgsManager::ALLOW_ANY, OptionsCategory::DEBUG_TEST);
 
-    SetupChainParamsBaseOptions();
+    SetupChainParamsBaseOptions(argsman);
 
     gArgs.AddArg("-acceptnonstdtxn", strprintf("Relay and mine \"non-standard\" transactions (%sdefault: %u)", "testnet/regtest only; ", !testnetChainParams->RequireStandard()), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::NODE_RELAY);
     gArgs.AddArg("-bytespersigop", strprintf("Equivalent bytes per sigop in transactions for relay and mining (default: %u)", DEFAULT_BYTES_PER_SIGOP), ArgsManager::ALLOW_ANY, OptionsCategory::NODE_RELAY);
