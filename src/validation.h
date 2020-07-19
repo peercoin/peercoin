@@ -713,6 +713,9 @@ public:
     /** Load the persisted mempool from disk */
     void LoadMempool(const ArgsManager& args);
 
+    /** Load the persisted mempool from disk */
+    void LoadMempool(const ArgsManager& args);
+
     /** Update the chain tip based on database information, i.e. CoinsTip()'s best block. */
     bool LoadChainTip() EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
