@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(hasBlocks)
 BOOST_AUTO_TEST_CASE(hasBlocks)
 {
     auto chain = interfaces::MakeChain(m_node);
-    auto& active = ChainActive();
+    const CChain& active = Assert(m_node.chainman)->ActiveChain();
 
     // Test ranges
     BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 10, 90));
