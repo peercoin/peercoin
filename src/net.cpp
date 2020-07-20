@@ -607,7 +607,6 @@ Network CNode::ConnectedThroughNetwork() const
 void CNode::CopyStats(CNodeStats& stats)
 {
     stats.nodeid = this->GetId();
-    X(nServices);
     X(addr);
     X(addrBind);
     stats.m_network = ConnectedThroughNetwork();
@@ -884,7 +883,7 @@ bool CConnman::AttemptToEvictConnection()
                 .m_min_ping_time = node->m_min_ping_time,
                 .m_last_block_time = node->m_last_block_time,
                 .m_last_tx_time = node->m_last_tx_time,
-                .fRelevantServices = HasAllDesirableServiceFlags(node->nServices),
+                .fRelevantServices = node->m_has_all_wanted_services,
                 .m_relay_txs = node->m_relays_txs.load(),
                 .fBloomFilter = node->m_bloom_filter_loaded.load(),
                 .nKeyedNetGroup = node->nKeyedNetGroup,
