@@ -4,7 +4,6 @@
 
 #include <kernel.h>
 #include <chainparams.h>
-#include <util.h>
 #include <validation.h>
 #include <streams.h>
 #include <timedata.h>
