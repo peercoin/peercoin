@@ -2799,8 +2799,6 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
 
     txNew.nLockTime = GetLocktimeForNewTransaction(chain(), locked_chain);
 
-    txNew.nTime = tx->nTime;  // peercoin: set time
-
     CAmount nFeeNeeded;
     int nBytes;
     {
