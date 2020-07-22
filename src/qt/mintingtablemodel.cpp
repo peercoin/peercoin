@@ -11,8 +11,6 @@
 #include <qt/optionsmodel.h>
 #include <qt/addresstablemodel.h>
 
-
-#include <util.h>
 #include <wallet/wallet.h>
 #include <validation.h>
 #include <chainparams.h>

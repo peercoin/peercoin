@@ -3405,7 +3405,7 @@ UniValue listminting(const JSONRPCRequest& request)
 //        from = request.params[1].get_int();
 
     UniValue ret(UniValue::VARR);
-    LOCK2(cs_main, pwallet->cs_wallet);
+    LOCK(pwallet->cs_wallet);
     const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
     double difficulty = p->GetBlockDifficulty();
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
