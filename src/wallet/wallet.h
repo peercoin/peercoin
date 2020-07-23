@@ -18,6 +18,7 @@
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <util/system.h>
+#include <validation.h>
 #include <validationinterface.h>
 #include <wallet/coinselection.h>
 #include <wallet/crypter.h>

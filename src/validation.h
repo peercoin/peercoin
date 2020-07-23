@@ -37,6 +37,7 @@ class CBlockIndex;
 class CBlockTreeDB;
 class CBlockUndo;
 class CChainParams;
+class CWallet;
 class CInv;
 class CConnman;
 class CScriptCheck;
