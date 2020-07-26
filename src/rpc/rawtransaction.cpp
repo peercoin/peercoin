@@ -201,6 +201,8 @@ static RPCHelpMan getrawtransaction()
     const NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
 
+    const NodeContext& node = EnsureNodeContext(request.context);
+
     bool in_active_chain = true;
     uint256 hash = ParseHashV(request.params[0], "parameter 1");
     CBlockIndex* blockindex = nullptr;

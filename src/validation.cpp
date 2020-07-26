@@ -1249,6 +1249,7 @@ PackageMempoolAcceptResult ProcessNewPackage(CChainState& active_chainstate, CTx
         for (const COutPoint& hashTx : coins_to_uncache) {
             active_chainstate.CoinsTip().Uncache(hashTx);
         }
+        return nullptr;
     }
     // Ensure the coins cache is still within limits.
     BlockValidationState state_dummy;
