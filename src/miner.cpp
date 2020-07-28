@@ -97,7 +97,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         return nullptr;
     pblock = &pblocktemplate->block; // pointer for convenience
 
-    LOCK2(cs_main, m_mempool.cs);
+    //TODO LOCK2(cs_main, m_mempool.cs);
     CBlockIndex* pindexPrev = ::ChainActive().Tip();
     assert(pindexPrev != nullptr);
     nHeight = pindexPrev->nHeight + 1;
@@ -146,6 +146,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         }
         if (*pfPoSCancel)
             return nullptr; // peercoin: there is no point to continue if we failed to create coinstake
+        pblock->nFlags = CBlockIndex::BLOCK_PROOF_OF_STAKE;
     }
 
     // -regtest only: allow overriding block.nVersion with
@@ -572,22 +573,35 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
             //
             CBlockIndex* pindexPrev = ::ChainActive().Tip();
             bool fPoSCancel = false;
-            std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(*mempool, Params()).CreateNewBlock(GetScriptForDestination(dest), pwallet.get(), &fPoSCancel));
-            if (!pblocktemplate.get())
-            {
-                if (fPoSCancel == true)
-                {
-                    if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
-                        return;
-                }
-                strMintWarning = strMintBlockMessage;
-                uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
-                LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
-                return;
-            }
-            CBlock *pblock = &pblocktemplate->block;
-            IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+            CScript scriptPubKey = GetScriptForDestination(dest);
+            CBlock *pblock;
+            std::unique_ptr<CBlockTemplate> pblocktemplate;
 
+            { 
+                LOCK2(cs_main, pwallet->cs_wallet);
+
+                pblocktemplate = BlockAssembler(*mempool, Params()).CreateNewBlock(scriptPubKey, pwallet.get(), &fPoSCancel);
+
+                if (!pblocktemplate.get())
+                {
+                    if (fPoSCancel == true)
+                    {
+                        if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
+                            return;
+                        continue;
+                    }
+                    strMintWarning = strMintBlockMessage;
+                    uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                    LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
+                    if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                       return;
+
+                    return;
+                }
+                pblock = &pblocktemplate->block;
+                IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+            }
+            LogPrintf("wtf\n");
             // peercoin: if proof-of-stake block found then process block
             if (pblock->IsProofOfStake())
             {

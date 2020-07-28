@@ -2851,7 +2851,9 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
 
             // BnB selector is the only selector used when this is true.
             // That should only happen on the first pass through the loop.
-            coin_selection_params.use_bnb = true;
+//            coin_selection_params.use_bnb = true;
+            coin_selection_params.use_bnb = false;
+
             coin_selection_params.m_subtract_fee_outputs = nSubtractFeeFromAmount != 0; // If we are doing subtract fee from recipient, don't use effective values
             // Start with no fee and loop until there is enough fee
             while (true)
@@ -4359,6 +4361,7 @@ bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_
     auto locked_chain = chain().lock();
     CCoinControl temp;
     CoinSelectionParams coin_selection_params;
+    coin_selection_params.use_bnb=false;
     bool bnb_used;
     AvailableCoins(*locked_chain, vAvailableCoins, true, &temp, txNew.nTime, 1, MAX_MONEY, MAX_MONEY, 0);
 
@@ -4526,7 +4529,7 @@ bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_
         int nIn = 0;
         for (const auto& pcoin : vwtxPrev)
         {
-            if (!SignSignature(*pwallet->GetSolvingProvider(scriptPubKeyKernel), *pcoin, txNew, nIn++, SIGHASH_ALL))
+            if (!SignSignature(*pwallet->GetLegacyScriptPubKeyMan(), *pcoin, txNew, nIn++, SIGHASH_ALL))
                 return error("CreateCoinStake : failed to sign coinstake");
         }
 
