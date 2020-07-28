@@ -498,6 +498,9 @@ protected:
     //! Only the active chainstate has a mempool.
     CTxMemPool* m_mempool;
 
+    //! mempool that is kept in sync with the chain
+    CTxMemPool& m_mempool;
+
     //! Manages the UTXO set, which is a reflection of the contents of `m_chain`.
     std::unique_ptr<CoinsViews> m_coins_views;
 
