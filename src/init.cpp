@@ -231,6 +231,7 @@ void Shutdown(NodeContext& node)
         DumpMempool(*node.mempool);
     }
 
+
     // FlushStateToDisk generates a ChainStateFlushed callback, which we should avoid missing
     if (node.chainman) {
         LOCK(cs_main);
@@ -287,6 +288,7 @@ void Shutdown(NodeContext& node)
     globalVerifyHandle.reset();
     ECC_Stop();
     node.mempool.reset();
+    node.fee_estimator.reset();
     node.chainman = nullptr;
     node.scheduler.reset();
 
@@ -1269,9 +1271,12 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     assert(!node.connman);
     node.connman = MakeUnique<CConnman>(GetRand(std::numeric_limits<uint64_t>::max()), GetRand(std::numeric_limits<uint64_t>::max()), args.GetBoolArg("-networkactive", true));
 
+    assert(!node.fee_estimator);
+    node.fee_estimator = std::make_unique<CBlockPolicyEstimator>();
+
     assert(!node.mempool);
     int check_ratio = std::min<int>(std::max<int>(args.GetArg("-checkmempool", chainparams.DefaultConsistencyChecks() ? 1 : 0), 0), 1000000);
-    node.mempool = MakeUnique<CTxMemPool>(check_ratio);
+    node.mempool = std::make_unique<CTxMemPool>(check_ratio);
 
     assert(!node.chainman);
     node.chainman = &g_chainman;
