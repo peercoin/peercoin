@@ -487,7 +487,7 @@ static void UpdatePreferredDownload(const CNode& node, CNodeState* state) EXCLUS
     nPreferredDownload -= state->fPreferredDownload;
 
     // Whether this node should be marked as a preferred download node.
-    state->fPreferredDownload = (!node.fInbound || node.HasPermission(PF_NOBAN)) && !node.IsAddrFetchConn() && !node.fClient;
+    state->fPreferredDownload = (!node.IsInboundConn() || node.HasPermission(PF_NOBAN)) && !node.IsAddrFetchConn() && !node.fClient;
 
     nPreferredDownload += state->fPreferredDownload;
 }
@@ -843,7 +843,7 @@ void UpdateLastBlockAnnounceTime(NodeId node, int64_t time_in_seconds)
 
 static bool IsOutboundDisconnectionCandidate(const CNode& node)
 {
-    return !(node.fInbound || node.IsManualConn() || node.IsFeelerConn() || node.IsAddrFetchConn());
+    return !(node.IsInboundConn() || node.IsManualConn() || node.IsFeelerConn() || node.IsAddrFetchConn());
 }
 
 void PeerLogicValidation::InitializeNode(CNode *pnode) {
@@ -852,9 +852,9 @@ void PeerLogicValidation::InitializeNode(CNode *pnode) {
     NodeId nodeid = pnode->GetId();
     {
         LOCK(cs_main);
-        mapNodeState.emplace_hint(mapNodeState.end(), std::piecewise_construct, std::forward_as_tuple(nodeid), std::forward_as_tuple(addr, std::move(addrName), pnode->fInbound, pnode->IsManualConn()));
+        mapNodeState.emplace_hint(mapNodeState.end(), std::piecewise_construct, std::forward_as_tuple(nodeid), std::forward_as_tuple(addr, std::move(addrName), pnode->IsInboundConn(), pnode->IsManualConn()));
     }
-    if(!pnode->fInbound)
+    if(!pnode->IsInboundConn())
         PushNodeVersion(*pnode, *connman, GetTime());
 }
 
@@ -2359,11 +2359,11 @@ void ProcessMessage(
         vRecv >> nVersion >> nServiceInt >> nTime >> addrMe;
         nSendVersion = std::min(nVersion, PROTOCOL_VERSION);
         nServices = ServiceFlags(nServiceInt);
-        if (!pfrom.fInbound)
+        if (!pfrom.IsInboundConn())
         {
             connman.SetServices(pfrom.addr, nServices);
         }
-        if (!pfrom.fInbound && !pfrom.IsFeelerConn() && !pfrom.IsManualConn() && !HasAllDesirableServiceFlags(nServices))
+        if (!pfrom.IsInboundConn() && !pfrom.IsFeelerConn() && !pfrom.IsManualConn() && !HasAllDesirableServiceFlags(nServices))
         {
             LogPrint(BCLog::NET, "peer=%d does not offer the expected services (%08x offered, %08x expected); disconnecting\n", pfrom.GetId(), nServices, GetDesirableServiceFlags(nServices));
             pfrom.fDisconnect = true;
@@ -2390,20 +2390,20 @@ void ProcessMessage(
         if (!vRecv.empty())
             vRecv >> fRelay;
         // Disconnect if we connected to ourself
-        if (pfrom.fInbound && !connman.CheckIncomingNonce(nNonce))
+        if (pfrom.IsInboundConn() && !connman.CheckIncomingNonce(nNonce))
         {
             LogPrintf("connected to self at %s, disconnecting\n", pfrom.addr.ToString());
             pfrom.fDisconnect = true;
             return;
         }
 
-        if (pfrom.fInbound && addrMe.IsRoutable())
+        if (pfrom.IsInboundConn() && addrMe.IsRoutable())
         {
             SeenLocal(addrMe);
         }
 
         // Be shy and don't send version until we hear
-        if (pfrom.fInbound)
+        if (pfrom.IsInboundConn())
             PushNodeVersion(pfrom, connman, GetAdjustedTime());
 
         if (nVersion >= WTXID_RELAY_VERSION) {
@@ -2447,7 +2447,7 @@ void ProcessMessage(
         UpdatePreferredDownload(pfrom, State(pfrom.GetId()));
         }
 
-        if (!pfrom.fInbound && pfrom.IsAddrRelayPeer())
+        if (!pfrom.IsInboundConn() && pfrom.IsAddrRelayPeer())
         {
             // Advertise our address
             if (fListen && !::ChainstateActive().IsInitialBlockDownload())
@@ -2504,22 +2504,14 @@ void ProcessMessage(
         return;
     }
 
-    // peercoin: set/unset network serialization mode for new clients
-    if (pfrom->nVersion <= OLD_VERSION)
-        vRecv.SetType(vRecv.GetType() & ~SER_POSMARKER);
-    else
-        vRecv.SetType(vRecv.GetType() | SER_POSMARKER);
-
     // At this point, the outgoing message serialization version can't change.
     const CNetMsgMaker msgMaker(pfrom.GetSendVersion());
 
     if (msg_type == NetMsgType::VERACK)
     {
-        if (pfrom->fSuccessfullyConnected) return true;
         pfrom.SetRecvVersion(std::min(pfrom.nVersion.load(), PROTOCOL_VERSION));
 
-
-        if (!pfrom.fInbound) {
+        if (!pfrom.IsInboundConn()) {
             // Mark this node as currently connected, so we update its timestamp later.
             LOCK(cs_main);
             State(pfrom.GetId())->fCurrentlyConnected = true;
@@ -2692,19 +2684,17 @@ void ProcessMessage(
             if (interruptMsgProc)
                 return;
 
-            // Ignore INVs that don't match wtxidrelay setting.
-            // Note that orphan parent fetching always uses MSG_TX GETDATAs regardless of the wtxidrelay setting.
-            // This is fine as no INV messages are involved in that process.
+            // ignore INVs that don't match wtxidrelay setting
             if (State(pfrom.GetId())->m_wtxid_relay) {
-                if (inv.IsMsgTx()) continue;
+                if (inv.type == MSG_TX) continue;
             } else {
-                if (inv.IsMsgWtx()) continue;
+                if (inv.type == MSG_WTX) continue;
             }
 
             bool fAlreadyHave = AlreadyHave(inv, mempool);
             LogPrint(BCLog::NET, "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom.GetId());
 
-            if (inv.IsMsgTx()) {
+            if (inv.type == MSG_TX) {
                 inv.type |= nFetchFlags;
             }
 
@@ -2725,7 +2715,7 @@ void ProcessMessage(
                     pfrom.fDisconnect = true;
                     return;
                 } else if (!fAlreadyHave && !chainman.ActiveChainstate().IsInitialBlockDownload()) {
-                    RequestTx(State(pfrom.GetId()), ToGenTxid(inv), current_time);
+                    RequestTx(State(pfrom.GetId()), inv.hash, current_time);
                 }
             }
         }
@@ -2984,7 +2974,7 @@ void ProcessMessage(
 
         // We do the AlreadyHave() check using wtxid, rather than txid - in the
         // absence of witness malleation, this is strictly better, because the
-        // recent rejects filter may contain the wtxid but rarely contains
+        // recent rejects filter may contain the wtxid but will never contain
         // the txid of a segwit transaction that has been rejected.
         // In the presence of witness malleation, it's possible that by only
         // doing the check with wtxid, we could overlook a transaction which
@@ -3020,19 +3010,8 @@ void ProcessMessage(
         else if (state.GetResult() == TxValidationResult::TX_MISSING_INPUTS)
         {
             bool fRejectedParents = false; // It may be the case that the orphans parents have all been rejected
-
-            // Deduplicate parent txids, so that we don't have to loop over
-            // the same parent txid more than once down below.
-            std::vector<uint256> unique_parents;
-            unique_parents.reserve(tx.vin.size());
             for (const CTxIn& txin : tx.vin) {
-                // We start with all parents, and then remove duplicates below.
-                unique_parents.push_back(txin.prevout.hash);
-            }
-            std::sort(unique_parents.begin(), unique_parents.end());
-            unique_parents.erase(std::unique(unique_parents.begin(), unique_parents.end()), unique_parents.end());
-            for (const uint256& parent_txid : unique_parents) {
-                if (recentRejects->contains(parent_txid)) {
+                if (recentRejects->contains(txin.prevout.hash)) {
                     fRejectedParents = true;
                     break;
                 }
@@ -3041,15 +3020,17 @@ void ProcessMessage(
                 uint32_t nFetchFlags = GetFetchFlags(pfrom);
                 const auto current_time = GetTime<std::chrono::microseconds>();
 
-                for (const uint256& parent_txid : unique_parents) {
-                    // Here, we only have the txid (and not wtxid) of the
-                    // inputs, so we only request in txid mode, even for
-                    // wtxidrelay peers.
-                    // Eventually we should replace this with an improved
-                    // protocol for getting all unconfirmed parents.
-                    CInv _inv(MSG_TX | nFetchFlags, parent_txid);
-                    pfrom.AddKnownTx(parent_txid);
-                    if (!AlreadyHave(_inv, mempool)) RequestTx(State(pfrom.GetId()), ToGenTxid(_inv), current_time);
+                if (!State(pfrom.GetId())->m_wtxid_relay) {
+                    for (const CTxIn& txin : tx.vin) {
+                        // Here, we only have the txid (and not wtxid) of the
+                        // inputs, so we only request parents from
+                        // non-wtxid-relay peers.
+                        // Eventually we should replace this with an improved
+                        // protocol for getting all unconfirmed parents.
+                        CInv _inv(MSG_TX | nFetchFlags, txin.prevout.hash);
+                        pfrom.AddKnownTx(txin.prevout.hash);
+                        if (!AlreadyHave(_inv, mempool)) RequestTx(State(pfrom.GetId()), _inv.hash, current_time);
+                    }
                 }
                 AddOrphanTx(ptx, pfrom.GetId());
 
@@ -3087,17 +3068,6 @@ void ProcessMessage(
                 // if we start doing this too early.
                 assert(recentRejects);
                 recentRejects->insert(tx.GetWitnessHash());
-                // If the transaction failed for TX_INPUTS_NOT_STANDARD,
-                // then we know that the witness was irrelevant to the policy
-                // failure, since this check depends only on the txid
-                // (the scriptPubKey being spent is covered by the txid).
-                // Add the txid to the reject filter to prevent repeated
-                // processing of this transaction in the event that child
-                // transactions are later received (resulting in
-                // parent-fetching by txid via the orphan-handling logic).
-                if (state.GetResult() == TxValidationResult::TX_INPUTS_NOT_STANDARD && tx.GetWitnessHash() != tx.GetHash()) {
-                    recentRejects->insert(tx.GetHash());
-                }
                 if (RecursiveDynamicUsage(*ptx) < 100000) {
                     AddToCompactExtraTransactions(ptx);
                 }
@@ -3648,7 +3618,7 @@ void ProcessMessage(
         // to users' AddrMan and later request them by sending getaddr messages.
         // Making nodes which are behind NAT and can only make outgoing connections ignore
         // the getaddr message mitigates the attack.
-        if (!pfrom.fInbound) {
+        if (!pfrom.IsInboundConn()) {
             LogPrint(BCLog::NET, "Ignoring \"getaddr\" from outbound connection. peer=%d\n", pfrom.GetId());
             return;
         }
@@ -4476,7 +4446,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto)
                 bool fSendTrickle = pto->HasPermission(PF_NOBAN);
                 if (pto->m_tx_relay->nNextInvSend < current_time) {
                     fSendTrickle = true;
-                    if (pto->fInbound) {
+                    if (pto->IsInboundConn()) {
                         pto->m_tx_relay->nNextInvSend = std::chrono::microseconds{connman->PoissonNextSendInbound(nNow, INVENTORY_BROADCAST_INTERVAL)};
                     } else {
                         // Use half the delay for outbound peers, as there is less privacy concern for them.
