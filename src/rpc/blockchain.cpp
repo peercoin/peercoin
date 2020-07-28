@@ -83,6 +83,15 @@ ChainstateManager& EnsureChainman(const util::Ref& context)
     return *node.chainman;
 }
 
+CBlockPolicyEstimator& EnsureFeeEstimator(const util::Ref& context)
+{
+    NodeContext& node = EnsureNodeContext(context);
+    if (!node.fee_estimator) {
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Fee estimation disabled");
+    }
+    return *node.fee_estimator;
+}
+
 /* Calculate the difficulty for a given block index.
  */
 double GetDifficulty(const CBlockIndex* blockindex, const CBlockIndex* tip)
