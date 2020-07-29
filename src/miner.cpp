@@ -97,7 +97,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         return nullptr;
     pblock = &pblocktemplate->block; // pointer for convenience
 
-    //TODO LOCK2(cs_main, m_mempool.cs);
+    LOCK2(cs_main, m_mempool.cs);
     CBlockIndex* pindexPrev = ::ChainActive().Tip();
     assert(pindexPrev != nullptr);
     nHeight = pindexPrev->nHeight + 1;
@@ -601,7 +601,6 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                 pblock = &pblocktemplate->block;
                 IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
             }
-            LogPrintf("wtf\n");
             // peercoin: if proof-of-stake block found then process block
             if (pblock->IsProofOfStake())
             {

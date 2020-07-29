@@ -2851,8 +2851,8 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
 
             // BnB selector is the only selector used when this is true.
             // That should only happen on the first pass through the loop.
-//            coin_selection_params.use_bnb = true;
-            coin_selection_params.use_bnb = false;
+            coin_selection_params.use_bnb = true;
+//            coin_selection_params.use_bnb = false;
 
             coin_selection_params.m_subtract_fee_outputs = nSubtractFeeFromAmount != 0; // If we are doing subtract fee from recipient, don't use effective values
             // Start with no fee and loop until there is enough fee
