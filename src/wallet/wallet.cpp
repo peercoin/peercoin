@@ -2869,7 +2869,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
 
                 // vouts to the payees
                 if (!coin_selection_params.m_subtract_fee_outputs) {
-                    coin_selection_params.tx_noinputs_size = 11; // Static vsize overhead + outputs vsize. 4 nVersion, 4 nLocktime, 1 input count, 1 output count, 1 witness overhead (dummy, flag, stack size)
+                    coin_selection_params.tx_noinputs_size = 15; // Static vsize overhead + outputs vsize. 4 nVersion, 4 nTime, 4 nLocktime, 1 input count, 1 output count, 1 witness overhead (dummy, flag, stack size)
                 }
                 for (const auto& recipient : vecSend)
                 {
@@ -2977,18 +2977,10 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
                     return false;
                 }
 
-                nBytes = CTransaction(txNew).GetTotalSize();
-
                 // Remove scriptSigs to eliminate the fee calculation dummy signatures
                 for (auto& vin : txNew.vin) {
                     vin.scriptSig = CScript();
                     vin.scriptWitness.SetNull();
-//ppcTODO: this code was in 0.7, but was refactored by b33d1f5ee512da5719b793b3867f75f1eea5cf52:
-//                int64 nPayFee;
-//                if (fNewFees)
-//                    nPayFee = (nBytes < 100) ? MIN_TX_FEE : (int64)(nBytes * (nTransactionFee / 1000));
-//                else
-//                    nPayFee = nTransactionFee * (1 + (int64)nBytes / 1000);
                 }
 
                 nFeeNeeded = GetMinFee(nBytes, txNew.nTime);
