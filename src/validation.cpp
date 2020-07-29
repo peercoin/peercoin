@@ -2115,9 +2115,6 @@ bool CChainState::FlushStateToDisk(
         bool fDoFullFlush = false;
         CoinsCacheSizeState cache_state = GetCoinsCacheSizeState(::mempool);
         LOCK(cs_LastBlockFile);
-                LOG_TIME_MILLIS("find files to prune (manual)", BCLog::BENCH);
-
-                LOG_TIME_MILLIS("find files to prune", BCLog::BENCH);
 
         int64_t nNow = GetTimeMicros();
         // Avoid writing/flushing immediately after startup.
