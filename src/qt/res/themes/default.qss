@@ -230,6 +230,7 @@ QFrame {
 QFrame QLabel#labelBalanceText,
 QFrame QLabel#titleNumTransactions,
 QFrame QLabel#labelImmatureText,
+QFrame QLabel#labelStakeText,
 QFrame QLabel#labelUnconfirmedText,
 QFrame QLabel#labelPendingText,
 QFrame QLabel#labelTotalText {
@@ -240,6 +241,7 @@ QFrame QLabel#labelTotalText {
 QFrame QLabel#labelBalance,
 QFrame QLabel#labelNumTransactions,
 QFrame QLabel#labelImmature,
+QFrame QLabel#labelStake,
 QFrame QLabel#labelUnconfirmed,
 QFrame QLabel#labelTotal {
     color: #666666;
