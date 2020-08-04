@@ -535,12 +535,14 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
     }
 
     try {
+        bool fNeedToClear = false;
         while (true) {
             while (pwallet->IsLocked()) {
                 if (strMintWarning != strMintMessage) {
                     strMintWarning = strMintMessage;
                     uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
                 }
+                fNeedToClear = true;
                 if (!connman->interruptNet.sleep_for(std::chrono::seconds(3)))
                     return;
             }
@@ -561,12 +563,15 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                     strMintWarning = strMintSyncMessage;
                     uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
                 }
+                fNeedToClear = true;
                 if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
                         return;
             }
-
-            strMintWarning = strMintEmpty;
-            uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+            if (fNeedToClear) {
+                strMintWarning = strMintEmpty;
+                uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                fNeedToClear = false;
+            }
 
             //
             // Create new block
@@ -581,26 +586,27 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                 LOCK2(cs_main, pwallet->cs_wallet);
 
                 pblocktemplate = BlockAssembler(*mempool, Params()).CreateNewBlock(scriptPubKey, pwallet.get(), &fPoSCancel);
-
-                if (!pblocktemplate.get())
-                {
-                    if (fPoSCancel == true)
-                    {
-                        if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
-                            return;
-                        continue;
-                    }
-                    strMintWarning = strMintBlockMessage;
-                    uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
-                    LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
-                    if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
-                       return;
-
-                    return;
-                }
-                pblock = &pblocktemplate->block;
-                IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
             }
+
+            if (!pblocktemplate.get())
+            {
+                if (fPoSCancel == true)
+                {
+                    if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
+                        return;
+                    continue;
+                }
+                strMintWarning = strMintBlockMessage;
+                uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
+                if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                   return;
+
+                return;
+            }
+            pblock = &pblocktemplate->block;
+            IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+
             // peercoin: if proof-of-stake block found then process block
             if (pblock->IsProofOfStake())
             {

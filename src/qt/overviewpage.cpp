@@ -244,7 +244,6 @@ void OverviewPage::setWalletModel(WalletModel *model)
         interfaces::WalletBalances balances = wallet.getBalances();
         setBalance(balances);
         connect(model, &WalletModel::balanceChanged, this, &OverviewPage::setBalance);
-        connect(model, SIGNAL(encryptionStatusChanged(int)), this, SLOT(updateLockStatus(int)));
         connect(model->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &OverviewPage::updateDisplayUnit);
 
         updateWatchOnlyLabels(wallet.haveWatchOnly() && !model->wallet().privateKeysDisabled());
