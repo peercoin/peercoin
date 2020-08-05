@@ -2701,14 +2701,12 @@ void PeerLogicValidation::ProcessMessage(CNode& pfrom, const std::string& msg_ty
 
         LOCK(cs_main);
 
-        uint32_t nFetchFlags = GetFetchFlags(pfrom);
         const auto current_time = GetTime<std::chrono::microseconds>();
         uint256* best_block{nullptr};
 
         for (CInv &inv : vInv)
         {
-            if (interruptMsgProc)
-                return;
+            if (interruptMsgProc) return;
 
             // ignore INVs that don't match wtxidrelay setting
             if (State(pfrom.GetId())->m_wtxid_relay) {
@@ -2719,10 +2717,6 @@ void PeerLogicValidation::ProcessMessage(CNode& pfrom, const std::string& msg_ty
 
             bool fAlreadyHave = AlreadyHave(inv, m_mempool);
             LogPrint(BCLog::NET, "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom.GetId());
-
-            if (inv.type == MSG_TX) {
-                inv.type |= nFetchFlags;
-            }
 
             if (inv.type == MSG_BLOCK) {
                 UpdateBlockAvailability(pfrom.GetId(), inv.hash);
@@ -2999,7 +2993,7 @@ void PeerLogicValidation::ProcessMessage(CNode& pfrom, const std::string& msg_ty
 
         // We do the AlreadyHave() check using wtxid, rather than txid - in the
         // absence of witness malleation, this is strictly better, because the
-        // recent rejects filter may contain the wtxid but will never contain
+        // recent rejects filter may contain the wtxid but rarely contains
         // the txid of a segwit transaction that has been rejected.
         // In the presence of witness malleation, it's possible that by only
         // doing the check with wtxid, we could overlook a transaction which
@@ -3035,27 +3029,35 @@ void PeerLogicValidation::ProcessMessage(CNode& pfrom, const std::string& msg_ty
         else if (state.GetResult() == TxValidationResult::TX_MISSING_INPUTS)
         {
             bool fRejectedParents = false; // It may be the case that the orphans parents have all been rejected
+
+            // Deduplicate parent txids, so that we don't have to loop over
+            // the same parent txid more than once down below.
+            std::vector<uint256> unique_parents;
+            unique_parents.reserve(tx.vin.size());
             for (const CTxIn& txin : tx.vin) {
-                if (recentRejects->contains(txin.prevout.hash)) {
+                // We start with all parents, and then remove duplicates below.
+                unique_parents.push_back(txin.prevout.hash);
+            }
+            std::sort(unique_parents.begin(), unique_parents.end());
+            unique_parents.erase(std::unique(unique_parents.begin(), unique_parents.end()), unique_parents.end());
+            for (const uint256& parent_txid : unique_parents) {
+                if (recentRejects->contains(parent_txid)) {
                     fRejectedParents = true;
                     break;
                 }
             }
             if (!fRejectedParents) {
-                uint32_t nFetchFlags = GetFetchFlags(pfrom);
                 const auto current_time = GetTime<std::chrono::microseconds>();
 
-                if (!State(pfrom.GetId())->m_wtxid_relay) {
-                    for (const CTxIn& txin : tx.vin) {
-                        // Here, we only have the txid (and not wtxid) of the
-                        // inputs, so we only request parents from
-                        // non-wtxid-relay peers.
-                        // Eventually we should replace this with an improved
-                        // protocol for getting all unconfirmed parents.
-                        CInv _inv(MSG_TX | nFetchFlags, txin.prevout.hash);
-                        pfrom.AddKnownTx(txin.prevout.hash);
-                        if (!AlreadyHave(_inv, m_mempool)) RequestTx(State(pfrom.GetId()), ToGenTxid(_inv), current_time);
-                    }
+                for (const uint256& parent_txid : unique_parents) {
+                    // Here, we only have the txid (and not wtxid) of the
+                    // inputs, so we only request in txid mode, even for
+                    // wtxidrelay peers.
+                    // Eventually we should replace this with an improved
+                    // protocol for getting all unconfirmed parents.
+                    CInv _inv(MSG_TX, parent_txid);
+                    pfrom.AddKnownTx(parent_txid);
+                    if (!AlreadyHave(_inv, m_mempool)) RequestTx(State(pfrom.GetId()), ToGenTxid(_inv), current_time);
                 }
                 AddOrphanTx(ptx, pfrom.GetId());
 
@@ -3093,6 +3095,17 @@ void PeerLogicValidation::ProcessMessage(CNode& pfrom, const std::string& msg_ty
                 // if we start doing this too early.
                 assert(recentRejects);
                 recentRejects->insert(tx.GetWitnessHash());
+                // If the transaction failed for TX_INPUTS_NOT_STANDARD,
+                // then we know that the witness was irrelevant to the policy
+                // failure, since this check depends only on the txid
+                // (the scriptPubKey being spent is covered by the txid).
+                // Add the txid to the reject filter to prevent repeated
+                // processing of this transaction in the event that child
+                // transactions are later received (resulting in
+                // parent-fetching by txid via the orphan-handling logic).
+                if (state.GetResult() == TxValidationResult::TX_INPUTS_NOT_STANDARD && tx.GetWitnessHash() != tx.GetHash()) {
+                    recentRejects->insert(tx.GetHash());
+                }
                 if (RecursiveDynamicUsage(*ptx) < 100000) {
                     AddToCompactExtraTransactions(ptx);
                 }
