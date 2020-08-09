@@ -55,6 +55,7 @@ struct BlockAndHeaderTipInfo;
 QT_BEGIN_NAMESPACE
 class QAction;
 class QComboBox;
+class QDateTime;
 class QMenu;
 class QProgressBar;
 class QProgressDialog;
