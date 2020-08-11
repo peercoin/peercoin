@@ -1153,6 +1153,8 @@ public:
     std::string GetAddrName() const;
     //! Sets the addrName only if it was not previously set
     void MaybeSetAddrName(const std::string& addrNameIn);
+
+    std::string ConnectionTypeAsString() const;
 };
 
 /** Return a timestamp in the future (in microseconds) for exponentially distributed events. */
