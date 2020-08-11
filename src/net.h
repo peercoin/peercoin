@@ -828,7 +828,7 @@ public:
     std::atomic_bool fPauseSend{false};
 
     bool IsOutboundOrBlockRelayConn() const {
-        switch(m_conn_type) {
+        switch (m_conn_type) {
             case ConnectionType::OUTBOUND_FULL_RELAY:
             case ConnectionType::BLOCK_RELAY:
                 return true;
@@ -873,7 +873,7 @@ public:
     }
 
     bool ExpectServicesFromConn() const {
-        switch(m_conn_type) {
+        switch (m_conn_type) {
             case ConnectionType::INBOUND:
             case ConnectionType::MANUAL:
             case ConnectionType::FEELER:
@@ -897,7 +897,7 @@ public:
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
-    std::unique_ptr<CRollingBloomFilter> m_addr_known = nullptr;
+    std::unique_ptr<CRollingBloomFilter> m_addr_known{nullptr};
     bool fGetAddr{false};
     std::set<uint256> setKnown;
     uint256 hashCheckpointKnown; // peercoin: known sent sync-checkpoint
