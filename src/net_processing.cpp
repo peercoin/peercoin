@@ -2614,8 +2614,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
     }
 
     if (!pfrom.fSuccessfullyConnected) {
-        // Must have a verack message before anything else
-        Misbehaving(pfrom.GetId(), 1, "non-verack message before version handshake");
+        LogPrint(BCLog::NET, "Unsupported message \"%s\" prior to verack from peer=%d\n", SanitizeString(msg_type), pfrom.GetId());
         return;
     }
 
