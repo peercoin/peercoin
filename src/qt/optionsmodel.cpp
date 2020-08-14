@@ -19,7 +19,7 @@
 #include <txdb.h> // for -dbcache defaults
 #include <util/string.h>
 
-#include <checkpointsync.h>
+//#include <checkpointsync.h>
 #include <QDebug>
 
 #include <QSettings>

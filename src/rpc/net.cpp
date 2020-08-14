@@ -31,7 +31,7 @@
 
 #include <univalue.h>
 
-#include <checkpointsync.h>
+//#include <checkpointsync.h>
 
 static UniValue getconnectioncount(const JSONRPCRequest& request)
 {

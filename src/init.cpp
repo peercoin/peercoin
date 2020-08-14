@@ -56,7 +56,7 @@
 
 #include <validationinterface.h>
 #include <walletinitinterface.h>
-#include <checkpointsync.h>
+//#include <checkpointsync.h>
 
 #include <stdint.h>
 #include <stdio.h>

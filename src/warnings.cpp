@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <alert.h>
-#include <checkpointsync.h>
+//#include <checkpointsync.h>
 
 #include <warnings.h>
 

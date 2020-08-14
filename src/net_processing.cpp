@@ -31,7 +31,7 @@
 #include <memory>
 #include <typeinfo>
 
-#include <checkpointsync.h>
+//#include <checkpointsync.h>
 
 #if defined(NDEBUG)
 # error "Peercoin cannot be compiled without assertions."
