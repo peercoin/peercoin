@@ -4229,15 +4229,15 @@ static UniValue upgradewallet(const JSONRPCRequest& request)
     return error.original;
 }
 
-UniValue abortrescan(const JSONRPCRequest& request); // in rpcdump.cpp
-UniValue dumpprivkey(const JSONRPCRequest& request); // in rpcdump.cpp
-UniValue importprivkey(const JSONRPCRequest& request);
-UniValue importaddress(const JSONRPCRequest& request);
-UniValue importpubkey(const JSONRPCRequest& request);
-UniValue dumpwallet(const JSONRPCRequest& request);
-UniValue importwallet(const JSONRPCRequest& request);
-UniValue importmulti(const JSONRPCRequest& request);
-UniValue importdescriptors(const JSONRPCRequest& request);
+RPCHelpMan abortrescan();
+RPCHelpMan dumpprivkey();
+RPCHelpMan importprivkey();
+RPCHelpMan importaddress();
+RPCHelpMan importpubkey();
+RPCHelpMan dumpwallet();
+RPCHelpMan importwallet();
+RPCHelpMan importmulti();
+RPCHelpMan importdescriptors();
 
 Span<const CRPCCommand> GetWalletRPCCommands()
 {
