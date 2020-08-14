@@ -32,7 +32,7 @@ remotes:
 - "url": "https://github.com/peercoin/peercoin.git"
   "dir": "peercoin"
 files:
-- "MacOSX10.10.sdk.tar.xz"
+- "MacOSX10.14.sdk.tar.xz"
 script: |
   set -e -o pipefail
 
