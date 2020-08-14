@@ -23,7 +23,7 @@ BITCOIN_DAEMON_NAME=peercoind
 BITCOIN_GUI_NAME=peercoin-qt
 BITCOIN_CLI_NAME=peercoin-cli
 BITCOIN_TX_NAME=peercoin-tx
-BITCOIN_WALLET_TOOL_NAME=bitcoin-wallet
+BITCOIN_WALLET_TOOL_NAME=peercoin-wallet
 
 dnl Unless the user specified ARFLAGS, force it to be cr
 AC_ARG_VAR(ARFLAGS, [Flags for the archiver, defaults to <cr> if not set])
