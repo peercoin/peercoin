@@ -425,7 +425,7 @@ public:
     OutputType getDefaultAddressType() override { return m_wallet->m_default_address_type; }
     void remove() override
     {
-        RemoveWallet(m_wallet);
+        RemoveWallet(m_wallet, false /* load_on_start */);
     }
     bool isLegacy() override { return m_wallet->IsLegacy(); }
     std::unique_ptr<Handler> handleUnload(UnloadFn fn) override
@@ -515,12 +515,12 @@ public:
     std::unique_ptr<Wallet> createWallet(const std::string& name, const SecureString& passphrase, uint64_t wallet_creation_flags, WalletCreationStatus& status, bilingual_str& error, std::vector<bilingual_str>& warnings) override
     {
         std::shared_ptr<CWallet> wallet;
-        status = CreateWallet(*m_context.chain, passphrase, wallet_creation_flags, name, error, warnings, wallet);
+        status = CreateWallet(*m_context.chain, passphrase, wallet_creation_flags, name, true /* load_on_start */, error, warnings, wallet);
         return MakeWallet(std::move(wallet));
     }
     std::unique_ptr<Wallet> loadWallet(const std::string& name, bilingual_str& error, std::vector<bilingual_str>& warnings) override
     {
-        return MakeWallet(LoadWallet(*m_context.chain, WalletLocation(name), error, warnings));
+        return MakeWallet(LoadWallet(*m_context.chain, WalletLocation(name), true /* load_on_start */, error, warnings));
     }
     std::string getWalletDir() override
     {
