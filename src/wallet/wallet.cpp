@@ -45,6 +45,8 @@
 
 #include <univalue.h>
 
+#include <univalue.h>
+
 #include <algorithm>
 #include <assert.h>
 #include <optional>
