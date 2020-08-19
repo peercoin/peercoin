@@ -1564,7 +1564,7 @@
     <name>OpenURIDialog</name>
     <message>
         <location filename="../forms/openuridialog.ui" line="+14"/>
-        <source>Open bitcoin URI</source>
+        <source>Open peercoin URI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3258,7 +3258,7 @@
     </message>
     <message>
         <location line="+213"/>
-        <source>Warning: Invalid Bitcoin address</source>
+        <source>Warning: Invalid Peercoin address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
