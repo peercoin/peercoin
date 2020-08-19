@@ -108,24 +108,13 @@ void FreespaceChecker::check()
     Q_EMIT reply(replyStatus, replyMessage, freeBytesAvailable);
 }
 
-namespace {
-//! Return pruning size that will be used if automatic pruning is enabled.
-int GetPruneTargetGB()
-{
-    int64_t prune_target_mib = gArgs.GetArg("-prune", 0);
-    // >1 means automatic pruning is enabled by config, 1 means manual pruning, 0 means no pruning.
-    return prune_target_mib > 1 ? PruneMiBtoGB(prune_target_mib) : DEFAULT_PRUNE_TARGET_GB;
-}
-} // namespace
-
 Intro::Intro(QWidget *parent, int64_t blockchain_size_gb, int64_t chain_state_size_gb) :
     QDialog(parent),
     ui(new Ui::Intro),
     thread(nullptr),
     signalled(false),
     m_blockchain_size_gb(blockchain_size_gb),
-    m_chain_state_size_gb(chain_state_size_gb),
-    m_prune_target_gb{GetPruneTargetGB()}
+    m_chain_state_size_gb(chain_state_size_gb)
 {
     ui->setupUi(this);
     ui->welcomeLabel->setText(ui->welcomeLabel->text().arg(PACKAGE_NAME));
@@ -138,19 +127,6 @@ Intro::Intro(QWidget *parent, int64_t blockchain_size_gb, int64_t chain_state_si
         .arg(tr("Peercoin"))
     );
     ui->lblExplanation2->setText(ui->lblExplanation2->text().arg(PACKAGE_NAME));
-
-    if (gArgs.GetArg("-prune", 0) > 1) { // -prune=1 means enabled, above that it's a size in MiB
-        ui->prune->setChecked(true);
-        ui->prune->setEnabled(false);
-    }
-    ui->prune->setText(tr("Discard blocks after verification, except most recent %1 GB (prune)").arg(m_prune_target_gb));
-    UpdatePruneLabels(ui->prune->isChecked());
-
-    connect(ui->prune, &QCheckBox::toggled, [this](bool prune_checked) {
-        UpdatePruneLabels(prune_checked);
-        UpdateFreeSpaceLabel();
-    });
-
     startThread();
 }
 
@@ -233,7 +209,6 @@ bool Intro::showIfNeeded(interfaces::Node& node, bool& did_show_intro, bool& pru
         }
 
         // Additional preferences:
-        prune = intro.ui->prune->isChecked();
 
         settings.setValue("strDataDir", dataDir);
         settings.setValue("fReset", false);
@@ -267,9 +242,6 @@ void Intro::setStatus(int status, const QString &message, quint64 bytesAvailable
         ui->freeSpace->setText("");
     } else {
         m_bytes_available = bytesAvailable;
-        if (ui->prune->isEnabled()) {
-            ui->prune->setChecked(m_bytes_available < (m_blockchain_size_gb + m_chain_state_size_gb + 10) * GB_BYTES);
-        }
         UpdateFreeSpaceLabel();
     }
     /* Don't allow confirm in ERROR state */
@@ -350,21 +322,4 @@ QString Intro::getPathToCheck()
     signalled = false; /* new request can be queued now */
     mutex.unlock();
     return retval;
-}
-
-void Intro::UpdatePruneLabels(bool prune_checked)
-{
-    m_required_space_gb = m_blockchain_size_gb + m_chain_state_size_gb;
-    QString storageRequiresMsg = tr("At least %1 GB of data will be stored in this directory, and it will grow over time.");
-    if (prune_checked && m_prune_target_gb <= m_blockchain_size_gb) {
-        m_required_space_gb = m_prune_target_gb + m_chain_state_size_gb;
-        storageRequiresMsg = tr("Approximately %1 GB of data will be stored in this directory.");
-    }
-    ui->lblExplanation3->setVisible(prune_checked);
-    ui->sizeWarningLabel->setText(
-        tr("%1 will download and store a copy of the Peercoin block chain.").arg(PACKAGE_NAME) + " " +
-        storageRequiresMsg.arg(m_required_space_gb) + " " +
-        tr("The wallet will also be stored in this directory.")
-    );
-    this->adjustSize();
 }
