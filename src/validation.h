@@ -143,8 +143,10 @@ bool LoadGenesisBlock(const CChainParams& chainparams);
 
 /** Unload database information */
 void UnloadBlockIndex(CTxMemPool* mempool, ChainstateManager& chainman);
-/** Run an instance of the script checking thread */
-void ThreadScriptCheck(int worker_num);
+/** Run instances of script checking worker threads */
+void StartScriptCheckWorkerThreads(int threads_num);
+/** Stop all of the script checking worker threads */
+void StopScriptCheckWorkerThreads();
 void AlertNotify(const std::string& strMessage, bool fUpdateUI = true);
 /**
  * Return transaction from the block at block_index.
