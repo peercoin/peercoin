@@ -202,17 +202,13 @@ public:
     //! Stop all of the worker threads.
     void StopWorkerThreads()
     {
-        {
-            boost::unique_lock<boost::mutex> lock(mutex);
-            m_request_stop = true;
-        }
-        condWorker.notify_all();
+        WITH_LOCK(m_mutex, m_request_stop = true);
+        m_worker_cv.notify_all();
         for (std::thread& t : m_worker_threads) {
             t.join();
         }
         m_worker_threads.clear();
-        boost::unique_lock<boost::mutex> lock(mutex);
-        m_request_stop = false;
+        WITH_LOCK(m_mutex, m_request_stop = false);
     }
 
     ~CCheckQueue()
