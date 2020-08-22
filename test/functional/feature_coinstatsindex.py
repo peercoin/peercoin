@@ -62,6 +62,13 @@ class CoinStatsIndexTest(BitcoinTestFramework):
             block_info['new_outputs_ex_coinbase'] + block_info['coinbase'] + block_info['unspendable']
         )
 
+    def block_sanity_check(self, block_info):
+        block_subsidy = 50
+        assert_equal(
+            block_info['prevout_spent'] + block_subsidy,
+            block_info['new_outputs_ex_coinbase'] + block_info['coinbase'] + block_info['unspendable']
+        )
+
     def _test_coin_stats_index(self):
         node = self.nodes[0]
         index_node = self.nodes[1]
