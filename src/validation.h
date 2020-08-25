@@ -149,7 +149,7 @@ void LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, FlatFi
 bool LoadGenesisBlock(const CChainParams& chainparams);
 
 /** Unload database information */
-void UnloadBlockIndex(CTxMemPool* mempool);
+void UnloadBlockIndex(CTxMemPool* mempool, ChainstateManager& chainman);
 /** Run an instance of the script checking thread */
 void ThreadScriptCheck(int worker_num);
 void AlertNotify(const std::string& strMessage, bool fUpdateUI = true);
