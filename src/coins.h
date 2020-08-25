@@ -20,6 +20,8 @@
 #include <functional>
 #include <unordered_map>
 
+class ChainstateManager;
+
 /**
  * A UTXO entry.
  *
@@ -290,6 +292,15 @@ public:
      * already exist in the cache.
      */
     void AddCoin(const COutPoint& outpoint, Coin&& coin, bool possible_overwrite, bool skipZeroValue = false);
+
+    /**
+     * Emplace a coin into cacheCoins without performing any checks, marking
+     * the emplaced coin as dirty.
+     *
+     * NOT FOR GENERAL USE. Used only when loading coins from a UTXO snapshot.
+     * @sa ChainstateManager::PopulateAndValidateSnapshot()
+     */
+    void EmplaceCoinInternalDANGER(COutPoint&& outpoint, Coin&& coin);
 
     /**
      * Emplace a coin into cacheCoins without performing any checks, marking

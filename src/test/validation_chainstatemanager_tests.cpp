@@ -36,6 +36,8 @@ BOOST_AUTO_TEST_CASE(chainstatemanager)
 
     BOOST_CHECK(!manager.SnapshotBlockhash().has_value());
 
+    BOOST_CHECK(!manager.SnapshotBlockhash().has_value());
+
     // Create a legacy (IBD) chainstate.
     //
     CChainState& c1 = WITH_LOCK(::cs_main, return manager.InitializeChainstate(&mempool));
@@ -57,6 +59,8 @@ BOOST_AUTO_TEST_CASE(chainstatemanager)
     auto active_tip = manager.ActiveTip();
     auto exp_tip = c1.m_chain.Tip();
     BOOST_CHECK_EQUAL(active_tip, exp_tip);
+
+    BOOST_CHECK(!manager.SnapshotBlockhash().has_value());
 
     BOOST_CHECK(!manager.SnapshotBlockhash().has_value());
 
