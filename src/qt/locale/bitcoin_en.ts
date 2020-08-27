@@ -330,12 +330,12 @@
         <translation>Sign &amp;message...</translation>
     </message>
     <message>
-        <location line="+667"/>
+        <location line="+668"/>
         <source>Synchronizing with network...</source>
         <translation>Synchronizing with network...</translation>
     </message>
     <message>
-        <location line="-768"/>
+        <location line="-769"/>
         <source>&amp;Overview</source>
         <translation>&amp;Overview</translation>
     </message>
@@ -495,7 +495,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+201"/>
+        <location line="+202"/>
         <source>Wallet:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -543,7 +543,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1004"/>
+        <location line="-1005"/>
         <source>Backup wallet to another location</source>
         <translation>Backup wallet to another location</translation>
     </message>
@@ -583,7 +583,7 @@
         <translation>Encrypt the private keys that belong to your wallet</translation>
     </message>
     <message>
-        <location line="+134"/>
+        <location line="+135"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
@@ -603,7 +603,7 @@
         <translation>Tabs toolbar</translation>
     </message>
     <message>
-        <location line="-205"/>
+        <location line="-206"/>
         <source>Show the list of used sending addresses and labels</source>
         <translation type="unfinished"></translation>
     </message>
@@ -619,7 +619,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+639"/>
+        <location line="+640"/>
         <source>Indexing blocks on disk...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -672,7 +672,7 @@
         <translation>Up to date</translation>
     </message>
     <message>
-        <location line="-692"/>
+        <location line="-693"/>
         <source>Node window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -712,7 +712,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>default wallet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4559,6 +4559,26 @@
     <message>
         <location line="+1"/>
         <source>Incorrect or no genesis block found. Wrong datadir for network?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Info: Minting disabled by &apos;nominting&apos; option.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Info: Minting suspended due to block creation failure.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Info: Minting suspended due to locked wallet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Info: Minting suspended while synchronizing wallet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

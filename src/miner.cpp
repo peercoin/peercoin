@@ -19,6 +19,7 @@
 #include <timedata.h>
 #include <util/moneystr.h>
 #include <util/system.h>
+#include <util/translation.h>
 #include <kernel.h>
 #include <net.h>
 #include <node/context.h>
@@ -522,10 +523,10 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
         LogPrintf("Set proof-of-stake timeout: %ums for %u UTXOs\n", pos_timio, vCoins.size());
     }
 
-    std::string strMintMessage = "Info: Minting suspended due to locked wallet.";
-    std::string strMintSyncMessage = "Info: Minting suspended while synchronizing wallet.";
-    std::string strMintDisabledMessage = "Info: Minting disabled by 'nominting' option.";
-    std::string strMintBlockMessage = "Info: Minting suspended due to block creation failure.";
+    std::string strMintMessage = _("Info: Minting suspended due to locked wallet.").translated;
+    std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.").translated;
+    std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.").translated;
+    std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.").translated;
     std::string strMintEmpty = "";
     if (!gArgs.GetBoolArg("-minting", true) || !gArgs.GetBoolArg("-staking", true))
     {
