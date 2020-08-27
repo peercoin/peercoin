@@ -396,7 +396,6 @@ void SetupServerArgs()
 #else
     hidden_args.emplace_back("-sysperms");
 #endif
-    gArgs.AddArg("-txindex", strprintf("Maintain a full transaction index, used by the getrawtransaction rpc call (default: %u)", DEFAULT_TXINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     gArgs.AddArg("-blockfilterindex=<type>",
                  strprintf("Maintain an index of compact filters by block (default: %s, values: %s).", DEFAULT_BLOCKFILTERINDEX, ListBlockFilterTypes()) +
                  " If <type> is not supplied or if <type> = 1, indexes for all known types are enabled.",
@@ -1368,7 +1367,7 @@ bool AppInitMain(NodeContext& node)
     nTotalCache = std::min(nTotalCache, nMaxDbCache << 20); // total cache cannot be greater than nMaxDbcache
     int64_t nBlockTreeDBCache = std::min(nTotalCache / 8, nMaxBlockDBCache << 20);
     nTotalCache -= nBlockTreeDBCache;
-    int64_t nTxIndexCache = std::min(nTotalCache / 8, gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX) ? nMaxTxIndexCache << 20 : 0);
+    int64_t nTxIndexCache = std::min(nTotalCache / 8, nMaxTxIndexCache << 20);
     nTotalCache -= nTxIndexCache;
     int64_t filter_index_cache = 0;
     if (!g_enabled_filter_types.empty()) {
@@ -1384,9 +1383,7 @@ bool AppInitMain(NodeContext& node)
     int64_t nMempoolSizeMax = gArgs.GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000;
     LogPrintf("Cache configuration:\n");
     LogPrintf("* Using %.1f MiB for block index database\n", nBlockTreeDBCache * (1.0 / 1024 / 1024));
-    if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
-        LogPrintf("* Using %.1f MiB for transaction index database\n", nTxIndexCache * (1.0 / 1024 / 1024));
-    }
+    LogPrintf("* Using %.1f MiB for transaction index database\n", nTxIndexCache * (1.0 / 1024 / 1024));
     for (BlockFilterType filter_type : g_enabled_filter_types) {
         LogPrintf("* Using %.1f MiB for %s block filter index database\n",
                   filter_index_cache * (1.0 / 1024 / 1024), BlockFilterTypeName(filter_type));
@@ -1571,10 +1568,8 @@ bool AppInitMain(NodeContext& node)
     }
 
     // ********************************************************* Step 8: start indexers
-    if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
-        g_txindex = MakeUnique<TxIndex>(nTxIndexCache, false, fReindex);
-        g_txindex->Start();
-    }
+    g_txindex = MakeUnique<TxIndex>(nTxIndexCache, false, fReindex);
+    g_txindex->Start();
 
     for (const auto& filter_type : g_enabled_filter_types) {
         InitBlockFilterIndex(filter_type, filter_index_cache, false, fReindex);
