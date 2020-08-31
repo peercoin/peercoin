@@ -2602,6 +2602,8 @@ UniValue CreateUTXOSnapshot(
     // `unsigned int`, nChainTx's type.
     result.pushKV("nchaintx", uint64_t{tip->nChainTx});
     return result;
+},
+    };
 }
 
 void RegisterBlockchainRPCCommands(CRPCTable &t)
