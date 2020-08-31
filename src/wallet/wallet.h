@@ -598,8 +598,15 @@ struct CoinSelectionParams
     size_t tx_noinputs_size = 0;
     //! Indicate that we are subtracting the fee from outputs
     bool m_subtract_fee_outputs = false;
+    bool m_avoid_partial_spends = false;
 
-    CoinSelectionParams(bool use_bnb, size_t change_output_size, size_t change_spend_size, size_t tx_noinputs_size) : use_bnb(use_bnb), change_output_size(change_output_size), change_spend_size(change_spend_size), tx_noinputs_size(tx_noinputs_size) {}
+    CoinSelectionParams(bool use_bnb, size_t change_output_size, size_t change_spend_size, size_t tx_noinputs_size), bool avoid_partial :
+        use_bnb(use_bnb),
+        change_output_size(change_output_size),
+        change_spend_size(change_spend_size),
+        tx_noinputs_size(tx_noinputs_size),
+        m_avoid_partial_spends(avoid_partial)
+    {}
     CoinSelectionParams() {}
 };
 
@@ -808,7 +815,7 @@ public:
      * completion the coin set and corresponding actual target value is
      * assembled
      */
-    bool SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibilityFilter& eligibility_filter, std::vector<OutputGroup> groups,
+    bool SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibilityFilter& eligibility_filter, std::vector<COutput> coins,
         std::set<CInputCoin>& setCoinsRet, CAmount& nValueRet, const CoinSelectionParams& coin_selection_params, bool& bnb_used) const;
 
     bool IsSpent(const uint256& hash, unsigned int n) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
