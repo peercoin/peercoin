@@ -29,7 +29,7 @@ SplashScreen::SplashScreen(interfaces::Node& node, Qt::WindowFlags f, const Netw
     QWidget(nullptr, f), curAlignment(0), m_node(node)
 {
     // set reference point, paddings
-    int paddingRight            = 145;
+    int paddingRight            = 165;
     int paddingTop              = 55;
     int titleVersionVSpace      = 17;
     int titleCopyrightVSpace    = 40;
@@ -47,7 +47,7 @@ SplashScreen::SplashScreen(interfaces::Node& node, Qt::WindowFlags f, const Netw
     QString font            = QApplication::font().toString();
 
     // create a bitmap according to device pixelratio
-    QSize splashSize(480*devicePixelRatio,320*devicePixelRatio);
+    QSize splashSize(480*devicePixelRatio,480*devicePixelRatio);
     pixmap = QPixmap(splashSize);
 
     // change to HiDPI if it makes sense
@@ -67,12 +67,12 @@ SplashScreen::SplashScreen(interfaces::Node& node, Qt::WindowFlags f, const Netw
     const QSize requiredSize(100,100);
     QPixmap icon(networkStyle->getAppIcon().pixmap(requiredSize));
 
-    QRect rectIcon(QPoint(30,20), requiredSize);
+    QRect rectIcon(QPoint(40,30), requiredSize);
     pixPaint.drawPixmap(rectIcon, icon);
 
-    QRect rectAvatar(QPoint(0,105), QSize(1007/2,385/2));
+    QRect rectAvatar(QPoint(75,105), QSize(1000/3,1000/3));
 
-    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/strider"));
+    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/scarab"));
 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
