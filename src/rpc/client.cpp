@@ -143,6 +143,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "getblockstats", 1, "stats" },
     { "keypoolrefill", 0, "newsize" },
     { "getrawmempool", 0, "verbose" },
+    { "getrawmempool", 1, "mempool_sequence" },
     { "estimatesmartfee", 0, "conf_target" },
     { "setban", 2, "bantime" },
     { "setban", 3, "absolute" },
