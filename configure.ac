@@ -1423,6 +1423,16 @@ if test "$build_bitcoin_cli$build_bitcoin_tx$build_bitcoin_util$build_bitcoind$b
   use_zmq=no
 fi
 
+if test x$use_ebpf != xno; then
+  AC_CHECK_HEADER([sys/sdt.h], [have_sdt=yes], [have_sdt=no])
+else
+  have_sdt=no
+fi
+
+if test x$have_sdt = xyes; then
+  AC_DEFINE([ENABLE_TRACING], [1], [Define to 1 to enable eBPF user static defined tracepoints])
+fi
+
 dnl Check for libminiupnpc (optional)
 if test "$use_upnp" != "no"; then
   AC_CHECK_HEADERS(
