@@ -2280,19 +2280,17 @@ static void UpdateTip(CTxMemPool& mempool, const CBlockIndex* pindexNew, const C
     }
 
     bilingual_str warning_messages;
+    int num_unexpected_version = 0;
     if (!::ChainstateActive().IsInitialBlockDownload())
     {
-        int nUpgraded = 0;
         const CBlockIndex* pindex = pindexNew;
         // Check the version of the last 100 blocks to see if we need to upgrade:
         for (int i = 0; i < 100 && pindex != nullptr; i++)
         {
             if (pindex->nVersion > CBlockHeader::CURRENT_VERSION)
-                ++nUpgraded;
+                ++num_unexpected_version;
             pindex = pindex->pprev;
         }
-        if (nUpgraded > 0)
-            AppendWarning(warning_messages, strprintf(_("%d of last 100 blocks have unexpected version"), nUpgraded));
     }
 
     LogPrintf("%s: new best=%s height=%d version=0x%08x log2_trust=%.8g moneysupply=%s tx=%lu date='%s' progress=%f cache=%.1fMiB(%utxo)%s\n", __func__,
@@ -2303,6 +2301,10 @@ static void UpdateTip(CTxMemPool& mempool, const CBlockIndex* pindexNew, const C
       FormatISO8601DateTime(pindexNew->GetBlockTime()),
       GuessVerificationProgress(chainParams.TxData(), pindexNew), ::ChainstateActive().CoinsTip().DynamicMemoryUsage() * (1.0 / (1<<20)), ::ChainstateActive().CoinsTip().GetCacheSize(),
       !warning_messages.empty() ? strprintf(" warning='%s'", warning_messages.original) : "");
+
+    if (num_unexpected_version > 0) {
+        LogPrint(BCLog::VALIDATION, "%d of last 100 blocks have unexpected version\n", num_unexpected_version);
+    }
 }
 
 /** Disconnect m_chain's tip.
