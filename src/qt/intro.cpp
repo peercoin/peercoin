@@ -110,7 +110,7 @@ void FreespaceChecker::check()
 }
 
 Intro::Intro(QWidget *parent, int64_t blockchain_size_gb, int64_t chain_state_size_gb) :
-    QDialog(parent),
+    QDialog(parent, GUIUtil::dialog_flags),
     ui(new Ui::Intro),
     thread(nullptr),
     signalled(false),
