@@ -14,7 +14,6 @@
 
 static Mutex g_warnings_mutex;
 static bilingual_str g_misc_warnings GUARDED_BY(g_warnings_mutex);
-static bool fLargeWorkForkFound GUARDED_BY(g_warnings_mutex) = false;
 static bool fLargeWorkInvalidChainFound GUARDED_BY(g_warnings_mutex) = false;
 std::string strMintWarning;
 
@@ -22,18 +21,6 @@ void SetMiscWarning(const bilingual_str& warning)
 {
     LOCK(g_warnings_mutex);
     g_misc_warnings = warning;
-}
-
-void SetfLargeWorkForkFound(bool flag)
-{
-    LOCK(g_warnings_mutex);
-    fLargeWorkForkFound = flag;
-}
-
-bool GetfLargeWorkForkFound()
-{
-    LOCK(g_warnings_mutex);
-    return fLargeWorkForkFound;
 }
 
 void SetfLargeWorkInvalidChainFound(bool flag)
@@ -71,11 +58,8 @@ bilingual_str GetWarnings(bool verbose)
         warnings_verbose.emplace_back(warnings_concise);
     }
 
-    if (fLargeWorkForkFound) {
+    if (fLargeWorkInvalidChainFound) {
         nPriority = 2000;
-        warnings_concise = _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.");
-        warnings_verbose.emplace_back(warnings_concise);
-    } else if (fLargeWorkInvalidChainFound) {
         nPriority = 2000;
         warnings_concise = _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
         warnings_verbose.emplace_back(warnings_concise);
