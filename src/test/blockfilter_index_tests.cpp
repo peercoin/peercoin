@@ -92,9 +92,9 @@ bool BuildChainTestingSetup::BuildChain(const CBlockIndex* pindex,
     for (auto& block : chain) {
         block = std::make_shared<CBlock>(CreateBlock(pindex, no_txns, coinbase_script_pub_key));
         CBlockHeader header = block->GetBlockHeader();
-
+        int tmpTemp;
         BlockValidationState state;
-        if (!ProcessNewBlockHeaders({header}, state, Params(), &pindex)) {
+        if (!ProcessNewBlockHeaders(tmpTemp, ::ChainActive().Tip()->GetBlockHash(), {header}, state, Params(), &pindex)) {
             return false;
         }
     }

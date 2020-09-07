@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
 
     int32_t& nPoSTemperature = mapPoSTemperature[CNetAddr()];
     // Process all the headers so we understand the toplogy of the chain
-    BOOST_CHECK(ProcessNewBlockHeaders(nPoSTemperature, chainActive.Tip()->GetBlockHash(), headers, state, Params()));
+    BOOST_CHECK(ProcessNewBlockHeaders(nPoSTemperature, ::ChainActive().Tip()->GetBlockHash(), headers, state, Params()));
 
     // Connect the genesis block and drain any outstanding events
     BOOST_CHECK(ProcessNewBlock(Params(), std::make_shared<CBlock>(Params().GenesisBlock()), true, &ignored));
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(mempool_locks_reorg)
         }
 
         // Mature the inputs of the txs
-        for (int j = COINBASE_MATURITY; j > 0; --j) {
+        for (int j = ::Params().GetConsensus().nCoinbaseMaturity; j > 0; --j) {
             last_mined = GoodBlock(last_mined->GetHash());
             BOOST_REQUIRE(ProcessBlock(last_mined));
         }
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(mempool_locks_reorg)
         std::vector<std::shared_ptr<const CBlock>> reorg;
         last_mined = GoodBlock(split_hash);
         reorg.push_back(last_mined);
-        for (size_t j = COINBASE_MATURITY + txs.size() + 1; j > 0; --j) {
+        for (size_t j = ::Params().GetConsensus().nCoinbaseMaturity + txs.size() + 1; j > 0; --j) {
             last_mined = GoodBlock(last_mined->GetHash());
             reorg.push_back(last_mined);
         }
@@ -295,7 +295,6 @@ BOOST_AUTO_TEST_CASE(mempool_locks_reorg)
                     *m_node.mempool,
                     state,
                     tx,
-                    &plTxnReplaced,
                     /* bypass_limits */ false,
                     /* nAbsurdFee */ 0));
             }

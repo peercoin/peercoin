@@ -90,10 +90,6 @@ int main(int argc, char *argv[])
     if (QTest::qExec(&test5) != 0) {
         fInvalid = true;
     }
-    AddressBookTests test6(*node);
-    if (QTest::qExec(&test6) != 0) {
-        fInvalid = true;
-    }
 #endif
 
     return fInvalid;
