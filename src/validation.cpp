@@ -4895,19 +4895,6 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex *pin
     return std::min<double>(pindex->nChainTx / fTxTotal, 1.0);
 }
 
-class CMainCleanup
-{
-public:
-    CMainCleanup() {}
-    ~CMainCleanup() {
-        // block headers
-        BlockMap::iterator it1 = g_chainman.BlockIndex().begin();
-        for (; it1 != g_chainman.BlockIndex().end(); it1++)
-            delete (*it1).second;
-        g_chainman.BlockIndex().clear();
-    }
-};
-static CMainCleanup instance_of_cmaincleanup;
 
 
 
@@ -5021,7 +5008,6 @@ bool CheckBlockSignature(const CBlock& block)
         return false;
     return key.Verify(block.GetHash(), block.vchBlockSig);
 }
-
 Optional<uint256> ChainstateManager::SnapshotBlockhash() const {
     if (m_active_chainstate != nullptr) {
         // If a snapshot chainstate exists, it will always be our active.

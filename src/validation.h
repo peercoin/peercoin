@@ -386,6 +386,10 @@ public:
         BlockValidationState& state,
         const CChainParams& chainparams,
         CBlockIndex** ppindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+
+    ~BlockManager() {
+        Unload();
+    }
 };
 
 /**
