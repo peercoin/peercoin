@@ -8,9 +8,10 @@ src/*/*.exe
 src/peercoin
 src/peercoind
 src/peercoin-cli
-src/peercoin-tx
 src/peercoin-gui
 src/peercoin-node
+src/peercoin-tx
+src/peercoin-util
 src/peercoin-wallet
 !src/test/fuzz/*.*
 src/test/test_peercoin
