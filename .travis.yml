@@ -1,141 +1,112 @@
-# Travis caches can be manually removed if necessary. This is one of the very
-# few manual operations that is possible with Travis, and it can be done by a
-# Bitcoin Core GitHub member via the Travis web interface [0].
-#
-# Travis CI uploads the cache after the script phase of the build [1].
-# However, the build is terminated without saving the cache if it takes over
-# 50 minutes [2]. Thus, if we spent too much time in early build stages, fail
-# with an error and save the cache.
-#
-# [0] https://travis-ci.org/bitcoin/bitcoin/caches
-# [1] https://docs.travis-ci.com/user/caching/#build-phases
-# [2] https://docs.travis-ci.com/user/customizing-the-build#build-timeouts
-
-version: ~> 1.0
+language: c
+os:
+  - linux
+  - osx
 
 dist: bionic
-os: linux
-language: minimal
-arch: amd64
-cache:
-  directories:
-    - $TRAVIS_BUILD_DIR/depends/built
-    - $TRAVIS_BUILD_DIR/depends/sdk-sources
-    - $TRAVIS_BUILD_DIR/ci/scratch/.ccache
-    - $TRAVIS_BUILD_DIR/releases/$HOST
-    # macOS
-    - $HOME/Library/Caches/Homebrew
-    - /usr/local/Homebrew
-stages:
-  - lint
-  - test
+# Valgrind currently supports upto macOS 10.13, the latest xcode of that version is 10.1
+osx_image: xcode10.1
+addons:
+  apt:
+    packages:
+      - libgmp-dev
+      - valgrind
+      - libtool-bin
+compiler:
+  - clang
+  - gcc
 env:
   global:
-    - CI_RETRY_EXE="travis_retry"
-    - CACHE_ERR_MSG="Error! Initial build successful, but not enough time remains to run later build stages and tests. See https://docs.travis-ci.com/user/customizing-the-build#build-timeouts . Please manually re-run this job by using the travis restart button. The next run should not time out because the build cache has been saved."
-before_install:
-  - set -o errexit; source ./ci/test/00_setup_env.sh
-  - set -o errexit; source ./ci/test/03_before_install.sh
-install:
-  - set -o errexit; source ./ci/test/04_install.sh
-before_script:
-  # Temporary workaround for https://github.com/bitcoin/bitcoin/issues/16368
-  - for i in {1..4}; do echo "$(sleep 500)" ; done &
-  - set -o errexit; source ./ci/test/05_before_script.sh &> "/dev/null"
-script:
-  - export CONTINUE=1
-  - if [ $SECONDS -gt 1200 ]; then export CONTINUE=0; fi  # Likely the depends build took very long
-  - if [ $TRAVIS_REPO_SLUG = "bitcoin/bitcoin" ]; then export CONTINUE=1; fi  # continue on repos with extended build time (90 minutes)
-  - if [ $CONTINUE = "1" ]; then set -o errexit; source ./ci/test/06_script_a.sh; else set +o errexit; echo "$CACHE_ERR_MSG"; false; fi
-  - if [[ $SECONDS -gt 50*60-$EXPECTED_TESTS_DURATION_IN_SECONDS ]]; then export CONTINUE=0; fi
-  - if [ $TRAVIS_REPO_SLUG = "bitcoin/bitcoin" ]; then export CONTINUE=1; fi  # continue on repos with extended build time (90 minutes)
-  - if [ $CONTINUE = "1" ]; then set -o errexit; source ./ci/test/06_script_b.sh; else set +o errexit; echo "$CACHE_ERR_MSG"; false; fi
-after_script:
-  - echo $TRAVIS_COMMIT_RANGE
-jobs:
+    - WIDEMUL=auto  BIGNUM=auto  ENDOMORPHISM=no  STATICPRECOMPUTATION=yes  ECMULTGENPRECISION=auto  ASM=no  BUILD=check  EXTRAFLAGS=  HOST=  ECDH=no  RECOVERY=no SCHNORRSIG=no EXPERIMENTAL=no CTIMETEST=yes BENCH=yes ITERS=2
+  matrix:
+    - WIDEMUL=int64   RECOVERY=yes
+    - WIDEMUL=int64   ECDH=yes  EXPERIMENTAL=yes SCHNORRSIG=yes
+    - WIDEMUL=int64   ENDOMORPHISM=yes
+    - WIDEMUL=int128
+    - WIDEMUL=int128  RECOVERY=yes EXPERIMENTAL=yes SCHNORRSIG=yes
+    - WIDEMUL=int128  ENDOMORPHISM=yes
+    - WIDEMUL=int128  ENDOMORPHISM=yes  ECDH=yes EXPERIMENTAL=yes SCHNORRSIG=yes
+    - WIDEMUL=int128                    ASM=x86_64
+    - WIDEMUL=int128  ENDOMORPHISM=yes  ASM=x86_64
+    - BIGNUM=no
+    - BIGNUM=no       ENDOMORPHISM=yes RECOVERY=yes EXPERIMENTAL=yes SCHNORRSIG=yes
+    - BIGNUM=no       STATICPRECOMPUTATION=no
+    - BUILD=distcheck CTIMETEST= BENCH=
+    - CPPFLAGS=-DDETERMINISTIC
+    - CFLAGS=-O0 CTIMETEST=
+    - ECMULTGENPRECISION=2
+    - ECMULTGENPRECISION=8
+    - VALGRIND=yes ENDOMORPHISM=yes BIGNUM=no ASM=x86_64 EXPERIMENTAL=yes ECDH=yes  RECOVERY=yes EXTRAFLAGS="--disable-openssl-tests" CPPFLAGS=-DVALGRIND BUILD=
+    - VALGRIND=yes                  BIGNUM=no ASM=x86_64 EXPERIMENTAL=yes ECDH=yes  RECOVERY=yes EXTRAFLAGS="--disable-openssl-tests" CPPFLAGS=-DVALGRIND BUILD=
+matrix:
+  fast_finish: true
   include:
-
-    - stage: lint
-      name: 'lint'
-      env:
-      cache: pip
-      language: python
-      python: '3.5' # Oldest supported version according to doc/dependencies.md
-      install:
-        - set -o errexit; source ./ci/lint/04_install.sh
-      before_script:
-        - set -o errexit; source ./ci/lint/05_before_script.sh
-      script:
-        - set -o errexit; source ./ci/lint/06_script.sh
-
-    - stage: test
-      name: 'ARM  [GOAL: install]  [buster]  [unit tests, functional tests]'
-      arch: arm64  # Can disable QEMU_USER_CMD and run the tests natively without qemu
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_arm.sh"
-        QEMU_USER_CMD=""
-
-    - stage: test
-      name: 'S390x  [GOAL: install]  [buster]  [unit tests, functional tests]'
-      arch: s390x  # Can disable QEMU_USER_CMD and run the tests natively without qemu
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_s390x.sh"
-        QEMU_USER_CMD=""
-
-    - stage: test
-      name: 'Win64  [GOAL: deploy]  [unit tests, no gui, no boost::process, no functional tests]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_win64.sh"
-
-    - stage: test
-      name: '32-bit + dash  [GOAL: install]  [CentOS 7]  [gui]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_i686_centos.sh"
-
-    - stage: test
-      name: 'x86_64 Linux  [GOAL: install]  [bionic]  [C++17, previous releases, uses qt5 dev package and some depends packages] [unsigned char]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_native_qt5.sh"
-
-    - stage: test
-      name: 'x86_64 Linux  [GOAL: install]  [focal]  [depends, sanitizers: memory (MSan)]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_native_msan.sh"
-
-    - stage: test
-      name: 'x86_64 Linux  [GOAL: install]  [focal]  [no depends, only system libs, sanitizers: fuzzer,address,undefined]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_native_fuzz.sh"
-
-    - stage: test
-      name: 'x86_64 Linux [GOAL: install]  [focal]  [multiprocess]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_native_multiprocess.sh"
-
-    - stage: test
-      name: 'x86_64 Linux  [GOAL: install]  [xenial]  [no wallet]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_native_nowallet.sh"
-
-    - stage: test
-      name: 'macOS 10.12  [GOAL: deploy] [no functional tests]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_mac.sh"
-
-    - stage: test
-      name: 'macOS 10.14 native [GOAL: install] [GUI] [no depends]'
-      os: osx
-      # Use the most recent version:
-      # Xcode 11.3.1, macOS 10.14, SDK 10.15
-      # https://docs.travis-ci.com/user/reference/osx/#macos-version
-      osx_image: xcode11.3
+    - compiler: clang
+      os: linux
+      env: HOST=i686-linux-gnu ENDOMORPHISM=yes
       addons:
-        homebrew:
+        apt:
           packages:
-          - berkeley-db4
-          - miniupnpc
-          - qrencode
-          - ccache
-          - zeromq
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_mac_host.sh"
+            - gcc-multilib
+            - libgmp-dev:i386
+            - valgrind
+            - libtool-bin
+            - libc6-dbg:i386
+    - compiler: clang
+      env: HOST=i686-linux-gnu
+      os: linux
+      addons:
+        apt:
+          packages:
+            - gcc-multilib
+            - valgrind
+            - libtool-bin
+            - libc6-dbg:i386
+    - compiler: gcc
+      env: HOST=i686-linux-gnu ENDOMORPHISM=yes
+      os: linux
+      addons:
+        apt:
+          packages:
+            - gcc-multilib
+            - valgrind
+            - libtool-bin
+            - libc6-dbg:i386
+    - compiler: gcc
+      os: linux
+      env: HOST=i686-linux-gnu
+      addons:
+        apt:
+          packages:
+            - gcc-multilib
+            - libgmp-dev:i386
+            - valgrind
+            - libtool-bin
+            - libc6-dbg:i386
+    # S390x build (big endian system)
+    - compiler: gcc
+      env: HOST=s390x-unknown-linux-gnu ECDH=yes RECOVERY=yes EXPERIMENTAL=yes CTIMETEST=
+      arch: s390x
+
+# We use this to install macOS dependencies instead of the built in `homebrew` plugin,
+# because in xcode earlier than 11 they have a bug requiring updating the system which overall takes ~8 minutes.
+# https://travis-ci.community/t/macos-build-fails-because-of-homebrew-bundle-unknown-command/7296
+before_install:
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install gmp valgrind gcc@9; fi
+
+before_script: ./autogen.sh
+
+# travis auto terminates jobs that go for 10 minutes without printing to stdout, but travis_wait doesn't work well with forking programs like valgrind (https://docs.travis-ci.com/user/common-build-problems/#build-times-out-because-no-output-was-received https://github.com/bitcoin-core/secp256k1/pull/750#issuecomment-623476860)
+script:
+  - function keep_alive() { while true; do echo -en "\a"; sleep 60; done }
+  - keep_alive &
+  - ./contrib/travis.sh
+  - kill %keep_alive
+
+after_script:
+    - cat ./tests.log
+    - cat ./exhaustive_tests.log
+    - cat ./valgrind_ctime_test.log
+    - cat ./bench.log
+    - $CC --version
+    - valgrind --version

@@ -1,5 +1,6 @@
 *.tar.gz
 
+bench_schnorrsig
 valgrind_ctime_test
 *.exe
 *.pdb
@@ -19,6 +20,8 @@ src/qt/test/test_peercoin-qt
 Makefile.in
 aclocal.m4
 autom4te.cache/
+*.log
+*.trs
 build-aux/config.guess
 build-aux/config.sub
 build-aux/depcomp
