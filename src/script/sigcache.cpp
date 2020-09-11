@@ -63,6 +63,13 @@ public:
         hasher.Write(hash.begin(), 32).Write(pubkey.data(), pubkey.size()).Write(sig.data(), sig.size()).Finalize(entry.begin());
     }
 
+    void
+    ComputeEntrySchnorr(uint256& entry, const uint256 &hash, Span<const unsigned char> sig, const XOnlyPubKey& pubkey)
+    {
+        CSHA256 hasher = m_salted_hasher_schnorr;
+        hasher.Write(hash.begin(), 32).Write(&pubkey[0], pubkey.size()).Write(sig.data(), sig.size()).Finalize(entry.begin());
+    }
+
     bool
     Get(const uint256& entry, const bool erase)
     {
