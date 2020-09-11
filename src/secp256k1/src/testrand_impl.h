@@ -155,4 +155,8 @@ static void secp256k1_testrand_finish(void) {
     printf("random run = %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", run32[0], run32[1], run32[2], run32[3], run32[4], run32[5], run32[6], run32[7], run32[8], run32[9], run32[10], run32[11], run32[12], run32[13], run32[14], run32[15]);
 }
 
+static void secp256k1_rand_flip(unsigned char *b, size_t len) {
+    b[secp256k1_rand_int(len)] ^= (1 << secp256k1_rand_int(8));
+}
+
 #endif /* SECP256K1_TESTRAND_IMPL_H */
