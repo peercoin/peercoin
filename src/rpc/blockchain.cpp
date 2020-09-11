@@ -1234,6 +1234,7 @@ RPCHelpMan getblockchaininfo()
     softforks.push_back(SoftForkDesc("bip66", 3, tip, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("bip65", 4, tip, Params().GetConsensus()));
 
+    BIP9SoftForkDescPushBack(softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     obj.pushKV("softforks",             softforks);
 
     obj.pushKV("warnings", GetWarnings(false).original);
