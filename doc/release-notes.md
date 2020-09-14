@@ -73,6 +73,17 @@ The `-rescan` startup parameter has been removed. Wallets which require
 rescanning due to corruption will still be rescanned on startup.
 Otherwise, please use the `rescanblockchain` RPC to trigger a rescan. (#23123)
 
+- The Tor onion service that is automatically created by setting the
+  `-listenonion` configuration parameter will now be created as a Tor v3 service
+  instead of Tor v2. The private key that was used for Tor v2 (if any) will be
+  left untouched in the `onion_private_key` file in the data directory (see
+  `-datadir`) and can be removed if not needed. Bitcoin Core will no longer
+  attempt to read it. The private key for the Tor v3 service will be saved in a
+  file named `onion_v3_private_key`. To use the deprecated Tor v2 service (not
+  recommended), then `onion_private_key` can be copied over
+  `onion_v3_private_key`, e.g.
+  `cp -f onion_private_key onion_v3_private_key`. (#19954)
+
 Updated RPCs
 ------------
 
