@@ -32,6 +32,8 @@ ANNEX_TAG = 0x50
 
 LEAF_VERSION_TAPSCRIPT = 0xc0
 
+LEAF_VERSION_TAPSCRIPT = 0xc0
+
 def hash160(s):
     return ripemd160(sha256(s))
 
