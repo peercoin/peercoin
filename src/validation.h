@@ -326,7 +326,7 @@ class CVerifyDB {
 public:
     CVerifyDB();
     ~CVerifyDB();
-    bool VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview, int nCheckLevel, int nCheckDepth);
+    bool VerifyDB(const CChainParams& chainparams, CChainState& active_chainstate, CCoinsView *coinsview, int nCheckLevel, int nCheckDepth);
 };
 
 enum DisconnectResult
