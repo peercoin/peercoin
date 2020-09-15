@@ -2168,7 +2168,6 @@ bool CChainState::FlushStateToDisk(
         bool fDoFullFlush = false;
         CoinsCacheSizeState cache_state = GetCoinsCacheSizeState(&m_mempool);
         LOCK(cs_LastBlockFile);
-
         const auto nNow = GetTime<std::chrono::microseconds>();
         // Avoid writing/flushing immediately after startup.
         if (nLastWrite.count() == 0) {
