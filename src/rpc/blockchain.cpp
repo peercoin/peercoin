@@ -1480,7 +1480,7 @@ static RPCHelpMan invalidateblock()
     InvalidateBlock(state, Params(), pblockindex);
 
     if (state.IsValid()) {
-        ActivateBestChain(state, Params());
+        ::ChainstateActive().ActivateBestChain(state, Params());
     }
 
     if (!state.IsValid()) {
@@ -1520,7 +1520,7 @@ static RPCHelpMan reconsiderblock()
     }
 
     BlockValidationState state;
-    ActivateBestChain(state, Params());
+    ::ChainstateActive().ActivateBestChain(state, Params());
 
     if (!state.IsValid()) {
         throw JSONRPCError(RPC_DATABASE_ERROR, state.ToString());
