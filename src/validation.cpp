@@ -3945,7 +3945,7 @@ bool static LoadBlockIndexDB(ChainstateManager& chainman, const CChainParams& ch
 void CChainState::LoadMempool(const ArgsManager& args)
 {
     if (args.GetArg("-persistmempool", DEFAULT_PERSIST_MEMPOOL)) {
-        ::LoadMempool(m_mempool);
+        ::LoadMempool(m_mempool, ::ChainstateActive());
     }
     m_mempool.SetIsLoaded(!ShutdownRequested());
 }
@@ -4716,7 +4716,7 @@ CBlockFileInfo* GetBlockFileInfo(size_t n)
 
 static const uint64_t MEMPOOL_DUMP_VERSION = 1;
 
-bool LoadMempool(CTxMemPool& pool)
+bool LoadMempool(CTxMemPool& pool, CChainState& active_chainstate)
 {
     const CChainParams& chainparams = Params();
     int64_t nExpiryTimeout = gArgs.GetArg("-mempoolexpiry", DEFAULT_MEMPOOL_EXPIRY) * 60 * 60;
@@ -4756,7 +4756,8 @@ bool LoadMempool(CTxMemPool& pool)
             }
             if (nTime > nNow - nExpiryTimeout) {
                 LOCK(cs_main);
-                if (AcceptToMemoryPoolWithTime(chainparams, pool, ::ChainstateActive(), tx, nTime, false /* bypass_limits */,
+                assert(std::addressof(::ChainstateActive()) == std::addressof(active_chainstate));
+                if (AcceptToMemoryPoolWithTime(chainparams, pool, active_chainstate, tx, nTime, false /* bypass_limits */,
                                                false /* test_accept */).m_result_type == MempoolAcceptResult::ResultType::VALID) {
                     ++count;
                 } else {

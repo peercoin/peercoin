@@ -999,7 +999,7 @@ CBlockFileInfo* GetBlockFileInfo(size_t n);
 bool DumpMempool(const CTxMemPool& pool);
 
 /** Load the mempool from disk. */
-bool LoadMempool(CTxMemPool& pool);
+bool LoadMempool(CTxMemPool& pool, CChainState& active_chainstate);
 
 // peercoin:
 CAmount GetProofOfWorkReward(unsigned int nBits, uint32_t nTime);
