@@ -17,6 +17,7 @@ class ClientModel;
 class PlatformStyle;
 class SendCoinsEntry;
 class SendCoinsRecipient;
+enum class SynchronizationState;
 
 namespace Ui {
     class SendCoinsDialog;
@@ -99,6 +100,7 @@ private Q_SLOTS:
     void coinControlClipboardChange();
     //void updateFeeSectionControls();
     //void updateSmartFeeLabel();
+    void updateNumberOfBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool headers, SynchronizationState sync_state);
 
 Q_SIGNALS:
     // Fired when a message should be reported to the user
