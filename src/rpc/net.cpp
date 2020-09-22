@@ -958,9 +958,9 @@ static RPCHelpMan addpeeraddress()
     };
 }
 
-static UniValue addpeeraddress(const JSONRPCRequest& request)
+static RPCHelpMan addpeeraddress()
 {
-    RPCHelpMan{"addpeeraddress",
+    return RPCHelpMan{"addpeeraddress",
         "\nAdd the address of a potential peer to the address manager. This RPC is for testing only.\n",
         {
             {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The IP address of the peer"},
@@ -976,8 +976,8 @@ static UniValue addpeeraddress(const JSONRPCRequest& request)
             HelpExampleCli("addpeeraddress", "\"1.2.3.4\" 8333")
     + HelpExampleRpc("addpeeraddress", "\"1.2.3.4\", 8333")
         },
-    }.Check(request);
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if (!node.connman) {
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -1004,6 +1004,8 @@ static UniValue addpeeraddress(const JSONRPCRequest& request)
 
     obj.pushKV("success", true);
     return obj;
+},
+    };
 }
 
 void RegisterNetRPCCommands(CRPCTable &t)
