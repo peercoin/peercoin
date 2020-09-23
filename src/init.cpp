@@ -989,6 +989,10 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     }
 #endif // USE_SYSCALL_SANDBOX
 
+    if (args.IsArgSet("-proxy") && args.GetArg("-proxy", "").empty()) {
+        return InitError(_("No proxy server specified. Use -proxy=<ip> or -proxy=<ip:port>."));
+    }
+
     return true;
 }
 
