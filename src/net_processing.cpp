@@ -1561,6 +1561,13 @@ void PeerManagerImpl::BlockConnected(const std::shared_ptr<const CBlock>& pblock
             m_txrequest.ForgetTxHash(ptx->GetWitnessHash());
         }
     }
+    {
+        LOCK(cs_main);
+        for (const auto& ptx : pblock->vtx) {
+            m_txrequest.ForgetTxHash(ptx->GetHash());
+            m_txrequest.ForgetTxHash(ptx->GetWitnessHash());
+        }
+    }
 }
 
 void PeerManagerImpl::BlockDisconnected(const std::shared_ptr<const CBlock> &block, const CBlockIndex* pindex)
