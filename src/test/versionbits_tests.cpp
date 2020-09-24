@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(versionbits_test)
     }
 
     // Sanity checks of version bit deployments
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
     const Consensus::Params &mainnetParams = chainParams->GetConsensus();
     for (int i=0; i<(int) Consensus::MAX_VERSION_BITS_DEPLOYMENTS; i++) {
         uint32_t bitmask = VersionBitsMask(mainnetParams, static_cast<Consensus::DeploymentPos>(i));
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(versionbits_computeblockversion)
 {
     // Check that ComputeBlockVersion will set the appropriate bit correctly
     // on mainnet.
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
     const Consensus::Params &mainnetParams = chainParams->GetConsensus();
 
     // Use the TESTDUMMY deployment for testing purposes.

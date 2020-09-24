@@ -15,7 +15,7 @@ BOOST_FIXTURE_TEST_SUITE(pow_tests, BasicTestingSetup)
 /* real blocks used */
 BOOST_AUTO_TEST_CASE(get_next_work)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 2;
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(get_next_work)
 /* Test the target before v9 */
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 2;
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9)
 
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos)
 
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos2)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -507,7 +507,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9real)
 
 BOOST_AUTO_TEST_CASE(GetBlockProofEquivalentTime_test)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
     std::vector<CBlockIndex> blocks(10000);
     for (int i = 0; i < 10000; i++) {
         blocks[i].pprev = i ? &blocks[i - 1] : nullptr;
@@ -527,9 +527,9 @@ BOOST_AUTO_TEST_CASE(GetBlockProofEquivalentTime_test)
     }
 }
 
-void sanity_check_chainparams(std::string chainName)
+void sanity_check_chainparams(const ArgsManager& args, std::string chainName)
 {
-    const auto chainParams = CreateChainParams(chainName);
+    const auto chainParams = CreateChainParams(args, chainName);
     const auto consensus = chainParams->GetConsensus();
 
     // hash genesis is correct
@@ -556,22 +556,22 @@ void sanity_check_chainparams(std::string chainName)
 
 BOOST_AUTO_TEST_CASE(ChainParams_MAIN_sanity)
 {
-    sanity_check_chainparams(CBaseChainParams::MAIN);
+    sanity_check_chainparams(*m_node.args, CBaseChainParams::MAIN);
 }
 
 BOOST_AUTO_TEST_CASE(ChainParams_REGTEST_sanity)
 {
-    sanity_check_chainparams(CBaseChainParams::REGTEST);
+    sanity_check_chainparams(*m_node.args, CBaseChainParams::REGTEST);
 }
 
 BOOST_AUTO_TEST_CASE(ChainParams_TESTNET_sanity)
 {
-    sanity_check_chainparams(CBaseChainParams::TESTNET);
+    sanity_check_chainparams(*m_node.args, CBaseChainParams::TESTNET);
 }
 
 BOOST_AUTO_TEST_CASE(ChainParams_SIGNET_sanity)
 {
-    sanity_check_chainparams(CBaseChainParams::SIGNET);
+    sanity_check_chainparams(*m_node.args, CBaseChainParams::SIGNET);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
