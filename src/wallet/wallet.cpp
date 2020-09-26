@@ -328,7 +328,7 @@ std::shared_ptr<CWallet> CreateWallet(interfaces::Chain& chain, const std::strin
     return wallet;
 }
 
-const uint256 CWalletTx::ABANDON_HASH(UINT256_ONE());
+const uint256 CWalletTx::ABANDON_HASH(uint256::ONE);
 
 // peercoin: optional setting to unlock wallet for block minting only;
 //         serves to disable the trivial sendmoney when OS account compromised
