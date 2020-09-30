@@ -37,6 +37,13 @@ using SecondsDouble = std::chrono::duration<double, std::chrono::seconds::period
  */
 inline double CountSecondsDouble(SecondsDouble t) { return t.count(); }
 
+using SecondsDouble = std::chrono::duration<double, std::chrono::seconds::period>;
+
+/**
+ * Helper to count the seconds in any std::chrono::duration type
+ */
+inline double CountSecondsDouble(SecondsDouble t) { return t.count(); }
+
 /**
  * DEPRECATED
  * Use either GetTimeSeconds (not mockable) or GetTime<T> (mockable)
