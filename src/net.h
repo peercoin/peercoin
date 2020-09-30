@@ -265,8 +265,8 @@ public:
     uint64_t nRecvBytes;
     mapMsgCmdSize mapRecvBytesPerMsgCmd;
     NetPermissionFlags m_permissionFlags;
-    int64_t m_ping_usec;
-    int64_t m_min_ping_usec;
+    std::chrono::microseconds m_last_ping_time;
+    std::chrono::microseconds m_min_ping_time;
     CAmount minFeeFilter;
     // Our address, as reported by the peer
     std::string addrLocal;
@@ -599,11 +599,11 @@ public:
     std::atomic<int64_t> nLastTXTime{0};
 
     /** Last measured round-trip time. Used only for RPC/GUI stats/debugging.*/
-    std::atomic<int64_t> m_last_ping_time{0};
+    std::atomic<std::chrono::microseconds> m_last_ping_time{0us};
 
     /** Lowest measured round-trip time. Used as an inbound peer eviction
      * criterium in CConnman::AttemptToEvictConnection. */
-    std::atomic<int64_t> m_min_ping_time{std::numeric_limits<int64_t>::max()};
+    std::atomic<std::chrono::microseconds> m_min_ping_time{std::chrono::microseconds::max()};
     // peercoin: used to detect branch switches
     uint256 lastAcceptedHeader;
 
@@ -727,8 +727,8 @@ public:
 
     /** A ping-pong round trip has completed successfully. Update latest and minimum ping times. */
     void PongReceived(std::chrono::microseconds ping_time) {
-        m_last_ping_time = count_microseconds(ping_time);
-        m_min_ping_time = std::min(m_min_ping_time.load(), count_microseconds(ping_time));
+        m_last_ping_time = ping_time;
+        m_min_ping_time = std::min(m_min_ping_time.load(), ping_time);
     }
 
 private:
@@ -1292,7 +1292,7 @@ struct NodeEvictionCandidate
 {
     NodeId id;
     int64_t nTimeConnected;
-    int64_t m_min_ping_time;
+    std::chrono::microseconds m_min_ping_time;
     int64_t nLastBlockTime;
     int64_t nLastTXTime;
     bool fRelevantServices;
