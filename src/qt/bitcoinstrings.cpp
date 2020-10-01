@@ -104,6 +104,10 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "loaded using a build with a newer version of Berkeley DB. If so, please use "
 "the software that last loaded this wallet"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
+"This error could occur if this wallet was not shutdown cleanly and was last "
+"loaded using a build with a newer version of Berkeley DB. If so, please use "
+"the software that last loaded this wallet"),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
 "This is a pre-release test build - use at your own risk - do not use for "
 "mining or merchant applications"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
@@ -112,6 +116,9 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Total length of network version string (%i) exceeds maximum length (%i). "
 "Reduce the number or size of uacomments."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
+"Transaction needs a change address, but we can't generate it. Please call "
+"keypoolrefill first."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Unable to replay blocks. You will need to rebuild the database using -"
 "reindex-chainstate."),

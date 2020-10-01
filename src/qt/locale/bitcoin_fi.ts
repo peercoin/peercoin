@@ -2323,6 +2323,14 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>%1 (%2 lohkoa)</translation>
     </message>
     <message>
+        <source>Cr&amp;eate Unsigned</source>
+        <translation>L&amp;uo allekirjoittamaton</translation>
+    </message>
+    <message>
+        <source>Creates a Partially Signed Bitcoin Transaction (PSBT) for use with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.</source>
+        <translation>Luo osittain allekirjoitetun bitcoin-siirtotapahtuman (PSBT) käytettäväksi mm. offline %1 lompakko tai PSBT-yhteensopiva hardware-lompakko.</translation>
+    </message>
+    <message>
         <source> from wallet '%1'</source>
         <translation> lompakosta '%1'</translation>
     </message>
@@ -2331,8 +2339,16 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>%1 to %2</translation>
     </message>
     <message>
+        <source>Do you want to draft this transaction?</source>
+        <translation>Haluatko laatia tämän siirron?</translation>
+    </message>
+    <message>
         <source>Are you sure you want to send?</source>
         <translation>Oletko varma, että haluat lähettää?</translation>
+    </message>
+    <message>
+        <source>Please, review your transaction proposal. This will produce a Partially Signed Bitcoin Transaction (PSBT) which you can copy and then sign with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.</source>
+        <translation>Ole hyvä ja katso siirtotapahtuma ehdotuksesi. Tämä tuottaa osittain allekirjoitetun bitcoin-siirtotapahtuman (PSBT), jonka voit kopioida ja sitten allekirjoittaa esimerkiksi offline %1 lompakko tai PSBT-yhteensopiva hardware-lompakko.</translation>
     </message>
     <message>
         <source>or</source>
@@ -2345,6 +2361,10 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
     <message>
         <source>Transaction fee</source>
         <translation>Siirtokulu</translation>
+    </message>
+    <message>
+        <source>Not signalling Replace-By-Fee, BIP-125.</source>
+        <translation>Ei signalointia Korvattavissa korkeammalla kululla, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3163,6 +3183,10 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>Haluatko nostaa siirtomaksua?</translation>
     </message>
     <message>
+        <source>Do you want to draft a transaction with fee increase?</source>
+        <translation>Haluatko nostaa siirtomaksua siirtoon?</translation>
+    </message>
+    <message>
         <source>Current fee:</source>
         <translation>Nykyinen palkkio:</translation>
     </message>
@@ -3277,6 +3301,10 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>Ei voida lukita data-hakemistoa %s. %s on luultavasti jo käynnissä.</translation>
     </message>
     <message>
+        <source>Cannot provide specific connections and have addrman find outgoing connections at the same.</source>
+        <translation>Ei voida tarjota tiettyjä yhteyksiä, ja antaa addrmanin löytää lähteviä yhteyksiä samanaikaisesti.</translation>
+    </message>
+    <message>
         <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
         <translation>Virhe luettaessa %s! Avaimet luetttiin oikein, mutta rahansiirtotiedot tai osoitekirjan sisältö saattavat olla puutteellisia tai vääriä.</translation>
     </message>
@@ -3333,12 +3361,28 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>-%s -osoitteen '%s' selvittäminen epäonnistui</translation>
     </message>
     <message>
+        <source>Change index out of range</source>
+        <translation>Vaihda hakemisto alueen ulkopuolelle</translation>
+    </message>
+    <message>
+        <source>Config setting for %s only applied on %s network when in [%s] section.</source>
+        <translation>Konfigurointiasetuksen %s käyttöön vain %s -verkossa, kun osassa [%s].</translation>
+    </message>
+    <message>
         <source>Copyright (C) %i-%i</source>
         <translation>Tekijänoikeus (C) %i-%i</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>
         <translation>Vioittunut lohkotietokanta havaittu</translation>
+    </message>
+    <message>
+        <source>Could not find asmap file %s</source>
+        <translation>Asmap-tiedostoa %s ei löytynyt</translation>
+    </message>
+    <message>
+        <source>Could not parse asmap file %s</source>
+        <translation>Asmap-tiedostoa %s ei voitu jäsentää</translation>
     </message>
     <message>
         <source>Do you want to rebuild the block database now?</source>
@@ -3359,6 +3403,10 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
     <message>
         <source>Error loading %s</source>
         <translation>Virhe ladattaessa %s</translation>
+    </message>
+    <message>
+        <source>Error loading %s: Private keys can only be disabled during creation</source>
+        <translation>Virhe %s:n lataamisessa: Yksityiset avaimet voidaan poistaa käytöstä vain luomisen aikana</translation>
     </message>
     <message>
         <source>Error loading %s: Wallet corrupted</source>
@@ -3497,6 +3545,10 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>Virhe: Saapuvien yhteyksien kuuntelu epäonnistui (kuuntelu palautti virheen %s)</translation>
     </message>
     <message>
+        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
+        <translation>Virheellinen summa -maxtxfee =: '%s' (täytyy olla vähintään %s minrelay-kulu, jotta estetään jumiutuneet siirtotapahtumat)</translation>
+    </message>
+    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Siirtomäärä on liian pieni lähetettäväksi kulun vähentämisen jälkeen.</translation>
     </message>
@@ -3591,6 +3643,14 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>PID-tiedostoa '%s' ei voitu luoda: %s</translation>
     </message>
     <message>
+        <source>Unable to generate initial keys</source>
+        <translation>Alkuavaimia ei voi luoda</translation>
+    </message>
+    <message>
+        <source>Unknown -blockfilterindex value %s.</source>
+        <translation>Tuntematon -lohkosuodatusindeksiarvo %s.</translation>
+    </message>
+    <message>
         <source>Verifying wallet(s)...</source>
         <translation>Varmistetaan lompakko(ja)...</translation>
     </message>
@@ -3657,6 +3717,10 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
     <message>
         <source>Insufficient funds</source>
         <translation>Lompakon saldo ei riitä</translation>
+    </message>
+    <message>
+        <source>Cannot upgrade a non HD split wallet without upgrading to support pre split keypool. Please use -upgradewallet=169900 or -upgradewallet with no version specified.</source>
+        <translation>Muuta kuin HD-jaettua lompakkoa ei voi päivittää ilman päivitystä tukemaan esijaettua avainvarastoa. Käytä -upgradewallet = 169900 tai -upgradewallet ilman määritettyä versiota.</translation>
     </message>
     <message>
         <source>Fee estimation failed. Fallbackfee is disabled. Wait a few blocks or enable -fallbackfee.</source>

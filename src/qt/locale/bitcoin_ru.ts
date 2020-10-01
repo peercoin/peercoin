@@ -231,7 +231,7 @@
     <message>
         <location line="-145"/>
         <source>Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
-        <translation>Введите новый пароль для кошелька.&lt;br/&gt;Используйте пароль, состоящий из &lt;b&gt;десяти или более случайных символов&lt;/b&gt;, или &lt;b&gt;восьми или более слов&lt;/b&gt;.</translation>
+        <translation>Введите новый пароль для кошелька.&lt;br/&gt;Используйте пароль, состоящий из &lt;b&gt;десяти или более случайных символов&lt;/b&gt; или &lt;b&gt;восьми или более слов&lt;/b&gt;.</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -256,7 +256,7 @@
     <message>
         <location line="+2"/>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation>ВАЖНО: любые предыдущие резервные копия вашего кошелька, выполненные вами, необходимо заменить новым сгенерированным, зашифрованным файлом кошелька. В целях безопасности, предыдущие резервные копии незашифрованного файла кошелька утратят пригодность после начала использования нового зашифрованного кошелька.</translation>
+        <translation>ВАЖНО: любые предыдущие резервные копия вашего кошелька, выполненные вами, необходимо заменить новым сгенерированным, зашифрованным файлом кошелька. В целях безопасности предыдущие резервные копии незашифрованного файла кошелька утратят пригодность после начала использования нового зашифрованного кошелька.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1072,7 +1072,7 @@
     <message>
         <location line="+19"/>
         <source>Disable private keys for this wallet. Wallets with private keys disabled will have no private keys and cannot have an HD seed or imported private keys. This is ideal for watch-only wallets.</source>
-        <translation>Отключить приватные ключи для этого кошелька. Кошельки с отключенными приватными ключами не будут иметь приватных ключей и HD мастер-ключ или импортированные приватные ключи. Это подходит только кошелькам для часов.</translation>
+        <translation>Отключить приватные ключи для этого кошелька. Кошельки с отключенными приватными ключами не будут иметь приватных ключей и HD мастер-ключа или импортированных приватных ключей. Это подходит только кошелькам для часов.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1082,7 +1082,7 @@
     <message>
         <location line="+13"/>
         <source>Make a blank wallet. Blank wallets do not initially have private keys or scripts. Private keys and addresses can be imported, or an HD seed can be set, at a later time.</source>
-        <translation>Сделать пустой кошелёк. Чистые кошельки изначально не имеют приватных ключей или скриптов. Позже можно импортировать приватные ключи и адреса, или установить HD мастер-ключ.</translation>
+        <translation>Сделать пустой кошелёк. Чистые кошельки изначально не имеют приватных ключей или скриптов. Позже можно импортировать приватные ключи и адреса или установить HD мастер-ключ.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1638,7 +1638,7 @@
         <location line="+23"/>
         <location line="+23"/>
         <source>Shows if the supplied default SOCKS5 proxy is used to reach peers via this network type.</source>
-        <translation>Показывает, используется ли прокси SOCKS5 по умолчанию, для доступа к узлам через этот тип сети.</translation>
+        <translation>Показывает, используется ли прокси SOCKS5 по умолчанию для доступа к узлам через этот тип сети.</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -1669,7 +1669,7 @@
         <location line="+80"/>
         <location line="+13"/>
         <source>Third party URLs (e.g. a block explorer) that appear in the transactions tab as context menu items. %s in the URL is replaced by transaction hash. Multiple URLs are separated by vertical bar |.</source>
-        <translation>Сторонние URL-адреса (например, обозреватель блоков) , которые отображаются на вкладке транзакции как элементы контекстного меню. %s в URL заменяется хэшем транзакции. Несколько URL-адресов разделены вертикальной чертой |.</translation>
+        <translation>Сторонние URL-адреса (например, обозреватель блоков), которые отображаются на вкладке транзакции как элементы контекстного меню. %s в URL заменяется хэшем транзакции. Несколько URL-адресов разделены вертикальной чертой |.</translation>
     </message>
     <message>
         <location line="+79"/>
@@ -1724,7 +1724,7 @@
     <message>
         <location line="+7"/>
         <source>If you disable the spending of unconfirmed change, the change from a transaction cannot be used until that transaction has at least one confirmation. This also affects how your balance is computed.</source>
-        <translation>При отключении траты неподтверждённой сдачи, сдача от транзакции не может быть использована до тех пор пока у этой транзакции не будет хотя бы одно подтверждение. Это также влияет как ваш баланс рассчитывается.</translation>
+        <translation>При отключении траты неподтверждённой сдачи сдача от транзакции не может быть использована до тех пор пока у этой транзакции не будет хотя бы одно подтверждение. Это также влияет как ваш баланс рассчитывается.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1946,7 +1946,7 @@
     <message>
         <location line="-236"/>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</source>
-        <translation>Общая сумма всех транзакций, которые до сих пор не подтверждены, и до сих пор не учитываются в расходном балансе</translation>
+        <translation>Общая сумма всех транзакций, которые до сих пор не подтверждены и не учитываются в расходном балансе</translation>
     </message>
     <message>
         <location line="+112"/>
@@ -2189,7 +2189,7 @@
         <location line="+4"/>
         <location line="+6"/>
         <source>%n week(s)</source>
-        <translation><numerusform>%n недели</numerusform><numerusform>%n недель</numerusform><numerusform>%n недель</numerusform><numerusform>%n недель</numerusform></translation>
+        <translation><numerusform>%n неделя</numerusform><numerusform>%n недель</numerusform><numerusform>%n недель</numerusform><numerusform>%n недель</numerusform></translation>
     </message>
     <message>
         <location line="+0"/>
@@ -2199,7 +2199,7 @@
     <message numerus="yes">
         <location line="+0"/>
         <source>%n year(s)</source>
-        <translation><numerusform>%n год</numerusform><numerusform>%n лет</numerusform><numerusform>%n лет</numerusform><numerusform>%n лет</numerusform></translation>
+        <translation><numerusform>%n год</numerusform><numerusform>%n года</numerusform><numerusform>%n лет</numerusform><numerusform>%n лет</numerusform></translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2229,7 +2229,7 @@
     <message>
         <location line="+6"/>
         <source>Error: Cannot parse configuration file: %1.</source>
-        <translation>Ошибка : Не возможно разобрать файл конфигурации: %1.</translation>
+        <translation>Ошибка : Невозможно разобрать файл конфигурации: %1.</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -2272,7 +2272,7 @@
     <message>
         <location line="+39"/>
         <source>QR code support not available.</source>
-        <translation>Поддержка QR кодов не доступна.</translation>
+        <translation>Поддержка QR кодов недоступна.</translation>
     </message>
     <message>
         <location line="+32"/>
@@ -2282,7 +2282,7 @@
     <message>
         <location line="+0"/>
         <source>PNG Image (*.png)</source>
-        <translation>PNG Картинка (*.png)</translation>
+        <translation>PNG Image (*.png)</translation>
     </message>
 </context>
 <context>
@@ -2636,7 +2636,7 @@
     <message>
         <location line="-4"/>
         <source>&amp;Disconnect</source>
-        <translation>&amp;Отключится</translation>
+        <translation>&amp;Отключиться</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2654,7 +2654,7 @@
     <message>
         <location line="+164"/>
         <source>Welcome to the %1 RPC console.</source>
-        <translation>Добро пожаловать в %1 RPC консоль</translation>
+        <translation>Добро пожаловать в %1 RPC-консоль</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2669,7 +2669,7 @@
     <message>
         <location line="+1"/>
         <source>For more information on using this console type %1.</source>
-        <translation>Для получения дополнительных сведений об использовании этой консоли, введите %1.</translation>
+        <translation>Для получения дополнительных сведений об использовании этой консоли введите %1.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2765,7 +2765,15 @@
         <location line="-39"/>
         <location line="+153"/>
         <source>An optional amount to request. Leave this empty or zero to not request a specific amount.</source>
-        <translation>Необязательная сумма для запроса. Оставьте пустым или укажите ноль, чтобы запросить неопределённую сумму.</translation>
+        <translation>Необязательная сумма для запроса. Оставьте пустым или укажите ноль, чтобы не запрашивать определённую сумму.</translation>
+    </message>
+    <message>
+        <source>An optional label to associate with the new receiving address (used by you to identify an invoice).  It is also attached to the payment request.</source>
+        <translation>Необязательная метка, ассоциированная с новым адресом приёма (используется вами, чтобы идентифицировать выставленный счёт). Также она присоединяется к запросу платежа.</translation>
+    </message>
+    <message>
+        <source>An optional message that is attached to the payment request and may be displayed to the sender.</source>
+        <translation>Необязательное сообщение, которое присоединяется к запросу платежа и может быть показано отправителю.</translation>
     </message>
     <message>
         <location line="-137"/>
@@ -3327,7 +3335,7 @@
     <message>
         <location line="+433"/>
         <source>This is an unauthenticated payment request.</source>
-        <translation>Это не проверенный запрос на оплату.</translation>
+        <translation>Это непроверенный запрос на оплату.</translation>
     </message>
     <message>
         <location line="+529"/>
@@ -3571,7 +3579,7 @@
     <message>
         <location filename="../trafficgraphwidget.cpp" line="+82"/>
         <source>KB/s</source>
-        <translation>КБ/сек</translation>
+        <translation>КБ/с</translation>
     </message>
 </context>
 <context>
@@ -3589,7 +3597,7 @@
     <message>
         <location line="+6"/>
         <source>conflicted with a transaction with %1 confirmations</source>
-        <translation>конфликт с транзакцией с %1 подтверждений</translation>
+        <translation>конфликт с транзакцией с %1 подтверждениями</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -4128,7 +4136,7 @@
     <message>
         <location line="+2"/>
         <source>ID</source>
-        <translation>ИН</translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -4271,7 +4279,7 @@
     <message>
         <location line="+3"/>
         <source>Cannot obtain a lock on data directory %s. %s is probably already running.</source>
-        <translation>Невозможно заблокировать каталог данных %s. %s возможно уже работает.</translation>
+        <translation>Невозможно заблокировать каталог данных %s. %s, возможно, уже работает.</translation>
     </message>
     <message>
         <location line="+2"/>

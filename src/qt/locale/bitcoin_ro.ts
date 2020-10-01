@@ -136,6 +136,10 @@
         <translation>Arată fraza de acces</translation>
     </message>
     <message>
+        <source>Show passphrase</source>
+        <translation>Arată fraza de acces</translation>
+    </message>
+    <message>
         <source>Encrypt wallet</source>
         <translation>Criptare portofel</translation>
     </message>
@@ -596,6 +600,10 @@
     <message>
         <source>HD key generation is &lt;b&gt;disabled&lt;/b&gt;</source>
         <translation>Generarea de chei HD este &lt;b&gt;dezactivată&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Private key &lt;b&gt;disabled&lt;/b&gt;</source>
+        <translation>Cheia privată &lt;b&gt;dezactivată&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Private key &lt;b&gt;disabled&lt;/b&gt;</source>
@@ -2197,6 +2205,10 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
         <translation>%1(%2 blocuri)</translation>
     </message>
     <message>
+        <source> from wallet '%1'</source>
+        <translation>din portofelul '%1'</translation>
+    </message>
+    <message>
         <source>%1 to %2</source>
         <translation>%1 la %2</translation>
     </message>
@@ -2650,6 +2662,10 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
     <message>
         <source>Output index</source>
         <translation>Index debit</translation>
+    </message>
+    <message>
+        <source> (Certificate was not verified)</source>
+        <translation>(Certificatul nu a fost verificat)</translation>
     </message>
     <message>
         <source>Merchant</source>

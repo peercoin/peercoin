@@ -109,7 +109,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+179"/>
         <source>Export Address List</source>
         <translation type="unfinished"></translation>
     </message>
@@ -132,7 +132,7 @@
 <context>
     <name>AddressTableModel</name>
     <message>
-        <location filename="../addresstablemodel.cpp" line="+165"/>
+        <location filename="../addresstablemodel.cpp" line="+168"/>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
@@ -175,7 +175,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="+50"/>
+        <location filename="../askpassphrasedialog.cpp" line="+51"/>
         <source>Encrypt wallet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -205,7 +205,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+48"/>
         <source>Confirm wallet encryption</source>
         <translation type="unfinished"></translation>
     </message>
@@ -231,7 +231,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-145"/>
+        <location line="-147"/>
         <source>Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -528,7 +528,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+57"/>
         <source>Reindexing blocks on disk...</source>
         <translation>Reindexing blocks on disk...</translation>
     </message>
@@ -652,7 +652,7 @@
         <translation>Transactions after this will not yet be visible.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+25"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
@@ -667,7 +667,7 @@
         <translation>Information</translation>
     </message>
     <message>
-        <location line="-81"/>
+        <location line="-78"/>
         <source>Up to date</source>
         <translation>Up to date</translation>
     </message>
@@ -757,7 +757,7 @@
         <translation>Catching up...</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+47"/>
         <source>Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -767,7 +767,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+100"/>
         <source>Date: %1
 </source>
         <translation type="unfinished"></translation>
@@ -838,8 +838,13 @@
         <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../bitcoin.cpp" line="+384"/>
-        <source>A fatal error occurred. Bitcoin can no longer continue safely and will quit.</source>
+        <location line="+129"/>
+        <source>Original message:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoin.cpp" line="+418"/>
+        <source>A fatal error occurred. %1 can no longer continue safely and will quit.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1039,7 +1044,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Create wallet failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1089,6 +1094,16 @@
     <message>
         <location line="+3"/>
         <source>Make Blank Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Use descriptors for scriptPubKey management</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Descriptor Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1196,7 +1211,7 @@
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <location filename="../utilitydialog.cpp" line="+35"/>
+        <location filename="../utilitydialog.cpp" line="+37"/>
         <source>version</source>
         <translation type="unfinished">version</translation>
     </message>
@@ -1509,7 +1524,7 @@
     <message>
         <location line="+7"/>
         <location line="+26"/>
-        <location filename="../modaloverlay.cpp" line="+145"/>
+        <location filename="../modaloverlay.cpp" line="+153"/>
         <source>Unknown...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1550,12 +1565,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../modaloverlay.cpp" line="-111"/>
+        <location filename="../modaloverlay.cpp" line="-119"/>
         <source>%1 is currently syncing.  It will download headers and blocks from peers and validate them until reaching the tip of the block chain.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+125"/>
         <source>Unknown. Syncing Headers (%1, %2%)...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1851,7 +1866,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+464"/>
+        <location line="+250"/>
+        <source>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor onion services.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Use separate SOCKS&amp;5 proxy to reach peers via Tor onion services:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+211"/>
         <source>&amp;Third party transaction URLs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1945,22 +1970,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
         <source>Your current spendable balance</source>
         <translation>Your current spendable balance</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Pending:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-236"/>
+        <location line="-242"/>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</source>
         <translation>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</translation>
     </message>
     <message>
-        <location line="+112"/>
+        <location line="+114"/>
         <source>Immature:</source>
         <translation>Immature:</translation>
     </message>
@@ -1970,7 +1995,7 @@
         <translation>Mined balance that has not yet matured</translation>
     </message>
     <message>
-        <location line="-177"/>
+        <location line="-181"/>
         <source>Balances</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1986,12 +2011,12 @@
         <translation>Total:</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+63"/>
         <source>Your current total balance</source>
         <translation>Your current total balance</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Your current balance in watch-only addresses</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2026,13 +2051,171 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+131"/>
         <source>Current total balance in watch-only addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../overviewpage.cpp" line="+166"/>
+        <source>Privacy mode activated for the Overview tab. To unmask the values, uncheck Settings-&gt;Mask values.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PSBTOperationsDialog</name>
+    <message>
+        <location filename="../forms/psbtoperationsdialog.ui" line="+14"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+72"/>
+        <source>Sign Tx</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Broadcast Tx</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Copy to Clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../psbtoperationsdialog.cpp" line="+55"/>
+        <source>Failed to load transaction: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Failed to sign transaction: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Could not sign any more inputs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Signed %1 inputs, but more signatures are still required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Signed transaction successfully. Transaction is ready to broadcast.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Unknown error processing transaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Transaction broadcast successfully! Transaction ID: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Transaction broadcast failed: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>PSBT copied to clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Save Transaction Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Partially Signed Transaction (Binary) (*.psbt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>PSBT saved to disk.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source> * Sends %1 to %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Unable to calculate transaction fee or total transaction amount.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Pays transaction fee: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Total Amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>or</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Transaction has %1 unsigned inputs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>Transaction is missing some information about inputs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Transaction still needs signature(s).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>(But this wallet cannot sign transactions.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>(But this wallet does not have the right keys.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Transaction is fully signed and ready for broadcast.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Transaction status is unknown.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2131,7 +2314,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../bitcoinunits.cpp" line="+195"/>
+        <location filename="../bitcoinunits.cpp" line="+209"/>
         <source>Amount</source>
         <translation type="unfinished">Amount</translation>
     </message>
@@ -2157,7 +2340,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <location line="+48"/>
+        <location line="+26"/>
         <source>%1 s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2251,7 +2434,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoin.cpp" line="+114"/>
+        <location filename="../bitcoin.cpp" line="+102"/>
         <source>Error: Specified data directory &quot;%1&quot; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2263,6 +2446,11 @@
     <message>
         <location line="+15"/>
         <source>Error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Error initializing settings: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2329,8 +2517,7 @@
         <location line="+23"/>
         <location line="+36"/>
         <location line="+23"/>
-        <location line="+716"/>
-        <location line="+23"/>
+        <location line="+710"/>
         <location line="+23"/>
         <location line="+23"/>
         <location line="+23"/>
@@ -2348,12 +2535,13 @@
         <location line="+23"/>
         <location line="+23"/>
         <location line="+26"/>
-        <location filename="../rpcconsole.cpp" line="+1121"/>
+        <location filename="../rpcconsole.cpp" line="+1127"/>
+        <location line="+8"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
     <message>
-        <location line="-1456"/>
+        <location line="-1427"/>
         <source>Client version</source>
         <translation>Client version</translation>
     </message>
@@ -2418,12 +2606,7 @@
         <translation>Block chain</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Current number of blocks</source>
-        <translation>Current number of blocks</translation>
-    </message>
-    <message>
-        <location line="+52"/>
+        <location line="+59"/>
         <source>Memory Pool</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2454,18 +2637,18 @@
     </message>
     <message>
         <location line="+80"/>
-        <location line="+589"/>
+        <location line="+560"/>
         <source>Received</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-509"/>
-        <location line="+486"/>
+        <location line="-480"/>
+        <location line="+457"/>
         <source>Sent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-445"/>
+        <location line="-416"/>
         <source>&amp;Peers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2476,18 +2659,13 @@
     </message>
     <message>
         <location line="+65"/>
-        <location filename="../rpcconsole.cpp" line="-624"/>
-        <location line="+756"/>
+        <location filename="../rpcconsole.cpp" line="-637"/>
+        <location line="+766"/>
         <source>Select a peer to view detailed information.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
-        <source>Whitelisted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
+        <location line="+54"/>
         <source>Direction</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2512,7 +2690,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+256"/>
+        <location line="+233"/>
         <source>The mapped Autonomous System used for diversifying peer selection.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2522,18 +2700,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1423"/>
-        <location line="+1072"/>
+        <location line="-1394"/>
+        <location line="+1066"/>
         <source>User Agent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1146"/>
+        <location line="-1140"/>
         <source>Node window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+409"/>
+        <location line="+279"/>
+        <source>Current block height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+130"/>
         <source>Open the %1 debug log file from the current data directory. This can take a few seconds for large log files.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2548,17 +2731,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+644"/>
+        <location line="+546"/>
+        <source>Permissions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+92"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+92"/>
-        <source>Ban Score</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
         <source>Connection Time</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2598,7 +2781,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1169"/>
+        <location line="-1140"/>
         <source>Last block time</source>
         <translation>Last block time</translation>
     </message>
@@ -2623,7 +2806,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-408"/>
+        <location filename="../rpcconsole.cpp" line="-416"/>
         <source>In:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2721,7 +2904,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+189"/>
+        <location line="+192"/>
         <source>(node id: %1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2747,17 +2930,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Yes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>No</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
+        <location line="+20"/>
         <location line="+6"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
@@ -2792,7 +2965,7 @@
     </message>
     <message>
         <location line="-39"/>
-        <location line="+153"/>
+        <location line="+159"/>
         <source>An optional amount to request. Leave this empty or zero to not request a specific amount.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2817,7 +2990,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+23"/>
         <source>Clear all fields of the form.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2881,16 +3054,51 @@
         <source>Copy amount</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+131"/>
+        <source>Could not unlock wallet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Could not generate new %1 address</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
-        <location filename="../forms/receiverequestdialog.ui" line="+29"/>
-        <source>QR Code</source>
+        <location filename="../forms/receiverequestdialog.ui" line="+14"/>
+        <source>Request payment to ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+76"/>
+        <source>Address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Amount:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Label:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Message:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Wallet:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
         <source>Copy &amp;URI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2905,44 +3113,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../receiverequestdialog.cpp" line="+64"/>
+        <location filename="../receiverequestdialog.cpp" line="+49"/>
         <source>Request payment to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location filename="../forms/receiverequestdialog.ui" line="-221"/>
         <source>Payment information</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>URI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Amount</source>
-        <translation type="unfinished">Amount</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Message</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Wallet</source>
-        <translation type="unfinished">Wallet</translation>
     </message>
 </context>
 <context>
@@ -3142,7 +3320,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+7"/>
         <source>Do you want to draft this transaction?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3152,8 +3330,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Please, review your transaction proposal. This will produce a Partially Signed Bitcoin Transaction (PSBT) which you can copy and then sign with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.</source>
+        <location line="+71"/>
+        <source>Create Unsigned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3177,12 +3355,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <source>To review recipient list click &quot;Show Details...&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+18"/>
         <source>Confirm send coins</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3193,21 +3371,11 @@
     </message>
     <message>
         <location line="+1"/>
-        <source>Copy PSBT to clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
         <source>Send</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>PSBT copied</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+166"/>
+        <location line="+228"/>
         <source>Watch-only balance:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3385,7 +3553,7 @@
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <location filename="../utilitydialog.cpp" line="+83"/>
+        <location filename="../utilitydialog.cpp" line="+85"/>
         <source>%1 is shutting down...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3524,7 +3692,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signverifymessagedialog.cpp" line="+117"/>
+        <location filename="../signverifymessagedialog.cpp" line="+120"/>
         <location line="+99"/>
         <source>The entered address is invalid.</source>
         <translation type="unfinished"></translation>
@@ -3849,7 +4017,7 @@
         <translation>This pane shows a detailed description of the transaction</translation>
     </message>
     <message>
-        <location filename="../transactiondescdialog.cpp" line="+17"/>
+        <location filename="../transactiondescdialog.cpp" line="+18"/>
         <source>Details for %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3857,7 +4025,7 @@
 <context>
     <name>TransactionTableModel</name>
     <message>
-        <location filename="../transactiontablemodel.cpp" line="+225"/>
+        <location filename="../transactiontablemodel.cpp" line="+221"/>
         <source>Date</source>
         <translation type="unfinished">Date</translation>
     </message>
@@ -4224,12 +4392,29 @@
         <source>Closing the wallet for too long can result in having to resync the entire chain if pruning is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+13"/>
+        <source>Close all wallets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Are you sure you wish to close all wallets?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WalletFrame</name>
     <message>
-        <location filename="../walletframe.cpp" line="+28"/>
-        <source>No wallet has been loaded.</source>
+        <location filename="../walletframe.cpp" line="+37"/>
+        <source>No wallet has been loaded.
+Go to File &gt; Open Wallet to load a wallet.
+- OR -</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Create a new wallet</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4452,7 +4637,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Do you want to rebuild the block database now?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4542,7 +4727,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Importing...</source>
         <translation type="unfinished"></translation>
     </message>

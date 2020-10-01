@@ -3,7 +3,7 @@
     <name>AddressBookPage</name>
     <message>
         <source>Right-click to edit address or label</source>
-        <translation>Feu clic dret per a editar l'adreça o l'etiqueta</translation>
+        <translation>Feu clic al botó dret per a editar l'adreça o l'etiqueta</translation>
     </message>
     <message>
         <source>Create a new address</source>
@@ -291,7 +291,7 @@
     </message>
     <message>
         <source>Show information about %1</source>
-        <translation>Mosta informació sobre el %1</translation>
+        <translation>Mostra informació sobre el %1</translation>
     </message>
     <message>
         <source>About &amp;Qt</source>
@@ -507,7 +507,7 @@
     </message>
     <message>
         <source>Open a wallet</source>
-        <translation>Obre la cartera</translation>
+        <translation>Obre una cartera</translation>
     </message>
     <message>
         <source>Close Wallet...</source>
@@ -945,7 +945,7 @@ Això és ideal per a carteres de mode només lectura.</translation>
     </message>
     <message>
         <source>As this is the first time the program is launched, you can choose where %1 will store its data.</source>
-        <translation>Com és la primera vegada que s'executa el programa, podeu triar on %1 emmagatzemarà les dades.</translation>
+        <translation>Com és la primera vegada que s'executa el programa, podeu triar on %1 emmagatzemaran les dades.</translation>
     </message>
     <message>
         <source>When you click OK, %1 will begin to download and process the full %4 block chain (%2GB) starting with the earliest transactions in %3 when %4 initially launched.</source>
@@ -2370,6 +2370,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Esteu segur que ho voleu enviar?</translation>
     </message>
     <message>
+        <source>Please, review your transaction proposal. This will produce a Partially Signed Bitcoin Transaction (PSBT) which you can copy and then sign with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.</source>
+        <translation>Revisa la teva proposta de transacció. Es produirà una transacció de Bitcoin amb signatura parcial (PSBT) que podeu copiar i després signar, per exemple, amb una cartera %1 de tipus fora de línia o una cartera física compatible amb PSBT.</translation>
+    </message>
+    <message>
         <source>or</source>
         <translation>o</translation>
     </message>
@@ -2378,8 +2382,16 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Comissió de transacció</translation>
     </message>
     <message>
+        <source>Not signalling Replace-By-Fee, BIP-125.</source>
+        <translation>Substitució per tarifa sense senyalització, BIP-125</translation>
+    </message>
+    <message>
         <source>Total Amount</source>
         <translation>Import total</translation>
+    </message>
+    <message>
+        <source>To review recipient list click "Show Details..."</source>
+        <translation>Per revisar la llista de destinataris, feu clic a "Mostra els detalls ..."</translation>
     </message>
     <message>
         <source>Confirm send coins</source>
@@ -2428,6 +2440,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Payment request expired.</source>
         <translation>La sol·licitud de pagament ha vençut.</translation>
+    </message>
+    <message numerus="yes">
+        <source>Estimated to begin confirmation within %n block(s).</source>
+        <translation><numerusform>S’estima que comenci la confirmació dintre d'un bloc.</numerusform><numerusform>S’estima que comenci la confirmació dintre de %n blocs.</numerusform></translation>
     </message>
     <message>
         <source>Warning: Invalid Bitcoin address</source>
@@ -2487,6 +2503,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Remove this entry</source>
         <translation>Elimina aquesta entrada</translation>
+    </message>
+    <message>
+        <source>The amount to send in the selected unit</source>
+        <translation>L’import a enviar a la unitat seleccionada</translation>
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
@@ -2615,6 +2635,14 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>L'adreça Bitcoin amb què va ser signat el missatge</translation>
     </message>
     <message>
+        <source>The signed message to verify</source>
+        <translation>El missatge signat per verificar</translation>
+    </message>
+    <message>
+        <source>The signature given when the message was signed</source>
+        <translation>La signatura donada quan es va signar el missatge</translation>
+    </message>
+    <message>
         <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
         <translation>Verificar el missatge per assegurar-se que ha estat signat amb una adreça Bitcoin específica</translation>
     </message>
@@ -2645,6 +2673,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Wallet unlock was cancelled.</source>
         <translation>S'ha cancel·lat el desblocatge de la cartera.</translation>
+    </message>
+    <message>
+        <source>No error</source>
+        <translation>Cap error</translation>
     </message>
     <message>
         <source>Private key for the entered address is not available.</source>
@@ -2688,6 +2720,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
 </context>
 <context>
     <name>TransactionDesc</name>
+    <message numerus="yes">
+        <source>Open for %n more block(s)</source>
+        <translation><numerusform>Obre per un bloc més</numerusform><numerusform>Obre per %n blocs més</numerusform></translation>
+    </message>
     <message>
         <source>Open until %1</source>
         <translation>Obert fins %1</translation>
@@ -2764,6 +2800,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <source>Credit</source>
         <translation>Crèdit</translation>
     </message>
+    <message numerus="yes">
+        <source>matures in %n more block(s)</source>
+        <translation><numerusform>madura en un bloc més</numerusform><numerusform>madura en %n blocs més</numerusform></translation>
+    </message>
     <message>
         <source>not accepted</source>
         <translation>no acceptat</translation>
@@ -2811,6 +2851,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Output index</source>
         <translation>Índex de resultats</translation>
+    </message>
+    <message>
+        <source> (Certificate was not verified)</source>
+        <translation>(El certificat no s'ha verificat)</translation>
     </message>
     <message>
         <source>Merchant</source>
@@ -2869,6 +2913,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Label</source>
         <translation>Etiqueta</translation>
+    </message>
+    <message numerus="yes">
+        <source>Open for %n more block(s)</source>
+        <translation><numerusform>Obre per un bloc més</numerusform><numerusform>Obre per %n blocs més</numerusform></translation>
     </message>
     <message>
         <source>Open until %1</source>
@@ -3131,7 +3179,15 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <source>Close wallet</source>
         <translation>Tanca la cartera</translation>
     </message>
-    </context>
+    <message>
+        <source>Are you sure you wish to close the wallet &lt;i&gt;%1&lt;/i&gt;?</source>
+        <translation>Segur que voleu tancar la cartera &lt;i&gt;%1 &lt;/i&gt;?</translation>
+    </message>
+    <message>
+        <source>Closing the wallet for too long can result in having to resync the entire chain if pruning is enabled.</source>
+        <translation>Si tanqueu la cartera durant massa temps, es pot haver de tornar a sincronitzar tota la cadena si teniu el sistema de poda habilitat.</translation>
+    </message>
+</context>
 <context>
     <name>WalletFrame</name>
     <message>
@@ -3156,6 +3212,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Do you want to increase the fee?</source>
         <translation>Voleu augmentar la tarifa?</translation>
+    </message>
+    <message>
+        <source>Do you want to draft a transaction with fee increase?</source>
+        <translation>Voleu redactar una transacció amb augment de tarifes?</translation>
     </message>
     <message>
         <source>Current fee:</source>
@@ -3260,8 +3320,16 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Els desenvolupadors %s</translation>
     </message>
     <message>
+        <source>Can't generate a change-address key. No keys in the internal keypool and can't generate any keys.</source>
+        <translation>No es pot generar una clau d’adreça de canvi. No hi ha claus al keypool intern i no es pot generar cap clau.</translation>
+    </message>
+    <message>
         <source>Cannot obtain a lock on data directory %s. %s is probably already running.</source>
         <translation>No es pot obtenir un bloqueig al directori de dades %s. %s probablement ja s'estigui executant.</translation>
+    </message>
+    <message>
+        <source>Cannot provide specific connections and have addrman find outgoing connections at the same.</source>
+        <translation>No es poden proporcionar connexions específiques i no es poden trobar connexions sortint al mateix temps.</translation>
     </message>
     <message>
         <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
@@ -3324,12 +3392,24 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Canvieu l'índex fora de l'abast</translation>
     </message>
     <message>
+        <source>Config setting for %s only applied on %s network when in [%s] section.</source>
+        <translation>Configuració per a %s únicament aplicada a  %s de la xarxa quan es troba a la secció [%s].</translation>
+    </message>
+    <message>
         <source>Copyright (C) %i-%i</source>
         <translation>Copyright (C) %i-%i</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>
         <translation>S'ha detectat una base de dades de blocs corrupta</translation>
+    </message>
+    <message>
+        <source>Could not find asmap file %s</source>
+        <translation>No s'ha pogut trobar el fitxer asmap %s</translation>
+    </message>
+    <message>
+        <source>Could not parse asmap file %s</source>
+        <translation>No s'ha pogut analitzar el fitxer asmap %s</translation>
     </message>
     <message>
         <source>Do you want to rebuild the block database now?</source>
@@ -3346,6 +3426,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Error loading %s</source>
         <translation>Error carregant %s</translation>
+    </message>
+    <message>
+        <source>Error loading %s: Private keys can only be disabled during creation</source>
+        <translation>Error carregant %s: les claus privades només es poden desactivar durant la creació</translation>
     </message>
     <message>
         <source>Error loading %s: Wallet corrupted</source>
@@ -3368,6 +3452,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Ha fallat escoltar a qualsevol port. Feu servir -listen=0 si voleu fer això.</translation>
     </message>
     <message>
+        <source>Failed to rescan the wallet during initialization</source>
+        <translation>No s'ha pogut escanejar novament la cartera durant la inicialització</translation>
+    </message>
+    <message>
         <source>Importing...</source>
         <translation>S'està important...</translation>
     </message>
@@ -3378,6 +3466,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Initialization sanity check failed. %s is shutting down.</source>
         <translation>S'ha produït un error en la verificació de sanejament d'inicialització. S'està tancant %s.</translation>
+    </message>
+    <message>
+        <source>Invalid P2P permission: '%s'</source>
+        <translation>Permís P2P no vàlid: '%s'</translation>
     </message>
     <message>
         <source>Invalid amount for -%s=&lt;amount&gt;: '%s'</source>
@@ -3392,8 +3484,28 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Import invàlid per -fallbackfee=&lt;amount&gt;: '%s'</translation>
     </message>
     <message>
+        <source>Specified blocks directory "%s" does not exist.</source>
+        <translation>El directori de blocs especificat "%s" no existeix.</translation>
+    </message>
+    <message>
+        <source>Unknown address type '%s'</source>
+        <translation>Tipus d'adreça desconegut '%s'</translation>
+    </message>
+    <message>
+        <source>Unknown change type '%s'</source>
+        <translation>Tipus de canvi desconegut '%s'</translation>
+    </message>
+    <message>
+        <source>Upgrading txindex database</source>
+        <translation>Actualitzant txindex de la base de dades</translation>
+    </message>
+    <message>
         <source>Loading P2P addresses...</source>
         <translation>S'estan carregant les adreces P2P ...</translation>
+    </message>
+    <message>
+        <source>Error: Disk space is too low!</source>
+        <translation>Error: l'espai del disc és insuficient.</translation>
     </message>
     <message>
         <source>Loading banlist...</source>
@@ -3476,6 +3588,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>S'ha produït un error en actualitzar la base de dades de chainstate</translation>
     </message>
     <message>
+        <source>Error: Disk space is low for %s</source>
+        <translation>Error: l'espai del disc és insuficient per a %s</translation>
+    </message>
+    <message>
         <source>Invalid -onion address or hostname: '%s'</source>
         <translation>Adreça o nom de l'ordinador -onion no vàlida: '%s'</translation>
     </message>
@@ -3496,6 +3612,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Cal especificar un port amb -whitebind: «%s»</translation>
     </message>
     <message>
+        <source>Prune mode is incompatible with -blockfilterindex.</source>
+        <translation>El mode de poda no és compatible amb -blockfilterindex.</translation>
+    </message>
+    <message>
         <source>Reducing -maxconnections from %d to %d, because of system limitations.</source>
         <translation>Reducció de -maxconnections de %d a %d, a causa de les limitacions del sistema.</translation>
     </message>
@@ -3506,6 +3626,24 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Signing transaction failed</source>
         <translation>Ha fallat la signatura de la transacció</translation>
+    </message>
+    <message>
+        <source>Specified -walletdir "%s" does not exist</source>
+        <translation>-Walletdir especificat "%s" no existeix</translation>
+    </message>
+    <message>
+        <source>Specified -walletdir "%s" is a relative path</source>
+        <translation>-Walletdir especificat "%s" és una ruta relativa</translation>
+    </message>
+    <message>
+        <source>Specified -walletdir "%s" is not a directory</source>
+        <translation>-Walletdir especificat "%s" no és un directori</translation>
+    </message>
+    <message>
+        <source>The specified config file %s does not exist
+</source>
+        <translation>El fitxer de configuració especificat %s no existeix
+</translation>
     </message>
     <message>
         <source>The transaction amount is too small to pay the fee</source>
@@ -3528,8 +3666,16 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>No s'ha pogut vincular a %s en aquest ordinador (la vinculació ha retornat l'error %s)</translation>
     </message>
     <message>
+        <source>Unable to create the PID file '%s': %s</source>
+        <translation>No es pot crear el fitxer PID '%s': %s</translation>
+    </message>
+    <message>
         <source>Unable to generate initial keys</source>
         <translation>No s'han pogut generar les claus inicials</translation>
+    </message>
+    <message>
+        <source>Unknown -blockfilterindex value %s.</source>
+        <translation>Valor %s -blockfilterindex desconegut</translation>
     </message>
     <message>
         <source>Verifying wallet(s)...</source>
