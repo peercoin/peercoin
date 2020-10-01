@@ -2374,6 +2374,8 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>トランザクション提案を確認してください。これにより、部分的に署名されたビットコイン・トランザクション（PSBT）が作成されます。これをコピーして例えばオフラインの %1 ウォレットやPSBTを扱えるハードウェアウォレットで残りの署名が出来ます。</translation>
     </message>
     <message>
+    </message>
+    <message>
         <source>or</source>
         <translation>または</translation>
     </message>
@@ -3240,6 +3242,10 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Confirm fee bump</source>
         <translation>手数料上乗せの確認</translation>
+    </message>
+    <message>
+        <source>Can't draft transaction.</source>
+        <translation>トランザクションのひな型を作成できませんでした。</translation>
     </message>
     <message>
         <source>Can't draft transaction.</source>
