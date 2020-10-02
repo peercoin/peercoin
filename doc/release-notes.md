@@ -167,6 +167,10 @@ Tools and Utilities
   known to the node instead of separate `torv2` and `torv3` fields, as support
   for Tor V2 addresses was removed from Bitcoin Core in 22.0. (#22544)
 
+- The `startupnotify` option is used to specify a command to
+  execute when Bitcoin Core has finished with its startup
+  sequence. (#15367)
+
 Wallet
 ------
 
