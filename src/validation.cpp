@@ -296,7 +296,6 @@ static void LimitMempoolSize(CTxMemPool& pool, CCoinsViewCache& coins_cache, siz
 
     std::vector<COutPoint> vNoSpendsRemaining;
     pool.TrimToSize(limit, &vNoSpendsRemaining);
-    assert(std::addressof(::ChainstateActive().CoinsTip()) == std::addressof(coins_cache));
     for (const COutPoint& removed : vNoSpendsRemaining)
         coins_cache.Uncache(removed);
 }
@@ -750,7 +749,6 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         return state.Invalid(TxValidationResult::TX_CONSENSUS, "fee is below minimum");
     // Check for non-standard pay-to-script-hash in inputs
     const auto& params = args.m_chainparams.GetConsensus();
-    assert(std::addressof(::ChainActive()) == std::addressof(m_active_chainstate.m_chain));
     auto taproot_state = VersionBitsState(m_active_chainstate.m_chain.Tip(), params, Consensus::DEPLOYMENT_TAPROOT, versionbitscache);
     if (fRequireStandard && !AreInputsStandard(tx, m_view, taproot_state == ThresholdState::ACTIVE)) {
         return state.Invalid(TxValidationResult::TX_INPUTS_NOT_STANDARD, "bad-txns-nonstandard-inputs");
@@ -3576,7 +3574,6 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
 // Exposed wrapper for AcceptBlockHeader
 bool ChainstateManager::ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAcceptedHeader, const std::vector<CBlockHeader>& headers, BlockValidationState& state, const CChainParams& chainparams, const CBlockIndex** ppindex)
 {
-    assert(std::addressof(::ChainstateActive()) == std::addressof(ActiveChainstate()));
     AssertLockNotHeld(cs_main);
     {
         LOCK(cs_main);
@@ -3721,7 +3718,6 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
 bool ChainstateManager::ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock>& block, bool force_processing, bool* new_block, CBlockIndex** ppindex, bool* fPoSDuplicate)
 {
     AssertLockNotHeld(cs_main);
-    assert(std::addressof(::ChainstateActive()) == std::addressof(ActiveChainstate()));
 
     {
         CBlockIndex *pindex = nullptr;
