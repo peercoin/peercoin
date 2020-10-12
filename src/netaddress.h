@@ -459,6 +459,8 @@ class CSubNet
         /// Is this value valid? (only used to signal parse errors)
         bool valid;
 
+        bool SanityCheck() const;
+
     public:
         CSubNet();
         CSubNet(const CNetAddr& addr, uint8_t mask);
@@ -490,6 +492,8 @@ class CSubNet
                 READWRITE(obj.netmask);
             }
             READWRITE(obj.valid);
+            // Mark invalid if the result doesn't pass sanity checking.
+            SER_READ(obj, if (obj.valid) obj.valid = obj.SanityCheck());
         }
 };
 
