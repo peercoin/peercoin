@@ -1488,7 +1488,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     if (args.GetBoolArg("-coinstatsindex", DEFAULT_COINSTATSINDEX)) {
         g_coin_stats_index = std::make_unique<CoinStatsIndex>(/* cache size */ 0, false, fReindex);
-        if (!g_coin_stats_index->Start()) {
+        if (!g_coin_stats_index->Start(::ChainstateActive())) {
             return false;
         }
     }
