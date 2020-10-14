@@ -202,6 +202,7 @@ static RPCHelpMan getrawtransaction()
     ChainstateManager& chainman = EnsureChainman(node);
 
     const NodeContext& node = EnsureNodeContext(request.context);
+    ChainstateManager& chainman = EnsureChainman(request.context);
 
     bool in_active_chain = true;
     uint256 hash = ParseHashV(request.params[0], "parameter 1");
