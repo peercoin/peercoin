@@ -151,6 +151,12 @@ AC_ARG_ENABLE([usdt],
   [use_usdt=$enableval],
   [use_usdt=yes])
 
+AC_ARG_WITH([sqlite],
+  [AS_HELP_STRING([--with-sqlite=yes|no|auto],
+  [enable sqlite wallet support (default: auto, i.e., enabled if wallet is enabled and sqlite is found)])],
+  [use_sqlite=$withval],
+  [use_sqlite=auto])
+
 AC_ARG_WITH([miniupnpc],
   [AS_HELP_STRING([--with-miniupnpc],
   [enable UPNP (default is yes if libminiupnpc is found)])],
@@ -1379,7 +1385,24 @@ if test "$enable_wallet" != "no"; then
     fi
 
     dnl Check for sqlite3
-    PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.7.17], , [AC_MSG_ERROR([sqlite3 not found.])])
+    if test "x$use_sqlite" != "xno"; then
+      PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.7.17], [have_sqlite=yes], [have_sqlite=no])
+    fi
+    AC_MSG_CHECKING([whether to build wallet with support for sqlite])
+    if test "x$use_sqlite" = "xno"; then
+      use_sqlite=no
+    elif test "x$have_sqlite" = "xno"; then
+      if test "x$use_sqlite" = "xyes"; then
+        AC_MSG_ERROR([sqlite support requested but cannot be built. Use --without-sqlite])
+      fi
+      use_sqlite=no
+    else
+      if test x$use_sqlite != xno; then
+        AC_DEFINE([USE_SQLITE],[1],[Define if sqlite support should be compiled in])
+        use_sqlite=yes
+      fi
+    fi
+    AC_MSG_RESULT([$use_sqlite])
 fi
 
 if test "$use_usdt" != "no"; then
