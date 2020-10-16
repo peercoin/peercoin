@@ -35,6 +35,9 @@ from test_framework.wallet import MiniWallet
 VERSIONBITS_TOP_BITS = 0x20000000
 VERSIONBITS_DEPLOYMENT_TESTDUMMY_BIT = 28
 
+VERSIONBITS_TOP_BITS = 0x20000000
+VERSIONBITS_DEPLOYMENT_TESTDUMMY_BIT = 28
+
 
 def assert_template(node, block, expect, rehash=True):
     if rehash:
