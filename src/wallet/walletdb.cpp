@@ -1166,6 +1166,10 @@ std::unique_ptr<WalletDatabase> MakeDatabase(const fs::path& path, const Databas
 #else
     assert(format != DatabaseFormat::SQLITE);
 #endif
+#ifdef USE_BDB
+        format = DatabaseFormat::BERKELEY;
+#endif
+    }
 
     if (format == DatabaseFormat::SQLITE) {
 #ifdef USE_SQLITE

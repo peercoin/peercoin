@@ -198,6 +198,10 @@ bool ExecuteWalletToolFunc(const ArgsManager& args, const std::string& command)
         if (!ret && !error.empty()) {
             tfm::format(std::cerr, "%s\n", error.original);
             return ret;
+#else
+            tfm::format(std::cerr, "Salvage command is not available as BDB support is not compiled");
+            return false;
+#endif
         }
         tfm::format(std::cout, "The dumpfile may contain private keys. To ensure the safety of your Bitcoin, do not share the dumpfile.\n");
         return ret;
