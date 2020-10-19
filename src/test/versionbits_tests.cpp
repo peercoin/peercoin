@@ -44,6 +44,13 @@ public:
     int GetStateSinceHeightFor(const CBlockIndex* pindexPrev) const { return AbstractThresholdConditionChecker::GetStateSinceHeightFor(pindexPrev, paramsDummy, cache); }
 };
 
+class TestNeverActiveConditionChecker : public TestConditionChecker
+{
+public:
+    int64_t BeginTime(const Consensus::Params& params) const override { return 0; }
+    int64_t EndTime(const Consensus::Params& params) const override { return 1230768000; }
+};
+
 #define CHECKERS 6
 
 class VersionBitsTester
@@ -55,6 +62,8 @@ class VersionBitsTester
     // The first one performs all checks, the second only 50%, the third only 25%, etc...
     // This is to test whether lack of cached information leads to the same results.
     TestConditionChecker checker[CHECKERS];
+    // Another 6 that assume never active activation
+    TestNeverActiveConditionChecker checker_never[CHECKERS];
 
     // Test counter (to identify failures)
     int num;
@@ -68,6 +77,7 @@ public:
         }
         for (unsigned int  i = 0; i < CHECKERS; i++) {
             checker[i] = TestConditionChecker();
+            checker_never[i] = TestNeverActiveConditionChecker();
         }
         vpblock.clear();
         return *this;
@@ -94,6 +104,10 @@ public:
         for (int i = 0; i < CHECKERS; i++) {
             if (InsecureRandBits(i) == 0) {
                 BOOST_CHECK_MESSAGE(checker[i].GetStateSinceHeightFor(vpblock.empty() ? nullptr : vpblock.back()) == height, strprintf("Test %i for StateSinceHeight", num));
+
+                // never active may go from DEFINED -> FAILED at the first period
+                const auto never_height = checker_never[i].GetStateSinceHeightFor(vpblock.empty() ? nullptr : vpblock.back());
+                BOOST_CHECK_MESSAGE(never_height == 0 || never_height == checker_never[i].Period(paramsDummy), strprintf("Test %i for StateSinceHeight (never active)", num));
             }
         }
         num++;
@@ -106,11 +120,13 @@ public:
                 const CBlockIndex* pindex = vpblock.empty() ? nullptr : vpblock.back();
                 ThresholdState got = checker[i].GetStateFor(pindex);
                 ThresholdState got_always = checker_always[i].GetStateFor(pindex);
+                ThresholdState got_never = checker_never[i].GetStateFor(pindex);
                 // nHeight of the next block. If vpblock is empty, the next (ie first)
                 // block should be the genesis block with nHeight == 0.
                 int height = pindex == nullptr ? 0 : pindex->nHeight + 1;
                 BOOST_CHECK_MESSAGE(got == exp, strprintf("Test %i for %s height %d (got %s)", num, StateName(exp), height, StateName(got)));
                 BOOST_CHECK_MESSAGE(got_always == ThresholdState::ACTIVE, strprintf("Test %i for ACTIVE height %d (got %s; always active case)", num, height, StateName(got_always)));
+                BOOST_CHECK_MESSAGE(got_never == ThresholdState::DEFINED|| got_never == ThresholdState::FAILED, strprintf("Test %i for DEFINED/FAILED height %d (got %s; never active case)", num, height, StateName(got_never)));
             }
         }
         num++;
