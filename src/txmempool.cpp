@@ -334,7 +334,7 @@ void CTxMemPoolEntry::UpdateAncestorState(int64_t modifySize, CAmount modifyFee,
 }
 
 CTxMemPool::CTxMemPool(int check_ratio)
-    : m_check_ratio(check_ratio), nTransactionsUpdated(0), m_epoch(0), m_has_epoch_guard(false)
+    : m_check_ratio(check_ratio)
 {
     _clear(); //lock free clear
 }

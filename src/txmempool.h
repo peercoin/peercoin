@@ -483,13 +483,13 @@ class CTxMemPool
 {
 private:
     const int m_check_ratio; //!< Value n means that 1 times in n we check.
-    std::atomic<unsigned int> nTransactionsUpdated; //!< Used by getblocktemplate to trigger CreateNewBlock() invocation
+    std::atomic<unsigned int> nTransactionsUpdated{0}; //!< Used by getblocktemplate to trigger CreateNewBlock() invocation
 
     uint64_t totalTxSize;      //!< sum of all mempool tx's virtual sizes. Differs from serialized tx size since witness data is discounted. Defined in BIP 141.
     uint64_t cachedInnerUsage; //!< sum of dynamic memory usage of all the map elements (NOT the maps themselves)
 
-    mutable uint64_t m_epoch;
-    mutable bool m_has_epoch_guard;
+    mutable uint64_t m_epoch{0};
+    mutable bool m_has_epoch_guard{false};
     // In-memory counter for external mempool tracking purposes.
     // This number is incremented once every time a transaction
     // is added or removed from the mempool for any reason.
