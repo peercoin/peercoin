@@ -1228,6 +1228,9 @@ public:
     void MaybeSetAddrName(const std::string& addrNameIn);
 
     std::string ConnectionTypeAsString() const;
+
+    /** Whether this peer is an inbound onion, e.g. connected via our Tor onion service. */
+    bool IsInboundOnion() const { return m_inbound_onion; }
 };
 
 /** Return a timestamp in the future (in microseconds) for exponentially distributed events. */
