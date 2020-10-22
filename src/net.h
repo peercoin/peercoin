@@ -32,11 +32,6 @@
 #include <memory>
 #include <condition_variable>
 
-#ifndef WIN32
-#include <arpa/inet.h>
-#endif
-
-
 class CScheduler;
 class CNode;
 class BanMan;
