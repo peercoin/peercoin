@@ -88,7 +88,7 @@ public Q_SLOTS:
     void gotoLoadPSBT(bool from_clipboard = false);
 
     /** Encrypt the wallet */
-    void encryptWallet(bool status);
+    void encryptWallet();
     /** Decrypt wallet for minting only */
     void decryptForMinting(bool status);
     /** Backup the wallet */

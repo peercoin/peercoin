@@ -203,11 +203,11 @@ void WalletFrame::gotoLoadPSBT(bool from_clipboard)
     }
 }
 
-void WalletFrame::encryptWallet(bool status)
+void WalletFrame::encryptWallet()
 {
     WalletView *walletView = currentWalletView();
     if (walletView)
-        walletView->encryptWallet(status);
+        walletView->encryptWallet();
 }
 
 void WalletFrame::decryptForMinting(bool status)
