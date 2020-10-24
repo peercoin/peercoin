@@ -704,10 +704,10 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel, interfaces::BlockAndH
         OptionsModel* optionsModel = _clientModel->getOptionsModel();
         if (optionsModel && trayIcon) {
             // be aware of the tray icon disable state change reported by the OptionsModel object.
-            connect(optionsModel, &OptionsModel::hideTrayIconChanged, this, &BitcoinGUI::setTrayIconVisible);
+            connect(optionsModel, &OptionsModel::showTrayIconChanged, this, &BitcoinGUI::setTrayIconVisible);
 
             // initialize the disable state of the tray icon with the current value in the model.
-            setTrayIconVisible(optionsModel->getHideTrayIcon());
+            setTrayIconVisible(optionsModel->getShowTrayIcon());
         }
     } else {
         // Disable possibility to show main window via action
@@ -1505,11 +1505,10 @@ void BitcoinGUI::showProgress(const QString &title, int nProgress)
     }
 }
 
-void BitcoinGUI::setTrayIconVisible(bool fHideTrayIcon)
+void BitcoinGUI::setTrayIconVisible(bool show_tray_con)
 {
-    if (trayIcon)
-    {
-        trayIcon->setVisible(!fHideTrayIcon);
+    if (trayIcon) {
+        trayIcon->setVisible(show_tray_con);
     }
 }
 
