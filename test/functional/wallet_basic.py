@@ -516,6 +516,12 @@ class WalletTest(BitcoinTestFramework):
                 assert_raises_rpc_error(-8, 'Invalid estimate_mode parameter, must be one of: "unset", "economical", "conservative"',
                     self.nodes[2].sendtoaddress, address=address, amount=1, conf_target=target, estimate_mode=mode)
 
+            # Test setting explicit fee rate just below the minimum.
+            for unit, fee_rate in {"BTC/kB": 0.00000999, "sat/B": 0.99999999}.items():
+                self.log.info("Test sendtoaddress raises 'fee rate too low' if conf_target {} and estimate_mode {} are passed".format(fee_rate, unit))
+                assert_raises_rpc_error(-6, "Fee rate (0.00000999 BTC/kB) is lower than the minimum fee rate setting (0.00001000 BTC/kB)",
+                    self.nodes[2].sendtoaddress, address=address, amount=1, estimate_mode=unit, conf_target=fee_rate)
+
             # 2. Import address from node2 to node1
             self.nodes[1].importaddress(address_to_import)
 
