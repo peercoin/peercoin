@@ -70,8 +70,10 @@
         <translation>Aquestes són les vostres adreces de Bitcoin per enviar els pagaments. Sempre reviseu l'import i l'adreça del destinatari abans de transferir monedes.</translation>
     </message>
     <message>
-        <source>These are your Bitcoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.</source>
-        <translation>Aquestes són les teves adreces Bitcoin per rebre pagaments. Utilitza el botó "Crear nova adreça de recepció" de la pestanya de recepció per crear noves adreces.</translation>
+        <source>These are your Bitcoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.
+Signing is only possible with addresses of the type 'legacy'.</source>
+        <translation>Aquestes son les teves adreces de Bitcoin per rebre pagaments. Utilitza el botó "Crear nova adreça de recepció" de la pestanya de recepció per crear una nova adreça.
+Només és possible firmar amb adreces del tipus "legacy".</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -629,11 +631,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>La cartera està &lt;b&gt;encriptada&lt;/b&gt; i actualment &lt;b&gt;blocada&lt;/b&gt;</translation>
     </message>
-    <message>
-        <source>A fatal error occurred. Bitcoin can no longer continue safely and will quit.</source>
-        <translation>S'ha produït un error fatal. Bitcoin no pot continuar amb seguretat i finalitzarà.</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -1140,10 +1138,6 @@ Això és ideal per a carteres de mode només lectura.</translation>
         <translation>Mostra si el proxy SOCKS5 predeterminat subministrat s'utilitza per arribar a altres nodes a través d'aquest tipus de xarxa.</translation>
     </message>
     <message>
-        <source>Use separate SOCKS&amp;5 proxy to reach peers via Tor hidden services:</source>
-        <translation>Usi un proxy SOCKS&amp;5 separat per connectar amb nodes a través dels serveis ocults de Tor:</translation>
-    </message>
-    <message>
         <source>Hide the icon from the system tray.</source>
         <translation>Amaga la icona de la safata del sistema</translation>
     </message>
@@ -1274,10 +1268,6 @@ Això és ideal per a carteres de mode només lectura.</translation>
     <message>
         <source>Tor</source>
         <translation>Tor</translation>
-    </message>
-    <message>
-        <source>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor hidden services.</source>
-        <translation>Conectar a la red de Bitcoin a través de un proxy SOCKS5 per als serveis ocults de Tor</translation>
     </message>
     <message>
         <source>&amp;Window</source>
@@ -1454,7 +1444,18 @@ Això és ideal per a carteres de mode només lectura.</translation>
         <source>Current total balance in watch-only addresses</source>
         <translation>Balanç total actual en adreces de només lectura</translation>
     </message>
-</context>
+    </context>
+<context>
+    <name>PSBTOperationsDialog</name>
+    <message>
+        <source>Total Amount</source>
+        <translation>Import total</translation>
+    </message>
+    <message>
+        <source>or</source>
+        <translation>o</translation>
+    </message>
+    </context>
 <context>
     <name>PaymentServer</name>
     <message>
@@ -1718,10 +1719,6 @@ Això és ideal per a carteres de mode només lectura.</translation>
         <translation>Cadena de blocs</translation>
     </message>
     <message>
-        <source>Current number of blocks</source>
-        <translation>Nombre de blocs actuals</translation>
-    </message>
-    <message>
         <source>Memory Pool</source>
         <translation>Reserva de memòria</translation>
     </message>
@@ -1764,10 +1761,6 @@ Això és ideal per a carteres de mode només lectura.</translation>
     <message>
         <source>Select a peer to view detailed information.</source>
         <translation>Seleccioneu un igual per mostrar informació detallada.</translation>
-    </message>
-    <message>
-        <source>Whitelisted</source>
-        <translation>A la llista blanca</translation>
     </message>
     <message>
         <source>Direction</source>
@@ -1820,10 +1813,6 @@ Això és ideal per a carteres de mode només lectura.</translation>
     <message>
         <source>Services</source>
         <translation>Serveis</translation>
-    </message>
-    <message>
-        <source>Ban Score</source>
-        <translation>Puntuació de bandeig</translation>
     </message>
     <message>
         <source>Connection Time</source>
@@ -1974,14 +1963,6 @@ Això és ideal per a carteres de mode només lectura.</translation>
         <translation>Sortint</translation>
     </message>
     <message>
-        <source>Yes</source>
-        <translation>Sí</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>No</translation>
-    </message>
-    <message>
         <source>Unknown</source>
         <translation>Desconegut</translation>
     </message>
@@ -2080,12 +2061,24 @@ Això és ideal per a carteres de mode només lectura.</translation>
         <source>Copy amount</source>
         <translation>Copia l'import</translation>
     </message>
-</context>
+    <message>
+        <source>Could not unlock wallet.</source>
+        <translation>No s'ha pogut desblocar la cartera.</translation>
+    </message>
+    </context>
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
-        <source>QR Code</source>
-        <translation>Codi QR</translation>
+        <source>Amount:</source>
+        <translation>Import:</translation>
+    </message>
+    <message>
+        <source>Message:</source>
+        <translation>Missatge:</translation>
+    </message>
+    <message>
+        <source>Wallet:</source>
+        <translation>Moneder:</translation>
     </message>
     <message>
         <source>Copy &amp;URI</source>
@@ -2106,30 +2099,6 @@ Això és ideal per a carteres de mode només lectura.</translation>
     <message>
         <source>Payment information</source>
         <translation>Informació de pagament</translation>
-    </message>
-    <message>
-        <source>URI</source>
-        <translation>URI</translation>
-    </message>
-    <message>
-        <source>Address</source>
-        <translation>Adreça</translation>
-    </message>
-    <message>
-        <source>Amount</source>
-        <translation>Import</translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation>Etiqueta</translation>
-    </message>
-    <message>
-        <source>Message</source>
-        <translation>Missatge</translation>
-    </message>
-    <message>
-        <source>Wallet</source>
-        <translation>Cartera</translation>
     </message>
 </context>
 <context>
@@ -2386,16 +2355,8 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Confirma l'enviament de monedes</translation>
     </message>
     <message>
-        <source>Copy PSBT to clipboard</source>
-        <translation>Copiar PSBT al porta-retalls.</translation>
-    </message>
-    <message>
         <source>Send</source>
         <translation>Enviar</translation>
-    </message>
-    <message>
-        <source>PSBT copied</source>
-        <translation>PSBT copiada</translation>
     </message>
     <message>
         <source>The recipient address is not valid. Please recheck.</source>
@@ -3135,8 +3096,8 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
 <context>
     <name>WalletFrame</name>
     <message>
-        <source>No wallet has been loaded.</source>
-        <translation>No s'ha carregat cap cartera.</translation>
+        <source>Create a new wallet</source>
+        <translation>Crear una nova cartera</translation>
     </message>
 </context>
 <context>
@@ -3201,6 +3162,10 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Exporta les dades de la pestanya actual a un fitxer</translation>
     </message>
     <message>
+        <source>Error</source>
+        <translation>Error</translation>
+    </message>
+    <message>
         <source>Backup Wallet</source>
         <translation>Còpia de seguretat de la cartera</translation>
     </message>
@@ -3242,10 +3207,6 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Prune: last wallet synchronisation goes beyond pruned data. You need to -reindex (download the whole blockchain again in case of pruned node)</source>
         <translation>Poda: la darrera sincronització de la cartera va més enllà de les dades podades. Cal que activeu -reindex (baixeu tota la cadena de blocs de nou en cas de node podat)</translation>
-    </message>
-    <message>
-        <source>Error: A fatal internal error occurred, see debug.log for details</source>
-        <translation>Error: s'ha produït un error intern fatal. Vegeu debug.log per a més detalls</translation>
     </message>
     <message>
         <source>Pruning blockstore...</source>
@@ -3302,14 +3263,6 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.</source>
         <translation>Avís: sembla que no estem plenament d'acord amb els nostres iguals! Podria caler que actualitzar l'aplicació, o potser que ho facin altres nodes.</translation>
-    </message>
-    <message>
-        <source>%d of last 100 blocks have unexpected version</source>
-        <translation>%d dels últims 100 blocs tenen una versió inesperada</translation>
-    </message>
-    <message>
-        <source>%s corrupt, salvage failed</source>
-        <translation>%s està malmès, el rescat de les dades ha fallat</translation>
     </message>
     <message>
         <source>-maxmempool must be at least %d MB</source>
@@ -3540,20 +3493,12 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Avís: regles noves desconegudes activades (versionbit %i)</translation>
     </message>
     <message>
-        <source>Zapping all transactions from wallet...</source>
-        <translation>Se suprimeixen totes les transaccions de la cartera..</translation>
-    </message>
-    <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>
         <translation>Aquesta és la tarifa de transacció que podeu pagar quan les estimacions de tarifes no estan disponibles.</translation>
     </message>
     <message>
         <source>Total length of network version string (%i) exceeds maximum length (%i). Reduce the number or size of uacomments.</source>
         <translation>La longitud total de la cadena de la versió de xarxa (%i) supera la longitud màxima (%i). Redueix el nombre o la mida de uacomments.</translation>
-    </message>
-    <message>
-        <source>Warning: Wallet file corrupt, data salvaged! Original %s saved as %s in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation>Advertència: la cartera és malmesa, les dades es recuperen! Original %s desat com a %s en %s; si el vostre saldo o transaccions són incorrectes, haureu de restaurar des d'una còpia de seguretat.</translation>
     </message>
     <message>
         <source>%s is set very high!</source>
