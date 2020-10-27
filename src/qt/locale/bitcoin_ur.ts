@@ -243,6 +243,9 @@
     <name>OverviewPage</name>
     </context>
 <context>
+    <name>PSBTOperationsDialog</name>
+    </context>
+<context>
     <name>PaymentServer</name>
     </context>
 <context>
@@ -267,20 +270,12 @@
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
+        <source>Amount:</source>
+        <translation>رقم:</translation>
+    </message>
+    <message>
         <source>Copy &amp;Address</source>
         <translation>کاپی پتہ</translation>
-    </message>
-    <message>
-        <source>Address</source>
-        <translation>پتہ</translation>
-    </message>
-    <message>
-        <source>Amount</source>
-        <translation>رقم</translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation>لیبل</translation>
     </message>
     </context>
 <context>
@@ -402,6 +397,10 @@
     <message>
         <source>Export the data in the current tab to a file</source>
         <translation>موجودہ ڈیٹا کو فائیل میں محفوظ کریں</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>نقص</translation>
     </message>
     </context>
 <context>

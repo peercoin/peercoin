@@ -1377,7 +1377,18 @@
         <source>Current total balance in watch-only addresses</source>
         <translation>Soldul total în adresele pentru vizualizare</translation>
     </message>
-</context>
+    </context>
+<context>
+    <name>PSBTOperationsDialog</name>
+    <message>
+        <source>Total Amount</source>
+        <translation>Suma totală</translation>
+    </message>
+    <message>
+        <source>or</source>
+        <translation>sau</translation>
+    </message>
+    </context>
 <context>
     <name>PaymentServer</name>
     <message>
@@ -1613,10 +1624,6 @@
         <translation>Lanț de blocuri</translation>
     </message>
     <message>
-        <source>Current number of blocks</source>
-        <translation>Numărul curent de blocuri</translation>
-    </message>
-    <message>
         <source>Memory Pool</source>
         <translation>Pool de Memorie</translation>
     </message>
@@ -1707,10 +1714,6 @@
     <message>
         <source>Services</source>
         <translation>Servicii</translation>
-    </message>
-    <message>
-        <source>Ban Score</source>
-        <translation>Scor Ban</translation>
     </message>
     <message>
         <source>Connection Time</source>
@@ -1861,14 +1864,6 @@
         <translation>Ieșire</translation>
     </message>
     <message>
-        <source>Yes</source>
-        <translation>Da</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Nu</translation>
-    </message>
-    <message>
         <source>Unknown</source>
         <translation>Necunoscut</translation>
     </message>
@@ -1955,12 +1950,24 @@
         <source>Copy amount</source>
         <translation>Copiază suma</translation>
     </message>
-</context>
+    <message>
+        <source>Could not unlock wallet.</source>
+        <translation>Portofelul nu a putut fi deblocat.</translation>
+    </message>
+    </context>
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
-        <source>QR Code</source>
-        <translation>Cod QR</translation>
+        <source>Amount:</source>
+        <translation>Sumă:</translation>
+    </message>
+    <message>
+        <source>Message:</source>
+        <translation>Mesaj:</translation>
+    </message>
+    <message>
+        <source>Wallet:</source>
+        <translation>Portofel:</translation>
     </message>
     <message>
         <source>Copy &amp;URI</source>
@@ -1981,30 +1988,6 @@
     <message>
         <source>Payment information</source>
         <translation>Informațiile plată</translation>
-    </message>
-    <message>
-        <source>URI</source>
-        <translation>URI</translation>
-    </message>
-    <message>
-        <source>Address</source>
-        <translation>Adresă</translation>
-    </message>
-    <message>
-        <source>Amount</source>
-        <translation>Cantitate</translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation>Etichetă</translation>
-    </message>
-    <message>
-        <source>Message</source>
-        <translation>Mesaj</translation>
-    </message>
-    <message>
-        <source>Wallet</source>
-        <translation>Portofel</translation>
     </message>
 </context>
 <context>
@@ -3058,6 +3041,10 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
     <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Exportă datele din tab-ul curent într-un fișier</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>Eroare</translation>
     </message>
     <message>
         <source>Backup Wallet</source>

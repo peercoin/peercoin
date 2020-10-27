@@ -695,7 +695,10 @@
         <source>Current total balance in watch-only addresses</source>
         <translation>Innistæða á færslugildum sem eru einungis til skoðunar</translation>
     </message>
-</context>
+    </context>
+<context>
+    <name>PSBTOperationsDialog</name>
+    </context>
 <context>
     <name>PaymentServer</name>
     <message>
@@ -725,10 +728,6 @@
     <message>
         <source>Block chain</source>
         <translation>Blokkarkeðja</translation>
-    </message>
-    <message>
-        <source>Current number of blocks</source>
-        <translation>Núverandi fjöldi blokka</translation>
     </message>
     <message>
         <source>Starting Block</source>
@@ -761,22 +760,10 @@
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
-        <source>Address</source>
-        <translation>Vistfang</translation>
+        <source>Amount:</source>
+        <translation>Upphæð:</translation>
     </message>
-    <message>
-        <source>Amount</source>
-        <translation>Upphæð</translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation>Merki</translation>
-    </message>
-    <message>
-        <source>Wallet</source>
-        <translation>Veski</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>RecentRequestsTableModel</name>
     <message>
@@ -924,6 +911,10 @@
     <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Flytja gögn í flipanum í skrá</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>Villa</translation>
     </message>
     </context>
 <context>

@@ -958,7 +958,7 @@
         <source>(no label)</source>
         <translation type="unfinished">(sin etiqueta)</translation>
     </message>
-</context>
+    </context>
 <context>
     <name>TransactionDesc</name>
     <message>
