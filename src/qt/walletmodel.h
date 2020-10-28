@@ -107,7 +107,7 @@ public:
     SendCoinsReturn sendCoins(WalletModelTransaction &transaction);
 
     // Wallet encryption
-    bool setWalletEncrypted(bool encrypted, const SecureString &passphrase);
+    bool setWalletEncrypted(const SecureString& passphrase);
     // Passphrase only needed when unlocking
     bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString(), int64_t nSeconds = 0, bool fMintOnly = false);
     bool changePassphrase(const SecureString &oldPass, const SecureString &newPass);
