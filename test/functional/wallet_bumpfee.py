@@ -44,8 +44,6 @@ NORMAL       =    100
 HIGH         =    500
 TOO_HIGH     = 100000
 
-BTC_MODE = "BTC/kB"
-SAT_MODE = "sat/B"
 
 class BumpFeeTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -169,13 +167,6 @@ def test_simple_bumpfee_succeeds(self, mode, rbf_node, peer_node, dest_address):
     if mode == "fee_rate":
         bumped_psbt = rbf_node.psbtbumpfee(rbfid, {"fee_rate": str(NORMAL)})
         bumped_tx = rbf_node.bumpfee(rbfid, {"fee_rate": NORMAL})
-    elif mode == BTC_MODE:
-        bumped_psbt = rbf_node.psbtbumpfee(rbfid, {"conf_target": NORMAL, "estimate_mode": BTC_MODE})
-        bumped_tx = rbf_node.bumpfee(rbfid, {"conf_target": NORMAL, "estimate_mode": BTC_MODE})
-    elif mode == SAT_MODE:
-        sat_fee = NORMAL * COIN / 1000  # convert NORMAL from BTC/kB to sat/B
-        bumped_psbt = rbf_node.psbtbumpfee(rbfid, {"conf_target": sat_fee, "estimate_mode": SAT_MODE})
-        bumped_tx = rbf_node.bumpfee(rbfid, {"conf_target": sat_fee, "estimate_mode": SAT_MODE})
     else:
         bumped_psbt = rbf_node.psbtbumpfee(rbfid)
         bumped_tx = rbf_node.bumpfee(rbfid)

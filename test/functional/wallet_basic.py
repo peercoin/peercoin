@@ -517,10 +517,22 @@ class WalletTest(BitcoinTestFramework):
                     self.nodes[2].sendtoaddress, address=address, amount=1, conf_target=target, estimate_mode=mode)
 
             # Test setting explicit fee rate just below the minimum.
-            for unit, fee_rate in {"BTC/kB": 0.00000999, "sat/B": 0.99999999}.items():
-                self.log.info("Test sendtoaddress raises 'fee rate too low' if conf_target {} and estimate_mode {} are passed".format(fee_rate, unit))
-                assert_raises_rpc_error(-6, "Fee rate (0.00000999 BTC/kB) is lower than the minimum fee rate setting (0.00001000 BTC/kB)",
-                    self.nodes[2].sendtoaddress, address=address, amount=1, estimate_mode=unit, conf_target=fee_rate)
+            self.log.info("Test sendtoaddress raises 'fee rate too low' if fee_rate of 0.99999999 is passed")
+            assert_raises_rpc_error(-6, "Fee rate (0.00000999 BTC/kB) is lower than the minimum fee rate setting (0.00001000 BTC/kB)",
+                self.nodes[2].sendtoaddress, address=address, amount=1, fee_rate=0.99999999)
+
+            self.log.info("Test sendtoaddress raises if fee_rate of 0 or -1 is passed")
+            assert_raises_rpc_error(-6, "Fee rate (0.00000000 BTC/kB) is lower than the minimum fee rate setting (0.00001000 BTC/kB)",
+                self.nodes[2].sendtoaddress, address=address, amount=10, fee_rate=0)
+            assert_raises_rpc_error(-3, OUT_OF_RANGE, self.nodes[2].sendtoaddress, address=address, amount=1.0, fee_rate=-1)
+
+            self.log.info("Test sendtoaddress raises if an invalid conf_target or estimate_mode is passed")
+            for target, mode in product([-1, 0, 1009], ["economical", "conservative"]):
+                assert_raises_rpc_error(-8, "Invalid conf_target, must be between 1 and 1008",  # max value of 1008 per src/policy/fees.h
+                    self.nodes[2].sendtoaddress, address=address, amount=1, conf_target=target, estimate_mode=mode)
+            for target, mode in product([-1, 0], ["btc/kb", "sat/b"]):
+                assert_raises_rpc_error(-8, "Invalid estimate_mode parameter",
+                    self.nodes[2].sendtoaddress, address=address, amount=1, conf_target=target, estimate_mode=mode)
 
             # 2. Import address from node2 to node1
             self.nodes[1].importaddress(address_to_import)
