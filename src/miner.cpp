@@ -103,6 +103,11 @@ Optional<int64_t> BlockAssembler::m_last_block_weight{nullopt};
 // peercoin: if pwallet != NULL it will attempt to create coinstake
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel)
 {
+    return CreateNewBlock(::ChainstateActive(), scriptPubKeyIn);
+}
+
+std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CChainState& chainstate, const CScript& scriptPubKeyIn)
+{
     int64_t nTimeStart = GetTimeMicros();
 
     resetBlock();
@@ -217,7 +222,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblocktemplate->vTxSigOpsCost[0] = WITNESS_SCALE_FACTOR * GetLegacySigOpCount(*pblock->vtx[0]);
 
     BlockValidationState state;
-    if (pwallet && !TestBlockValidity(state, chainparams, ::ChainstateActive(), *pblock, pindexPrev, false, false)) {
+    assert(std::addressof(::ChainstateActive()) == std::addressof(chainstate));
+    if (pwallet && !TestBlockValidity(state, chainparams, chainstate, *pblock, pindexPrev, false, false)) {
         throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, state.ToString()));
     }
     int64_t nTime2 = GetTimeMicros();
