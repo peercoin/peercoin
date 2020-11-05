@@ -118,6 +118,11 @@ void BlockAssembler::resetBlock()
 // peercoin: if pwallet != NULL it will attempt to create coinstake
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node)
 {
+    return CreateNewBlock(::ChainstateActive(), scriptPubKeyIn);
+}
+
+std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CChainState& chainstate, const CScript& scriptPubKeyIn)
+{
     int64_t nTimeStart = GetTimeMicros();
 
     resetBlock();
