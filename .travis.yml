@@ -104,4 +104,3 @@ after_script:
     - cat ./bench.log
     - $CC --version
     - valgrind --version
-          - sqlite
