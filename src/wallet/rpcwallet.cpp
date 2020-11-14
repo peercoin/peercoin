@@ -9,6 +9,7 @@
 #include <interfaces/wallet.h>
 #include <key_io.h>
 #include <node/context.h>
+#include <optional.h>
 #include <outputtype.h>
 #include <policy/policy.h>
 #include <rpc/rawtransaction_util.h>
