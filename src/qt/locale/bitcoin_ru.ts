@@ -848,7 +848,12 @@
         <source>Network Alert</source>
         <translation>Сетевое Сообщение</translation>
     </message>
-    </context>
+    <message>
+        <source>A fatal error occurred. %1 can no longer continue safely and will quit.</source>
+        <translation>Произошла критическая ошибка. %1 больше не может продолжать безопасную работу и будет закрыт.
+ </translation>
+    </message>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -2024,7 +2029,11 @@
         <source>Current total balance in watch-only addresses</source>
         <translation>Текущий общий баланс на адресах наблюдения</translation>
     </message>
-    </context>
+    <message>
+        <source>Privacy mode activated for the Overview tab. To unmask the values, uncheck Settings-&gt;Mask values.</source>
+        <translation>Режим приватности включен для вкладки обзора. Чтобы показать данные, отключите настройку Скрыть Значения.</translation>
+    </message>
+</context>
 <context>
     <name>PSBTOperationsDialog</name>
     <message>
@@ -2034,6 +2043,10 @@
     <message>
         <source>Sign Tx</source>
         <translation>Подписать транзакцию</translation>
+    </message>
+    <message>
+        <source>Broadcast Tx</source>
+        <translation>Отправить Tx</translation>
     </message>
     <message>
         <source>Copy to Clipboard</source>
@@ -2048,12 +2061,64 @@
         <translation>Закрыть</translation>
     </message>
     <message>
+        <source>Failed to load transaction: %1</source>
+        <translation>Не удалось загрузить транзакцию: %1</translation>
+    </message>
+    <message>
+        <source>Failed to sign transaction: %1</source>
+        <translation>Не удалось подписать транзакцию: %1</translation>
+    </message>
+    <message>
+        <source>Could not sign any more inputs.</source>
+        <translation>Не удалось подписать оставшиеся входы.</translation>
+    </message>
+    <message>
+        <source>Signed %1 inputs, but more signatures are still required.</source>
+        <translation>Подписано %1 входов, но требуется больше подписей.</translation>
+    </message>
+    <message>
+        <source>Signed transaction successfully. Transaction is ready to broadcast.</source>
+        <translation>Транзакция успешно подписана. Транзакция готова к отправке.</translation>
+    </message>
+    <message>
+        <source>Unknown error processing transaction.</source>
+        <translation>Неизвестная ошибка во время обработки транзакции.</translation>
+    </message>
+    <message>
+        <source>Transaction broadcast successfully! Transaction ID: %1</source>
+        <translation>Транзакция успешно отправлена! ID транзакции: %1</translation>
+    </message>
+    <message>
+        <source>Transaction broadcast failed: %1</source>
+        <translation>Отправка транзакции не удалась: %1</translation>
+    </message>
+    <message>
         <source>PSBT copied to clipboard.</source>
         <translation>PSBT скопирован в буфер обмена</translation>
     </message>
     <message>
+        <source>Save Transaction Data</source>
+        <translation>Сохранить данные о транзакции</translation>
+    </message>
+    <message>
         <source>Partially Signed Transaction (Binary) (*.psbt)</source>
         <translation>Частично Подписанная Транзакция (Бинарный файл) (*.psbt)</translation>
+    </message>
+    <message>
+        <source>PSBT saved to disk.</source>
+        <translation>PSBT сохранён на диск.</translation>
+    </message>
+    <message>
+        <source> * Sends %1 to %2</source>
+        <translation>* Отправляет %1 к %2</translation>
+    </message>
+    <message>
+        <source>Unable to calculate transaction fee or total transaction amount.</source>
+        <translation>Не удалось сосчитать сумму комиссии или общую сумму транзакции.</translation>
+    </message>
+    <message>
+        <source>Pays transaction fee: </source>
+        <translation>Платит комиссию:</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -2063,7 +2128,35 @@
         <source>or</source>
         <translation>или</translation>
     </message>
-    </context>
+    <message>
+        <source>Transaction has %1 unsigned inputs.</source>
+        <translation>Транзакция имеет %1 неподписанных входов.</translation>
+    </message>
+    <message>
+        <source>Transaction is missing some information about inputs.</source>
+        <translation>Транзакция имеет недостаточно информации о некоторых входах.</translation>
+    </message>
+    <message>
+        <source>Transaction still needs signature(s).</source>
+        <translation>Транзакция требует по крайней мере одну подпись.</translation>
+    </message>
+    <message>
+        <source>(But this wallet cannot sign transactions.)</source>
+        <translation>(Но этот кошелёк не может подписывать транзакции.)</translation>
+    </message>
+    <message>
+        <source>(But this wallet does not have the right keys.)</source>
+        <translation>(Но этот кошелёк не имеет необходимые ключи.)</translation>
+    </message>
+    <message>
+        <source>Transaction is fully signed and ready for broadcast.</source>
+        <translation>Транзакция полностью подписана, и готова к отправке.</translation>
+    </message>
+    <message>
+        <source>Transaction status is unknown.</source>
+        <translation>Статус транзакции неизвестен.</translation>
+    </message>
+</context>
 <context>
     <name>PaymentServer</name>
     <message>
@@ -2903,7 +2996,11 @@
         <source>Could not unlock wallet.</source>
         <translation>Невозможно разблокировать кошелёк.</translation>
     </message>
-    </context>
+    <message>
+        <source>Could not generate new %1 address</source>
+        <translation>Не удалось сгенерировать новый %1 адрес</translation>
+    </message>
+</context>
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
@@ -4241,7 +4338,11 @@
         <source>Close all wallets</source>
         <translation>Закрыть все кошельки</translation>
     </message>
-    </context>
+    <message>
+        <source>Are you sure you wish to close all wallets?</source>
+        <translation>Вы уверенны, что хотите закрыть все кошельки?</translation>
+    </message>
+</context>
 <context>
     <name>WalletFrame</name>
     <message>

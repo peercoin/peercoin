@@ -1111,6 +1111,11 @@
         <source>Create</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+20"/>
+        <source>Compiled without sqlite support (required for descriptor wallets)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EditAddressDialog</name>
@@ -4025,7 +4030,7 @@
 <context>
     <name>TransactionTableModel</name>
     <message>
-        <location filename="../transactiontablemodel.cpp" line="+221"/>
+        <location filename="../transactiontablemodel.cpp" line="+251"/>
         <source>Date</source>
         <translation type="unfinished">Date</translation>
     </message>
@@ -4733,6 +4738,11 @@ Go to File &gt; Open Wallet to load a wallet.
     </message>
     <message>
         <location line="+2"/>
+        <source>Ignoring duplicate -wallet %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Importing...</source>
         <translation type="unfinished"></translation>
     </message>
