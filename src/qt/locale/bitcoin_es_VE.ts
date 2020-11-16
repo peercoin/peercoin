@@ -133,6 +133,10 @@
         <translation>Repita la nueva contraseña</translation>
     </message>
     <message>
+        <source>Show passphrase</source>
+        <translation>Mostrar la frase de contraseña</translation>
+    </message>
+    <message>
         <source>Encrypt wallet</source>
         <translation>Cifrar monedero</translation>
     </message>
@@ -171,6 +175,14 @@
     <message>
         <source>Wallet encrypted</source>
         <translation>Monedero cifrado</translation>
+    </message>
+    <message>
+        <source>Wallet to be encrypted</source>
+        <translation>Billetera a ser cifrada</translation>
+    </message>
+    <message>
+        <source>Your wallet is now encrypted. </source>
+        <translation>Su billetera está ahora cifrada</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
@@ -273,6 +285,18 @@
     <message>
         <source>Open &amp;URI...</source>
         <translation>Abrir URI...</translation>
+    </message>
+    <message>
+        <source>Create Wallet...</source>
+        <translation>Crear Billetera...</translation>
+    </message>
+    <message>
+        <source>Create a new wallet</source>
+        <translation>Crear una nueva billetera</translation>
+    </message>
+    <message>
+        <source>Network activity disabled.</source>
+        <translation>Actividad de red deshabilitada.</translation>
     </message>
     <message>
         <source>Reindexing blocks on disk...</source>
@@ -385,6 +409,10 @@
     <message>
         <source>Close wallet</source>
         <translation>Cerrar monedero</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation>billetera por defecto</translation>
     </message>
     <message>
         <source>No wallets available</source>
@@ -696,6 +724,10 @@
 </context>
 <context>
     <name>OpenWalletActivity</name>
+    <message>
+        <source>default wallet</source>
+        <translation>billetera por defecto</translation>
+    </message>
     </context>
 <context>
     <name>OptionsDialog</name>
@@ -1449,14 +1481,22 @@
     </context>
 <context>
     <name>WalletFrame</name>
-    </context>
+    <message>
+        <source>Create a new wallet</source>
+        <translation>Crear una nueva billetera</translation>
+    </message>
+</context>
 <context>
     <name>WalletModel</name>
     <message>
         <source>Send Coins</source>
         <translation>Enviar monedas</translation>
     </message>
-    </context>
+    <message>
+        <source>default wallet</source>
+        <translation>billetera por defecto</translation>
+    </message>
+</context>
 <context>
     <name>WalletView</name>
     <message>
@@ -1470,6 +1510,10 @@
     <message>
         <source>Error</source>
         <translation>Error</translation>
+    </message>
+    <message>
+        <source>Backup Wallet</source>
+        <translation>Billetera de Respaldo</translation>
     </message>
     <message>
         <source>Backup Failed</source>
@@ -1487,7 +1531,11 @@
         <source>The wallet data was successfully saved to %1.</source>
         <translation>Los datos de la billetera fueron guardados exitosamente al %1</translation>
     </message>
-    </context>
+    <message>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+</context>
 <context>
     <name>bitcoin-core</name>
     <message>

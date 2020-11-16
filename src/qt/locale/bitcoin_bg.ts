@@ -438,6 +438,22 @@
         <translation>Актуално</translation>
     </message>
     <message>
+        <source>Close Wallet...</source>
+        <translation>Затвори Портфейла</translation>
+    </message>
+    <message>
+        <source>Close wallet</source>
+        <translation>Затвори портфейла</translation>
+    </message>
+    <message>
+        <source>Close All Wallets...</source>
+        <translation>Затвори Всички Портфейли...</translation>
+    </message>
+    <message>
+        <source>Close all wallets</source>
+        <translation>Затвори всички портфейли</translation>
+    </message>
+    <message>
         <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
         <translation>Покажи %1 помощно съобщение за да получиш лист с възможни Пиркойн команди</translation>
     </message>
@@ -452,6 +468,14 @@
     <message>
         <source>Minimize</source>
         <translation>Минимизирай</translation>
+    </message>
+    <message>
+        <source>Zoom</source>
+        <translation>Увеличи</translation>
+    </message>
+    <message>
+        <source>Main Window</source>
+        <translation>Главен Прозорец</translation>
     </message>
     <message>
         <source>%1 client</source>
@@ -2188,6 +2212,14 @@
     </context>
 <context>
     <name>WalletController</name>
+    <message>
+        <source>Close wallet</source>
+        <translation>Затвори портфейла</translation>
+    </message>
+    <message>
+        <source>Close all wallets</source>
+        <translation>Затвори всички портфейли</translation>
+    </message>
     </context>
 <context>
     <name>WalletFrame</name>
