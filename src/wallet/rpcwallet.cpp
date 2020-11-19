@@ -211,14 +211,8 @@ static void SetFeeEstimateMode(const CWallet* pwallet, CCoinControl& cc, const U
         if (!estimate_mode.isNull() && !estimate_mode.get_str().empty()) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Cannot specify both estimate_mode and fee_rate");
         }
-        CFeeRate fee_rate_in_sat_vb{CFeeRate(AmountFromValue(fee_rate), COIN)};
-        if (override_min_fee) {
-            if (fee_rate_in_sat_vb <= CFeeRate(0)) {
-                throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid fee_rate %s (must be greater than 0)", fee_rate_in_sat_vb.ToString(FeeEstimateMode::SAT_VB)));
-            }
-            cc.fOverrideFeeRate = true;
-        }
-        cc.m_feerate = fee_rate_in_sat_vb;
+        cc.m_feerate = CFeeRate(AmountFromValue(fee_rate), COIN);
+        if (override_min_fee) cc.fOverrideFeeRate = true;
         // Default RBF to true for explicit fee_rate, if unset.
         if (cc.m_signal_bip125_rbf == nullopt) cc.m_signal_bip125_rbf = true;
         return;
