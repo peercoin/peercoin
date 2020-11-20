@@ -22,6 +22,7 @@ def check_ELF_RELRO(binary) -> bool:
     GNU_RELRO program header must exist
     Dynamic section must have BIND_NOW flag
     '''
+    elf = pixie.load(executable)
     have_gnu_relro = False
     for segment in binary.segments:
         # Note: not checking p_flags == PF_R: here as linkers set the permission differently
