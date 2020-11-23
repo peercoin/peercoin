@@ -172,6 +172,8 @@ Updated settings
   `addnode` RPC. To mimic the old behavior use `-proxy=` together with
   `-onlynet=` listing all relevant networks except `onion`. (#22834)
 
+- Passing an invalid `-rpcauth` argument now cause bitcoind to fail to start.  (#20461)
+
 Tools and Utilities
 -------------------
 
