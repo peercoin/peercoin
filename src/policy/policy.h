@@ -39,6 +39,8 @@ static const unsigned int MAX_STANDARD_P2WSH_STACK_ITEM_SIZE = 80;
 static const unsigned int MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE = 80;
 /** The maximum size of a standard witnessScript */
 static const unsigned int MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
+/** The maximum size of a standard ScriptSig */
+static const unsigned int MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 /**
  * Standard script verification flags that standard transactions will comply
  * with. However scripts violating these flags may still be present in valid
