@@ -36,7 +36,6 @@
 #include <txdb.h>
 #include <txmempool.h>
 #include <undo.h>
-#include <util/ref.h>
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <util/translation.h>
@@ -83,7 +82,7 @@ ChainstateManager& EnsureChainman(const util::Ref& context)
     return *node.chainman;
 }
 
-CBlockPolicyEstimator& EnsureFeeEstimator(const util::Ref& context)
+CBlockPolicyEstimator& EnsureFeeEstimator(const std::any& context)
 {
     NodeContext& node = EnsureNodeContext(context);
     if (!node.fee_estimator) {

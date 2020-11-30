@@ -10,7 +10,6 @@
 #include <interfaces/chain.h>
 #include <node/context.h>
 #include <test/util/setup_common.h>
-#include <util/ref.h>
 #include <util/time.h>
 
 #include <any>

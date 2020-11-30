@@ -18,7 +18,6 @@
 #include <rpc/server.h>
 #include <test/util/logging.h>
 #include <test/util/setup_common.h>
-#include <util/ref.h>
 #include <util/translation.h>
 #include <validation.h>
 #include <wallet/coincontrol.h>

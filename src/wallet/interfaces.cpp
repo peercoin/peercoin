@@ -14,7 +14,6 @@
 #include <sync.h>
 #include <uint256.h>
 #include <util/check.h>
-#include <util/ref.h>
 #include <util/system.h>
 #include <util/translation.h>
 #include <util/ui_change_type.h>
