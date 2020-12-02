@@ -23,6 +23,9 @@ BITCOIN_GUI_NAME=peercoin-qt
 BITCOIN_CLI_NAME=peercoin-cli
 BITCOIN_TX_NAME=peercoin-tx
 BITCOIN_WALLET_TOOL_NAME=peercoin-wallet
+dnl Multi Process
+BITCOIN_MP_NODE_NAME=bitcoin-node
+BITCOIN_MP_GUI_NAME=bitcoin-gui
 dnl Unless the user specified ARFLAGS, force it to be cr
 AC_ARG_VAR(ARFLAGS, [Flags for the archiver, defaults to <cr> if not set])
 if test "x${ARFLAGS+set}" != "xset"; then
@@ -1673,6 +1676,8 @@ AC_SUBST(BITCOIN_GUI_NAME)
 AC_SUBST(BITCOIN_CLI_NAME)
 AC_SUBST(BITCOIN_TX_NAME)
 AC_SUBST(BITCOIN_WALLET_TOOL_NAME)
+AC_SUBST(BITCOIN_MP_NODE_NAME)
+AC_SUBST(BITCOIN_MP_GUI_NAME)
 
 AC_SUBST(RELDFLAGS)
 AC_SUBST(DEBUG_CPPFLAGS)
