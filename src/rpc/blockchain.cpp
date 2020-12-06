@@ -76,7 +76,7 @@ static CUpdatedBlock latestblock GUARDED_BY(cs_blockchange);
 
 ChainstateManager& EnsureChainman(const util::Ref& context)
 {
-    NodeContext& node = EnsureNodeContext(context);
+    const NodeContext& node = EnsureNodeContext(context);
     if (!node.chainman) {
         throw JSONRPCError(RPC_INTERNAL_ERROR, "Node chainman not found");
     }
