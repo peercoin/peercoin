@@ -17,6 +17,7 @@
 #include <cuckoocache.h>
 #include <flatfile.h>
 #include <hash.h>
+#include <index/blockfilterindex.h>
 #include <index/txindex.h>
 #include <logging.h>
 #include <logging/timer.h>
@@ -2134,8 +2135,16 @@ bool CChainState::FlushStateToDisk(
     try {
     {
         bool fDoFullFlush = false;
+
         CoinsCacheSizeState cache_state = GetCoinsCacheSizeState(&m_mempool);
         LOCK(cs_LastBlockFile);
+            // make sure we don't prune above the blockfilterindexes bestblocks
+            // pruning is height-based
+            int last_prune = m_chain.Height(); // last height we can prune
+            ForEachBlockFilterIndex([&](BlockFilterIndex& index) {
+               last_prune = std::max(1, std::min(last_prune, index.GetSummary().best_block_height));
+            });
+
         const auto nNow = GetTime<std::chrono::microseconds>();
         // Avoid writing/flushing immediately after startup.
         if (nLastWrite.count() == 0) {
