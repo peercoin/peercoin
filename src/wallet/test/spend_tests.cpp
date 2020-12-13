@@ -26,9 +26,7 @@ BOOST_FIXTURE_TEST_CASE(SubtractFee, TestChain100Setup)
     // instead of the miner.
     auto check_tx = [&wallet](CAmount leftover_input_amount) {
         CRecipient recipient{GetScriptForRawPubKey({}), 50 * COIN - leftover_input_amount, true /* subtract fee */};
-        CTransactionRef tx;
-        CAmount fee;
-        int change_pos = -1;
+        constexpr int RANDOM_CHANGE_POSITION = -1;
         bilingual_str error;
         CCoinControl coin_control;
         CAmount fee_calc;
