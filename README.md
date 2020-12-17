@@ -32,6 +32,8 @@ Developers are strongly encouraged to write unit tests for new code, and to subm
 
 Unit tests can be compiled and run (assuming they weren't disabled in configure) with:
   make check
+The CI (Continuous Integration) systems make sure that every pull request is built for Windows, Linux, and macOS,
+and that unit/sanity tests are run automatically.
 
 ### Manual Quality Assurance (QA) Testing
 
