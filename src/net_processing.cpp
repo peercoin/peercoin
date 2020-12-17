@@ -2670,6 +2670,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         // Feeler connections exist only to verify if address is online.
         if (pfrom.IsFeelerConn()) {
+            LogPrint(BCLog::NET, "feeler connection completed peer=%d; disconnecting\n", pfrom.GetId());
             pfrom.fDisconnect = true;
         }
         return;
@@ -2757,6 +2758,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         if (pfrom.fSuccessfullyConnected) {
             // Disconnect peers that send wtxidrelay message after VERACK; this
             // must be negotiated between VERSION and VERACK.
+            LogPrint(BCLog::NET, "wtxidrelay received after verack from peer=%d; disconnecting\n", pfrom.GetId());
             pfrom.fDisconnect = true;
             return;
         }
@@ -2774,6 +2776,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         if (pfrom.fSuccessfullyConnected) {
             // Disconnect peers that send SENDADDRV2 message after VERACK; this
             // must be negotiated between VERSION and VERACK.
+            LogPrint(BCLog::NET, "sendaddrv2 received after verack from peer=%d; disconnecting\n", pfrom.GetId());
             pfrom.fDisconnect = true;
             return;
         }
@@ -2843,8 +2846,10 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         m_connman.AddNewAddresses(vAddrOk, pfrom.addr, 2 * 60 * 60);
         if (vAddr.size() < 1000)
             pfrom.fGetAddr = false;
-        if (pfrom.IsAddrFetchConn())
+        if (pfrom.IsAddrFetchConn()) {
+            LogPrint(BCLog::NET, "addrfetch connection completed peer=%d; disconnecting\n", pfrom.GetId());
             pfrom.fDisconnect = true;
+        }
         return;
     }
 
@@ -3975,6 +3980,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
     if (msg_type == NetMsgType::FILTERLOAD) {
         if (!(pfrom.GetLocalServices() & NODE_BLOOM)) {
+            LogPrint(BCLog::NET, "filterload received despite not offering bloom services from peer=%d; disconnecting\n", pfrom.GetId());
             pfrom.fDisconnect = true;
             return;
         }
@@ -3997,6 +4003,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
     if (msg_type == NetMsgType::FILTERADD) {
         if (!(pfrom.GetLocalServices() & NODE_BLOOM)) {
+            LogPrint(BCLog::NET, "filteradd received despite not offering bloom services from peer=%d; disconnecting\n", pfrom.GetId());
             pfrom.fDisconnect = true;
             return;
         }
@@ -4024,6 +4031,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
     if (msg_type == NetMsgType::FILTERCLEAR) {
         if (!(pfrom.GetLocalServices() & NODE_BLOOM)) {
+            LogPrint(BCLog::NET, "filterclear received despite not offering bloom services from peer=%d; disconnecting\n", pfrom.GetId());
             pfrom.fDisconnect = true;
             return;
         }
