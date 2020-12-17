@@ -39,9 +39,7 @@ if [ "$RUN_SECURITY_TESTS" = "true" ]; then
 fi
 
 if [ "$RUN_SECURITY_TESTS" = "true" ]; then
-  BEGIN_FOLD security-tests
   DOCKER_EXEC make test-security-check
-  END_FOLD
 fi
 
 if [ "$RUN_FUZZ_TESTS" = "true" ]; then
