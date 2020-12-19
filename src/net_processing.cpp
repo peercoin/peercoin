@@ -1618,18 +1618,21 @@ void static ProcessGetBlockData(CNode& pfrom, Peer& peer, const CChainParams& ch
             }
         }
 
-        // Trigger the peer node to send a getblocks request for the next batch of inventory
-        if (inv.hash == peer.m_continuation_block) {
-            // Send immediately. This must send even if redundant,
-            // and we want it right after the last block so they don't
-            // wait for other stuff first.
+        {
+            LOCK(peer.m_block_inv_mutex);
+            // Trigger the peer node to send a getblocks request for the next batch of inventory
+            if (inv.hash == peer.m_continuation_block) {
+                // Send immediately. This must send even if redundant,
+                // and we want it right after the last block so they don't
+                // wait for other stuff first.
             // peercoin: send latest proof-of-work block to allow the
             // download node to accept as orphan (proof-of-stake
             // block might be rejected by stake connection check)
-            std::vector<CInv> vInv;
-            vInv.push_back(CInv(MSG_BLOCK, GetLastBlockIndex(::ChainActive().Tip(), false)->GetBlockHash()));
-            connman.PushMessage(&pfrom, msgMaker.Make(NetMsgType::INV, vInv));
-            peer.m_continuation_block.SetNull();
+                std::vector<CInv> vInv;
+                vInv.push_back(CInv(MSG_BLOCK, GetLastBlockIndex(::ChainActive().Tip(), false)->GetBlockHash()));
+                connman.PushMessage(&pfrom, msgMaker.Make(NetMsgType::INV, vInv));
+                peer.m_continuation_block.SetNull();
+            }
         }
     }
 }
@@ -2805,12 +2808,11 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 break;
             }
             WITH_LOCK(peer->m_block_inv_mutex, peer->m_blocks_for_inv_relay.push_back(pindex->GetBlockHash()));
-            if (--nLimit <= 0)
-            {
+            if (--nLimit <= 0) {
                 // When this block is requested, we'll send an inv that'll
                 // trigger the peer to getblocks the next batch of inventory.
                 LogPrint(BCLog::NET, "  getblocks stopping at limit %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
-                peer->m_continuation_block = pindex->GetBlockHash();
+                WITH_LOCK(peer->m_block_inv_mutex, {peer->m_continuation_block = pindex->GetBlockHash();});
                 break;
             }
         }
