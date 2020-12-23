@@ -1067,6 +1067,7 @@ void PeerManagerImpl::FindNextBlocksToDownload(NodeId nodeid, unsigned int count
     if (state->pindexLastCommonBlock == state->pindexBestKnownBlock)
         return;
 
+    const Consensus::Params& consensusParams = m_chainparams.GetConsensus();
     std::vector<const CBlockIndex*> vToFetch;
     const CBlockIndex *pindexWalk = state->pindexLastCommonBlock;
     // Never fetch further than the best block we know the peer has, or more than BLOCK_DOWNLOAD_WINDOW + 1 beyond the last
