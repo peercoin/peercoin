@@ -185,6 +185,11 @@ QVariant PeerTableModel::data(const QModelIndex &index, int role) const
             default:
                 return QVariant();
         }
+    } else if (role == StatsRole) {
+        switch (index.column()) {
+        case NetNodeId: return QVariant::fromValue(rec);
+        default: return QVariant();
+        }
     }
 
     return QVariant();
