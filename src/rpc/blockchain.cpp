@@ -190,7 +190,7 @@ UniValue blockheaderToJSON(const CBlockIndex* tip, const CBlockIndex* blockindex
     return result;
 }
 
-UniValue blockToJSON(const CBlock& block, const CBlockIndex* tip, const CBlockIndex* blockindex, TxVerbosity verbosity)
+UniValue blockToJSON(BlockManager& blockman, const CBlock& block, const CBlockIndex* tip, const CBlockIndex* blockindex, TxVerbosity verbosity)
 {
     UniValue result = blockheaderToJSON(tip, blockindex);
 
@@ -957,7 +957,7 @@ static RPCHelpMan getblockheader()
     };
 }
 
-static CBlock GetBlockChecked(const CBlockIndex* pblockindex) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
+static CBlock GetBlockChecked(BlockManager& blockman, const CBlockIndex* pblockindex) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     AssertLockHeld(::cs_main);
     CBlock block;
@@ -972,7 +972,7 @@ static CBlock GetBlockChecked(const CBlockIndex* pblockindex) EXCLUSIVE_LOCKS_RE
     return block;
 }
 
-static CBlockUndo GetUndoChecked(const CBlockIndex* pblockindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+static CBlockUndo GetUndoChecked(BlockManager& blockman, const CBlockIndex* pblockindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     AssertLockHeld(::cs_main);
     CBlockUndo blockUndo;
@@ -1087,8 +1087,8 @@ static RPCHelpMan getblock()
     CBlock block;
     const CBlockIndex* pblockindex;
     const CBlockIndex* tip;
+    ChainstateManager& chainman = EnsureAnyChainman(request.context);
     {
-        ChainstateManager& chainman = EnsureAnyChainman(request.context);
         LOCK(cs_main);
         pblockindex = chainman.m_blockman.LookupBlockIndex(hash);
         tip = chainman.ActiveChain().Tip();
@@ -1097,7 +1097,7 @@ static RPCHelpMan getblock()
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
         }
 
-        block = GetBlockChecked(pblockindex);
+        block = GetBlockChecked(chainman.m_blockman, pblockindex);
     }
 
     if (verbosity <= 0)
@@ -1117,7 +1117,7 @@ static RPCHelpMan getblock()
         tx_verbosity = TxVerbosity::SHOW_DETAILS_AND_PREVOUT;
     }
 
-    return blockToJSON(block, tip, pblockindex, tx_verbosity);
+    return blockToJSON(chainman.m_blockman, block, tip, pblockindex, tx_verbosity);
 },
     };
 }
@@ -2032,8 +2032,8 @@ static RPCHelpMan getblockstats()
         }
     }
 
-    const CBlock block = GetBlockChecked(pindex);
-    const CBlockUndo blockUndo = GetUndoChecked(pindex);
+    const CBlock block = GetBlockChecked(chainman.m_blockman, pindex);
+    const CBlockUndo blockUndo = GetUndoChecked(chainman.m_blockman, pindex);
 
     const bool do_all = stats.size() == 0; // Calculate everything if nothing selected (default)
     const bool do_mediantxsize = do_all || stats.count("mediantxsize") != 0;

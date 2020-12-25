@@ -73,7 +73,6 @@ using node::CBlockIndexHeightOnlyComparator;
 using node::CBlockIndexWorkComparator;
 using node::CCoinsStats;
 using node::CoinStatsHashType;
-using node::fHavePruned;
 using node::fImporting;
 using node::fPruneMode;
 using node::fReindex;

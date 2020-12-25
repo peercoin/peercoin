@@ -294,10 +294,10 @@ static bool rest_block(const std::any& context,
     CBlock block;
     const CBlockIndex* pblockindex = nullptr;
     const CBlockIndex* tip = nullptr;
+    ChainstateManager* maybe_chainman = GetChainman(context, req);
+    if (!maybe_chainman) return false;
+    ChainstateManager& chainman = *maybe_chainman;
     {
-        ChainstateManager* maybe_chainman = GetChainman(context, req);
-        if (!maybe_chainman) return false;
-        ChainstateManager& chainman = *maybe_chainman;
         LOCK(cs_main);
         tip = chainman.ActiveChain().Tip();
         pblockindex = chainman.m_blockman.LookupBlockIndex(hash);
@@ -330,7 +330,7 @@ static bool rest_block(const std::any& context,
     }
 
     case RESTResponseFormat::JSON: {
-        UniValue objBlock = blockToJSON(block, tip, pblockindex, tx_verbosity);
+        UniValue objBlock = blockToJSON(chainman.m_blockman, block, tip, pblockindex, tx_verbosity);
         std::string strJSON = objBlock.write() + "\n";
         req->WriteHeader("Content-Type", "application/json");
         req->WriteReply(HTTP_OK, strJSON);
