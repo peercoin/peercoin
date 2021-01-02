@@ -372,19 +372,12 @@ struct CNodeState {
     bool fPreferHeaderAndIDs{false};
     /**
       * Whether this peer will send us cmpctblocks if we request them.
-      * This is not used to gate request logic, as we really only care about fSupportsDesiredCmpctVersion,
-      * but is used as a flag to "lock in" the version of compact blocks (fWantsCmpctWitness) we send.
       */
     bool fProvidesHeaderAndIDs{false};
     //! Whether this peer can give us witnesses
     bool fHaveWitness{false};
     //! Whether this peer wants witnesses in cmpctblocks/blocktxns
     bool fWantsCmpctWitness{false};
-    /**
-     * If we've announced NODE_WITNESS to this peer: whether the peer sends witnesses in cmpctblocks/blocktxns,
-     * otherwise: whether this peer sends non-witnesses in cmpctblocks/blocktxns.
-     */
-    bool fSupportsDesiredCmpctVersion{false};
 
     /** State used to enforce CHAIN_SYNC_TIMEOUT and EXTRA_PEER_CHECK_INTERVAL logic.
       *
@@ -987,8 +980,8 @@ void PeerManagerImpl::MaybeSetPeerAsAnnouncingHeaderAndIDs(NodeId nodeid)
     if (m_ignore_incoming_txs) return;
 
     CNodeState* nodestate = State(nodeid);
-    if (!nodestate || !nodestate->fSupportsDesiredCmpctVersion) {
-        // Never ask from peers who can't provide witnesses.
+    if (!nodestate || !nodestate->fProvidesHeaderAndIDs) {
+        // Don't request compact blocks if the peer has not signalled support
         return;
     }
     if (nodestate->fProvidesHeaderAndIDs) {
@@ -2317,7 +2310,7 @@ void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, const Peer& peer,
                 }
                 if (vGetData.size() > 0) {
                     if (!m_ignore_incoming_txs &&
-                        nodestate->fSupportsDesiredCmpctVersion &&
+                        nodestate->fProvidesHeaderAndIDs &&
                         vGetData.size() == 1 &&
                         mapBlocksInFlight.size() == 1 &&
                         pindexLast->pprev->IsValid(BLOCK_VALID_CHAIN)) {
@@ -2932,7 +2925,6 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
             // (receiving sendcmpct(1) signals high-bandwidth, sendcmpct(0) low-bandwidth)
             pfrom.m_bip152_highbandwidth_from = fAnnounceUsingCMPCTBLOCK;
         }
-        State(pfrom.GetId())->fSupportsDesiredCmpctVersion = true;
         return;
     }
 
