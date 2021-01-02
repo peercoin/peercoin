@@ -177,6 +177,8 @@ enum class ConnectionType {
     ADDR_FETCH,
 };
 
+/** Convert ConnectionType enum to a string value */
+std::string ConnectionTypeAsString(ConnectionType conn_type);
 void Discover();
 uint16_t GetListenPort();
 
@@ -268,9 +270,8 @@ public:
     // Network the peer connected through
     Network m_network;
     uint32_t m_mapped_as;
-    std::string m_conn_type_string;
+    ConnectionType m_conn_type;
 };
-
 
 
 /** Transport protocol agnostic message container.
@@ -764,7 +765,7 @@ public:
     //! Sets the addrName only if it was not previously set
     void MaybeSetAddrName(const std::string& addrNameIn);
 
-    std::string ConnectionTypeAsString() const;
+    std::string ConnectionTypeAsString() const { return ::ConnectionTypeAsString(m_conn_type); }
 
     /** Whether this peer is an inbound onion, e.g. connected via our Tor onion service. */
     bool IsInboundOnion() const { return m_inbound_onion; }
