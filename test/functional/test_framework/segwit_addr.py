@@ -2,10 +2,18 @@
 # Copyright (c) 2017 Pieter Wuille
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Reference implementation for Bech32 and segwit addresses."""
+"""Reference implementation for Bech32/Bech32m and segwit addresses."""
 import unittest
+from enum import Enum
 
 CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
+BECH32_CONST = 1
+BECH32M_CONST = 0x2bc830a3
+
+class Encoding(Enum):
+    """Enumeration type to list the various supported encodings."""
+    BECH32 = 1
+    BECH32M = 2
 
 
 def bech32_polymod(values):
@@ -110,7 +118,8 @@ def decode_segwit_address(hrp, addr):
 
 def encode_segwit_address(hrp, witver, witprog):
     """Encode a segwit address."""
-    ret = bech32_encode(hrp, [witver] + convertbits(witprog, 8, 5))
+    encoding = Encoding.BECH32 if witver == 0 else Encoding.BECH32M
+    ret = bech32_encode(encoding, hrp, [witver] + convertbits(witprog, 8, 5))
     if decode_segwit_address(hrp, ret) == (None, None):
         return None
     return ret
@@ -128,3 +137,5 @@ class TestFrameworkScript(unittest.TestCase):
         # P2WSH
         test_python_bech32('bcrt1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3xueyj')
         test_python_bech32('bcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqseac85')
+        # P2TR
+        test_python_bech32('bcrt1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqc8gma6')

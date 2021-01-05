@@ -9,4 +9,5 @@ Updated RPCs
   for mainnet until consensus rules are adopted that give them meaning
   (e.g. through [BIP 341](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki)).
   Once that happens, Bech32m is expected to be used for them, so this shouldn't
-  affect any production systems, but may be observed on other networks.
+  affect any production systems, but may be observed on other networks where such
+  addresses already have meaning (like signet).
