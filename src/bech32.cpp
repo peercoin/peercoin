@@ -14,6 +14,9 @@
 namespace bech32
 {
 
+namespace bech32
+{
+
 namespace
 {
 
