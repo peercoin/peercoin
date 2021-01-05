@@ -41,7 +41,7 @@ struct DecodeResult
     DecodeResult(Encoding enc, std::string&& h, std::vector<uint8_t>&& d) : encoding(enc), hrp(std::move(h)), data(std::move(d)) {}
 };
 
-/** Decode a Bech32 or Bech32m string. */
+/** Decode a Bech32 string. */
 DecodeResult Decode(const std::string& str);
 
 } // namespace bech32

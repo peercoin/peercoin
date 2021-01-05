@@ -62,7 +62,7 @@ public:
         std::vector<unsigned char> data = {(unsigned char)id.version};
         data.reserve(1 + (id.length * 8 + 4) / 5);
         ConvertBits<8, 5, true>([&](unsigned char c) { data.push_back(c); }, id.program, id.program + id.length);
-        return bech32::Encode(bech32::Encoding::BECH32M, m_params.Bech32HRP(), data);
+        return bech32::Encode(bech32::Encoding::BECH32, m_params.Bech32HRP(), data);
     }
 
     std::string operator()(const CNoDestination& no) const { return {}; }
@@ -95,20 +95,18 @@ CTxDestination DecodeDestination(const std::string& str, const CChainParams& par
         error_str = "Invalid prefix for Base58-encoded address";
     }
     data.clear();
-    auto bech = bech32::Decode(str);
-    if (bech.second.size() > 0) {
+    const auto dec = bech32::Decode(str);
+    if (dec.encoding == bech32::Encoding::BECH32 && dec.data.size() > 0) {
+        // Bech32 decoding
         error_str = "";
-
-        if (bech.first != params.Bech32HRP()) {
+        if (dec.hrp != params.Bech32HRP()) {
             error_str = "Invalid prefix for Bech32 address";
             return CNoDestination();
         }
-
-        // Bech32 decoding
-        int version = bech.second[0]; // The first 5 bit symbol is the witness version (0-16)
+        int version = dec.data[0]; // The first 5 bit symbol is the witness version (0-16)
         // The rest of the symbols are converted witness program bytes.
-        data.reserve(((bech.second.size() - 1) * 5) / 8);
-        if (ConvertBits<5, 8, false>([&](unsigned char c) { data.push_back(c); }, bech.second.begin() + 1, bech.second.end())) {
+        data.reserve(((dec.data.size() - 1) * 5) / 8);
+        if (ConvertBits<5, 8, false>([&](unsigned char c) { data.push_back(c); }, dec.data.begin() + 1, dec.data.end())) {
             if (version == 0) {
                 {
                     WitnessV0KeyHash keyid;
