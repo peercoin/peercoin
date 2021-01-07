@@ -42,13 +42,6 @@ script: |
   export PATH="$HOME/.local/bin":$PATH
   cd ..
 
-  # Install signapple
-  cd signapple
-  python3 -m pip install -U pip setuptools
-  python3 -m pip install .
-  export PATH="$HOME/.local/bin":$PATH
-  cd ..
-
   UNSIGNED_TARBALL=peercoin-osx-unsigned.tar.gz
   UNSIGNED_APP=dist/Peercoin-Qt.app
   SIGNED=peercoin-osx-signed.dmg
