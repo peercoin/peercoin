@@ -14,7 +14,7 @@ remotes:
   "dir": "signature"
 - "url": "https://github.com/achow101/signapple.git"
   "dir": "signapple"
-  "commit": "b084cbbf44d5330448ffce0c7d118f75781b64bd"
+  "commit": "c7e73aa27a7615ac9506559173f787e2906b25eb"
 files:
 - "peercoin-osx-unsigned.tar.gz"
 script: |
@@ -34,6 +34,13 @@ script: |
     echo "\$REAL \$@" >> $WRAP_DIR/${prog}
     chmod +x ${WRAP_DIR}/${prog}
   done
+
+  # Install signapple
+  cd signapple
+  python3 -m pip install -U pip setuptools
+  python3 -m pip install .
+  export PATH="$HOME/.local/bin":$PATH
+  cd ..
 
   # Install signapple
   cd signapple
