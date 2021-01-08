@@ -5,6 +5,7 @@
 #ifndef BITCOIN_NODE_BLOCKSTORAGE_H
 #define BITCOIN_NODE_BLOCKSTORAGE_H
 
+#include <chain.h>
 #include <fs.h>
 #include <protocol.h> // For CMessageHeader::MessageStartChars
 #include <sync.h>
@@ -20,7 +21,6 @@ class ArgsManager;
 class BlockValidationState;
 class CBlock;
 class CBlockFileInfo;
-class CBlockIndex;
 class CBlockUndo;
 class CChain;
 class CChainParams;
@@ -45,7 +45,11 @@ static const unsigned int MAX_BLOCKFILE_SIZE = 0x8000000; // 128 MiB
 extern std::atomic_bool fImporting;
 extern std::atomic_bool fReindex;
 
-typedef std::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
+// Because validation code takes pointers to the map's CBlockIndex objects, if
+// we ever switch to another associative container, we need to either use a
+// container that has stable addressing (true of all std associative
+// containers), or make the key a `std::unique_ptr<CBlockIndex>`
+typedef std::unordered_map<uint256, CBlockIndex, BlockHasher> BlockMap;
 
 struct CBlockIndexWorkComparator {
     bool operator()(const CBlockIndex* pa, const CBlockIndex* pb) const;
