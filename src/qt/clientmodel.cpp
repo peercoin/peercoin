@@ -21,6 +21,7 @@
 #include <uint256.h>
 
 #include <stdint.h>
+#include <functional>
 
 #include <QDebug>
 #include <QThread>

@@ -31,6 +31,7 @@
 #include <wallet/wallet.h> // for CRecipient
 
 #include <stdint.h>
+#include <functional>
 
 #include <QDebug>
 #include <QMessageBox>
