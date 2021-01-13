@@ -203,6 +203,7 @@ BASE_SCRIPTS = [
     'feature_notifications.py',
     'rpc_getblockfilter.py',
     'rpc_invalidateblock.py',
+    'feature_utxo_set_hash.py',
     'mempool_packages.py',
     'mempool_package_onemore.py',
     'rpc_createmultisig.py --legacy-wallet',
