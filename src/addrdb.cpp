@@ -21,6 +21,21 @@
 #include <util/system.h>
 #include <util/translation.h>
 
+CBanEntry::CBanEntry(const UniValue& json)
+    : nVersion(json["version"].get_int()), nCreateTime(json["ban_created"].get_int64()),
+      nBanUntil(json["banned_until"].get_int64())
+{
+}
+
+UniValue CBanEntry::ToJson() const
+{
+    UniValue json(UniValue::VOBJ);
+    json.pushKV("version", nVersion);
+    json.pushKV("ban_created", nCreateTime);
+    json.pushKV("banned_until", nBanUntil);
+    return json;
+}
+
 namespace {
 
 class DbNotFoundError : public std::exception
@@ -141,7 +156,7 @@ bool CBanDB::Write(const banmap_t& banSet)
     return false;
 }
 
-bool CBanDB::Read(banmap_t& banSet)
+bool CBanDB::Read(banmap_t& banSet, bool& dirty)
 {
     if (fs::exists(m_banlist_dat)) {
         LogPrintf("banlist.dat ignored because it can only be read by " PACKAGE_NAME " version 22.x. Remove %s to silence this warning.\n", fs::quoted(fs::PathToString(m_banlist_dat)));
