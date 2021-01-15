@@ -18,6 +18,7 @@
 #include <util/moneystr.h>
 #include <util/system.h>
 #include <util/time.h>
+#include <validation.h>
 #include <validationinterface.h>
 
 #include <chainparams.h>
