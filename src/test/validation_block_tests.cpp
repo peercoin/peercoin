@@ -12,14 +12,13 @@
 #include <net.h>
 #include <random.h>
 #include <script/standard.h>
+#include <test/util/script.h>
 #include <test/util/setup_common.h>
 #include <util/time.h>
 #include <validation.h>
 #include <validationinterface.h>
 
 #include <thread>
-
-static const std::vector<unsigned char> V_OP_TRUE{OP_TRUE};
 
 namespace validation_block_tests {
 struct MinerTestingSetup : public RegTestingSetup {
@@ -65,20 +64,10 @@ std::shared_ptr<CBlock> MinerTestingSetup::Block(const uint256& prev_hash)
     static int i = 0;
     static uint64_t time = 1569931200;//Params().GenesisBlock().nTime;
 
-    CScript pubKey;
-    pubKey << i++ << OP_TRUE;
-
-    auto ptemplate = BlockAssembler(*m_node.mempool, Params()).CreateNewBlock(pubKey);
+    auto ptemplate = BlockAssembler(*m_node.mempool, Params()).CreateNewBlock(CScript{} << i++ << OP_TRUE);
     auto pblock = std::make_shared<CBlock>(ptemplate->block);
     pblock->hashPrevBlock = prev_hash;
     pblock->nTime = ++time;
-
-    pubKey.clear();
-    {
-        WitnessV0ScriptHash witness_program;
-        CSHA256().Write(&V_OP_TRUE[0], V_OP_TRUE.size()).Finalize(witness_program.begin());
-        pubKey << OP_0 << ToByteVector(witness_program);
-    }
 
     // Make the coinbase transaction with two outputs:
     // One zero-value one that has a unique pubkey to make sure that blocks at the same height can have a different hash
@@ -86,7 +75,7 @@ std::shared_ptr<CBlock> MinerTestingSetup::Block(const uint256& prev_hash)
     CMutableTransaction txCoinbase(*pblock->vtx[0]);
     txCoinbase.nTime = pblock->nTime;
     txCoinbase.vout.resize(2);
-    txCoinbase.vout[1].scriptPubKey = pubKey;
+    txCoinbase.vout[1].scriptPubKey = P2WSH_OP_TRUE;
     txCoinbase.vout[1].nValue = txCoinbase.vout[0].nValue;
     txCoinbase.vout[0].nValue = 0;
     txCoinbase.vin[0].scriptWitness.SetNull();
@@ -257,7 +246,7 @@ BOOST_AUTO_TEST_CASE(mempool_locks_reorg)
         for (int num_txs = 22; num_txs > 0; --num_txs) {
             CMutableTransaction mtx;
             mtx.vin.push_back(CTxIn{COutPoint{last_mined->vtx[0]->GetHash(), 1}, CScript{}});
-            mtx.vin[0].scriptWitness.stack.push_back(V_OP_TRUE);
+            mtx.vin[0].scriptWitness.stack.push_back(WITNESS_STACK_ELEM_OP_TRUE);
             mtx.vout.push_back(last_mined->vtx[0]->vout[1]);
             mtx.vout[0].nValue -= 1000;
             txs.push_back(MakeTransactionRef(mtx));
