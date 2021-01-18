@@ -2868,7 +2868,7 @@ bool CWallet::AttachChain(const std::shared_ptr<CWallet>& walletInstance, interf
     assert(!walletInstance->m_chain || walletInstance->m_chain == &chain);
     walletInstance->m_chain = &chain;
 
-    if (!AttachChain(walletInstance, chain, error, warnings)) {
+    if (chain && !AttachChain(walletInstance, *chain, error, warnings)) {
         return nullptr;
     }
 
