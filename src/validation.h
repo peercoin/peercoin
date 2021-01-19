@@ -12,6 +12,7 @@
 
 #include <amount.h>
 #include <coins.h>
+#include <consensus/validation.h>
 #include <crypto/common.h> // for ReadLE64
 #include <fs.h>
 #include <optional.h>
@@ -22,6 +23,7 @@
 #include <txmempool.h> // For CTxMemPool::cs
 #include <txdb.h>
 #include <serialize.h>
+#include <util/check.h>
 #include <util/hasher.h>
 #include <wallet/wallet.h>
 
@@ -47,7 +49,6 @@ class CConnman;
 class CScriptCheck;
 class CTxMemPool;
 class ChainstateManager;
-class TxValidationState;
 class CKeyStore;
 struct ChainTxData;
 
@@ -168,11 +169,46 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex* pin
 uint64_t CalculateCurrentUsage();
 
 
-/** (try to) add transaction to memory pool
- * plTxnReplaced will be appended to with all transactions replaced from mempool
- * @param[out] fee_out optional argument to return tx fee to the caller **/
-bool AcceptToMemoryPool(CTxMemPool& pool, TxValidationState &state, const CTransactionRef &tx,
-                        bool bypass_limits, bool test_accept=false) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+/**
+* Validation result for a single transaction mempool acceptance.
+*/
+struct MempoolAcceptResult {
+    /** Used to indicate the results of mempool validation,
+    * including the possibility of unfinished validation.
+    */
+    enum class ResultType {
+        VALID, //!> Fully validated, valid.
+        INVALID, //!> Invalid.
+    };
+    ResultType m_result_type;
+    TxValidationState m_state;
+
+    // The following fields are only present when m_result_type = ResultType::VALID
+    /** Mempool transactions replaced by the tx per BIP 125 rules. */
+    std::optional<std::list<CTransactionRef>> m_replaced_transactions;
+    /** Raw base fees. */
+    std::optional<CAmount> m_base_fees;
+
+    /** Constructor for failure case */
+    explicit MempoolAcceptResult(TxValidationState state)
+        : m_result_type(ResultType::INVALID),
+        m_state(state), m_replaced_transactions(nullopt), m_base_fees(nullopt) {
+            Assume(!state.IsValid()); // Can be invalid or error
+        }
+
+    /** Constructor for success case */
+    explicit MempoolAcceptResult(std::list<CTransactionRef>&& replaced_txns, CAmount fees)
+        : m_result_type(ResultType::VALID), m_state(TxValidationState{}),
+        m_replaced_transactions(std::move(replaced_txns)), m_base_fees(fees) {}
+};
+
+/**
+ * (Try to) add a transaction to the memory pool.
+ * @param[in]  bypass_limits   When true, don't enforce mempool fee limits.
+ * @param[in]  test_accept     When true, run validation checks but don't submit to mempool.
+ */
+MempoolAcceptResult AcceptToMemoryPool(CTxMemPool& pool, const CTransactionRef& tx,
+                                       bool bypass_limits, bool test_accept=false) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
 /** Apply the effects of this transaction on the UTXO set represented by view */
 void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, int nHeight);

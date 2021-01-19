@@ -363,9 +363,8 @@ static void UpdateMempoolForReorg(CTxMemPool& mempool, DisconnectedBlockTransact
     auto it = disconnectpool.queuedTx.get<insertion_order>().rbegin();
     while (it != disconnectpool.queuedTx.get<insertion_order>().rend()) {
         // ignore validation errors in resurrected transactions
-        TxValidationState stateDummy;
         if (!fAddToMempool || (*it)->IsCoinBase() || (*it)->IsCoinStake() ||
-            !AcceptToMemoryPool(mempool, stateDummy, *it, true /* bypass_limits */)) {
+            AcceptToMemoryPool(mempool, *it, true /* bypass_limits */).m_result_type != MempoolAcceptResult::ResultType::VALID) {
             // If the transaction doesn't make it in to the mempool, remove any
             // transactions that depend on it (which would now be orphans).
             mempool.removeRecursive(**it, MemPoolRemovalReason::REORG);
@@ -457,11 +456,11 @@ public:
          */
         std::vector<COutPoint>& m_coins_to_uncache;
         const bool m_test_accept;
-        CAmount* m_fee_out;
+        CAmount m_fee_out;
     };
 
     // Single transaction acceptance
-    bool AcceptSingleTransaction(const CTransactionRef& ptx, ATMPArgs& args) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    MempoolAcceptResult AcceptSingleTransaction(const CTransactionRef& ptx, ATMPArgs& args) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
 private:
     // All the intermediate state that gets passed between the various levels
@@ -629,6 +628,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
 
     if (nFees < GetMinFee(tx, tx.nTime ? tx.nTime : GetAdjustedTime()))
         return state.Invalid(TxValidationResult::TX_CONSENSUS, "fee is below minimum");
+    args.m_fee_out = nFees;
 
     // Check for non-standard pay-to-script-hash in inputs
     const auto& params = args.m_chainparams.GetConsensus();
@@ -814,14 +814,14 @@ bool MemPoolAccept::Finalize(ATMPArgs& args, Workspace& ws)
     return true;
 }
 
-bool MemPoolAccept::AcceptSingleTransaction(const CTransactionRef& ptx, ATMPArgs& args)
+MempoolAcceptResult MemPoolAccept::AcceptSingleTransaction(const CTransactionRef& ptx, ATMPArgs& args)
 {
     AssertLockHeld(cs_main);
     LOCK(m_pool.cs); // mempool "read lock" (held through GetMainSignals().TransactionAddedToMempool())
 
     Workspace workspace(ptx);
 
-    if (!PreChecks(args, workspace)) return false;
+    if (!PreChecks(args, workspace)) return MempoolAcceptResult(args.m_state);
 
     // Only compute the precomputed transaction data if we need to verify
     // scripts (ie, other policy checks pass). We perform the inexpensive
@@ -829,30 +829,36 @@ bool MemPoolAccept::AcceptSingleTransaction(const CTransactionRef& ptx, ATMPArgs
     // checks pass, to mitigate CPU exhaustion denial-of-service attacks.
     PrecomputedTransactionData txdata;
 
-    if (!PolicyScriptChecks(args, workspace, txdata)) return false;
+    if (!PolicyScriptChecks(args, workspace, txdata)) return MempoolAcceptResult(args.m_state);
 
-    if (!ConsensusScriptChecks(args, workspace, txdata)) return false;
+    if (!ConsensusScriptChecks(args, workspace, txdata)) return MempoolAcceptResult(args.m_state);
 
     // Tx was accepted, but not added
-    if (args.m_test_accept) return true;
+    if (args.m_test_accept) {
+        return MempoolAcceptResult(std::move(args.m_replaced_transactions), args.m_fee_out);
+    }
 
-    if (!Finalize(args, workspace)) return false;
+    if (!Finalize(args, workspace)) return MempoolAcceptResult(args.m_state);
 
     GetMainSignals().TransactionAddedToMempool(ptx, m_pool.GetAndIncrementSequence());
 
-    return true;
+    return MempoolAcceptResult(std::move(args.m_replaced_transactions), args.m_fee_out);
 }
 
 } // anon namespace
 
 /** (try to) add transaction to memory pool with a specified acceptance time **/
-static bool AcceptToMemoryPoolWithTime(const CChainParams& chainparams, CTxMemPool& pool, TxValidationState &state, const CTransactionRef &tx,
-                        int64_t nAcceptTime, bool bypass_limits, bool test_accept) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+static MempoolAcceptResult AcceptToMemoryPoolWithTime(const CChainParams& chainparams, CTxMemPool& pool,
+                                                      const CTransactionRef &tx, int64_t nAcceptTime,
+                                                      bool bypass_limits, bool test_accept)
+                                                      EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
+    TxValidationState state;
     std::vector<COutPoint> coins_to_uncache;
-    MemPoolAccept::ATMPArgs args { chainparams, state, nAcceptTime, bypass_limits, coins_to_uncache, test_accept };
-    bool res = MemPoolAccept(pool).AcceptSingleTransaction(tx, args);
-    if (!res) {
+    MemPoolAccept::ATMPArgs args { chainparams, state, nAcceptTime, {}, bypass_limits, coins_to_uncache, test_accept, {} };
+
+    const MempoolAcceptResult result = MemPoolAccept(pool).AcceptSingleTransaction(tx, args);
+    if (result.m_result_type != MempoolAcceptResult::ResultType::VALID) {
         // Remove coins that were not present in the coins cache before calling ATMPW;
         // this is to prevent memory DoS in case we receive a large number of
         // invalid transactions that attempt to overrun the in-memory coins cache
@@ -864,14 +870,13 @@ static bool AcceptToMemoryPoolWithTime(const CChainParams& chainparams, CTxMemPo
     // After we've (potentially) uncached entries, ensure our coins cache is still within its size limits
     BlockValidationState state_dummy;
     ::ChainstateActive().FlushStateToDisk(chainparams, state_dummy, FlushStateMode::PERIODIC);
-    return res;
+    return result;
 }
 
-bool AcceptToMemoryPool(CTxMemPool& pool, TxValidationState &state, const CTransactionRef &tx,
-                        bool bypass_limits, bool test_accept)
+MempoolAcceptResult AcceptToMemoryPool(CTxMemPool& pool, const CTransactionRef &tx, bool bypass_limits, bool test_accept)
 {
     const CChainParams& chainparams = Params();
-    return AcceptToMemoryPoolWithTime(chainparams, pool, state, tx, GetTime(), bypass_limits, test_accept);
+    return AcceptToMemoryPoolWithTime(chainparams, pool, tx, GetTime(), bypass_limits, test_accept);
 }
 
 CTransactionRef GetTransaction(const CBlockIndex* const block_index, const CTxMemPool* const mempool, const uint256& hash, const Consensus::Params& consensusParams, uint256& hashBlock)
@@ -4726,12 +4731,10 @@ bool LoadMempool(CTxMemPool& pool)
             if (amountdelta) {
                 pool.PrioritiseTransaction(tx->GetHash(), amountdelta);
             }
-            TxValidationState state;
             if (nTime > nNow - nExpiryTimeout) {
                 LOCK(cs_main);
-                AcceptToMemoryPoolWithTime(chainparams, pool, state, tx, nTime,
-                                           false /* bypass_limits */, false /* test_accept */);
-                if (state.IsValid()) {
+                if (AcceptToMemoryPoolWithTime(chainparams, pool, tx, nTime, false /* bypass_limits */,
+                                               false /* test_accept */).m_result_type == MempoolAcceptResult::ResultType::VALID) {
                     ++count;
                 } else {
                     // mempool may contain the transaction already, e.g. from
