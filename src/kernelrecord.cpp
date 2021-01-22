@@ -25,12 +25,10 @@ bool KernelRecord::showTransaction(const CWalletTx &wtx)
  */
 vector<KernelRecord> KernelRecord::decomposeOutput(const CWallet *wallet, const CWalletTx &wtx)
 {
-    const Consensus::Params& params = Params().GetConsensus();
     vector<KernelRecord> parts;
     int64_t nTime = wtx.GetTxTime();
     uint256 hash = wtx.GetHash();
     std::map<std::string, std::string> mapValue = wtx.mapValue;
-    int nDayWeight = (min((GetAdjustedTime() - nTime), params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
 
     if (showTransaction(wtx))
     {
@@ -40,8 +38,6 @@ vector<KernelRecord> KernelRecord::decomposeOutput(const CWallet *wallet, const 
             if( wallet->IsMine(txOut) ) {
                 CTxDestination address;
                 std::string addrStr;
-
-                uint64_t coinAge = max(txOut.nValue * nDayWeight / COIN, (int64_t)0);
 
                 if (ExtractDestination(txOut.scriptPubKey, address))
                 {
@@ -53,7 +49,7 @@ vector<KernelRecord> KernelRecord::decomposeOutput(const CWallet *wallet, const 
                     // Sent to IP, or other non-address transaction like OP_EVAL
                     addrStr = mapValue["to"];
                 }
-                parts.push_back(KernelRecord(hash, nTime, addrStr, txOut.nValue, nOut, wallet->IsSpent(hash, nOut), coinAge));
+                parts.push_back(KernelRecord(hash, nTime, addrStr, txOut.nValue, nOut, wallet->IsSpent(hash, nOut)));
             }
         }
     }
@@ -69,6 +65,13 @@ std::string KernelRecord::getTxID()
 int64_t KernelRecord::getAge() const
 {
     return (GetAdjustedTime() - nTime) / 86400;
+}
+
+int64_t KernelRecord::getCoinAge() const
+{
+    const Consensus::Params& params = Params().GetConsensus();
+    int nDayWeight = (min((GetAdjustedTime() - nTime), params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
+    return max(nValue * nDayWeight / COIN, (int64_t) 0);
 }
 
 double KernelRecord::getProbToMintStake(double difficulty, int timeOffset) const
