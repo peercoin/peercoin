@@ -26,12 +26,10 @@ bool KernelRecord::showTransaction(bool isCoinbase, int depth)
  */
 vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, const interfaces::WalletTx &wtx)
 {
-    const Consensus::Params& params = Params().GetConsensus();
     vector<KernelRecord> parts;
     int64_t nTime = wtx.tx->nTime;
     uint256 hash = wtx.tx->GetHash();
     std::map<std::string, std::string> mapValue = wtx.value_map;
-    int nDayWeight = (min((GetAdjustedTime() - nTime), params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
 
     int numBlocks;
     interfaces::WalletTxStatus status;
@@ -46,8 +44,6 @@ vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, c
                 CTxDestination address;
                 std::string addrStr;
 
-                uint64_t coinAge = max(txOut.nValue * nDayWeight / COIN, (int64_t)0);
-
                 if (ExtractDestination(txOut.scriptPubKey, address)) {
                     // Sent to Bitcoin Address
                     addrStr = EncodeDestination(address);
@@ -57,7 +53,7 @@ vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, c
                 }
                 std::vector<interfaces::WalletTxOut> coins = wallet.getCoins({COutPoint(hash, nOut)});
                 bool isSpent = coins.size() >= 1 ? coins[0].is_spent : true;
-                parts.push_back(KernelRecord(hash, nTime, addrStr, txOut.nValue, nOut, isSpent, coinAge));
+                parts.push_back(KernelRecord(hash, nTime, addrStr, txOut.nValue, nOut, isSpent));
             }
         }
     }
@@ -73,6 +69,13 @@ std::string KernelRecord::getTxID()
 int64_t KernelRecord::getAge() const
 {
     return (GetAdjustedTime() - nTime) / 86400;
+}
+
+int64_t KernelRecord::getCoinAge() const
+{
+    const Consensus::Params& params = Params().GetConsensus();
+    int nDayWeight = (min((GetAdjustedTime() - nTime), params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
+    return max(nValue * nDayWeight / COIN, (int64_t) 0);
 }
 
 double KernelRecord::getProbToMintStake(double difficulty, int timeOffset) const

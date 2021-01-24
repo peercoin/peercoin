@@ -3431,7 +3431,7 @@ UniValue listminting(const JSONRPCRequest& request)
                 std::string strTime = boost::lexical_cast<std::string>(kr.nTime);
                 std::string strAmount = boost::lexical_cast<std::string>(kr.nValue);
                 std::string strAge = boost::lexical_cast<std::string>(kr.getAge());
-                std::string strCoinAge = boost::lexical_cast<std::string>(kr.coinAge);
+                std::string strCoinAge = boost::lexical_cast<std::string>(kr.getCoinAge());
 
 //                JSONRPCRequest request2;
 //                request2.params = UniValue(UniValue::VARR);
