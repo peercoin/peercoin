@@ -3,6 +3,7 @@
 ["They are in the form"],
 ["[[[prevout hash, prevout index, prevout scriptPubKey, amount?], [input 2], ...],"],
 ["serializedTransaction, verifyFlags]"],
+["Use BADTX for verifyFlags if it is expected to fail CheckTransaction()"],
 ["Objects that are only a single string (like this one) are ignored"],
 
 ["0e1b5688cf179cd9f7cbda1fac0090f6e684bbf8cd946660120197c3f3681809 but with extra junk appended to the end of the scriptPubKey"],
