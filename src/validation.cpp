@@ -5123,10 +5123,7 @@ void ChainstateManager::Reset()
     LOCK(::cs_main);
     m_ibd_chainstate.reset();
     m_snapshot_chainstate.reset();
-    {
-        LOCK(::cs_main);
-        m_active_chainstate = nullptr;
-    }
+    m_active_chainstate = nullptr;
     m_snapshot_validated = false;
 }
 
