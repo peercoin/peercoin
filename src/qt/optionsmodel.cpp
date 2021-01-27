@@ -19,7 +19,6 @@
 #include <txdb.h> // for -dbcache defaults
 #include <util/string.h>
 
-//#include <checkpointsync.h>
 #include <QDebug>
 
 #include <QSettings>
@@ -81,10 +80,6 @@ void OptionsModel::Init(bool resetSettings)
     if (!settings.contains("fCoinControlFeatures"))
         settings.setValue("fCoinControlFeatures", false);
     fCoinControlFeatures = settings.value("fCoinControlFeatures", false).toBool();
-
-    if (!settings.contains("fCheckpointEnforce"))
-        settings.setValue("fCheckpointEnforce", true);
-    fCheckpointEnforce = settings.value("fCheckpointEnforce", true).toBool();
 
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
@@ -329,10 +324,7 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("nThreadsScriptVerif");
         case Listen:
             return settings.value("fListen");
-#ifdef ENABLE_CHECKPOINTS
-        case CheckpointEnforce:
-            return IsSyncCheckpointEnforced();
-#endif
+
         default:
             return QVariant();
         }
@@ -481,13 +473,7 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 setRestartRequired(true);
             }
             break;
-#ifdef ENABLE_CHECKPOINTS
-        case CheckpointEnforce:
-            fCheckpointEnforce = value.toBool();
-            settings.setValue("fCheckpointEnforce", value);
-            SetCheckpointEnforce(fCheckpointEnforce);
-            break;
-#endif
+
         default:
             break;
         }

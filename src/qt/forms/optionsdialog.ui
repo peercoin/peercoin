@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
+    <width>630</width>
     <height>440</height>
    </rect>
   </property>
@@ -34,16 +34,6 @@
          </property>
          <property name="text">
           <string>&amp;Start %1 on system login</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkpointEnforce">
-         <property name="toolTip">
-          <string>Check this box to follow the centrally issued checkpoints.</string>
-         </property>
-         <property name="text">
-          <string>Enforce checkpoints</string>
          </property>
         </widget>
        </item>
