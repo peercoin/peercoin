@@ -174,9 +174,6 @@ void OptionsDialog::setModel(OptionsModel *_model)
     connect(ui->lang, static_cast<void (QValueComboBox::*)()>(&QValueComboBox::valueChanged), [this]{ showRestartWarning(); });
     connect(ui->thirdPartyTxUrls, &QLineEdit::textChanged, [this]{ showRestartWarning(); });
 
-#ifndef ENABLE_CHECKPOINTS
-    ui->checkpointEnforce->setVisible(false);
-#endif
 }
 
 void OptionsDialog::setCurrentTab(OptionsDialog::Tab tab)
@@ -195,7 +192,6 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->bitcoinAtStartup, OptionsModel::StartAtStartup);
     mapper->addMapping(ui->threadsScriptVerif, OptionsModel::ThreadsScriptVerif);
     mapper->addMapping(ui->databaseCache, OptionsModel::DatabaseCache);
-    mapper->addMapping(ui->checkpointEnforce, OptionsModel::CheckpointEnforce);
 
     /* Wallet */
     mapper->addMapping(ui->spendZeroConfChange, OptionsModel::SpendZeroConfChange);
