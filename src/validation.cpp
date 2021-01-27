@@ -4950,6 +4950,7 @@ bool CheckBlockSignature(const CBlock& block)
     return key.Verify(block.GetHash(), block.vchBlockSig);
 }
 Optional<uint256> ChainstateManager::SnapshotBlockhash() const {
+    LOCK(::cs_main);  // for m_active_chainstate access
     if (m_active_chainstate != nullptr) {
         // If a snapshot chainstate exists, it will always be our active.
         return m_active_chainstate->m_from_snapshot_blockhash;
@@ -4996,13 +4997,14 @@ CChainState& ChainstateManager::InitializeChainstate(CTxMemPool& mempool, const 
 
 CChainState& ChainstateManager::ActiveChainstate() const
 {
+    LOCK(::cs_main);
     assert(m_active_chainstate);
     return *m_active_chainstate;
 }
 
 bool ChainstateManager::IsSnapshotActive() const
 {
-    return m_snapshot_chainstate && m_active_chainstate == m_snapshot_chainstate.get();
+    return m_snapshot_chainstate && WITH_LOCK(::cs_main, return m_active_chainstate) == m_snapshot_chainstate.get();
 }
 
 CChainState& ChainstateManager::ValidatedChainstate() const
@@ -5033,7 +5035,10 @@ void ChainstateManager::Reset()
 {
     m_ibd_chainstate.reset();
     m_snapshot_chainstate.reset();
-    m_active_chainstate = nullptr;
+    {
+        LOCK(::cs_main);
+        m_active_chainstate = nullptr;
+    }
     m_snapshot_validated = false;
 }
 
