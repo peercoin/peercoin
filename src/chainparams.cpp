@@ -9,7 +9,6 @@
 #include <consensus/merkle.h>
 #include <hash.h> // for signet block challenge hash
 #include <util/system.h>
-#include <util/strencodings.h>
 #include <versionbitsinfo.h>
 
 #include <assert.h>
@@ -133,7 +132,7 @@ public:
         // human readable prefix to bench32 address
         bech32_hrp = "pc";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
+        vFixedSeeds = std::vector<SeedSpec6>(std::begin(pnSeed6_main), std::end(pnSeed6_main));
 
         fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
@@ -242,7 +241,7 @@ public:
         // human readable prefix to bench32 address
         bech32_hrp = "tpc";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
+        vFixedSeeds = std::vector<SeedSpec6>(std::begin(pnSeed6_test), std::end(pnSeed6_test));
 
         fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
