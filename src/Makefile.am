@@ -230,6 +230,7 @@ BITCOIN_CORE_H = \
   util/bytevectorhash.h \
   util/check.h \
   util/error.h \
+  util/getuniquepath.h \
   util/golombrice.h \
   util/hasher.h \
   util/macros.h \
@@ -547,6 +548,7 @@ libbitcoin_util_a_SOURCES = \
   util/bip32.cpp \
   util/bytevectorhash.cpp \
   util/error.cpp \
+  util/getuniquepath.cpp \
   util/hasher.cpp \
   util/system.cpp \
   util/message.cpp \
