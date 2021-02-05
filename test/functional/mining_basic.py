@@ -56,6 +56,9 @@ class MiningTest(BitcoinTestFramework):
         self.setup_clean_chain = True
         self.supports_cli = False
 
+    def skip_test_if_missing_module(self):
+        self.skip_if_no_wallet()
+
     def mine_chain(self):
         self.log.info('Create some old blocks')
         for t in range(TIME_GENESIS_BLOCK, TIME_GENESIS_BLOCK + 200 * 600, 600):
