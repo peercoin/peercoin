@@ -598,6 +598,7 @@ struct CoinSelectionParams
     size_t change_output_size = 0;
     size_t change_spend_size = 0;
     CFeeRate m_long_term_feerate;
+    CFeeRate m_discard_feerate;
     size_t tx_noinputs_size = 0;
     //! Indicate that we are subtracting the fee from outputs
     bool m_subtract_fee_outputs = false;
@@ -608,6 +609,7 @@ struct CoinSelectionParams
         use_bnb(use_bnb),
         change_output_size(change_output_size),
         change_spend_size(change_spend_size),
+        m_discard_feerate(discard_feerate),
         tx_noinputs_size(tx_noinputs_size),
         m_avoid_partial_spends(avoid_partial)
     {}
