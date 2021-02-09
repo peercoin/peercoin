@@ -8,6 +8,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      
+      - name: dependencies
+        run: |
+          sudo apt-get -y install autoconf libtool pkg-config libboost-all-dev libssl-dev libevent-dev
         
       - name: yolo build
         run: |
