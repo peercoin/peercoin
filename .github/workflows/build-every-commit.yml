@@ -32,10 +32,10 @@ jobs:
           sudo make install
 
                 
-      - name: build
+      - name: no-wallet build, fix it
         run: |
           ./autogen.sh
-          ./configure
+          ./configure --disable-wallet
           make
           make install
 
