@@ -1,1 +1,20 @@
-blank
+name: Peercoin-artifact
+on: [push, pull_request]
+
+# Should do linux, mac and windows.
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        
+      - name: yolo build
+        run: |
+          ./autogen.sh
+          ./configure
+          make
+          make install
+
+
+
