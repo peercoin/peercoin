@@ -14,7 +14,8 @@ jobs:
           sudo apt-get -y install autoconf libtool pkg-config libboost-all-dev libssl-dev libevent-dev
         
         
-# If ppc wishes to claim betterness, then it must address this.        
+# If ppc wishes to claim betterness, then it must address this.
+# Do not hack around it.  Use the later berkeley DB unless there is an incredibly good reason not to, even if it means you have to do a bunch of work.         
       - name: bug in btc ecosystem
         run: |
           cd ~
