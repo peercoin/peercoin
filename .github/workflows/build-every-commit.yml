@@ -11,7 +11,7 @@ jobs:
       
       - name: dependencies
         run: |
-          sudo apt-get -y install autoconf libtool pkg-config libboost-all-dev libssl-dev libevent-dev
+          sudo apt-get -y install autoconf libtool pkg-config libdb-dev libdb++-dev libboost-all-dev libssl-dev libevent-dev
                 
       - name: no-wallet build, fix it
         run: |
