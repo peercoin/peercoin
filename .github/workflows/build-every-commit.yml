@@ -27,7 +27,7 @@ jobs:
           cd db-4.8.30.NC/build_unix
           mkdir -p build
           BDB_PREFIX=$(pwd)/build
-          ../dist/configure — disable-shared — enable-cxx — with-pic — prefix=$BDB_PREFIX
+          ../dist/configure --disable-shared --enable-cxx --with-pic --prefix=$BDB_PREFIX
           make
           sudo make install
 
