@@ -13,7 +13,25 @@ jobs:
         run: |
           sudo apt-get -y install autoconf libtool pkg-config libboost-all-dev libssl-dev libevent-dev
         
-      - name: yolo build
+        
+# If ppc wishes to claim betterness, then it must address this.        
+      - name: bug in btc ecosystem
+        run: |
+          cd ~
+          mkdir dev  
+          cd dev
+          wget http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz
+          tar -xvf db-4.8.30.NC.tar.gz
+          sed -i ‘s/__atomic_compare_exchange/__atomic_compare_exchange_db/g’ db-4.8.30.NC/dbinc/atomic.h
+          cd db-4.8.30.NC/build_unix
+          mkdir -p build
+          BDB_PREFIX=$(pwd)/build
+          ../dist/configure — disable-shared — enable-cxx — with-pic — prefix=$BDB_PREFIX
+          make
+          sudo make install
+
+                
+      - name: build
         run: |
           ./autogen.sh
           ./configure
