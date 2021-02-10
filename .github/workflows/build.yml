@@ -1,0 +1,24 @@
+name: Peercoin-artifact
+on: [push, pull_request]
+
+# Should do linux, mac and windows.
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      
+      - name: dependencies
+        run: |
+          sudo apt-get -y install autoconf libprotobuf-dev protobuf-compiler libminiupnpc-dev libzmq3-dev libqrencode-dev libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libtool pkg-config libdb-dev libdb++-dev libboost-all-dev libssl-dev libevent-dev
+          
+          
+      - name: build
+        run: |
+          ./autogen.sh
+          ./configure --with-gui=qt5 --with-incompatible-bdb
+          make
+
+
+
