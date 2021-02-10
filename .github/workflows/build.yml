@@ -19,7 +19,6 @@ jobs:
           ./autogen.sh
           ./configure --with-gui=qt5 --with-incompatible-bdb
           make
-          make install
 
 
 
