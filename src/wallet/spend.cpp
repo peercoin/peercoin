@@ -617,7 +617,7 @@ static bool CreateTransactionInternal(
     coin_selection_params.m_avoid_partial_spends = coin_control.m_avoid_partial_spends;
 
     // Set the long term feerate estimate to the wallet's consolidate feerate
-    coin_selection_params.m_long_term_feerate = m_consolidate_feerate;
+    coin_selection_params.m_long_term_feerate = wallet.m_consolidate_feerate;
 
     CAmount recipients_sum = 0;
     const OutputType change_type = wallet.TransactionChangeType(coin_control.m_change_type ? *coin_control.m_change_type : wallet.m_default_change_type, vecSend);
