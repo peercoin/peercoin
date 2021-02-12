@@ -434,7 +434,7 @@ public:
     // Bind address of our side of the connection
     const CAddress addrBind;
     //! Whether this peer is an inbound onion, i.e. connected via our Tor onion service.
-    const bool m_inbound_onion{false};
+    const bool m_inbound_onion;
     std::atomic<int> nVersion{0};
     RecursiveMutex cs_SubVer;
     /**
@@ -611,7 +611,7 @@ public:
     // peercoin: used to detect branch switches
     uint256 lastAcceptedHeader;
 
-    CNode(NodeId id, ServiceFlags nLocalServicesIn, SOCKET hSocketIn, const CAddress& addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress& addrBindIn, const std::string& addrNameIn, ConnectionType conn_type_in, bool inbound_onion = false);
+    CNode(NodeId id, ServiceFlags nLocalServicesIn, SOCKET hSocketIn, const CAddress& addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress& addrBindIn, const std::string& addrNameIn, ConnectionType conn_type_in, bool inbound_onion);
     ~CNode();
     CNode(const CNode&) = delete;
     CNode& operator=(const CNode&) = delete;
