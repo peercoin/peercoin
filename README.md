@@ -1,4 +1,9 @@
 # Peercoin Official Development Repo
+For an immediately usable, binary version of the Bitcoin Core software, see
+https://bitcoincore.org/en/download/.
+
+Further information about Bitcoin Core is available in the [doc folder](/doc).
+
 
 [![Peercoin Donate](https://badgen.net/badge/peercoin/Donate/green?icon=https://raw.githubusercontent.com/peercoin/media/84710cca6c3c8d2d79676e5260cc8d1cd729a427/Peercoin%202020%20Logo%20Files/01.%20Icon%20Only/Inside%20Circle/Transparent/Green%20Icon/peercoin-icon-green-transparent.svg)](https://chainz.cryptoid.info/ppc/address.dws?p92W3t7YkKfQEPDb7cG9jQ6iMh7cpKLvwK)
 [![Continuous Integration](https://github.com/peercoin/peercoin/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/peercoin/peercoin/actions/workflows/build.yml)
@@ -62,5 +67,4 @@ The release branch is identified by it's major and minor version number e.g. `re
 The official release tags are always made on a release branch.
 Release branches will typically branch from or merge tested code from the master branch to freeze the code for release.
 Only critical patches can be applied through pull requests directly on this branch, all non critical features should follow the standard path through develop -> master -> release-*
-
 
