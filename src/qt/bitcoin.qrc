@@ -108,4 +108,7 @@
         <file alias="scroll-down">res/images/controls/scroll-down.png</file>
         <file alias="scroll-up">res/images/controls/scroll-up.png</file>
     </qresource>
+    <qresource prefix="/fonts">
+        <file alias="monospace">res/fonts/RobotoMono-Bold.ttf</file>
+    </qresource>
 </RCC>
