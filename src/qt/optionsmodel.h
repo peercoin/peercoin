@@ -59,6 +59,7 @@ public:
         DisplayUnit,            // BitcoinUnits::Unit
         ThirdPartyTxUrls,       // QString
         Language,               // QString
+        UseEmbeddedMonospacedFont, // bool
         CoinControlFeatures,    // bool
         CheckpointEnforce,      // bool
         ThreadsScriptVerif,     // int
@@ -87,6 +88,7 @@ public:
     bool getMinimizeOnClose() const { return fMinimizeOnClose; }
     int getDisplayUnit() const { return nDisplayUnit; }
     QString getThirdPartyTxUrls() const { return strThirdPartyTxUrls; }
+    bool getUseEmbeddedMonospacedFont() const { return m_use_embedded_monospaced_font; }
     bool getCoinControlFeatures() const { return fCoinControlFeatures; }
     bool getCheckpointEnforce() const { return fCheckpointEnforce; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
@@ -111,6 +113,7 @@ private:
     QString language;
     int nDisplayUnit;
     QString strThirdPartyTxUrls;
+    bool m_use_embedded_monospaced_font;
     bool fCoinControlFeatures;
     bool fCheckpointEnforce;
     /* settings that were overridden by command-line */
@@ -125,6 +128,7 @@ Q_SIGNALS:
     void displayUnitChanged(int unit);
     void coinControlFeaturesChanged(bool);
     void showTrayIconChanged(bool);
+    void useEmbeddedMonospacedFontChanged(bool);
 };
 
 #endif // BITCOIN_QT_OPTIONSMODEL_H
