@@ -210,6 +210,7 @@ BASE_SCRIPTS = [
     'mempool_package_onemore.py',
     'rpc_createmultisig.py --legacy-wallet',
     'rpc_createmultisig.py --descriptors',
+    'rpc_packages.py',
     'rpc_preciousblock.py',
     'wallet_importprunedfunds.py --legacy-wallet',
     'wallet_importprunedfunds.py --descriptors',
