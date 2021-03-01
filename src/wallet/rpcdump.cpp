@@ -1663,8 +1663,6 @@ RPCHelpMan listdescriptors()
         throw JSONRPCError(RPC_WALLET_ERROR, "listdescriptors is not available for non-descriptor wallets");
     }
 
-    EnsureWalletIsUnlocked(*wallet);
-
     LOCK(wallet->cs_wallet);
 
     UniValue descriptors(UniValue::VARR);
