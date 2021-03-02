@@ -13,7 +13,7 @@ src/peercoin-node
 src/peercoin-tx
 src/peercoin-util
 src/peercoin-wallet
-!src/test/fuzz/*.*
+src/test/fuzz/fuzz
 src/test/test_peercoin
 src/qt/test/test_peercoin-qt
 
