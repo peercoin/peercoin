@@ -239,7 +239,6 @@ BITCOIN_CORE_H = \
   util/message.h \
   util/moneystr.h \
   util/readwritefile.h \
-  util/ref.h \
   util/settings.h \
   util/sock.h \
   util/spanparsing.h \
