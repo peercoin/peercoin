@@ -3,6 +3,7 @@
              (gnu packages autotools)
              (gnu packages base)
              (gnu packages bash)
+             (gnu packages bison)
              (gnu packages check)
              (gnu packages commencement)
              (gnu packages compression)
@@ -129,6 +130,7 @@ desirable for building Bitcoin Core release binaries."
        autoconf
        automake
        pkg-config
+        bison
        ;; Scripting
        perl
        python-3.7
