@@ -20,6 +20,11 @@ enum DeploymentPos
 };
 
 /**
+    /** If lock in occurs, delay activation until at least this block
+     *  height.  Note that activation will only occur on a retarget
+     *  boundary.
+     */
+    int min_activation_height{0};
  * Parameters that influence chain consensus.
  */
 struct Params {
