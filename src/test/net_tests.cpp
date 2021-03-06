@@ -8,6 +8,7 @@
 #include <clientversion.h>
 #include <cstdint>
 #include <net.h>
+#include <netaddress.h>
 #include <netbase.h>
 #include <serialize.h>
 #include <span.h>
