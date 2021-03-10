@@ -1270,6 +1270,40 @@ class RawTransactionsTest(BitcoinTestFramework):
         rawtx = w.createrawtransaction(inputs=[], outputs=[{self.nodes[0].getnewaddress(address_type="bech32"): 1 - 0.00000202}])
         assert_raises_rpc_error(-4, "Insufficient funds", w.fundrawtransaction, rawtx, {"fee_rate": 1.85})
 
+    def test_include_unsafe(self):
+        self.log.info("Test fundrawtxn with unsafe inputs")
+
+        self.nodes[0].createwallet("unsafe")
+        wallet = self.nodes[0].get_wallet_rpc("unsafe")
+
+        # We receive unconfirmed funds from external keys (unsafe outputs).
+        addr = wallet.getnewaddress()
+        txid1 = self.nodes[2].sendtoaddress(addr, 6)
+        txid2 = self.nodes[2].sendtoaddress(addr, 4)
+        self.sync_all()
+        vout1 = find_vout_for_address(wallet, txid1, addr)
+        vout2 = find_vout_for_address(wallet, txid2, addr)
+
+        # Unsafe inputs are ignored by default.
+        rawtx = wallet.createrawtransaction([], [{self.nodes[2].getnewaddress(): 5}])
+        assert_raises_rpc_error(-4, "Insufficient funds", wallet.fundrawtransaction, rawtx)
+
+        # But we can opt-in to use them for funding.
+        fundedtx = wallet.fundrawtransaction(rawtx, {"include_unsafe": True})
+        tx_dec = wallet.decoderawtransaction(fundedtx['hex'])
+        assert any([txin['txid'] == txid1 and txin['vout'] == vout1 for txin in tx_dec['vin']])
+        signedtx = wallet.signrawtransactionwithwallet(fundedtx['hex'])
+        wallet.sendrawtransaction(signedtx['hex'])
+
+        # And we can also use them once they're confirmed.
+        self.nodes[0].generate(1)
+        rawtx = wallet.createrawtransaction([], [{self.nodes[2].getnewaddress(): 3}])
+        fundedtx = wallet.fundrawtransaction(rawtx, {"include_unsafe": True})
+        tx_dec = wallet.decoderawtransaction(fundedtx['hex'])
+        assert any([txin['txid'] == txid2 and txin['vout'] == vout2 for txin in tx_dec['vin']])
+        signedtx = wallet.signrawtransactionwithwallet(fundedtx['hex'])
+        wallet.sendrawtransaction(signedtx['hex'])
+
 
 if __name__ == '__main__':
     RawTransactionsTest().main()
