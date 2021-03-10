@@ -1056,7 +1056,7 @@ public:
     }
     std::unique_ptr<Handler> handleNotifications(std::shared_ptr<Notifications> notifications) override
     {
-        return MakeUnique<NotificationsHandlerImpl>(std::move(notifications));
+        return std::make_unique<NotificationsHandlerImpl>(std::move(notifications));
     }
     void waitForNotificationsIfTipChanged(const uint256& old_tip) override
     {
@@ -1069,7 +1069,7 @@ public:
     }
     std::unique_ptr<Handler> handleRpc(const CRPCCommand& command) override
     {
-        return MakeUnique<RpcHandlerImpl>(command);
+        return std::make_unique<RpcHandlerImpl>(command);
     }
     bool rpcEnableDeprecated(const std::string& method) override { return IsDeprecatedRPCEnabled(method); }
     void rpcRunLater(const std::string& name, std::function<void()> fn, int64_t seconds) override
