@@ -1246,7 +1246,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     }
 
     assert(!node.scheduler);
-    node.scheduler = MakeUnique<CScheduler>();
+    node.scheduler = std::make_unique<CScheduler>();
 
     // Start the lightweight task scheduler thread
     node.scheduler->m_service_thread = std::thread([&] { TraceThread("scheduler", [&] { node.scheduler->serviceQueue(); }); });
@@ -1298,9 +1298,9 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     const bool ignores_incoming_txs{args.GetBoolArg("-blocksonly", DEFAULT_BLOCKSONLY)};
 
     assert(!node.banman);
-    node.banman = MakeUnique<BanMan>(GetDataDir() / "banlist.dat", &uiInterface, args.GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME));
+    node.banman = std::make_unique<BanMan>(GetDataDir() / "banlist.dat", &uiInterface, args.GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME));
     assert(!node.connman);
-    node.connman = MakeUnique<CConnman>(GetRand(std::numeric_limits<uint64_t>::max()), GetRand(std::numeric_limits<uint64_t>::max()), args.GetBoolArg("-networkactive", true));
+    node.connman = std::make_unique<CConnman>(GetRand(std::numeric_limits<uint64_t>::max()), GetRand(std::numeric_limits<uint64_t>::max()), args.GetBoolArg("-networkactive", true));
 
     assert(!node.fee_estimator);
     // Don't initialize fee estimation with old data if we don't relay transactions,
@@ -1676,7 +1676,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     }
 
     // ********************************************************* Step 8: start indexers
-    g_txindex = MakeUnique<TxIndex>(nTxIndexCache, false, fReindex);
+    g_txindex = std::make_unique<TxIndex>(nTxIndexCache, false, fReindex);
     g_txindex->Start();
 
     for (const auto& filter_type : g_enabled_filter_types) {
