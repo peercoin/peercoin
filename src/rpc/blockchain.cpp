@@ -10,8 +10,10 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <coins.h>
+#include <consensus/params.h>
 #include <consensus/validation.h>
 #include <core_io.h>
+#include <deploymentinfo.h>
 #include <deploymentstatus.h>
 #include <hash.h>
 #include <index/blockfilterindex.h>
@@ -36,6 +38,7 @@
 #include <util/translation.h>
 #include <validation.h>
 #include <validationinterface.h>
+#include <versionbits.h>
 #include <warnings.h>
 
 #include <stdint.h>
@@ -1383,7 +1386,7 @@ RPCHelpMan getblockchaininfo()
     softforks.push_back(SoftForkDesc("bip65", 4, tip, Params().GetConsensus()));
 
 //    BIP9SoftForkDescPushBack(tip, softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
-    obj.pushKV("softforks",             softforks);
+    obj.pushKV("softforks", softforks);
 
     obj.pushKV("warnings", GetWarnings(false).original);
     return obj;
