@@ -23,7 +23,7 @@
 #include <logging/timer.h>
 #include <node/coinstats.h>
 #include <node/ui_interface.h>
-#include <optional.h>
+#include <optional>
 #include <policy/policy.h>
 #include <policy/settings.h>
 #include <pow.h>
@@ -5009,7 +5009,6 @@ bool CheckBlockSignature(const CBlock& block)
         return false;
     return key.Verify(block.GetHash(), block.vchBlockSig);
 }
-Optional<uint256> ChainstateManager::SnapshotBlockhash() const {
     LOCK(::cs_main);
     if (m_active_chainstate != nullptr &&
             !m_active_chainstate->m_from_snapshot_blockhash.IsNull()) {
