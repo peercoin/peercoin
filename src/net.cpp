@@ -794,7 +794,7 @@ CNetMessage V1TransportDeserializer::GetMessage(const std::chrono::microseconds 
     // Initialize out parameter
     reject_message = false;
     // decompose a single CNetMessage from the TransportDeserializer
-    Optional<CNetMessage> msg(std::move(vRecv));
+    std::optional<CNetMessage> msg(std::move(vRecv));
 
     // store command string, time, and sizes
     msg.m_type = hdr.GetCommand();

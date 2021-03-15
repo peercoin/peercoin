@@ -824,7 +824,7 @@ class ChainImpl : public Chain
 {
 public:
     explicit ChainImpl(NodeContext& node) : m_node(node) {}
-    Optional<int> getHeight() override
+    std::optional<int> getHeight() override
     {
         LOCK(::cs_main);
         const CChain& active = Assert(m_node.chainman)->ActiveChain();
@@ -832,7 +832,7 @@ public:
         if (height >= 0) {
             return height;
         }
-        return nullopt;
+        return std::nullopt;
     }
     Optional<int> getBlockHeight(const uint256& hash) override
     {
@@ -879,14 +879,14 @@ public:
         LOCK(cs_main);
         return CheckFinalTx(tx);
     }
-    Optional<int> findLocatorFork(const CBlockLocator& locator) override
+    std::optional<int> findLocatorFork(const CBlockLocator& locator) override
     {
         LOCK(cs_main);
         const CChain& active = Assert(m_node.chainman)->ActiveChain();
         if (CBlockIndex* fork = FindForkInGlobalIndex(active, locator)) {
             return fork->nHeight;
         }
-        return nullopt;
+        return std::nullopt;
     }
     bool findBlock(const uint256& hash, const FoundBlock& block) override
     {
@@ -944,7 +944,7 @@ public:
         LOCK(cs_main);
         return GuessVerificationProgress(Params().TxData(), g_chainman.m_blockman.LookupBlockIndex(block_hash));
     }
-    bool hasBlocks(const uint256& block_hash, int min_height, Optional<int> max_height) override
+    bool hasBlocks(const uint256& block_hash, int min_height, std::optional<int> max_height) override
     {
         // hasBlocks returns true if all ancestors of block_hash in specified
         // range have block data (are not pruned), false if any ancestors in
