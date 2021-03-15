@@ -8,7 +8,6 @@
 #include <consensus/consensus.h>
 #include <consensus/tx_verify.h>
 #include <consensus/validation.h>
-#include <optional>
 #include <policy/policy.h>
 #include <policy/settings.h>
 #include <reverse_iterator.h>
@@ -20,6 +19,7 @@
 #include <validationinterface.h>
 
 #include <chainparams.h>
+#include <optional>
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTransactionRef& _tx, const CAmount& _nFee,
                                  int64_t _nTime, unsigned int _entryHeight,
@@ -881,7 +881,7 @@ std::optional<CTxMemPool::txiter> CTxMemPool::GetIter(const uint256& txid) const
 {
     auto it = mapTx.find(txid);
     if (it != mapTx.end()) return it;
-    return std::optional<txiter>{};
+    return {};
 }
 
 CTxMemPool::setEntries CTxMemPool::GetIterSet(const std::set<uint256>& hashes) const

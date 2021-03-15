@@ -18,7 +18,6 @@
 #include <net_permissions.h>
 #include <netaddress.h>
 #include <netbase.h>
-#include <optional>
 #include <protocol.h>
 #include <random.h>
 #include <span.h>
@@ -34,6 +33,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <optional>
 #include <thread>
 #include <vector>
 

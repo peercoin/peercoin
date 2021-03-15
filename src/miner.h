@@ -6,12 +6,12 @@
 #ifndef BITCOIN_MINER_H
 #define BITCOIN_MINER_H
 
-#include <optional>
 #include <primitives/block.h>
 #include <txmempool.h>
 #include <validation.h>
 #include <node/context.h>
 #include <memory>
+#include <optional>
 #include <stdint.h>
 
 #include <boost/multi_index_container.hpp>
@@ -162,8 +162,8 @@ public:
     std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet=nullptr, bool* pfPoSCancel=nullptr);
     std::unique_ptr<CBlockTemplate> CreateNewBlock(CChainState& chainstate, const CScript& scriptPubKeyIn);
 
-    static std::optional<int64_t> m_last_block_num_txs;
-    static std::optional<int64_t> m_last_block_weight;
+    inline static std::optional<int64_t> m_last_block_num_txs{};
+    inline static std::optional<int64_t> m_last_block_weight{};
 
 private:
     // utility functions

@@ -48,6 +48,7 @@
 #endif
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 using interfaces::BlockTip;

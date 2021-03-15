@@ -5,10 +5,11 @@
 #ifndef BITCOIN_WALLET_COINCONTROL_H
 #define BITCOIN_WALLET_COINCONTROL_H
 
-#include <optional>
 #include <outputtype.h>
 #include <primitives/transaction.h>
 #include <script/standard.h>
+
+#include <optional>
 
 const int DEFAULT_MIN_DEPTH = 0;
 const int DEFAULT_MAX_DEPTH = 9999999;

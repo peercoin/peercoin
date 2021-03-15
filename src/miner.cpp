@@ -97,9 +97,6 @@ void BlockAssembler::resetBlock()
     nFees = 0;
 }
 
-std::optional<int64_t> BlockAssembler::m_last_block_num_txs{std::nullopt};
-std::optional<int64_t> BlockAssembler::m_last_block_weight{std::nullopt};
-
 // peercoin: if pwallet != NULL it will attempt to create coinstake
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel)
 {

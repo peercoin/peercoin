@@ -7,11 +7,12 @@
 
 #include <attributes.h>
 #include <node/transaction.h>
-#include <optional>
 #include <primitives/transaction.h>
 #include <pubkey.h>
 #include <script/sign.h>
 #include <script/signingprovider.h>
+
+#include <optional>
 
 // Magic bytes
 static constexpr uint8_t PSBT_MAGIC_BYTES[5] = {'p', 's', 'b', 't', 0xff};

@@ -34,6 +34,7 @@
 #include <validation.h>
 
 #include <memory>
+#include <optional>
 #include <typeinfo>
 
 #include <kernel.h>

@@ -23,7 +23,6 @@
 #include <logging/timer.h>
 #include <node/coinstats.h>
 #include <node/ui_interface.h>
-#include <optional>
 #include <policy/policy.h>
 #include <policy/settings.h>
 #include <pow.h>
@@ -49,6 +48,7 @@
 #include <validationinterface.h>
 #include <warnings.h>
 
+#include <optional>
 #include <kernel.h>
 #include <bignum.h>
 #include <wallet/wallet.h>
