@@ -102,6 +102,10 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
 {
     return CreateNewBlock(::ChainstateActive(), scriptPubKeyIn);
 }
+std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn)
+{
+    return CreateNewBlock(::ChainstateActive(), scriptPubKeyIn);
+}
 
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CChainState& chainstate, const CScript& scriptPubKeyIn)
 {

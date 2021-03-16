@@ -160,6 +160,7 @@ public:
 
     /** Construct a new block template with coinbase to scriptPubKeyIn */
     std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet=nullptr, bool* pfPoSCancel=nullptr);
+    std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn);
     std::unique_ptr<CBlockTemplate> CreateNewBlock(CChainState& chainstate, const CScript& scriptPubKeyIn);
 
     inline static std::optional<int64_t> m_last_block_num_txs{};
