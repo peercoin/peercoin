@@ -213,6 +213,7 @@ namespace boost {
 
 void MintStake(std::shared_ptr<CWallet> pwallet, NodeContext& m_node);
 
+// TODO just accept a CBlockIndex*
 /** Update an old GenerateCoinbaseCommitment from CreateNewBlock after the block txs have changed */
 void RegenerateCommitments(CBlock& block, ChainstateManager& chainman);
 } // namespace node
