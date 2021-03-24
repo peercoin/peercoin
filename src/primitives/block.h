@@ -29,7 +29,7 @@ public:
     uint32_t nNonce;
 
     // peercoin: A copy from CBlockIndex.nFlags from other clients. We need this information because we are using headers-first syncronization.
-    int32_t nFlags;
+    uint32_t nFlags;
     // peercoin: Used in CheckProofOfStake().
     static const int32_t NORMAL_SERIALIZE_SIZE=80;
     static const int32_t CURRENT_VERSION=3;
