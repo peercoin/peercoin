@@ -130,7 +130,7 @@ Intro::Intro(QWidget *parent, int64_t blockchain_size_gb, int64_t chain_state_si
     );
     ui->lblExplanation2->setText(ui->lblExplanation2->text().arg(PACKAGE_NAME));
 
-    ui->lblPruneSuffix->setToolTip(ui->prune->toolTip());
+
     startThread();
 }
 
