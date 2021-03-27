@@ -25,6 +25,11 @@ enum DeploymentPos
      *  boundary.
      */
     int min_activation_height{0};
+
+    /** Special value for nStartTime indicating that the deployment is never active.
+     *  This is useful for integrating the code changes for a new feature
+     *  prior to deploying it on some or all networks. */
+    static constexpr int64_t NEVER_ACTIVE = -2;
  * Parameters that influence chain consensus.
  */
 struct Params {
