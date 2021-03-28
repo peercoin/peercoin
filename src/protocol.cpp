@@ -1,16 +1,18 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2009-2018 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <protocol.h>
 
-#include <util.h>
-#include <utilstrencodings.h>
+#include <util/system.h>
+#include <util/strencodings.h>
 
 #ifndef WIN32
 # include <arpa/inet.h>
 #endif
+
+static std::atomic<bool> g_initial_block_download_completed(false);
 
 namespace NetMsgType {
 const char *VERSION="version";
@@ -33,7 +35,6 @@ const char *NOTFOUND="notfound";
 const char *FILTERLOAD="filterload";
 const char *FILTERADD="filteradd";
 const char *FILTERCLEAR="filterclear";
-const char *REJECT="reject";
 const char *SENDHEADERS="sendheaders";
 const char *FEEFILTER="feefilter";
 const char *SENDCMPCT="sendcmpct";
@@ -67,7 +68,6 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::FILTERLOAD,
     NetMsgType::FILTERADD,
     NetMsgType::FILTERCLEAR,
-    NetMsgType::REJECT,
     NetMsgType::SENDHEADERS,
     NetMsgType::FEEFILTER,
     NetMsgType::SENDCMPCT,
@@ -89,8 +89,13 @@ CMessageHeader::CMessageHeader(const MessageStartChars& pchMessageStartIn)
 CMessageHeader::CMessageHeader(const MessageStartChars& pchMessageStartIn, const char* pszCommand, unsigned int nMessageSizeIn)
 {
     memcpy(pchMessageStart, pchMessageStartIn, MESSAGE_START_SIZE);
-    memset(pchCommand, 0, sizeof(pchCommand));
-    strncpy(pchCommand, pszCommand, COMMAND_SIZE);
+
+    // Copy the command name, zero-padding to COMMAND_SIZE bytes
+    size_t i = 0;
+    for (; i < COMMAND_SIZE && pszCommand[i] != 0; ++i) pchCommand[i] = pszCommand[i];
+    assert(pszCommand[i] == 0); // Assert that the command name passed in is not longer than COMMAND_SIZE
+    for (; i < COMMAND_SIZE; ++i) pchCommand[i] = 0;
+
     nMessageSize = nMessageSizeIn;
     memset(pchChecksum, 0, CHECKSUM_SIZE);
 }
@@ -130,6 +135,17 @@ bool CMessageHeader::IsValid(const MessageStartChars& pchMessageStartIn) const
     return true;
 }
 
+
+ServiceFlags GetDesirableServiceFlags(ServiceFlags services) {
+    if ((services & NODE_NETWORK_LIMITED) && g_initial_block_download_completed) {
+        return ServiceFlags(NODE_NETWORK_LIMITED | NODE_WITNESS);
+    }
+    return ServiceFlags(NODE_NETWORK | NODE_WITNESS);
+}
+
+void SetServiceFlagsIBDCache(bool state) {
+    g_initial_block_download_completed = state;
+}
 
 
 CAddress::CAddress() : CService()

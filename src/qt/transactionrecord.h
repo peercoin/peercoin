@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 The Bitcoin Core developers
+// Copyright (c) 2011-2018 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,8 +11,12 @@
 #include <QList>
 #include <QString>
 
-class CWallet;
-class CWalletTx;
+namespace interfaces {
+class Node;
+class Wallet;
+struct WalletTx;
+struct WalletTxStatus;
+}
 
 /** UI model for transaction status. The transaction status is the part of a transaction that will change over time.
  */
@@ -105,8 +109,8 @@ public:
 
     /** Decompose CWallet transaction to model transaction records.
      */
-    static bool showTransaction(const CWalletTx &wtx);
-    static QList<TransactionRecord> decomposeTransaction(const CWallet *wallet, const CWalletTx &wtx);
+    static bool showTransaction();
+    static QList<TransactionRecord> decomposeTransaction(const interfaces::WalletTx& wtx);
 
     /** @name Immutable transaction attributes
       @{*/
@@ -128,18 +132,18 @@ public:
     bool involvesWatchAddress;
 
     /** Return the unique identifier for this transaction (part) */
-    QString getTxID() const;
+    QString getTxHash() const;
 
     /** Return the output index of the subtransaction  */
     int getOutputIndex() const;
 
     /** Update status from core wallet tx.
      */
-    void updateStatus(const CWalletTx &wtx);
+    void updateStatus(const interfaces::WalletTxStatus& wtx, int numBlocks, int64_t block_time);
 
     /** Return whether a status update is needed.
      */
-    bool statusUpdateNeeded() const;
+    bool statusUpdateNeeded(int numBlocks) const;
 };
 
 #endif // BITCOIN_QT_TRANSACTIONRECORD_H

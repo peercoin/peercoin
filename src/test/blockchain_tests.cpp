@@ -1,19 +1,25 @@
+// Copyright (c) 2017-2019 The Bitcoin Core developers
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include <boost/test/unit_test.hpp>
 
 #include <stdlib.h>
 
+#include <chain.h>
 #include <rpc/blockchain.h>
-#include <test/test_bitcoin.h>
+#include <util/string.h>
+#include <test/util/setup_common.h>
 
 /* Equality between doubles is imprecise. Comparison should be done
  * with a small threshold of tolerance, rather than exact equality.
  */
-bool DoubleEquals(double a, double b, double epsilon)
+static bool DoubleEquals(double a, double b, double epsilon)
 {
     return std::abs(a - b) < epsilon;
 }
 
-CBlockIndex* CreateBlockIndexWithNbits(uint32_t nbits)
+static CBlockIndex* CreateBlockIndexWithNbits(uint32_t nbits)
 {
     CBlockIndex* block_index = new CBlockIndex();
     block_index->nHeight = 46367;
@@ -22,39 +28,26 @@ CBlockIndex* CreateBlockIndexWithNbits(uint32_t nbits)
     return block_index;
 }
 
-CChain CreateChainWithNbits(uint32_t nbits)
-{
-    CBlockIndex* block_index = CreateBlockIndexWithNbits(nbits);
-    CChain chain;
-    chain.SetTip(block_index);
-    return chain;
-}
-
-void RejectDifficultyMismatch(double difficulty, double expected_difficulty) {
+static void RejectDifficultyMismatch(double difficulty, double expected_difficulty) {
      BOOST_CHECK_MESSAGE(
         DoubleEquals(difficulty, expected_difficulty, 0.00001),
-        "Difficulty was " + std::to_string(difficulty)
-            + " but was expected to be " + std::to_string(expected_difficulty));
+        "Difficulty was " + ToString(difficulty)
+            + " but was expected to be " + ToString(expected_difficulty));
 }
 
 /* Given a BlockIndex with the provided nbits,
  * verify that the expected difficulty results.
  */
-void TestDifficulty(uint32_t nbits, double expected_difficulty)
+static void TestDifficulty(uint32_t nbits, double expected_difficulty)
 {
     CBlockIndex* block_index = CreateBlockIndexWithNbits(nbits);
-    /* Since we are passing in block index explicitly,
-     * there is no need to set up anything within the chain itself.
-     */
-    CChain chain;
-
     double difficulty = GetDifficulty(block_index);
     delete block_index;
 
     RejectDifficultyMismatch(difficulty, expected_difficulty);
 }
 
-BOOST_FIXTURE_TEST_SUITE(blockchain_difficulty_tests, BasicTestingSetup)
+BOOST_FIXTURE_TEST_SUITE(blockchain_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(get_difficulty_for_very_low_target)
 {

@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2009-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 #include <primitives/transaction.h>
 #include <compressor.h>
 #include <core_memusage.h>
-#include <hash.h>
+#include <crypto/siphash.h>
 #include <memusage.h>
 #include <serialize.h>
 #include <uint256.h>
@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include <functional>
 #include <unordered_map>
 
 /**
@@ -72,9 +73,9 @@ public:
     template<typename Stream>
     void Serialize(Stream &s) const {
         assert(!IsSpent());
-        uint32_t code = nHeight * 2 + fCoinBase;
+        uint32_t code = nHeight * uint32_t{2} + fCoinBase;
         ::Serialize(s, VARINT(code));
-        ::Serialize(s, CTxOutCompressor(REF(out)));
+        ::Serialize(s, Using<TxOutCompression>(out));
         // peercoin flags
         unsigned int nFlag = fCoinStake? 1 : 0;
         ::Serialize(s, VARINT(nFlag));
@@ -88,7 +89,7 @@ public:
         ::Unserialize(s, VARINT(code));
         nHeight = code >> 1;
         fCoinBase = code & 1;
-        ::Unserialize(s, REF(CTxOutCompressor(out)));
+        ::Unserialize(s, Using<TxOutCompression>(out));
         // peercoin flags
         unsigned int nFlag = 0;
         ::Unserialize(s, VARINT(nFlag));
@@ -119,8 +120,16 @@ public:
      * This *must* return size_t. With Boost 1.46 on 32-bit systems the
      * unordered_map will behave unpredictably if the custom hasher returns a
      * uint64_t, resulting in failures when syncing the chain (#4634).
+     *
+     * Having the hash noexcept allows libstdc++'s unordered_map to recalculate
+     * the hash during rehash, so it does not have to cache the value. This
+     * reduces node's memory by sizeof(size_t). The required recalculation has
+     * a slight performance penalty (around 1.6%), but this is compensated by
+     * memory savings of about 9% which allow for a larger dbcache setting.
+     *
+     * @see https://gcc.gnu.org/onlinedocs/gcc-9.2.0/libstdc++/manual/manual/unordered_associative.html
      */
-    size_t operator()(const COutPoint& id) const {
+    size_t operator()(const COutPoint& id) const noexcept {
         return SipHashUint256Extra(k0, k1, id.hash, id.n);
     }
 };
@@ -228,7 +237,7 @@ class CCoinsViewCache : public CCoinsViewBacked
 protected:
     /**
      * Make mutable so that we can "fill the cache" even from Get-methods
-     * declared as "const".  
+     * declared as "const".
      */
     mutable uint256 hashBlock;
     mutable CCoinsMap cacheCoins;
@@ -305,13 +314,13 @@ public:
     //! Calculate the size of the cache (in bytes)
     size_t DynamicMemoryUsage() const;
 
-    /** 
+    /**
      * Amount of bitcoins coming in to a transaction
      * Note that lightweight clients may not know anything besides the hash of previous transactions,
      * so may not be able to calculate this.
      *
-     * @param[in] tx	transaction for which we are checking input total
-     * @return	Sum of value of all inputs (scriptSigs)
+     * @param[in] tx    transaction for which we are checking input total
+     * @return  Sum of value of all inputs (scriptSigs)
      */
     CAmount GetValueIn(const CTransaction& tx) const;
 
@@ -319,21 +328,49 @@ public:
     bool HaveInputs(const CTransaction& tx) const;
 
 private:
+    /**
+     * @note this is marked const, but may actually append to `cacheCoins`, increasing
+     * memory usage.
+     */
     CCoinsMap::iterator FetchCoin(const COutPoint &outpoint) const;
 };
 
 //! Utility function to add all of a transaction's outputs to a cache.
-// When check is false, this assumes that overwrites are only possible for coinbase transactions.
-// When check is true, the underlying view may be queried to determine whether an addition is
-// an overwrite.
+//! When check is false, this assumes that overwrites are only possible for coinbase transactions.
+//! When check is true, the underlying view may be queried to determine whether an addition is
+//! an overwrite.
 // TODO: pass in a boolean to limit these possible overwrites to known
 // (pre-BIP34) cases.
 void AddCoins(CCoinsViewCache& cache, const CTransaction& tx, int nHeight, bool check = false);
 
 //! Utility function to find any unspent output with a given txid.
-// This function can be quite expensive because in the event of a transaction
-// which is not found in the cache, it can cause up to MAX_OUTPUTS_PER_BLOCK
-// lookups to database, so it should be used with care.
+//! This function can be quite expensive because in the event of a transaction
+//! which is not found in the cache, it can cause up to MAX_OUTPUTS_PER_BLOCK
+//! lookups to database, so it should be used with care.
 const Coin& AccessByTxid(const CCoinsViewCache& cache, const uint256& txid);
+
+/**
+ * This is a minimally invasive approach to shutdown on LevelDB read errors from the
+ * chainstate, while keeping user interface out of the common library, which is shared
+ * between bitcoind, and bitcoin-qt and non-server tools.
+ *
+ * Writes do not need similar protection, as failure to write is handled by the caller.
+*/
+class CCoinsViewErrorCatcher final : public CCoinsViewBacked
+{
+public:
+    explicit CCoinsViewErrorCatcher(CCoinsView* view) : CCoinsViewBacked(view) {}
+
+    void AddReadErrCallback(std::function<void()> f) {
+        m_err_callbacks.emplace_back(std::move(f));
+    }
+
+    bool GetCoin(const COutPoint &outpoint, Coin &coin) const override;
+
+private:
+    /** A list of callbacks to execute upon leveldb read error. */
+    std::vector<std::function<void()>> m_err_callbacks;
+
+};
 
 #endif // BITCOIN_COINS_H

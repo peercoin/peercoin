@@ -1,4 +1,4 @@
-Peercoin 0.9.0 BETA
+Peercoin 0.10.0 BETA
 
 Setup
 ---------------------
@@ -21,7 +21,7 @@ Unpack the files into a directory and run:
 
 Unpack the files into a directory, and then run peercoin-qt.exe.
 
-### OS X
+### macOS
 
 Drag Peercoin to your applications folder, and then run Peercoin.
 
@@ -37,23 +37,26 @@ Building
 The following are developer notes on how to build Peercoin on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [Dependencies](dependencies.md)
-- [OS X Build Notes](build-osx.md)
+- [macOS Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
 - [Windows Build Notes](build-windows.md)
+- [FreeBSD Build Notes](build-freebsd.md)
 - [OpenBSD Build Notes](build-openbsd.md)
-- [Gitian Building Guide](gitian-building.md)
+- [NetBSD Build Notes](build-netbsd.md)
+- [Gitian Building Guide (External Link)](https://github.com/bitcoin-core/docs/blob/master/gitian-building.md)
 
 Development
 ---------------------
 The Peercoin repo's [root README](/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
+- [Productivity Notes](productivity.md)
 - [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
 - [Source Code Documentation (External Link)](none-yet)
 - [Translation Process](translation_process.md)
 - [Translation Strings Policy](translation_strings_policy.md)
-- [Travis CI](travis-ci.md)
+- [JSON-RPC Interface](JSON-RPC-interface.md)
 - [Unauthenticated REST Interface](REST-interface.md)
 - [Shared Libraries](shared-libraries.md)
 - [BIPS](bips.md)
@@ -61,19 +64,20 @@ The Peercoin repo's [root README](/README.md) contains relevant information on t
 - [Benchmarking](benchmarking.md)
 
 ### Resources
-* TODO: add some peercoin resourses
+* Discuss on the [Peercoin](https://talk.peercoin.net/) forums.
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
+- [bitcoin.conf Configuration File](bitcoin-conf.md)
 - [Files](files.md)
 - [Fuzz-testing](fuzzing.md)
+- [Reduce Memory](reduce-memory.md)
 - [Reduce Traffic](reduce-traffic.md)
 - [Tor Support](tor.md)
 - [Init Scripts (systemd/upstart/openrc)](init.md)
 - [ZMQ](zmq.md)
+- [PSBT support](psbt.md)
 
 License
 ---------------------
 Distributed under the [MIT software license](/COPYING).
-This product includes software developed by the OpenSSL Project for use in the [OpenSSL Toolkit](https://www.openssl.org/). This product includes
-cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cryptsoft.com)), and UPnP software written by Thomas Bernard.

@@ -81,13 +81,13 @@ bech32_templates = [
 bech32_ng_templates = [
   # hrp, version, witprog_size, invalid_bech32, invalid_checksum, invalid_char
   ('tc',    0, 20, False, False, False),
-  ('tpc',   17, 32, False, False, False),
+  ('tpc',  17, 32, False, False, False),
   ('pcrt',  3,  1, False, False, False),
   ('pc',   15, 41, False, False, False),
-  ('tpc',    0, 16, False, False, False),
+  ('tpc',   0, 16, False, False, False),
   ('pcrt',  0, 32, True,  False, False),
   ('pc',    0, 16, True,  False, False),
-  ('tpc',    0, 32, False, True,  False),
+  ('tpc',   0, 32, False, True,  False),
   ('bcrt',  0, 20, False, False, True)
 ]
 

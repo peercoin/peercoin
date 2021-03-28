@@ -1,18 +1,18 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2009-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <txdb.h>
 
-#include <chainparams.h>
-#include <hash.h>
-#include <random.h>
 #include <pow.h>
-#include <uint256.h>
-#include <util.h>
+#include <random.h>
+#include <shutdown.h>
 #include <ui_interface.h>
-#include <init.h>
+#include <uint256.h>
+#include <util/system.h>
+#include <util/translation.h>
+#include <util/vector.h>
 
 #include <stdint.h>
 
@@ -21,7 +21,6 @@
 static const char DB_COIN = 'C';
 static const char DB_COINS = 'c';
 static const char DB_BLOCK_FILES = 'f';
-static const char DB_TXINDEX = 't';
 static const char DB_BLOCK_INDEX = 'b';
 
 static const char DB_BEST_BLOCK = 'B';
@@ -54,7 +53,7 @@ struct CoinEntry {
 
 }
 
-CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe, true) 
+CCoinsViewDB::CCoinsViewDB(fs::path ldb_path, size_t nCacheSize, bool fMemory, bool fWipe) : db(ldb_path, nCacheSize, fMemory, fWipe, true)
 {
 }
 
@@ -104,7 +103,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock) {
     // A vector is used for future extensibility, as we may want to support
     // interrupting after partial writes from multiple independent reorgs.
     batch.Erase(DB_BEST_BLOCK);
-    batch.Write(DB_HEAD_BLOCKS, std::vector<uint256>{hashBlock, old_tip});
+    batch.Write(DB_HEAD_BLOCKS, Vector(hashBlock, old_tip));
 
     for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
         if (it->second.flags & CCoinsCacheEntry::DIRTY) {
@@ -161,9 +160,8 @@ bool CBlockTreeDB::WriteReindexing(bool fReindexing) {
         return Erase(DB_REINDEX_FLAG);
 }
 
-bool CBlockTreeDB::ReadReindexing(bool &fReindexing) {
+void CBlockTreeDB::ReadReindexing(bool &fReindexing) {
     fReindexing = Exists(DB_REINDEX_FLAG);
-    return true;
 }
 
 bool CBlockTreeDB::ReadLastBlockFile(int &nFile) {
@@ -236,17 +234,6 @@ bool CBlockTreeDB::WriteBatchSync(const std::vector<std::pair<int, const CBlockF
     return WriteBatch(batch, true);
 }
 
-bool CBlockTreeDB::ReadTxIndex(const uint256 &txid, CDiskTxPos &pos) {
-    return Read(std::make_pair(DB_TXINDEX, txid), pos);
-}
-
-bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >&vect) {
-    CDBBatch batch(*this);
-    for (std::vector<std::pair<uint256,CDiskTxPos> >::const_iterator it=vect.begin(); it!=vect.end(); it++)
-        batch.Write(std::make_pair(DB_TXINDEX, it->first), it->second);
-    return WriteBatch(batch);
-}
-
 bool CBlockTreeDB::WriteFlag(const std::string &name, bool fValue) {
     return Write(std::make_pair(DB_FLAG, name), fValue ? '1' : '0');
 }
@@ -265,9 +252,10 @@ bool CBlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, 
 
     pcursor->Seek(std::make_pair(DB_BLOCK_INDEX, uint256()));
 
-    // Load mapBlockIndex
+    // Load m_block_index
     while (pcursor->Valid()) {
         boost::this_thread::interruption_point();
+        if (ShutdownRequested()) return false;
         std::pair<char, uint256> key;
         if (pcursor->GetKey(key) && key.first == DB_BLOCK_INDEX) {
             CDiskBlockIndex diskindex;
@@ -339,7 +327,7 @@ public:
     void Unserialize(Stream &s) {
         unsigned int nCode = 0;
         // version
-        int nVersionDummy;
+        unsigned int nVersionDummy;
         ::Unserialize(s, VARINT(nVersionDummy));
         // header code
         ::Unserialize(s, VARINT(nCode));
@@ -363,10 +351,10 @@ public:
         vout.assign(vAvail.size(), CTxOut());
         for (unsigned int i = 0; i < vAvail.size(); i++) {
             if (vAvail[i])
-                ::Unserialize(s, REF(CTxOutCompressor(vout[i])));
+                ::Unserialize(s, Using<TxOutCompression>(vout[i]));
         }
         // coinbase height
-        ::Unserialize(s, VARINT(nHeight));
+        ::Unserialize(s, VARINT_MODE(nHeight, VarIntMode::NONNEGATIVE_SIGNED));
     }
 };
 
@@ -385,8 +373,8 @@ bool CCoinsViewDB::Upgrade() {
 
     int64_t count = 0;
     LogPrintf("Upgrading utxo-set database...\n");
-    LogPrintf("[0%%]...");
-    uiInterface.ShowProgress(_("Upgrading UTXO database"), 0, true);
+    LogPrintf("[0%%]..."); /* Continued */
+    uiInterface.ShowProgress(_("Upgrading UTXO database").translated, 0, true);
     size_t batch_size = 1 << 24;
     CDBBatch batch(db);
     int reportDone = 0;
@@ -401,10 +389,10 @@ bool CCoinsViewDB::Upgrade() {
             if (count++ % 256 == 0) {
                 uint32_t high = 0x100 * *key.second.begin() + *(key.second.begin() + 1);
                 int percentageDone = (int)(high * 100.0 / 65536.0 + 0.5);
-                uiInterface.ShowProgress(_("Upgrading UTXO database"), percentageDone, true);
+                uiInterface.ShowProgress(_("Upgrading UTXO database").translated, percentageDone, true);
                 if (reportDone < percentageDone/10) {
                     // report max. every 10% step
-                    LogPrintf("[%d%%]...", percentageDone);
+                    LogPrintf("[%d%%]...", percentageDone); /* Continued */
                     reportDone = percentageDone/10;
                 }
             }

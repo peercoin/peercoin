@@ -1,11 +1,13 @@
-// Copyright (c) 2012-2017 The Bitcoin Core developers
+// Copyright (c) 2012-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <coins.h>
 
 #include <consensus/consensus.h>
+#include <logging.h>
 #include <random.h>
+#include <version.h>
 
 bool CCoinsView::GetCoin(const COutPoint &outpoint, Coin &coin) const { return false; }
 uint256 CCoinsView::GetBestBlock() const { return uint256(); }
@@ -244,7 +246,7 @@ bool CCoinsViewCache::HaveInputs(const CTransaction& tx) const
     return true;
 }
 
-static const size_t MIN_TRANSACTION_OUTPUT_WEIGHT = WITNESS_SCALE_FACTOR * ::GetSerializeSize(CTxOut(), SER_NETWORK, PROTOCOL_VERSION);
+static const size_t MIN_TRANSACTION_OUTPUT_WEIGHT = WITNESS_SCALE_FACTOR * ::GetSerializeSize(CTxOut(), PROTOCOL_VERSION);
 static const size_t MAX_OUTPUTS_PER_BLOCK = MAX_BLOCK_WEIGHT / MIN_TRANSACTION_OUTPUT_WEIGHT;
 
 const Coin& AccessByTxid(const CCoinsViewCache& view, const uint256& txid)
@@ -256,4 +258,20 @@ const Coin& AccessByTxid(const CCoinsViewCache& view, const uint256& txid)
         ++iter.n;
     }
     return coinEmpty;
+}
+
+bool CCoinsViewErrorCatcher::GetCoin(const COutPoint &outpoint, Coin &coin) const {
+    try {
+        return CCoinsViewBacked::GetCoin(outpoint, coin);
+    } catch(const std::runtime_error& e) {
+        for (auto f : m_err_callbacks) {
+            f();
+        }
+        LogPrintf("Error reading from database: %s\n", e.what());
+        // Starting the shutdown sequence and returning false to the caller would be
+        // interpreted as 'entry not found' (as opposed to unable to read data), and
+        // could lead to invalid interpretation. Just exit immediately, as we can't
+        // continue anyway, and all writes should be atomic.
+        std::abort();
+    }
 }

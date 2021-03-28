@@ -8,5 +8,4 @@ Terminal=false
 Type=Application
 Icon=/usr/share/pixmaps/peercoin128.png
 MimeType=x-scheme-handler/peercoin;
-Categories=Office;Finance;
-StartupWMClass=Peercoin-qt
+Categories=Office;Finance;P2P;Network;Qt;

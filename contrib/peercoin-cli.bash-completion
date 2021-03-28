@@ -1,5 +1,5 @@
 # bash programmable completion for peercoin-cli(1)
-# Copyright (c) 2012-2016 The Bitcoin Core developers
+# Copyright (c) 2012-2019 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,13 +15,6 @@ _peercoin_rpc() {
         esac
     done
     $peercoin_cli "${rpcargs[@]}" "$@"
-}
-
-# Add wallet accounts to COMPREPLY
-_peercoin_accounts() {
-    local accounts
-    accounts=$(_peercoin_rpc listaccounts | awk -F '"' '{ print $2 }')
-    COMPREPLY=( "${COMPREPLY[@]}" $( compgen -W "$accounts" -- "$cur" ) )
 }
 
 _peercoin_cli() {
@@ -50,7 +43,7 @@ _peercoin_cli() {
                 COMPREPLY=( $( compgen -W "true false" -- "$cur" ) )
                 return 0
                 ;;
-            signrawtransaction)
+            signrawtransactionwithkey|signrawtransactionwithwallet)
                 COMPREPLY=( $( compgen -W "ALL NONE SINGLE ALL|ANYONECANPAY NONE|ANYONECANPAY SINGLE|ANYONECANPAY" -- "$cur" ) )
                 return 0
                 ;;
@@ -60,10 +53,9 @@ _peercoin_cli() {
     if ((cword > 3)); then
         case ${words[cword-3]} in
             addmultisigaddress)
-                _peercoin_accounts
                 return 0
                 ;;
-            getbalance|gettxout|importaddress|importpubkey|importprivkey|listreceivedbyaccount|listreceivedbyaddress|listsinceblock)
+            getbalance|gettxout|importaddress|importpubkey|importprivkey|listreceivedbyaddress|listsinceblock)
                 COMPREPLY=( $( compgen -W "true false" -- "$cur" ) )
                 return 0
                 ;;
@@ -80,12 +72,8 @@ _peercoin_cli() {
                 COMPREPLY=( $( compgen -W "add remove" -- "$cur" ) )
                 return 0
                 ;;
-            fundrawtransaction|getblock|getblockheader|getmempoolancestors|getmempooldescendants|getrawtransaction|gettransaction|listaccounts|listreceivedbyaccount|listreceivedbyaddress|sendrawtransaction)
+            fundrawtransaction|getblock|getblockheader|getmempoolancestors|getmempooldescendants|getrawtransaction|gettransaction|listreceivedbyaddress|sendrawtransaction)
                 COMPREPLY=( $( compgen -W "true false" -- "$cur" ) )
-                return 0
-                ;;
-            move|setaccount)
-                _peercoin_accounts
                 return 0
                 ;;
         esac
@@ -96,12 +84,11 @@ _peercoin_cli() {
             _filedir
             return 0
             ;;
-        getaddednodeinfo|getrawmempool|lockunspent|setgenerate)
+        getaddednodeinfo|getrawmempool|lockunspent)
             COMPREPLY=( $( compgen -W "true false" -- "$cur" ) )
             return 0
             ;;
-        getaccountaddress|getaddressesbyaccount|getbalance|getnewaddress|getreceivedbyaccount|listtransactions|move|sendfrom|sendmany)
-            _peercoin_accounts
+        getbalance|getnewaddress|listtransactions|sendmany)
             return 0
             ;;
     esac

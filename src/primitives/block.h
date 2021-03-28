@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2009-2018 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -29,7 +29,7 @@ public:
     uint32_t nNonce;
 
     // peercoin: A copy from CBlockIndex.nFlags from other clients. We need this information because we are using headers-first syncronization.
-    int32_t nFlags;
+    uint32_t nFlags;
     // peercoin: Used in CheckProofOfStake().
     static const int32_t NORMAL_SERIALIZE_SIZE=80;
     static const int32_t CURRENT_VERSION=3;
@@ -100,14 +100,14 @@ public:
     CBlock(const CBlockHeader &header)
     {
         SetNull();
-        *((CBlockHeader*)this) = header;
+        *(static_cast<CBlockHeader*>(this)) = header;
     }
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(*(CBlockHeader*)this);
+        READWRITEAS(CBlockHeader, *this);
         READWRITE(vtx);
         READWRITE(vchBlockSig);
     }

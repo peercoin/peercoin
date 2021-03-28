@@ -1,52 +1,70 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2009-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <wallet/init.h>
-
+#include <init.h>
+#include <interfaces/chain.h>
 #include <net.h>
-#include <util.h>
-#include <utilmoneystr.h>
-#include <validation.h>
-#include <wallet/rpcwallet.h>
+#include <node/context.h>
+#include <outputtype.h>
+#include <ui_interface.h>
+#include <util/moneystr.h>
+#include <util/system.h>
+#include <util/translation.h>
+#include <wallet/coincontrol.h>
 #include <wallet/wallet.h>
-#include <wallet/walletutil.h>
+#include <walletinitinterface.h>
 
-std::string GetWalletHelpString(bool showDebug)
+class WalletInit : public WalletInitInterface {
+public:
+
+    //! Was the wallet component compiled in.
+    bool HasWalletSupport() const override {return true;}
+
+    //! Return the wallets help message.
+    void AddWalletOptions() const override;
+
+    //! Wallets parameter interaction
+    bool ParameterInteraction() const override;
+
+    //! Add wallets that should be opened to list of chain clients.
+    void Construct(NodeContext& node) const override;
+};
+
+const WalletInitInterface& g_wallet_init_interface = WalletInit();
+
+void WalletInit::AddWalletOptions() const
 {
-    std::string strUsage = HelpMessageGroup(_("Wallet options:"));
-    strUsage += HelpMessageOpt("-addresstype", strprintf("What type of addresses to use (\"legacy\", \"p2sh-segwit\", or \"bech32\", default: \"%s\")", FormatOutputType(OUTPUT_TYPE_DEFAULT)));
-    strUsage += HelpMessageOpt("-changetype", "What type of change to use (\"legacy\", \"p2sh-segwit\", or \"bech32\"). Default is same as -addresstype, except when -addresstype=p2sh-segwit a native segwit output is used when sending to a native segwit address)");
-    strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
-    strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), DEFAULT_KEYPOOL_SIZE));
-    strUsage += HelpMessageOpt("-rescan", _("Rescan the block chain for missing wallet transactions on startup"));
-    strUsage += HelpMessageOpt("-salvagewallet", _("Attempt to recover private keys from a corrupt wallet on startup"));
-    strUsage += HelpMessageOpt("-salvageaggressive", _("Be aggressive during -salvagewallet operation (default: false)"));
-    strUsage += HelpMessageOpt("-spendzeroconfchange", strprintf(_("Spend unconfirmed change when sending transactions (default: %u)"), DEFAULT_SPEND_ZEROCONF_CHANGE));
-    strUsage += HelpMessageOpt("-txconfirmtarget=<n>", strprintf(_("If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)"), DEFAULT_TX_CONFIRM_TARGET));
-    strUsage += HelpMessageOpt("-upgradewallet", _("Upgrade wallet to latest format on startup"));
-    strUsage += HelpMessageOpt("-wallet=<file>", _("Specify wallet file (within data directory)") + " " + strprintf(_("(default: %s)"), DEFAULT_WALLET_DAT));
-    strUsage += HelpMessageOpt("-walletbroadcast", _("Make the wallet broadcast transactions") + " " + strprintf(_("(default: %u)"), DEFAULT_WALLETBROADCAST));
-    strUsage += HelpMessageOpt("-walletdir=<dir>", _("Specify directory to hold wallets (default: <datadir>/wallets if it exists, otherwise <datadir>)"));
-    strUsage += HelpMessageOpt("-walletnotify=<cmd>", _("Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)"));
-    strUsage += HelpMessageOpt("-zapwallettxes=<mode>", _("Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup") +
-                               " " + _("(1 = keep tx meta data e.g. account owner and payment request information, 2 = drop tx meta data)"));
+    gArgs.AddArg("-addresstype", strprintf("What type of addresses to use (\"legacy\", \"p2sh-segwit\", or \"bech32\", default: \"%s\")", FormatOutputType(DEFAULT_ADDRESS_TYPE)), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-avoidpartialspends", strprintf("Group outputs by address, selecting all or none, instead of selecting on a per-output basis. Privacy is improved as an address is only used once (unless someone sends to it after spending from it), but may result in slightly higher fees as suboptimal coin selection may result due to the added limitation (default: %u (always enabled for wallets with \"avoid_reuse\" enabled))", DEFAULT_AVOIDPARTIALSPENDS), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-changetype", "What type of change to use (\"legacy\", \"p2sh-segwit\", or \"bech32\"). Default is same as -addresstype, except when -addresstype=p2sh-segwit a native segwit output is used when sending to a native segwit address)", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-disablewallet", "Do not load the wallet and disable wallet RPC calls", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
 
-    if (showDebug)
-    {
-        strUsage += HelpMessageGroup(_("Wallet debugging/testing options:"));
+    gArgs.AddArg("-keypool=<n>", strprintf("Set key pool size to <n> (default: %u). Warning: Smaller sizes may increase the risk of losing funds when restoring from an old backup, if none of the addresses in the original keypool have been used.", DEFAULT_KEYPOOL_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-maxtxfee=<amt>", strprintf("Maximum total fees (in %s) to use in a single wallet transaction; setting this too low may abort large transactions (default: %s)",
+        CURRENCY_UNIT, FormatMoney(DEFAULT_TRANSACTION_MAXFEE)), ArgsManager::ALLOW_ANY, OptionsCategory::DEBUG_TEST);
+    gArgs.AddArg("-rescan", "Rescan the block chain for missing wallet transactions on startup", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-salvagewallet", "Attempt to recover private keys from a corrupt wallet on startup", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-spendzeroconfchange", strprintf("Spend unconfirmed change when sending transactions (default: %u)", DEFAULT_SPEND_ZEROCONF_CHANGE), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-txconfirmtarget=<n>", strprintf("If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)", DEFAULT_TX_CONFIRM_TARGET), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-upgradewallet", "Upgrade wallet to latest format on startup", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-wallet=<path>", "Specify wallet database path. Can be specified multiple times to load multiple wallets. Path is interpreted relative to <walletdir> if it is not absolute, and will be created if it does not exist (as a directory containing a wallet.dat file and log files). For backwards compatibility this will also accept names of existing data files in <walletdir>.)", ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::WALLET);
+    gArgs.AddArg("-walletbroadcast",  strprintf("Make the wallet broadcast transactions (default: %u)", DEFAULT_WALLETBROADCAST), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-walletdir=<dir>", "Specify directory to hold wallets (default: <datadir>/wallets if it exists, otherwise <datadir>)", ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::WALLET);
+#if HAVE_SYSTEM
+    gArgs.AddArg("-walletnotify=<cmd>", "Execute command when a wallet transaction changes. %s in cmd is replaced by TxID and %w is replaced by wallet name. %w is not currently implemented on windows. On systems where %w is supported, it should NOT be quoted because this would break shell escaping used to invoke the command.", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+#endif
+    gArgs.AddArg("-zapwallettxes=<mode>", "Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup"
+                               " (1 = keep tx meta data e.g. payment request information, 2 = drop tx meta data)", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
 
-        strUsage += HelpMessageOpt("-dblogsize=<n>", strprintf("Flush wallet database activity from memory to disk log every <n> megabytes (default: %u)", DEFAULT_WALLET_DBLOGSIZE));
-        strUsage += HelpMessageOpt("-flushwallet", strprintf("Run a thread to flush wallet periodically (default: %u)", DEFAULT_FLUSHWALLET));
-        strUsage += HelpMessageOpt("-privdb", strprintf("Sets the DB_PRIVATE flag in the wallet db environment (default: %u)", DEFAULT_WALLET_PRIVDB));
-        strUsage += HelpMessageOpt("-walletrejectlongchains", strprintf(_("Wallet will not create transactions that violate mempool chain limits (default: %u)"), DEFAULT_WALLET_REJECT_LONG_CHAINS));
-    }
-
-    return strUsage;
+    gArgs.AddArg("-dblogsize=<n>", strprintf("Flush wallet database activity from memory to disk log every <n> megabytes (default: %u)", DEFAULT_WALLET_DBLOGSIZE), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::WALLET_DEBUG_TEST);
+    gArgs.AddArg("-flushwallet", strprintf("Run a thread to flush wallet periodically (default: %u)", DEFAULT_FLUSHWALLET), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::WALLET_DEBUG_TEST);
+    gArgs.AddArg("-privdb", strprintf("Sets the DB_PRIVATE flag in the wallet db environment (default: %u)", DEFAULT_WALLET_PRIVDB), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::WALLET_DEBUG_TEST);
+    gArgs.AddArg("-walletrejectlongchains", strprintf("Wallet will not create transactions that violate mempool chain limits (default: %u)", DEFAULT_WALLET_REJECT_LONG_CHAINS), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::WALLET_DEBUG_TEST);
 }
 
-bool WalletParameterInteraction()
+bool WalletInit::ParameterInteraction() const
 {
     if (gArgs.GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET)) {
         for (const std::string& wallet : gArgs.GetArgs("-wallet")) {
@@ -56,7 +74,6 @@ bool WalletParameterInteraction()
         return true;
     }
 
-    gArgs.SoftSetArg("-wallet", DEFAULT_WALLET_DAT);
     const bool is_multiwallet = gArgs.GetArgs("-wallet").size() > 1;
 
     if (gArgs.GetBoolArg("-blocksonly", DEFAULT_BLOCKSONLY) && gArgs.SoftSetBoolArg("-walletbroadcast", false)) {
@@ -97,152 +114,23 @@ bool WalletParameterInteraction()
 
     if (gArgs.GetBoolArg("-sysperms", false))
         return InitError("-sysperms is not allowed in combination with enabled wallet functionality");
-    if (gArgs.GetArg("-prune", 0) && gArgs.GetBoolArg("-rescan", false))
-        return InitError(_("Rescans are not possible in pruned mode. You will need to use -reindex which will download the whole blockchain again."));
 
     if (gArgs.IsArgSet("-reservebalance"))
     {
         CAmount nReserveBalance = 0;
         if (!ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
-            return InitError(strprintf(_("Invalid amount for -reservebalance=<amount>: '%s'"), gArgs.GetArg("-reservebalance", "")));
-    }
-    nTxConfirmTarget = gArgs.GetArg("-txconfirmtarget", DEFAULT_TX_CONFIRM_TARGET);
-    bSpendZeroConfChange = gArgs.GetBoolArg("-spendzeroconfchange", DEFAULT_SPEND_ZEROCONF_CHANGE);
-
-    g_address_type = ParseOutputType(gArgs.GetArg("-addresstype", ""));
-    if (g_address_type == OUTPUT_TYPE_NONE) {
-        return InitError(strprintf("Unknown address type '%s'", gArgs.GetArg("-addresstype", "")));
-    }
-
-    // If changetype is set in config file or parameter, check that it's valid.
-    // Default to OUTPUT_TYPE_NONE if not set.
-    g_change_type = ParseOutputType(gArgs.GetArg("-changetype", ""), OUTPUT_TYPE_NONE);
-    if (g_change_type == OUTPUT_TYPE_NONE && !gArgs.GetArg("-changetype", "").empty()) {
-        return InitError(strprintf("Unknown change type '%s'", gArgs.GetArg("-changetype", "")));
+            return InitError(strprintf("Invalid amount for -reservebalance=<amount>: '%s'", gArgs.GetArg("-reservebalance", "")));
     }
 
     return true;
 }
 
-void RegisterWalletRPC(CRPCTable &t)
-{
-    if (gArgs.GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET)) {
-        return;
-    }
-
-    RegisterWalletRPCCommands(t);
-}
-
-bool VerifyWallets()
-{
-    if (gArgs.GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET)) {
-        return true;
-    }
-
-    if (gArgs.IsArgSet("-walletdir")) {
-        fs::path wallet_dir = gArgs.GetArg("-walletdir", "");
-        if (!fs::exists(wallet_dir)) {
-            return InitError(strprintf(_("Specified -walletdir \"%s\" does not exist"), wallet_dir.string()));
-        } else if (!fs::is_directory(wallet_dir)) {
-            return InitError(strprintf(_("Specified -walletdir \"%s\" is not a directory"), wallet_dir.string()));
-        } else if (!wallet_dir.is_absolute()) {
-            return InitError(strprintf(_("Specified -walletdir \"%s\" is a relative path"), wallet_dir.string()));
-        }
-    }
-
-    LogPrintf("Using wallet directory %s\n", GetWalletDir().string());
-
-    uiInterface.InitMessage(_("Verifying wallet(s)..."));
-
-    // Keep track of each wallet absolute path to detect duplicates.
-    std::set<fs::path> wallet_paths;
-
-    for (const std::string& walletFile : gArgs.GetArgs("-wallet")) {
-        if (boost::filesystem::path(walletFile).filename() != walletFile) {
-            return InitError(strprintf(_("Error loading wallet %s. -wallet parameter must only specify a filename (not a path)."), walletFile));
-        }
-
-        if (SanitizeString(walletFile, SAFE_CHARS_FILENAME) != walletFile) {
-            return InitError(strprintf(_("Error loading wallet %s. Invalid characters in -wallet filename."), walletFile));
-        }
-
-        fs::path wallet_path = fs::absolute(walletFile, GetWalletDir());
-
-        if (fs::exists(wallet_path) && (!fs::is_regular_file(wallet_path) || fs::is_symlink(wallet_path))) {
-            return InitError(strprintf(_("Error loading wallet %s. -wallet filename must be a regular file."), walletFile));
-        }
-
-        if (!wallet_paths.insert(wallet_path).second) {
-            return InitError(strprintf(_("Error loading wallet %s. Duplicate -wallet filename specified."), walletFile));
-        }
-
-        std::string strError;
-        if (!CWalletDB::VerifyEnvironment(walletFile, GetWalletDir().string(), strError)) {
-            return InitError(strError);
-        }
-
-        if (gArgs.GetBoolArg("-salvagewallet", false)) {
-            // Recover readable keypairs:
-            CWallet dummyWallet;
-            std::string backup_filename;
-            if (!CWalletDB::Recover(walletFile, (void *)&dummyWallet, CWalletDB::RecoverKeysOnlyFilter, backup_filename)) {
-                return false;
-            }
-        }
-
-        std::string strWarning;
-        bool dbV = CWalletDB::VerifyDatabaseFile(walletFile, GetWalletDir().string(), strWarning, strError);
-        if (!strWarning.empty()) {
-            InitWarning(strWarning);
-        }
-        if (!dbV) {
-            InitError(strError);
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool OpenWallets()
+void WalletInit::Construct(NodeContext& node) const
 {
     if (gArgs.GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET)) {
         LogPrintf("Wallet disabled!\n");
-        return true;
+        return;
     }
-
-    for (const std::string& walletFile : gArgs.GetArgs("-wallet")) {
-        CWallet * const pwallet = CWallet::CreateWalletFromFile(walletFile);
-        if (!pwallet) {
-            return false;
-        }
-        vpwallets.push_back(pwallet);
-    }
-
-    return true;
-}
-
-void StartWallets(CScheduler& scheduler) {
-    for (CWalletRef pwallet : vpwallets) {
-        pwallet->postInitProcess(scheduler);
-    }
-}
-
-void FlushWallets() {
-    for (CWalletRef pwallet : vpwallets) {
-        pwallet->Flush(false);
-    }
-}
-
-void StopWallets() {
-    for (CWalletRef pwallet : vpwallets) {
-        pwallet->Flush(true);
-    }
-}
-
-void CloseWallets() {
-    for (CWalletRef pwallet : vpwallets) {
-        delete pwallet;
-    }
-    vpwallets.clear();
+    gArgs.SoftSetArg("-wallet", "");
+    node.chain_clients.emplace_back(interfaces::MakeWalletClient(*node.chain, gArgs.GetArgs("-wallet")));
 }
