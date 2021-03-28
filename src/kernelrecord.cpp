@@ -45,6 +45,8 @@ vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, c
                 std::string addrStr;
 
                 if (ExtractDestination(txOut.scriptPubKey, address)) {
+                    if (address.type() != typeid(PKHash)) // only PKHash can mint at the moment
+                        continue;
                     // Sent to Bitcoin Address
                     addrStr = EncodeDestination(address);
                 } else {
