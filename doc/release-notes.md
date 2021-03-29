@@ -229,6 +229,9 @@ Wallet
   command line setting. The wallet will already fail to create transactions
   with fees higher than `-maxtxfee`. (#18467)
 
+- The `bumpfee` RPC is not available with wallets that have private keys
+  disabled. `psbtbumpfee` can be used instead. (#20891)
+
 GUI changes
 -----------
 
