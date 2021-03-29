@@ -21,7 +21,7 @@ jobs:
           
       - name: build in Sonarcloud wrapper
         run: |
-          curl "${SONAR_HOST_URL}/static/cpp/build-wrapper-linux-x86.zip" --output build-wrapper-linux-x86.zip
+          curl "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip" --output build-wrapper-linux-x86.zip
           unzip build-wrapper-linux-x86.zip
           cp build-wrapper-linux-x86/libinterceptor-x86_64.so build-wrapper-linux-x86/libinterceptor-haswell.so
           curl 'https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip' --output sonar-scanner-cli-4.2.0.1873-linux.zip
