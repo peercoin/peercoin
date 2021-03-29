@@ -116,7 +116,6 @@ public:
         vSeeds.emplace_back("seed.peercoin.net");
         vSeeds.emplace_back("seed2.peercoin.net");
         vSeeds.emplace_back("seed.peercoin-library.org");
-        vSeeds.emplace_back("ppcseed.ns.7server.net");
         vSeeds.emplace_back("seed.ppcoin.info");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);  // peercoin: addresses begin with 'P'
