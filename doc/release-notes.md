@@ -89,6 +89,25 @@ Otherwise, please use the `rescanblockchain` RPC to trigger a rescan. (#23123)
 
 Updated RPCs
 ------------
+
+- Due to [BIP 350](https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki)
+  being implemented, behavior for all RPCs that accept addresses is changed when
+  a native witness version 1 (or higher) is passed. These now require a Bech32m
+  encoding instead of a Bech32 one, and Bech32m encoding will be used for such
+  addresses in RPC output as well. No version 1 addresses should be created
+  for mainnet until consensus rules are adopted that give them meaning
+  (e.g. through [BIP 341](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki)).
+  Once that happens, Bech32m is expected to be used for them, so this shouldn't
+  affect any production systems, but may be observed on other networks where such
+  addresses already have meaning (like signet). (#20861)
+
+- The `getpeerinfo` RPC returns two new boolean fields, `bip152_hb_to` and
+  `bip152_hb_from`, that respectively indicate whether we selected a peer to be
+  in compact blocks high-bandwidth mode or whether a peer selected us as a
+  compact blocks high-bandwidth peer. High-bandwidth peers send new block
+  announcements via a `cmpctblock` message rather than the usual inv/headers
+  announcements. See BIP 152 for more details. (#19776)
+
 - `getpeerinfo` no longer returns the following fields: `addnode`, `banscore`,
   and `whitelisted`, which were previously deprecated in 0.21. Instead of
   `addnode`, the `connection_type` field returns manual. Instead of
@@ -157,6 +176,10 @@ Files
 
 New settings
 ------------
+
+- The `-natpmp` option has been added to use NAT-PMP to map the listening port.
+  If both UPnP and NAT-PMP are enabled, a successful allocation from UPnP
+  prevails over one from NAT-PMP. (#18077)
 
 Updated settings
 ----------------
@@ -245,8 +268,9 @@ Low-level changes
 
 RPC
 ---
+
 - The RPC server can process a limited number of simultaneous RPC requests.
-  Previously, if this limit was exceeded, `bitcoind` would respond with
+  Previously, if this limit was exceeded, the RPC server would respond with
   [status code 500 (`HTTP_INTERNAL_SERVER_ERROR`)](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_server_errors).
   Now it returns status code 503 (`HTTP_SERVICE_UNAVAILABLE`). (#18335)
 
