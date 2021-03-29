@@ -20,6 +20,8 @@ jobs:
           
           
       - name: build in Sonarcloud wrapper
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io
         run: |
           curl "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip" --output build-wrapper-linux-x86.zip
           unzip build-wrapper-linux-x86.zip
