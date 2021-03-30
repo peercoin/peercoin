@@ -30,6 +30,6 @@ jobs:
           unzip sonar-scanner-cli-4.2.0.1873-linux.zip
           mv sonar-scanner-4.2.0.1873-linux sonar-scanner
           ./autogen.sh
-          ./configure --disable-tests --disable-bench --disable-ccache --with-gui=no --with-utils --with-libs --with-daemon --with-incompatible-db
+          ./configure --disable-tests --disable-bench --disable-ccache --with-gui=no --with-utils --with-libs --with-daemon --with-incompatible-bdb
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir . make  -j$(nproc)
           sonar-scanner/bin/sonar-scanner -X -Dsonar.host.url="${SONAR_HOST_URL}" -Dsonar.token="${SONAR_TOKEN}"
