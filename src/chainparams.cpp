@@ -132,7 +132,7 @@ public:
         // human readable prefix to bench32 address
         bech32_hrp = "pc";
 
-        vFixedSeeds = std::vector<SeedSpec6>(std::begin(pnSeed6_main), std::end(pnSeed6_main));
+        vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_main), std::end(chainparams_seed_main));
 
         fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
@@ -241,7 +241,7 @@ public:
         // human readable prefix to bench32 address
         bech32_hrp = "tpc";
 
-        vFixedSeeds = std::vector<SeedSpec6>(std::begin(pnSeed6_test), std::end(pnSeed6_test));
+        vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_test), std::end(chainparams_seed_test));
 
         fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
