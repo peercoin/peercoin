@@ -4,7 +4,6 @@
 
 #include <addrdb.h>
 #include <banman.h>
-#include <boost/signals2/signal.hpp>
 #include <chain.h>
 #include <chainparams.h>
 #include <external_signer.h>
