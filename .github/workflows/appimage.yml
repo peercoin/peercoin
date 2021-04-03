@@ -14,9 +14,9 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install autoconf libprotobuf-dev protobuf-compiler libminiupnpc-dev libzmq3-dev libqrencode-dev libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libtool pkg-config libdb-dev libdb++-dev libboost-all-dev libssl-dev libevent-dev
       - name: configure
-        run: ./autogen.sh && ./configure --with-gui=qt5 --disable-bench --disable-tests --disable-ccache --with-incompatible-bdb
+        run: ./autogen.sh && ./configure --with-gui=qt5 --disable-bench --disable-tests --disable-ccache --with-incompatible-bdb --prefix=/usr
       - name: build
-        run: make -j`nproc`  install DESTDIR=../AppDir
+        run: make -j`nproc`  install DESTDIR=AppDir
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage-action@master
         env:
@@ -28,5 +28,4 @@ jobs:
           name: Continuous build
           prerelease: True
           path: './*.AppImage*'
-          artifacts: "out/*"
           
