@@ -433,8 +433,6 @@ int GuiMain(int argc, char* argv[])
 
     BitcoinApplication app(*node);
 
-	BitcoinApplication app(argc, argv);
-
     // Register meta types used for QMetaObject::invokeMethod and Qt::QueuedConnection
     qRegisterMetaType<bool*>();
 #ifdef ENABLE_WALLET
