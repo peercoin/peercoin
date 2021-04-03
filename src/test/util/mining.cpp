@@ -14,6 +14,7 @@
 #include <test/util/script.h>
 #include <util/check.h>
 #include <validation.h>
+#include <versionbits.h>
 
 using node::BlockAssembler;
 using node::NodeContext;
