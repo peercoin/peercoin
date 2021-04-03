@@ -1274,7 +1274,7 @@ static void PushCoinStakeCategory(UniValue & entry, const CWalletTx &wtx)
 /**
  * List transactions based on the given criteria.
  *
- * @param  pwallet        The wallet.
+ * @param  wallet         The wallet.
  * @param  wtx            The wallet transaction.
  * @param  nMinDepth      The minimum confirmation depth.
  * @param  fLong          Whether to include the JSON version of the transaction.
