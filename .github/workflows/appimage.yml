@@ -1,4 +1,4 @@
-name: Peercoin AppImage
+name: AppImage build
 
 on: [push, pull_request]
 
@@ -16,7 +16,7 @@ jobs:
       - name: configure
         run: ./autogen.sh && ./configure --with-gui=qt5 --disable-bench --disable-tests --disable-ccache --with-incompatible-bdb
       - name: build
-        run: make -j`nproc`  install DESTDIR=AppDir
+        run: make -j`nproc`  install DESTDIR=../AppDir
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage-action@master
         env:
@@ -25,4 +25,8 @@ jobs:
           recipe: AppImageBuilder.yml
       - uses: actions/upload-artifact@v2
         with:
-          name: Peercoin AppImage
+          name: Continuous build
+          prerelease: True
+          path: './*.AppImage*'
+          artifacts: "out/*"
+          
