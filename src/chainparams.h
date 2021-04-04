@@ -57,7 +57,7 @@ using MapAssumeutxo = std::map<int, const AssumeutxoData>;
  */
 struct AssumeutxoData {
     //! The expected hash of the deserialized UTXO set.
-    const uint256 hash_serialized;
+    const AssumeutxoHash hash_serialized;
 
     //! Used to populate the nChainTx value, which is used during BlockManager::LoadBlockIndex().
     //!
