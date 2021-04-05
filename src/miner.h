@@ -210,8 +210,7 @@ namespace boost {
 
 void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwallet, NodeContext* m_node);
 
-// TODO just accept a CBlockIndex*
 /** Update an old GenerateCoinbaseCommitment from CreateNewBlock after the block txs have changed */
-void RegenerateCommitments(CBlock& block, BlockManager& blockman);
+void RegenerateCommitments(CBlock& block, CBlockIndex* prev_block);
 
 #endif // BITCOIN_MINER_H
