@@ -1199,6 +1199,76 @@ PackageMempoolAcceptResult MemPoolAccept::AcceptPackage(const Package& package, 
     return submission_result;
 }
 
+PackageMempoolAcceptResult MemPoolAccept::AcceptMultipleTransactions(const std::vector<CTransactionRef>& txns, ATMPArgs& args)
+{
+    AssertLockHeld(cs_main);
+
+    PackageValidationState package_state;
+    const unsigned int package_count = txns.size();
+
+    std::vector<Workspace> workspaces{};
+    workspaces.reserve(package_count);
+    std::transform(txns.cbegin(), txns.cend(), std::back_inserter(workspaces), [](const auto& tx) {
+        return Workspace(tx);
+    });
+
+    std::map<const uint256, const MempoolAcceptResult> results;
+    {
+        // Don't allow any conflicting transactions, i.e. spending the same inputs, in a package.
+        std::unordered_set<COutPoint, SaltedOutpointHasher> inputs_seen;
+        for (const auto& tx : txns) {
+            for (const auto& input : tx->vin) {
+                if (inputs_seen.find(input.prevout) != inputs_seen.end()) {
+                    // This input is also present in another tx in the package.
+                    package_state.Invalid(PackageValidationResult::PCKG_POLICY, "conflict-in-package");
+                    return PackageMempoolAcceptResult(package_state, {});
+                }
+            }
+            // Batch-add all the inputs for a tx at a time. If we added them 1 at a time, we could
+            // catch duplicate inputs within a single tx.  This is a more severe, consensus error,
+            // and we want to report that from CheckTransaction instead.
+            std::transform(tx->vin.cbegin(), tx->vin.cend(), std::inserter(inputs_seen, inputs_seen.end()),
+                           [](const auto& input) { return input.prevout; });
+        }
+    }
+
+    LOCK(m_pool.cs);
+
+    // Do all PreChecks first and fail fast to avoid running expensive script checks when unnecessary.
+    for (Workspace& ws : workspaces) {
+        if (!PreChecks(args, ws)) {
+            package_state.Invalid(PackageValidationResult::PCKG_TX, "transaction failed");
+            // Exit early to avoid doing pointless work. Update the failed tx result; the rest are unfinished.
+            results.emplace(ws.m_ptx->GetWitnessHash(), MempoolAcceptResult::Failure(ws.m_state));
+            return PackageMempoolAcceptResult(package_state, std::move(results));
+        }
+        // Make the coins created by this transaction available for subsequent transactions in the
+        // package to spend. Since we already checked conflicts in the package and RBFs are
+        // impossible, we don't need to track the coins spent. Note that this logic will need to be
+        // updated if RBFs in packages are allowed in the future.
+        assert(args.disallow_mempool_conflicts);
+        m_viewmempool.PackageAddTransaction(ws.m_ptx);
+    }
+
+    for (Workspace& ws : workspaces) {
+        PrecomputedTransactionData txdata;
+        if (!PolicyScriptChecks(args, ws, txdata)) {
+            // Exit early to avoid doing pointless work. Update the failed tx result; the rest are unfinished.
+            package_state.Invalid(PackageValidationResult::PCKG_TX, "transaction failed");
+            results.emplace(ws.m_ptx->GetWitnessHash(), MempoolAcceptResult::Failure(ws.m_state));
+            return PackageMempoolAcceptResult(package_state, std::move(results));
+        }
+        if (args.m_test_accept) {
+            // When test_accept=true, transactions that pass PolicyScriptChecks are valid because there are
+            // no further mempool checks (passing PolicyScriptChecks implies passing ConsensusScriptChecks).
+            results.emplace(ws.m_ptx->GetWitnessHash(),
+                            MempoolAcceptResult::Success(std::move(ws.m_replaced_transactions), ws.m_base_fees));
+        }
+    }
+
+    return PackageMempoolAcceptResult(package_state, std::move(results));
+}
+
 } // anon namespace
 
 MempoolAcceptResult AcceptToMemoryPool(CChainState& active_chainstate, const CTransactionRef& tx,
