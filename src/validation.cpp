@@ -1208,10 +1208,26 @@ PackageMempoolAcceptResult MemPoolAccept::AcceptMultipleTransactions(const std::
 
     std::vector<Workspace> workspaces{};
     workspaces.reserve(package_count);
-    std::transform(txns.cbegin(), txns.cend(), std::back_inserter(workspaces), [](const auto& tx) {
-        return Workspace(tx);
-    });
-
+    {
+        std::unordered_set<uint256, SaltedTxidHasher> later_txids;
+        std::transform(txns.cbegin(), txns.cend(), std::inserter(later_txids, later_txids.end()),
+                       [](const auto& tx) { return tx->GetHash(); });
+        // Require the package to be sorted in order of dependency, i.e. parents appear before children.
+        // An unsorted package will fail anyway on missing-inputs, but it's better to quit earlier and
+        // fail on something less ambiguous (missing-inputs could also be an orphan or trying to
+        // spend nonexistent coins).
+        for (const auto& tx : txns) {
+            for (const auto& input : tx->vin) {
+                if (later_txids.find(input.prevout.hash) != later_txids.end()) {
+                    // The parent is a subsequent transaction in the package.
+                    package_state.Invalid(PackageValidationResult::PCKG_POLICY, "package-not-sorted");
+                    return PackageMempoolAcceptResult(package_state, {});
+                }
+            }
+            later_txids.erase(tx->GetHash());
+            workspaces.emplace_back(Workspace(tx));
+        }
+    }
     std::map<const uint256, const MempoolAcceptResult> results;
     {
         // Don't allow any conflicting transactions, i.e. spending the same inputs, in a package.
