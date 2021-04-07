@@ -9,6 +9,7 @@
 #include <config/bitcoin-config.h>
 #endif
 
+#include <qt/guiutil.h>
 #include <qt/optionsdialog.h>
 
 #include <amount.h>
@@ -127,8 +128,8 @@ private:
     WalletFrame* walletFrame = nullptr;
 
     UnitDisplayStatusBarControl* unitDisplayControl = nullptr;
-    QLabel* labelWalletEncryptionIcon = nullptr;
-    QLabel* labelWalletHDStatusIcon = nullptr;
+    GUIUtil::ThemedLabel* labelWalletEncryptionIcon = nullptr;
+    GUIUtil::ThemedLabel* labelWalletHDStatusIcon = nullptr;
     GUIUtil::ClickableLabel* labelProxyIcon = nullptr;
     GUIUtil::ClickableLabel* connectionsControl = nullptr;
     GUIUtil::ClickableLabel* labelBlocksIcon = nullptr;
