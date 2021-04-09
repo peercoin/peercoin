@@ -218,7 +218,7 @@ QString ClientModel::dataDir() const
 
 QString ClientModel::blocksDir() const
 {
-    return GUIUtil::boostPathToQString(GetBlocksDir());
+    return GUIUtil::boostPathToQString(gArgs.GetBlocksDirPath());
 }
 
 void ClientModel::updateBanlist()
