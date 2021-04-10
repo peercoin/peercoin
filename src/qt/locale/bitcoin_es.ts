@@ -3591,10 +3591,6 @@ Nota: Dado que la comisión se calcula por byte, una comisión de "100 satoshis 
         <translation>Error: La escucha para conexiones entrantes falló (la escucha devolvió el error %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Cantidad no válida para -maxtxfee=&lt;amount&gt;: '%s' (debe ser al menos la comisión mínima de %s para prevenir transacciones atascadas)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Monto de transacción muy pequeño después de la deducción de la comisión</translation>
     </message>
@@ -3711,10 +3707,6 @@ Nota: Dado que la comisión se calcula por byte, una comisión de "100 satoshis 
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Eliminando todas las transacciones del monedero...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee tiene un valor muy elevado. Comisiones muy grandes podrían ser pagadas en una única transacción.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

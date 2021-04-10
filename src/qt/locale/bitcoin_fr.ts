@@ -3599,10 +3599,6 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
         <translation>Erreur : L’écoute des connexions entrantes a échoué (l’écoute a retourné l’erreur %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Montant invalide pour -maxtxfee=&lt;amount&gt; : « %s » (doit être au moins les frais minrelay de %s pour prévenir le blocage des transactions)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Le montant de la transaction est trop bas pour être envoyé une fois que les frais ont été déduits</translation>
     </message>
@@ -3719,10 +3715,6 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Supprimer toutes les transactions du porte-monnaie…</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>La valeur -maxtxfee est très élevée ! Des frais aussi élevés pourraient être payés en une seule transaction.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

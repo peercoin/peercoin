@@ -3601,10 +3601,6 @@ Hinweis: Eine Gebühr von "100 Satoshis pro kB" bei einer Größe der Transaktio
         <translation>Fehler: Abhören nach eingehenden Verbindungen fehlgeschlagen (listen meldete Fehler %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Ungültiger Betrag für -maxtxfee=&lt;amount&gt;: '%s' (muss mindestens die minimale Weiterleitungsgebühr in Höhe von %s sein, um zu verhindern dass Transaktionen nicht bearbeitet werden)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Der Transaktionsbetrag ist zu klein, um ihn nach Abzug der Gebühr zu senden.</translation>
     </message>
@@ -3721,10 +3717,6 @@ Hinweis: Eine Gebühr von "100 Satoshis pro kB" bei einer Größe der Transaktio
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Lösche alle Transaktionen aus Wallet...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee ist auf einen sehr hohen Wert festgelegt! Gebühren dieser Höhe könnten für eine einzelne Transaktion bezahlt werden.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

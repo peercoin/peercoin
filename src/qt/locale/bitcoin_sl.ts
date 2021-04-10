@@ -3591,10 +3591,6 @@ Opomba: Ker se provizija izračuna na bajt, bi provizija "100 satoshijev na kB" 
         <translation>Napaka: Ni mogoče sprejemati dohodnih povezav (vrnjena napaka: %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Neveljaven znesek za -maxtxfee=&lt;amount&gt;: '%s' (mora biti najmanj provizija za %s, da se prepreči zataknjene transakcije)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Znesek transakcije je premajhen za pošiljanje po odbitku provizije</translation>
     </message>
@@ -3711,10 +3707,6 @@ Opomba: Ker se provizija izračuna na bajt, bi provizija "100 satoshijev na kB" 
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Brišem vse transakcije iz denarnice ...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee je nastavljen zelo visoko!</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

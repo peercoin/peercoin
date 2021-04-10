@@ -3339,10 +3339,6 @@ Nota: Cum taxa este calculata per byte, o taxa de "100 satoshi per kB" pentru o 
         <translation>Eroare: Ascultarea conexiunilor de intrare nu a reuşit (ascultarea a reurnat eroarea %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Sumă nevalidă pentru -maxtxfee=&lt;amount&gt;: '%s' (trebuie să fie cel puţin taxa minrelay de %s pentru a preveni blocarea tranzactiilor)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Suma tranzactiei este prea mica pentru a fi trimisa dupa ce se scade taxa.</translation>
     </message>
@@ -3433,10 +3429,6 @@ Nota: Cum taxa este calculata per byte, o taxa de "100 satoshi per kB" pentru o 
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Şterge toate tranzacţiile din portofel...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee este setata foarte sus! Se pot plati taxe de aceasta marime pe o singura tranzactie.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

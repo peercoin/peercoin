@@ -34,7 +34,6 @@ void DummyWalletInit::AddWalletOptions() const
         "-discardfee=<amt>",
         "-fallbackfee=<amt>",
         "-keypool=<n>",
-        "-maxtxfee=<amt>",
         "-mintxfee=<amt>",
         "-paytxfee=<amt>",
         "-rescan",

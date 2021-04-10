@@ -3592,10 +3592,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
         <translation>Fout: luisteren naar binnenkomende verbindingen mislukt (luisteren gaf foutmelding %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>ongeldig bedrag voor -maxtxfee=&lt;bedrag&gt;: '%s' (moet ten minste de minimale doorgeefvergoeding van %s zijn om vastgelopen transacties te voorkomen)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Het transactiebedrag is te klein om te versturen nadat de transactievergoeding in mindering is gebracht</translation>
     </message>
@@ -3712,10 +3708,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Bezig met het zappen van alle transacties van de portemonnee...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee staat zeer hoog! Transactiekosten van deze grootte kunnen worden gebruikt in een enkele transactie.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

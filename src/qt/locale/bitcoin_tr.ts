@@ -3584,10 +3584,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>Hata: İçeri gelen bağlantıların dinlenmesi başarısız oldu (dinleme %s hatasını verdi)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>-maxtxfee=&lt;tutar&gt; için geçersiz tutar: '%s' (Sıkışmış işlemleri önlemek için en az %s değerinde en düşük aktarım ücretine eşit olmalıdır)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Bu işlem, tutar düşüldükten sonra göndermek için çok düşük</translation>
     </message>
@@ -3714,10 +3710,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Cüzdandaki tüm işlemler kaldırılıyor...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee çok yüksek bir değere ayarlanmış! Bu denli yüksek ücretler tek bir işlemde ödenebilir.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

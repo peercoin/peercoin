@@ -3591,10 +3591,6 @@ Note: Siden gebyret er kalkuleret på en per-byte basis, et gebyr på "100 satos
         <translation>Fejl: Lytning efter indkommende forbindelser mislykkedes (lytning resultarede i fejl %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Ugyldigt beløb for -maxtxfee=&lt;beløb&gt;: “%s” (skal være på mindst minrelay-gebyret på %s for at undgå hængende transaktioner)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Transaktionsbeløbet er for lille til at sende, når gebyret er trukket fra</translation>
     </message>
@@ -3711,10 +3707,6 @@ Note: Siden gebyret er kalkuleret på en per-byte basis, et gebyr på "100 satos
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Zapper alle transaktioner fra tegnebog…</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee er sat meget højt! Gebyrer så store risikeres betalt på en enkelt transaktion.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

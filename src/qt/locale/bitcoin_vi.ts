@@ -3333,10 +3333,6 @@ Lưu ý: Vì phí được tính trên cơ sở mỗi byte, nên phí "100 satos
         <translation>Error: Listening for incoming connections failed (listen returned error %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>The transaction amount is too small to send after the fee has been deducted</translation>
     </message>
@@ -3453,10 +3449,6 @@ Lưu ý: Vì phí được tính trên cơ sở mỗi byte, nên phí "100 satos
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Zapping all transactions from wallet...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

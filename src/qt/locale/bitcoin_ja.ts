@@ -3600,10 +3600,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>エラー: 内向きの接続をリッスンするのに失敗しました（%s エラーが返却されました）</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>-maxtxfee=&lt;amount&gt; オプションに対する不正な amount: '%s'（トランザクション詰まり防止のため、最小中継手数料の %s より大きくする必要があります）</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>取引の手数料差引後金額が小さすぎるため、送金できません。</translation>
     </message>
@@ -3720,10 +3716,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>ウォレットから全取引を消去中...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee が非常に高く設定されています！ ひとつの取引でこの金額の手数料が支払われてしまうことがあります。</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

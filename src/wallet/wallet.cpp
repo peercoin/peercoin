@@ -1876,7 +1876,7 @@ bool CWalletTx::SubmitMemoryPoolAndRelay(std::string& err_string, bool relay)
     // Irrespective of the failure reason, un-marking fInMempool
     // out-of-order is incorrect - it should be unmarked when
     // TransactionRemovedFromMempool fires.
-    bool ret = pwallet->chain().broadcastTransaction(tx, pwallet->m_default_max_tx_fee, relay, err_string);
+    bool ret = pwallet->chain().broadcastTransaction(tx, relay, err_string);
     fInMempool |= ret;
     return ret;
 }
@@ -3113,11 +3113,6 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
             strFailReason = _("Transaction too large").translated;
             return false;
         }
-    }
-    
-    if (nFeeRet > m_default_max_tx_fee) {
-        strFailReason = TransactionErrorString(TransactionError::MAX_FEE_EXCEEDED);
-        return false;
     }
 
     if (gArgs.GetBoolArg("-walletrejectlongchains", DEFAULT_WALLET_REJECT_LONG_CHAINS)) {

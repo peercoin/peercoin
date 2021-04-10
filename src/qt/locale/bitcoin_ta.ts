@@ -3469,10 +3469,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>வாலாட்டிலிருந்து அனைத்து பரிவர்த்தனைகளையும் அழிக்கிறது...</translation>
     </message>
     <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee மிக அதிகமாக அமைக்கப்பட்டுள்ளது! இவ்வாறு அதிகமுள்ள கட்டணம் ஒரே பரிவர்த்தனையில் செலுத்தப்படலாம்.</translation>
-    </message>
-    <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>
         <translation>கட்டண மதிப்பீடுகள் இல்லாதபோது நீங்கள் செலுத்த வேண்டிய பரிவர்த்தனைக் கட்டணம் இதுவாகும்.</translation>
     </message>

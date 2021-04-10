@@ -3599,10 +3599,6 @@ Poznámka: Jelikož je poplatek počítaný za bajt, poplatek o hodnotě "100 sa
         <translation>Chyba: Nelze naslouchat příchozí spojení (listen vrátil chybu %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Neplatná částka pro -maxtxfee=&lt;amount&gt;: '%s' (musí být alespoň jako poplatek minrelay %s, aby transakce nezůstávaly trčet)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Částka v transakci po odečtení poplatku je příliš malá na odeslání</translation>
     </message>
@@ -3719,10 +3715,6 @@ Poznámka: Jelikož je poplatek počítaný za bajt, poplatek o hodnotě "100 sa
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Vymazat všechny transakce z peněženky...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee je nastaveno velmi vysoko! Takto vysoký poplatek může být zaplacen v jednotlivé transakci.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

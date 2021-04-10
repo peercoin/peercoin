@@ -3359,10 +3359,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>錯誤: 聽候外來連線失敗(回傳錯誤 %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>-maxtxfee=&lt;amount&gt;: '%s' 的金額無效 (必須大於最低轉發手續費 %s 以避免交易無法確認)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>扣除手續費後的交易金額太少而不能傳送</translation>
     </message>
@@ -3479,10 +3475,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>正在砍掉錢包中的所有交易...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>參數 -maxtxfee 設定了很高的金額！這可是你一次交易就有可能付出的最高手續費。</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

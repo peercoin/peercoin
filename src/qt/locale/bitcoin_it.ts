@@ -3600,10 +3600,6 @@ Nota: poiché la commissione è calcolata su base per byte, una commissione di "
         <translation>Errore: attesa per connessioni in arrivo fallita (errore riportato %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Importo non valido per -maxtxfee=&lt;amount&gt;: '%s' (deve essere almeno pari alla commissione 'minrelay fee' di %s per prevenire transazioni bloccate)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>L'importo della transazione risulta troppo basso per l'invio una volta dedotte le commissioni.</translation>
     </message>
@@ -3720,10 +3716,6 @@ Nota: poiché la commissione è calcolata su base per byte, una commissione di "
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Eliminazione dal portafoglio di tutte le transazioni...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee è impostato molto alto! Commissioni così alte possono venir pagate anche su una singola transazione.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>
