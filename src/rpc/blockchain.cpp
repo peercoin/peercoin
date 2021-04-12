@@ -1465,7 +1465,6 @@ RPCHelpMan getblockchaininfo()
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-    LOCK(cs_main);
     ChainstateManager& chainman = EnsureAnyChainman(request.context);
     CChainState& active_chainstate = chainman.ActiveChainstate();
 
