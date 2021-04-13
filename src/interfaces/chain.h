@@ -147,7 +147,6 @@ public:
     //! amount specified by max_tx_fee, and broadcast to all peers if relay is set to true.
     //! Return false if the transaction could not be added due to the fee or for another reason.
     virtual bool broadcastTransaction(const CTransactionRef& tx,
-        const CAmount& max_tx_fee,
         bool relay,
         std::string& err_string) = 0;
 

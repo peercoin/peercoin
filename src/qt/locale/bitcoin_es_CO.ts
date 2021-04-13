@@ -3017,10 +3017,6 @@
         <translation>Eliminando todas las transacciones del monedero...</translation>
     </message>
     <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee tiene un valor muy elevado! Comisiones muy grandes podrían ser pagadas en una única transacción.</translation>
-    </message>
-    <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>
         <translation>Impuesto por transacción que pagarás cuando la estimación de impuesto no esté disponible.</translation>
     </message>

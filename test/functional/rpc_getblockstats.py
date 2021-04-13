@@ -126,7 +126,7 @@ class GetblockstatsTest(BitcoinTestFramework):
                 assert_equal(result[stat], self.expected_stats[i][stat])
 
         # Make sure only the selected statistics are included (more than one)
-        some_stats = {'minfee', 'maxfee'}
+        some_stats = {'minfee'}
         stats = self.nodes[0].getblockstats(hash_or_height=1, stats=list(some_stats))
         assert_equal(set(stats.keys()), some_stats)
 
@@ -143,7 +143,7 @@ class GetblockstatsTest(BitcoinTestFramework):
             [inv_sel_stat],
             ['minfee' , inv_sel_stat],
             [inv_sel_stat, 'minfee'],
-            ['minfee', inv_sel_stat, 'maxfee'],
+            ['minfee', inv_sel_stat],
         ]
         for inv_stat in inv_stats:
             assert_raises_rpc_error(-8, 'Invalid selected statistic %s' % inv_sel_stat,
