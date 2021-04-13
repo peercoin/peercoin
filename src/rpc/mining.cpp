@@ -617,7 +617,7 @@ static RPCHelpMan getblocktemplate()
     NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
     LOCK(cs_main);
-    ChainstateManager& chainman = EnsureChainman(request.context);
+    ChainstateManager& chainman = EnsureAnyChainman(request.context);
 
     std::string strMode = "template";
     UniValue lpval = NullUniValue;
