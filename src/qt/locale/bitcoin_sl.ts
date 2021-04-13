@@ -2285,14 +2285,6 @@ Opomba: Ker se provizija izračuna na bajt, bi provizija "100 satoshijev na kB" 
         <translation>Čas do potrditve:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Omogoči Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>"Replace-By-Fee" (BIP-125, "Povozi s provizijo") omogoča, da povečate provizijo za transakcijo po tem, ko je bila transakcija že poslana. Brez tega se lahko priporoči višja provizija za nadomestilo povečanega tveganja zamude pri transakciji.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Počisti &amp;vse</translation>
     </message>
@@ -2377,20 +2369,12 @@ Opomba: Ker se provizija izračuna na bajt, bi provizija "100 satoshijev na kB" 
         <translation>ali</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Provizijo lahko zvišate kasneje (signali Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Prosimo, preglejte vaše transakcije.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Provizija transakcije</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Not signalling Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

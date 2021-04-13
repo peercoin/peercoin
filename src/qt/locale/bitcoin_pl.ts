@@ -2294,14 +2294,6 @@ Uwaga: Ponieważ opłata jest naliczana za każdy bajt, opłata "100 satoshi za 
         <translation>Docelowy czas potwierdzenia:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Włącz RBF (podmiana transakcji przez podniesienie opłaty)</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Dzięki podmień-przez-opłatę (RBF, BIP-125) możesz podnieść opłatę transakcyjną już wysłanej transakcji. Bez tego, może być rekomendowana większa opłata aby zmniejszyć ryzyko opóźnienia zatwierdzenia transakcji.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Wyczyść &amp;wszystko</translation>
     </message>
@@ -2386,20 +2378,8 @@ Uwaga: Ponieważ opłata jest naliczana za każdy bajt, opłata "100 satoshi za 
         <translation>lub</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Możesz później zwiększyć opłatę (sygnalizuje podmień-przez-opłatę (RBF), BIP 125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Proszę, zweryfikuj swoją transakcję.</translation>
-    </message>
-    <message>
-        <source>Transaction fee</source>
-        <translation>Opłata transakcyjna</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Nie sygnalizuje podmień-przez-opłatę (RBF), BIP-125</translation>
     </message>
     <message>
         <source>Total Amount</source>

@@ -2211,14 +2211,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>உறுதிப்படுத்தும் நேர இலக்கு:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>மாற்று-கட்டணத்தை இயக்கு</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>மாற்று-கட்டணத்தின் (பிப்-125) மூலம், ஒரு பரிவர்த்தனையின் கட்டணத்தை அனுப்பிய பின் அதை அதிகரிக்கலாம். இது இல்லை என்றால், பரிவர்த்தனையின் தாமத அபாயத்தை ஈடுசெய்ய அதிக கட்டணம் பரிந்துரைக்கப்படலாம்.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>அழி &amp;அனைத்து</translation>
     </message>
@@ -2287,20 +2279,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>அல்லது</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>நீங்கள் கட்டணத்தை பின்னர் அதிகரிக்கலாம் (என்கிறது மாற்று கட்டணம், பிப்-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>தயவு செய்து, உங்கள் பரிவர்த்தனையை சரிபார்க்கவும்.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>பரிமாற்ற கட்டணம்</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>சிக்னல் செய்யவில்லை மாற்று-கட்டணம், பிப்-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

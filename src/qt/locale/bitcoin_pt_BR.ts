@@ -2293,14 +2293,6 @@ Nota:  Como a taxa é calculada por byte, uma taxa de "100 satoshis por kB" por 
         <translation>Tempo alvo de confirmação:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Habilitar Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Com Replace-By-Fee (BIP-125) você pode aumentar a taxa da transação após ela ser enviada. Sem isso, uma taxa maior pode ser recomendada para compensar por risco de alto atraso na transação.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Limpar &amp;Tudo</translation>
     </message>
@@ -2385,20 +2377,12 @@ Nota:  Como a taxa é calculada por byte, uma taxa de "100 satoshis por kB" por 
         <translation>ou</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Você pode aumentar a taxa depois (sinaliza Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Revise a sua transação.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Taxa da transação</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Não sinalizar Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

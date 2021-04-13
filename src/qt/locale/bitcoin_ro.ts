@@ -2149,14 +2149,6 @@ Nota: Cum taxa este calculata per byte, o taxa de "100 satoshi per kB" pentru o 
         <translation>Timp confirmare tinta:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Autorizeaza Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Cu Replace-By-Fee (BIP-125) se poate creste taxa unei tranzactii dupa ce a fost trimisa. Fara aceasta optiune, o taxa mai mare e posibil sa fie recomandata pentru a compensa riscul crescut de intarziere a tranzactiei.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Curăţă to&amp;ate</translation>
     </message>
@@ -2217,20 +2209,12 @@ Nota: Cum taxa este calculata per byte, o taxa de "100 satoshi per kB" pentru o 
         <translation>sau</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Puteti creste taxa mai tarziu (semnaleaza Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Va rugam sa revizuiti tranzactia.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Taxă tranzacţie</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Nu se semnalizeaza Replace-By-Fee, BIP-125</translation>
     </message>
     <message>
         <source>Total Amount</source>

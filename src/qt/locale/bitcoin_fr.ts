@@ -2293,14 +2293,6 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
         <translation>Estimation du délai de confirmation :</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Activer Remplacer-par-des-frais</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Avec Remplacer-par-des-frais (BIP-125), vous pouvez augmenter les frais de transaction après qu’elle est envoyée. Sans cela, des frais plus élevés peuvent être recommandés pour compenser le risque accru de retard transactionnel.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>&amp;Tout effacer</translation>
     </message>
@@ -2385,20 +2377,12 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
         <translation>ou</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Vous pouvez augmenter les frais ultérieurement (signale Remplacer-par-des-frais, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Veuillez vérifier votre transaction.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Frais de transaction</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Ne signale pas Remplacer-par-des-frais, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

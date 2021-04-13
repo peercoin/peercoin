@@ -2293,14 +2293,6 @@ Poznámka: Jelikož je poplatek počítaný za bajt, poplatek o hodnotě "100 sa
         <translation>Časové cílování potvrzení:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Povolit možnost dodatečně transakci navýšit poplatek (tzv. „replace-by-fee“)</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>S dodatečným navýšením poplatku (BIP-125, tzv. „Replace-By-Fee“) můžete zvýšit poplatek i po odeslání. Bez dodatečného navýšení bude navrhnut vyšší transakční poplatek, tak aby kompenzoval zvýšené riziko prodlení transakce.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Všechno s&amp;maž</translation>
     </message>
@@ -2385,20 +2377,12 @@ Poznámka: Jelikož je poplatek počítaný za bajt, poplatek o hodnotě "100 sa
         <translation>nebo</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Poplatek můžete navýšit později (vysílá se "Replace-By-Fee" - nahrazení poplatkem, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Prosím, zkontrolujte vaši transakci.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Transakční poplatek</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Nevysílá se "Replace-By-Fee" - nahrazení poplatkem, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

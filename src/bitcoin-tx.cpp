@@ -17,7 +17,6 @@
 #include <script/signingprovider.h>
 #include <univalue.h>
 #include <util/moneystr.h>
-#include <util/rbf.h>
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <util/system.h>
@@ -60,7 +59,6 @@ static void SetupBitcoinTxArgs()
     gArgs.AddArg("outscript=VALUE:SCRIPT[:FLAGS]", "Add raw script output to TX. "
         "Optionally add the \"W\" flag to produce a pay-to-witness-script-hash output. "
         "Optionally add the \"S\" flag to wrap the output in a pay-to-script-hash.", ArgsManager::ALLOW_ANY, OptionsCategory::COMMANDS);
-    gArgs.AddArg("replaceable(=N)", "Set RBF opt-in sequence number for input N (if not provided, opt-in all available inputs)", ArgsManager::ALLOW_ANY, OptionsCategory::COMMANDS);
     gArgs.AddArg("sign=SIGHASH-FLAGS", "Add zero or more signatures to transaction. "
         "This command requires JSON registers:"
         "prevtxs=JSON object, "

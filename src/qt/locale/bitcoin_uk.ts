@@ -2277,14 +2277,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>Час підтвердження:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Увімкнути Заміна-Через-Комісію</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>З опцією Заміна-Через-Комісію (BIP-125) ви можете збільшити комісію за транзакцію після її надсилання. Інакше може бути рекомендоване збільшення розміру комісії для компенсації підвищеного ризику затримки транзакції.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Очистити &amp;все</translation>
     </message>
@@ -2369,20 +2361,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>або</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Ви можете збільшити комісію пізніше (сигналізує Заміна-Через-Комісію, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Будь-ласка, перевірте вашу транзакцію.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Комісія</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Не сигналізує Заміна-Через-Комісію, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
