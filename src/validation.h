@@ -318,7 +318,7 @@ public:
     bool VerifyDB(
         CChainState& chainstate,
         const CChainParams& chainparams,
-        CCoinsView* coinsview,
+        CCoinsView& coinsview,
         int nCheckLevel,
         int nCheckDepth) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 };

@@ -3862,7 +3862,7 @@ CVerifyDB::~CVerifyDB()
 bool CVerifyDB::VerifyDB(
     CChainState& chainstate,
     const CChainParams& chainparams,
-    CCoinsView* coinsview,
+    CCoinsView& coinsview,
     int nCheckLevel, int nCheckDepth)
 {
     AssertLockHeld(cs_main);
@@ -3876,13 +3876,16 @@ bool CVerifyDB::VerifyDB(
         nCheckDepth = chainstate.m_chain.Height();
     nCheckLevel = std::max(0, std::min(4, nCheckLevel));
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
-    CCoinsViewCache coins(coinsview);
+    CCoinsViewCache coins(&coinsview);
     CBlockIndex* pindex;
     CBlockIndex* pindexFailure = nullptr;
     int nGoodTransactions = 0;
     BlockValidationState state;
     int reportDone = 0;
     LogPrintf("[0%%]..."); /* Continued */
+
+    bool is_snapshot_cs = !chainstate.m_from_snapshot_blockhash.IsNull();
+
     for (pindex = chainstate.m_chain.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
         const int percentageDone = std::max(1, std::min(99, (int)(((double)(chainstate.m_chain.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100))));
         if (reportDone < percentageDone/10) {
@@ -3911,9 +3914,9 @@ bool CVerifyDB::VerifyDB(
             }
         }
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
-        int64_t curr_coins_usage = coins.DynamicMemoryUsage() + chainstate.CoinsTip().DynamicMemoryUsage();
+        size_t curr_coins_usage = coins.DynamicMemoryUsage() + chainstate.CoinsTip().DynamicMemoryUsage();
 
-        if (nCheckLevel >= 3 && static_cast<unsigned long>(curr_coins_usage) <= chainstate.m_coinstip_cache_size_bytes) {
+        if (nCheckLevel >= 3 && curr_coins_usage <= chainstate.m_coinstip_cache_size_bytes) {
             assert(coins.GetBestBlock() == pindex->GetBlockHash());
             DisconnectResult res = chainstate.DisconnectBlock(block, pindex, coins);
             if (res == DISCONNECT_FAILED) {
