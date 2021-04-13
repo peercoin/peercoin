@@ -19,6 +19,7 @@
 #include <validationinterface.h>
 
 #include <chainparams.h>
+#include <cmath>
 #include <optional>
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTransactionRef& _tx, const CAmount& _nFee,
