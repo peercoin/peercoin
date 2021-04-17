@@ -1734,7 +1734,7 @@ void CConnman::ProcessAddrFetch()
     }
 }
 
-bool CConnman::GetTryNewOutboundPeer()
+bool CConnman::GetTryNewOutboundPeer() const
 {
     return m_try_another_outbound_peer;
 }
@@ -1751,7 +1751,7 @@ void CConnman::SetTryNewOutboundPeer(bool flag)
 // Also exclude peers that haven't finished initial connection handshake yet
 // (so that we don't decide we're over our desired connection limit, and then
 // evict some peer that has finished the handshake)
-int CConnman::GetExtraFullOutboundCount()
+int CConnman::GetExtraFullOutboundCount() const
 {
     int full_outbound_peers = 0;
     {
@@ -1765,7 +1765,7 @@ int CConnman::GetExtraFullOutboundCount()
     return std::max(full_outbound_peers - m_max_outbound_full_relay, 0);
 }
 
-int CConnman::GetExtraBlockRelayCount()
+int CConnman::GetExtraBlockRelayCount() const
 {
     int block_relay_peers = 0;
     {
@@ -2063,7 +2063,7 @@ std::vector<CAddress> CConnman::GetCurrentBlockRelayOnlyConns() const
     return ret;
 }
 
-std::vector<AddedNodeInfo> CConnman::GetAddedNodeInfo()
+std::vector<AddedNodeInfo> CConnman::GetAddedNodeInfo() const
 {
     std::vector<AddedNodeInfo> ret;
 
@@ -2673,7 +2673,7 @@ CConnman::~CConnman()
     Stop();
 }
 
-std::vector<CAddress> CConnman::GetAddresses(size_t max_addresses, size_t max_pct)
+std::vector<CAddress> CConnman::GetAddresses(size_t max_addresses, size_t max_pct) const
 {
     std::vector<CAddress> addresses = addrman.GetAddr(max_addresses, max_pct);
     if (m_banman) {
@@ -2748,7 +2748,7 @@ bool CConnman::RemoveAddedNode(const std::string& strNode)
     return false;
 }
 
-size_t CConnman::GetNodeCount(ConnectionDirection flags)
+size_t CConnman::GetNodeCount(ConnectionDirection flags) const
 {
     LOCK(cs_vNodes);
     if (flags == ConnectionDirection::Both) // Shortcut if we want total
@@ -2764,7 +2764,7 @@ size_t CConnman::GetNodeCount(ConnectionDirection flags)
     return nNum;
 }
 
-void CConnman::GetNodeStats(std::vector<CNodeStats>& vstats)
+void CConnman::GetNodeStats(std::vector<CNodeStats>& vstats) const
 {
     vstats.clear();
     LOCK(cs_vNodes);
@@ -2841,18 +2841,18 @@ void CConnman::RecordBytesSent(uint64_t bytes)
     nMaxOutboundTotalBytesSentInCycle += bytes;
 }
 
-uint64_t CConnman::GetMaxOutboundTarget()
+uint64_t CConnman::GetMaxOutboundTarget() const
 {
     LOCK(cs_totalBytesSent);
     return nMaxOutboundLimit;
 }
 
-std::chrono::seconds CConnman::GetMaxOutboundTimeframe()
+std::chrono::seconds CConnman::GetMaxOutboundTimeframe() const
 {
     return MAX_UPLOAD_TIMEFRAME;
 }
 
-std::chrono::seconds CConnman::GetMaxOutboundTimeLeftInCycle()
+std::chrono::seconds CConnman::GetMaxOutboundTimeLeftInCycle() const
 {
     LOCK(cs_totalBytesSent);
     if (nMaxOutboundLimit == 0)
@@ -2866,7 +2866,7 @@ std::chrono::seconds CConnman::GetMaxOutboundTimeLeftInCycle()
     return (cycleEndTime < now) ? 0s : cycleEndTime - now;
 }
 
-bool CConnman::OutboundTargetReached(bool historicalBlockServingLimit)
+bool CConnman::OutboundTargetReached(bool historicalBlockServingLimit) const
 {
     LOCK(cs_totalBytesSent);
     if (nMaxOutboundLimit == 0)
@@ -2886,7 +2886,7 @@ bool CConnman::OutboundTargetReached(bool historicalBlockServingLimit)
     return false;
 }
 
-uint64_t CConnman::GetOutboundTargetBytesLeft()
+uint64_t CConnman::GetOutboundTargetBytesLeft() const
 {
     LOCK(cs_totalBytesSent);
     if (nMaxOutboundLimit == 0)
@@ -2895,13 +2895,13 @@ uint64_t CConnman::GetOutboundTargetBytesLeft()
     return (nMaxOutboundTotalBytesSentInCycle >= nMaxOutboundLimit) ? 0 : nMaxOutboundLimit - nMaxOutboundTotalBytesSentInCycle;
 }
 
-uint64_t CConnman::GetTotalBytesRecv()
+uint64_t CConnman::GetTotalBytesRecv() const
 {
     LOCK(cs_totalBytesRecv);
     return nTotalBytesRecv;
 }
 
-uint64_t CConnman::GetTotalBytesSent()
+uint64_t CConnman::GetTotalBytesSent() const
 {
     LOCK(cs_totalBytesSent);
     return nTotalBytesSent;
