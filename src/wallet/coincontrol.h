@@ -22,32 +22,27 @@ class CCoinControl
 {
 public:
     //! Custom change destination, if not set an address is generated
-    CTxDestination destChange;
+    CTxDestination destChange = CNoDestination();
     //! Override the default change type if set, ignored if destChange is set
     std::optional<OutputType> m_change_type;
     //! If false, only selected inputs are used
-    bool m_add_inputs;
+    bool m_add_inputs = true;
     //! If false, allows unselected inputs, but requires all selected inputs be used
-    bool fAllowOtherInputs;
+    bool fAllowOtherInputs = false;
     //! Includes watch only addresses which are solvable
-    bool fAllowWatchOnly;
+    bool fAllowWatchOnly = false;
     //! Override the default confirmation target if set
     std::optional<unsigned int> m_confirm_target;
     //! Avoid partial use of funds sent to a given address
-    bool m_avoid_partial_spends;
+    bool m_avoid_partial_spends = DEFAULT_AVOIDPARTIALSPENDS;
     //! Forbids inclusion of dirty (previously used) addresses
-    bool m_avoid_address_reuse;
+    bool m_avoid_address_reuse = false;
     //! Minimum chain depth value for coin availability
     int m_min_depth = DEFAULT_MIN_DEPTH;
     //! Maximum chain depth value for coin availability
     int m_max_depth = DEFAULT_MAX_DEPTH;
 
-    CCoinControl()
-    {
-        SetNull();
-    }
-
-    void SetNull();
+    CCoinControl();
 
     bool HasSelected() const
     {
