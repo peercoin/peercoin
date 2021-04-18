@@ -151,17 +151,15 @@ CTxMemPool mempool;
 // Internal stuff
 namespace {
     CBlockIndex* pindexBestInvalid = nullptr;
+} // namespace
 
-    RecursiveMutex cs_LastBlockFile;
-    std::vector<CBlockFileInfo> vinfoBlockFile;
-    int nLastBlockFile = 0;
-
-    /** Dirty block index entries. */
-    std::set<CBlockIndex*> setDirtyBlockIndex;
-
-    /** Dirty block file entries. */
-    std::set<int> setDirtyFileInfo;
-} // anon namespace
+// Internal stuff from blockstorage ...
+extern RecursiveMutex cs_LastBlockFile;
+extern std::vector<CBlockFileInfo> vinfoBlockFile;
+extern int nLastBlockFile;
+extern std::set<CBlockIndex*> setDirtyBlockIndex;
+extern std::set<int> setDirtyFileInfo;
+// ... TODO move fully to blockstorage
 
 CBlockIndex* BlockManager::LookupBlockIndex(const uint256& hash) const
 {
@@ -1363,7 +1361,7 @@ bool UndoReadFromDisk(CBlockUndo& blockundo, const CBlockIndex* pindex)
     return true;
 }
 
-static bool AbortNode(BlockValidationState& state, const std::string& strMessage, const bilingual_str& userMessage = bilingual_str())
+bool AbortNode(BlockValidationState& state, const std::string& strMessage, const bilingual_str& userMessage)
 {
     AbortNode(strMessage, userMessage);
     return state.Error(strMessage);
