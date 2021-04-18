@@ -630,30 +630,6 @@ static void StartupNotify(const ArgsManager& args)
 }
 #endif
 
-/** Sanity checks
- *  Ensure that Peercoin is running in a usable environment with all
- *  necessary library support.
- */
-static bool InitSanityCheck()
-{
-    if (!ECC_InitSanityCheck()) {
-        return InitError(Untranslated("Elliptic curve cryptography sanity check failure. Aborting."));
-    }
-
-    if (!glibcxx_sanity_test())
-        return false;
-
-    if (!Random_SanityCheck()) {
-        return InitError(Untranslated("OS cryptographic RNG sanity check failure. Aborting."));
-    }
-
-    if (!ChronoSanityCheck()) {
-        return InitError(Untranslated("Clock epoch mismatch. Aborting."));
-    }
-
-    return true;
-}
-
 static bool AppInitServers(NodeContext& node)
 {
     const ArgsManager& args = *Assert(node.args);
@@ -1043,10 +1019,9 @@ bool AppInitSanityChecks()
 
     // peercoin: init hash seed
     peercoinRandseed = GetRand(1 << 30);
-
-    // Sanity check
-    if (!InitSanityCheck())
+    if (!init::SanityChecks()) {
         return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down."), PACKAGE_NAME));
+    }
 
     // Probe the data directory lock to give an early error message, if possible
     // We cannot hold the data directory lock here, as the forking for daemon() hasn't yet happened,
