@@ -113,8 +113,6 @@ typedef std::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
 extern Mutex g_best_block_mutex;
 extern std::condition_variable g_best_block_cv;
 extern uint256 g_best_block;
-extern std::atomic_bool fImporting;
-extern std::atomic_bool fReindex;
 /** Whether there are dedicated script-checking threads running.
  * False indicates all script checking is done on the main threadMessageHandler thread.
  */
@@ -1010,7 +1008,6 @@ CAmount GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneyS
 bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, unsigned int nTimeTx, bool isTrueCoinAge = true); // peercoin: get transaction coin age
 bool SignBlock(CBlock& block, const CWallet& keystore);
 bool CheckBlockSignature(const CBlock& block);
-
 /**
  * Return the expected assumeutxo value for a given height, if one exists.
  *
