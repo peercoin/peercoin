@@ -22,9 +22,9 @@
 #include <httpserver.h>
 #include <index/blockfilterindex.h>
 #include <index/txindex.h>
+#include <init/common.h>
 #include <interfaces/chain.h>
 #include <interfaces/node.h>
-#include <key.h>
 #include <mapport.h>
 #include <miner.h>
 #include <net.h>
@@ -148,8 +148,6 @@ static fs::path GetPidFile(const ArgsManager& args)
 // ShutdownRequested() getting set, and then does the normal Qt
 // shutdown thing.
 //
-
-static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
 void Interrupt(NodeContext& node)
 {
@@ -282,8 +280,7 @@ void Shutdown(NodeContext& node)
     node.chain_clients.clear();
     UnregisterAllValidationInterfaces();
     GetMainSignals().UnregisterBackgroundSignalScheduler();
-    globalVerifyHandle.reset();
-    ECC_Stop();
+    init::UnsetGlobals();
     node.mempool.reset();
     node.fee_estimator.reset();
     node.chainman = nullptr;
@@ -1042,12 +1039,7 @@ bool AppInitSanityChecks()
 {
     // ********************************************************* Step 4: sanity checks
 
-    // Initialize elliptic curve code
-    std::string sha256_algo = SHA256AutoDetect();
-    LogPrintf("Using the '%s' SHA256 implementation\n", sha256_algo);
-    RandomInit();
-    ECC_Start();
-    globalVerifyHandle.reset(new ECCVerifyHandle());
+    init::SetGlobals();
 
     // peercoin: init hash seed
     peercoinRandseed = GetRand(1 << 30);
