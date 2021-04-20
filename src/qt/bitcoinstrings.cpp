@@ -21,6 +21,9 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Cannot downgrade wallet from version %i to version %i. Wallet version "
 "unchanged."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
+"Cannot downgrade wallet from version %i to version %i. Wallet version "
+"unchanged."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Cannot obtain a lock on data directory %s. %s is probably already running."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Cannot provide specific connections and have addrman find outgoing "
@@ -82,6 +85,14 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "More than one onion bind address is provided. Using %s for the automatically "
 "created Tor onion service."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
+"No dump file provided. To use createfromdump, -dumpfile=<filename> must be "
+"provided."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
+"No dump file provided. To use dump, -dumpfile=<filename> must be provided."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
+"No wallet file format provided. To use createfromdump, -format=<format> must "
+"be provided."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Please check that your computer's date and time are correct! If your clock "
 "is wrong, %s will not work properly."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
@@ -141,7 +152,8 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Warning: Dumpfile wallet format \"%s\" does not match command line specified "
 "format \"%s\"."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
-"Warning: Private keys detected in wallet {%s} with disabled private keys"),
+"Unknown wallet file format \"%s\" provided. Please provide one of \"bdb\" or "
+"\"sqlite\"."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Warning: We do not appear to fully agree with our peers! You may need to "
 "upgrade, or other nodes may need to upgrade."),
