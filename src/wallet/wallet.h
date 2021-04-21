@@ -553,7 +553,15 @@ class COutput
 {
 public:
     const CWalletTx *tx;
+
+    /** Index in tx->vout. */
     int i;
+
+    /**
+     * Depth in block chain.
+     * If > 0: the tx is on chain and has this many confirmations.
+     * If = 0: the tx is waiting confirmation.
+     * If < 0: a conflicting tx is on chain and has this many confirmations. */
     int nDepth;
 
     /** Pre-computed estimated size of this output as a fully-signed input in a transaction. Can be -1 if it could not be calculated */
@@ -593,16 +601,29 @@ public:
     }
 };
 
+/** Parameters for one iteration of Coin Selection. */
 struct CoinSelectionParams
 {
+    /** Toggles use of Branch and Bound instead of Knapsack solver. */
     bool use_bnb = true;
+    /** Size of a change output in bytes, determined by the output type. */
     size_t change_output_size = 0;
+    /** Size of the input to spend a change output in virtual bytes. */
     size_t change_spend_size = 0;
+    /** The targeted feerate of the transaction being built. */
+    /** The feerate estimate used to estimate an upper bound on what should be sufficient to spend
+     * the change output sometime in the future. */
     CFeeRate m_long_term_feerate;
+    /** If the cost to spend a change output at the discard feerate exceeds its value, drop it to fees. */
     CFeeRate m_discard_feerate;
+    /** Size of the transaction before coin selection, consisting of the header and recipient
+     * output(s), excluding the inputs and change output(s). */
     size_t tx_noinputs_size = 0;
     /** Indicate that we are subtracting the fee from outputs */
     bool m_subtract_fee_outputs = false;
+    /** When true, always spend all (up to OUTPUT_GROUP_MAX_ENTRIES) or none of the outputs
+     * associated with the same address. This helps reduce privacy leaks resulting from address
+     * reuse. Dust outputs are not eligible to be added to output groups and thus not considered. */
     bool m_avoid_partial_spends = false;
 
     CoinSelectionParams(bool use_bnb, size_t change_output_size, size_t change_spend_size,
@@ -637,7 +658,10 @@ private:
     //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletVersion GUARDED_BY(cs_wallet){FEATURE_BASE};
 
+    /** The next scheduled rebroadcast of wallet transactions. */
     int64_t nNextResend = 0;
+    /** Whether this wallet will submit newly created transactions to the node's mempool and
+     * prompt rebroadcasts (see ResendWalletTransactions()). */
     bool fBroadcastTransactions = false;
     // Local time that the tip block was received. Used to schedule wallet rebroadcasts.
     std::atomic<int64_t> m_best_block_time {0};
@@ -679,6 +703,7 @@ private:
      * Should be called with non-zero block_hash and posInBlock if this is for a transaction that is included in a block. */
     void SyncTransaction(const CTransactionRef& tx, CWalletTx::Confirmation confirm, bool update_tx = true) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
+    /** WalletFlags set on this wallet. */
     std::atomic<uint64_t> m_wallet_flags{0};
 
     bool SetAddressBookWithDB(WalletBatch& batch, const CTxDestination& address, const std::string& strName, const std::string& strPurpose);
@@ -738,8 +763,11 @@ public:
 
     /**
      * Select a set of coins such that nValueRet >= nTargetValue and at least
-     * all coins from coinControl are selected; Never select unconfirmed coins
-     * if they are not ours
+     * all coins from coin_control are selected; never select unconfirmed coins if they are not ours
+     * param@[out]  setCoinsRet         Populated with inputs including pre-selected inputs from
+     *                                  coin_control and Coin Selection if successful.
+     * param@[out]  nValueRet           Total value of selected coins including pre-selected ones
+     *                                  from coin_control and Coin Selection if successful.
      */
     bool SelectCoins(const std::vector<COutput>& vAvailableCoins, const CAmount& nTargetValue, std::set<CInputCoin>& setCoinsRet, CAmount& nValueRet,
                     const CCoinControl& coin_control, CoinSelectionParams& coin_selection_params, bool& bnb_used) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
@@ -773,6 +801,8 @@ public:
     /** Interface to assert chain access */
     bool HaveChain() const { return m_chain ? true : false; }
 
+    /** Map from txid to CWalletTx for all transactions this wallet is
+     * interested in, including received and sent transactions. */
     std::map<uint256, CWalletTx> mapWallet GUARDED_BY(cs_wallet);
 
     typedef std::multimap<int64_t, CWalletTx*> TxItems;
@@ -786,6 +816,10 @@ public:
 
     std::map<uint32_t, CTransactionRef> m_coinstakes;
 
+    /** Set of Coins owned by this wallet that we won't try to spend from. A
+     * Coin may be locked if it has already been used to fund a transaction
+     * that hasn't confirmed yet. We wouldn't consider the Coin spent already,
+     * but also shouldn't try to use it again. */
     std::set<COutPoint> setLockedCoins GUARDED_BY(cs_wallet);
 
     /** Registered interfaces::Chain::Notifications handler. */
@@ -820,6 +854,11 @@ public:
      * small change; This method is stochastic for some inputs and upon
      * completion the coin set and corresponding actual target value is
      * assembled
+     * param@[in]   coins           Set of UTXOs to consider. These will be categorized into
+     *                              OutputGroups and filtered using eligibility_filter before
+     *                              selecting coins.
+     * param@[out]  setCoinsRet     Populated with the coins selected if successful.
+     * param@[out]  nValueRet       Used to return the total value of selected coins.
      */
     bool SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibilityFilter& eligibility_filter, std::vector<COutput> coins,
         std::set<CInputCoin>& setCoinsRet, CAmount& nValueRet, const CoinSelectionParams& coin_selection_params, bool& bnb_used) const;
@@ -1003,10 +1042,17 @@ public:
     bool ImportPubKeys(const std::vector<CKeyID>& ordered_pubkeys, const std::map<CKeyID, CPubKey>& pubkey_map, const std::map<CKeyID, std::pair<CPubKey, KeyOriginInfo>>& key_origins, const bool add_keypool, const bool internal, const int64_t timestamp) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     bool ImportScriptPubKeys(const std::string& label, const std::set<CScript>& script_pub_keys, const bool have_solving_data, const bool apply_label, const int64_t timestamp) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
+    /** Allow Coin Selection to pick unconfirmed UTXOs that were sent from our own wallet if it
+     * cannot fund the transaction otherwise. */
     bool m_spend_zero_conf_change{DEFAULT_SPEND_ZEROCONF_CHANGE};
     bool m_split_coins{DEFAULT_SPLIT_COINS};
     bool m_check_github{DEFAULT_CHECK_GITHUB};
 
+
+     /** If the cost to spend a change output at this feerate is greater than the value of the
+      * output itself, just drop it to fees. */
+
+    /** The maximum fee amount we're willing to pay to prioritize partial spend avoidance. */
     CAmount m_max_aps_fee{DEFAULT_MAX_AVOIDPARTIALSPEND_FEE}; //!< note: this is absolute fee, not fee rate
     OutputType m_default_address_type{DEFAULT_ADDRESS_TYPE};
     /**
