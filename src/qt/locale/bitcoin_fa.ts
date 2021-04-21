@@ -1795,10 +1795,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>هدف زمانی تایید شدن:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>فعال کردن جایگذاری دوباره از کارمزد</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>پاک کردن همه</translation>
     </message>
@@ -1857,10 +1853,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>or</source>
         <translation>یا</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>تو میتوانی بعدا هزینه کارمزد را افزایش بدی(signals Replace-By-Fee, BIP-125)</translation>
     </message>
     <message>
         <source>Please, review your transaction.</source>

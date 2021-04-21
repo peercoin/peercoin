@@ -1108,10 +1108,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>目标确认时间：</translation>
     </message>
     <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>通过 Replace-By-Fee (BIP-125) 您可以在交易发送后增加交易费用。没有这个，可能会建议收取更高的费用，以补偿交易延迟风险的增加。</translation>
-    </message>
-    <message>
         <source>Copy quantity</source>
         <translation>复制数量</translation>
     </message>
@@ -1138,10 +1134,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Are you sure you want to send?</source>
         <translation>确定发送么？</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>稍后您可以增加费用( 信号 Replace-By-Fee，BIP-125）。</translation>
     </message>
     <message>
         <source>Please, review your transaction.</source>

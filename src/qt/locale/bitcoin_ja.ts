@@ -2294,14 +2294,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>目標承認時間</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Replace-By-Fee を有効化する</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Replace-By-Fee(手数料の上乗せ: BIP-125)機能を有効にすることで、トランザクション送信後でも手数料を上乗せすることができます。この機能を利用しない場合、予め手数料を多めに見積もっておかないと取引が遅れる可能性があります。</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>全てクリア(&amp;A)</translation>
     </message>
@@ -2386,20 +2378,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>または</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>手数料は後から上乗せ可能です(Replace-By-Fee(手数料の上乗せ: BIP-125)機能が有効)。</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>取引内容の最終確認をしてください。</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>取引手数料</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Replace-By-Fee(手数料の上乗せ: BIP-125)機能は有効になっていません。</translation>
     </message>
     <message>
         <source>Total Amount</source>

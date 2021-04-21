@@ -1986,14 +1986,6 @@
         <translation>هدف وقت التأكيد:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>تفعيل الإستبدال بواسطة الرسوم</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>مع الإستبدال بواسطة الرسوم (BIP-125) يمكنك زيادة رسوم المعاملة بعد إرسالها. وبدون ذلك، قد نوصي برسوم أعلى للتعويض عن مخاطر تأخير المعاملة المتزايدة.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>مسح الكل</translation>
     </message>
@@ -2052,18 +2044,6 @@
     <message>
         <source>or</source>
         <translation>أو</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>يمكنك زيادة الرسوم لاحقًا (بإشارة الإستبدال بواسطة الرسوم، BIP-125).</translation>
-    </message>
-    <message>
-        <source>Transaction fee</source>
-        <translation>رسوم المعاملة</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>لا يشير إلى الإستبدال بواسطة الرسوم، BIP-125.</translation>
     </message>
     <message>
         <source>Confirm send coins</source>

@@ -2115,14 +2115,6 @@ Lưu ý: Vì phí được tính trên cơ sở mỗi byte, nên phí "100 satos
         <translation>Thời gian xác nhận đối tượng:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Kích hoạt  Phí thay thế</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Với Phí thay thế (BIP-125), bạn có thể tăng phí giao dịch sau khi được gửi. Nếu không có điều này, một khoản phí cao hơn có thể được đề xuất để bù đắp cho rủi ro chậm trễ giao dịch tăng lên.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Clear &amp;All</translation>
     </message>
@@ -2191,20 +2183,12 @@ Lưu ý: Vì phí được tính trên cơ sở mỗi byte, nên phí "100 satos
         <translation>hoặc</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Bạn có thể tăng phí sau khi gửi( với tín hiệu Phí Thay Thế, BIP-125)</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Làm ơn xem xét đánh giá giao dịch của bạn.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Transaction fee</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Không có tín hiệu Phí Thay Thế, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

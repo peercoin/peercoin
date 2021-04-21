@@ -2041,14 +2041,6 @@
         <translation>Bekreftelsestidsmål:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Aktiver Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Med Replace-By-Fee (BIP-125) kan du øke transaksjonens gebyr etter at den er sendt. Uten dette aktivert anbefales et høyere gebyr for å kompensere for risikoen for at transaksjonen blir forsinket.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Fjern &amp;Alt</translation>
     </message>
@@ -2109,10 +2101,6 @@
         <translation>eller</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Du kan øke gebyret senere (signaliserer Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Vennligst se over transaksjonen din.</translation>
     </message>
@@ -2121,16 +2109,8 @@
         <translation>Transaksjonsgebyr</translation>
     </message>
     <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Signaliserer ikke Replace-By-Fee, BIP-125</translation>
-    </message>
-    <message>
         <source>Total Amount</source>
         <translation>Totalbeløp</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Signaliserer ikke Replace-By-Fee, BIP-125</translation>
     </message>
     <message>
         <source>Confirm send coins</source>

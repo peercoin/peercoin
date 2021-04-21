@@ -38,7 +38,6 @@
 #include <uint256.h>
 #include <undo.h>
 #include <util/moneystr.h>
-#include <util/rbf.h>
 #include <util/strencodings.h>
 #include <util/system.h>
 #include <util/translation.h>

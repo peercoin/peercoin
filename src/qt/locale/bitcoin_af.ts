@@ -1517,16 +1517,6 @@ etlike ure of dae (of nooit) sal neem om te bevestig. Oorweeg om
         <translation>Bevestigingstyd teiken:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Bemoontlik vervang-deur-fooi</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Met Vervang-Met-Fooi (BIP-125) kan jy 'n transaskiefooi verhoog nadat dit gestuur is.
-Daarsonder mag 'n hoër fooi dalk aanbeveel word om te kompenseer vir 'n verhoogde
-transaksievertragingsrisiko.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Vee &amp;Alles skoon</translation>
     </message>
@@ -1585,18 +1575,6 @@ transaksievertragingsrisiko.</translation>
     <message>
         <source>or</source>
         <translation>of</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>U kan die fooi later verhoog (sein Vervang-met-Fooi, BIP-125)</translation>
-    </message>
-    <message>
-        <source>Transaction fee</source>
-        <translation>Transaksie fooi</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Sein nie Vervang-Met-Fooi nie, BIP-25</translation>
     </message>
     <message>
         <source>Confirm send coins</source>

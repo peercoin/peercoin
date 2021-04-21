@@ -2275,14 +2275,6 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
         <translation>Vahvistusajan tavoite:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Käytä Replace-By-Fee:tä</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Replace-By-Fee:tä (BIP-125) käyttämällä voit korottaa siirtotapahtuman palkkiota sen lähettämisen jälkeen. Ilman tätä saatetaan suositella käyttämään suurempaa palkkiota kompensoimaan viiveen kasvamisen riskiä.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>&amp;Tyhjennnä Kaikki</translation>
     </message>
@@ -2345,10 +2337,6 @@ Huom: Koska siirtomaksu lasketaan tavujen mukaan, niin määrittelemällä 500 t
     <message>
         <source>or</source>
         <translation>tai</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Voit korottaa palkkiota myöhemmin (osoittaa Replace-By-Fee:tä, BIP-125).</translation>
     </message>
     <message>
         <source>Please, review your transaction.</source>

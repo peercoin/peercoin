@@ -2167,14 +2167,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>זמן לקבלת אישור:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>אפשר ״החלפה-על ידי עמלה״</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>באמצעות עמלה-ניתנת-לשינוי (BIP-125) תוכלו להגדיל עמלת עסקה גם לאחר שליחתה. ללא אפשרות זו, עמלה גבוהה יותר יכולה להיות מומלצת כדי להקטין את הסיכון בעיכוב אישור העסקה.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>&amp;ניקוי הכול</translation>
     </message>
@@ -2235,20 +2227,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>או</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>תוכלו להגדיל את העמלה מאוחר יותר (איתות Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>אנא עברו שוב על העסקה שלכם.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>עמלת העברה</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>לא משדר Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

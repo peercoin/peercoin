@@ -2109,14 +2109,6 @@ Pastaba: Kadangi mokestis apskaičiuojamas pagal baitą, mokestis už „100 sat
         <translation>Patvirtinimo laiko tikslas:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Įgalinti keitimąsi mokesčiu</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Naudojant Replace-by-Fend (BIP-125) galite išsiųsti sandorio mokestį vėliau. Be jo, gali būti rekomenduojamas didesnis mokestis, kad būtų kompensuota padidėjusi sandorio vėlavimo rizika.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Išvalyti &amp;viską</translation>
     </message>
@@ -2175,10 +2167,6 @@ Pastaba: Kadangi mokestis apskaičiuojamas pagal baitą, mokestis už „100 sat
     <message>
         <source>or</source>
         <translation>ar</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Vėliau galite padidinti mokestį (signalai Pakeisti mokesčius, BIP-125).</translation>
     </message>
     <message>
         <source>Please, review your transaction.</source>

@@ -2097,14 +2097,6 @@ Tandaan: Dahil ang bayad  ay kinakalkula sa bawat-byte na batayan, ang bayad ng 
         <translation>Target na oras ng pagkumpirma:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Paganahin ang Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Sa Replace-By-Fee (BIP-125) maaari kang magpataas ng bayad sa transaksyon pagkatapos na maipadala ito. Nang wala ito, maaaring irekumenda ang mas mataas na bayad upang mabawi ang mas mataas na transaction delay risk.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Burahin Lahat</translation>
     </message>
@@ -2165,20 +2157,12 @@ Tandaan: Dahil ang bayad  ay kinakalkula sa bawat-byte na batayan, ang bayad ng 
         <translation>o</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Maaari mong dagdagan ang bayad mamaya (sumesenyas ng Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Pakiusap, suriin ang iyong transaksyon.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Bayad sa transaksyon</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Hindi sumesenyas ng Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
