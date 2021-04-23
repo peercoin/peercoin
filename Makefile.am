@@ -6,6 +6,10 @@
 # Pattern rule to print variables, e.g. make print-top_srcdir
 print-%:
 	@echo '$*'='$($*)'
+noinst_HEADERS += src/modinv32.h
+noinst_HEADERS += src/modinv32_impl.h
+noinst_HEADERS += src/modinv64.h
+noinst_HEADERS += src/modinv64_impl.h
 
 ACLOCAL_AMFLAGS = -I build-aux/m4
 SUBDIRS = src
