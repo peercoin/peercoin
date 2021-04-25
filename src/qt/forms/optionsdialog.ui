@@ -708,14 +708,14 @@
               <item>
                <widget class="QLabel" name="embeddedFont_label_1">
                 <property name="text">
-                 <string>111.11111111 BTC</string>
+                 <string notr="true">111.11111111 BTC</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLabel" name="embeddedFont_label_9">
                 <property name="text">
-                 <string>909.09090909 BTC</string>
+                 <string notr="true">909.09090909 BTC</string>
                 </property>
                </widget>
               </item>
@@ -757,14 +757,14 @@
               <item>
                <widget class="QLabel" name="systemFont_label_1">
                 <property name="text">
-                 <string>111.11111111 BTC</string>
+                 <string notr="true">111.11111111 BTC</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLabel" name="systemFont_label_9">
                 <property name="text">
-                 <string>909.09090909 BTC</string>
+                 <string notr="true">909.09090909 BTC</string>
                 </property>
                </widget>
               </item>
