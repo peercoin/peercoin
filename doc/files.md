@@ -109,7 +109,7 @@ Subdirectory | File                 | Description
 
 ## Legacy subdirectories and files
 
-These subdirectories and files are no longer used by the Peercoin:
+These subdirectories and files are no longer used by Peercoin:
 
 Path           | Description | Repository notes
 ---------------|-------------|-----------------
