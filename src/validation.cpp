@@ -1394,6 +1394,7 @@ CChainState::CChainState(
     ChainstateManager& chainman,
     std::optional<uint256> from_snapshot_blockhash)
     : m_mempool(mempool),
+      m_params(::Params()),
       m_blockman(blockman),
       m_params(::Params()),
       m_chainman(chainman),
