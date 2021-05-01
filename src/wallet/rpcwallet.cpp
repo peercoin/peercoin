@@ -2303,7 +2303,7 @@ static RPCHelpMan settxfee()
                 "\nDeprecated method used to set the transaction fee per kB.\n"
                 "Minimum and default transaction fee per KB is 1 cent\n",
                 {
-                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The transaction fee in " + CURRENCY_UNIT + "/kvB"},
+                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The transaction fee rate in " + CURRENCY_UNIT + "/kvB"},
                 },
                 RPCResult{
                     RPCResult::Type::BOOL, "", "Returns true if successful"
