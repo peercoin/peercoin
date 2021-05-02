@@ -1279,7 +1279,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         };
         bilingual_str strLoadError;
 
-        uiInterface.InitMessage(_("Loading block index...").translated);
+        uiInterface.InitMessage(_("Loading block index…").translated);
 
         do {
             const int64_t load_block_index_start_time = GetTimeMillis();
@@ -1399,7 +1399,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
                 for (CChainState* chainstate : chainman.GetAll()) {
                     if (!is_coinsview_empty(chainstate)) {
-                        uiInterface.InitMessage(_("Verifying blocks...").translated);
+                        uiInterface.InitMessage(_("Verifying blocks…").translated);
 
                         const CBlockIndex* tip = chainstate->m_chain.Tip();
                         RPCNotifyBlockChange(tip);
