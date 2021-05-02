@@ -29,6 +29,7 @@
 #include <warnings.h>
 
 #include <key_io.h>
+#include <optional>
 
 #include <univalue.h>
 
@@ -878,7 +879,7 @@ static RPCHelpMan getnodeaddresses()
     if (count < 0) throw JSONRPCError(RPC_INVALID_PARAMETER, "Address count out of range");
 
     // returns a shuffled list of CAddress
-    const std::vector<CAddress> vAddr{connman.GetAddresses(count, /* max_pct */ 0)};
+    const std::vector<CAddress> vAddr{connman.GetAddresses(count, /* max_pct */ 0, /* network */ std::nullopt)};
     UniValue ret(UniValue::VARR);
 
     for (const CAddress& addr : vAddr) {
