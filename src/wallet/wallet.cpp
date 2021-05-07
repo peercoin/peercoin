@@ -2456,12 +2456,10 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibil
         effective_feerate = coin_selection_params.m_effective_feerate;
     }
 
-    CAmount cost_of_change = GetMinFee(coin_selection_params.change_spend_size, GetAdjustedTime()) + GetMinFee(coin_selection_params.change_output_size, GetAdjustedTime());
-
     if (coin_selection_params.use_bnb) {
         std::vector<OutputGroup> positive_groups = GroupOutputs(coins, !coin_selection_params.m_avoid_partial_spends, effective_feerate, coin_selection_params.m_long_term_feerate, eligibility_filter, true /* positive_only */);
         bnb_used = true;
-        return SelectCoinsBnB(positive_groups, nTargetValue, cost_of_change, setCoinsRet, nValueRet, not_input_fees);
+        return SelectCoinsBnB(positive_groups, nTargetValue, coin_selection_params.m_cost_of_change, setCoinsRet, nValueRet, not_input_fees);
     } else {
         // The knapsack solver has some legacy behavior where it will spend dust outputs. We retain this behavior, so don't filter for positive only here.
         // The knapsack solver currently does not use effective values, so we give GroupOutputs feerates of 0 so it sets the effective values to be the same as the real value.
@@ -2927,22 +2925,37 @@ bool CWallet::CreateTransactionInternal(
             CTxOut change_prototype_txout(0, scriptChange);
             coin_selection_params.change_output_size = GetSerializeSize(change_prototype_txout, SER_DISK);
 
-            bool fNewFees = IsProtocolV07(txNew.nTime);
-            nFeeRet = (fNewFees ? MIN_TX_FEE : MIN_TX_FEE_PREV7);
+            // Get size of spending the change output
+            int change_spend_size = CalculateMaximumSignedInputSize(change_prototype_txout, this);
+            // If the wallet doesn't know how to sign change output, assume p2sh-p2wpkh
+            // as lower-bound to allow BnB to do it's thing
+            if (change_spend_size == -1) {
+                coin_selection_params.change_spend_size = DUMMY_NESTED_P2WPKH_INPUT_SIZE;
+            } else {
+                coin_selection_params.change_spend_size = (size_t)change_spend_size;
+            }
+
 
             // Get long term estimate
             CCoinControl cc_temp;
             cc_temp.m_confirm_target = chain().estimateMaxBlocks();
             coin_selection_params.m_long_term_feerate = GetMinimumFeeRate(*this, cc_temp, nullptr);
 
+            // Calculate the cost of change
+            // Cost of change is the cost of creating the change output + cost of spending the change output in the future.
+            // For creating the change output now, we use the effective feerate.
+            // For spending the change output in the future, we use the discard feerate for now.
+            // So cost of change = (change output size * effective feerate) + (size of spending change output * discard feerate)
+            coin_selection_params.m_change_fee = coin_selection_params.m_effective_feerate.GetFee(coin_selection_params.change_output_size);
+            coin_selection_params.m_cost_of_change = coin_selection_params.m_discard_feerate.GetFee(coin_selection_params.change_spend_size) + coin_selection_params.m_change_fee;
+
+            nFeeRet = 0;
             bool pick_new_inputs = true;
             CAmount nValueIn = 0;
 
             // BnB selector is the only selector used when this is true.
             // That should only happen on the first pass through the loop.
             coin_selection_params.use_bnb = true;
-//            coin_selection_params.use_bnb = false;
-
             coin_selection_params.m_subtract_fee_outputs = nSubtractFeeFromAmount != 0; // If we are doing subtract fee from recipient, don't use effective values
             // Start with no fee and loop until there is enough fee
             while (true)
@@ -2987,14 +3000,6 @@ bool CWallet::CreateTransactionInternal(
                 if (pick_new_inputs) {
                     nValueIn = 0;
                     setCoins.clear();
-                    int change_spend_size = CalculateMaximumSignedInputSize(change_prototype_txout, this);
-                    // If the wallet doesn't know how to sign change output, assume p2sh-p2wpkh
-                    // as lower-bound to allow BnB to do it's thing
-                    if (change_spend_size == -1) {
-                        coin_selection_params.change_spend_size = DUMMY_NESTED_P2WPKH_INPUT_SIZE;
-                    } else {
-                        coin_selection_params.change_spend_size = (size_t)change_spend_size;
-                    }
                     if (!SelectCoins(vAvailableCoins, nValueToSelect, setCoins, nValueIn, coin_control, coin_selection_params, bnb_used))
                     {
                         // If BnB was used, it was the first pass. No longer the first pass and continue loop with knapsack.
