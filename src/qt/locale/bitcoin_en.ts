@@ -94,22 +94,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>&amp;Copy Address</source>
+        <location line="+8"/>
+        <source>Copy Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Copy &amp;Label</source>
+        <source>Copy Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>&amp;Edit</source>
+        <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+3"/>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+161"/>
         <source>Export Address List</source>
         <translation type="unfinished"></translation>
     </message>
@@ -312,7 +317,7 @@
 <context>
     <name>BitcoinApplication</name>
     <message>
-        <location filename="../bitcoin.cpp" line="+423"/>
+        <location filename="../bitcoin.cpp" line="+421"/>
         <source>Runaway exception</source>
         <translation type="unfinished"></translation>
     </message>
@@ -415,12 +420,7 @@
         <translation>Show information about Qt</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>&amp;Options...</source>
-        <translation>&amp;Options...</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Modify configuration options for %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -588,7 +588,12 @@
         <translation>Show or hide the main Window</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+2"/>
+        <source>&amp;Encrypt Wallet…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Encrypt the private keys that belong to your wallet</source>
         <translation>Encrypt the private keys that belong to your wallet</translation>
     </message>
@@ -639,7 +644,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+19"/>
+        <location line="+101"/>
         <source>Processed %n block(s) of transaction history.</source>
         <translation>
             <numerusform>Processed %n block of transaction history.</numerusform>
@@ -652,7 +657,12 @@
         <translation>%1 behind</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+5"/>
+        <source>Catching up…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
         <source>Last received block was generated %1 ago.</source>
         <translation>Last received block was generated %1 ago.</translation>
     </message>
@@ -712,12 +722,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Close Wallet...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Close wallet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -960,17 +965,17 @@
     </message>
     <message>
         <location line="+1"/>
-        <location line="+26"/>
+        <location line="+9"/>
         <source>Copy amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-8"/>
         <source>Copy transaction ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Lock unspent</source>
         <translation type="unfinished"></translation>
     </message>
@@ -980,7 +985,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+4"/>
         <source>Copy quantity</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1203,7 +1208,7 @@
 <context>
     <name>FreespaceChecker</name>
     <message>
-        <location filename="../intro.cpp" line="+72"/>
+        <location filename="../intro.cpp" line="+73"/>
         <source>A new data directory will be created.</source>
         <translation>A new data directory will be created.</translation>
     </message>
@@ -1544,12 +1549,18 @@
     <message>
         <location line="+7"/>
         <location line="+26"/>
-        <location filename="../modaloverlay.cpp" line="+153"/>
-        <source>Unknown...</source>
+        <location filename="../modaloverlay.cpp" line="+152"/>
+        <source>Unknown…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
+        <location line="+44"/>
+        <location line="+20"/>
+        <source>calculating…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-77"/>
         <source>Last block time</source>
         <translation type="unfinished">Last block time</translation>
     </message>
@@ -1559,18 +1570,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+24"/>
         <source>Progress increase per hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
         <location line="+20"/>
-        <source>calculating...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-7"/>
         <source>Estimated time left until synced</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1585,13 +1590,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../modaloverlay.cpp" line="-119"/>
+        <location filename="../modaloverlay.cpp" line="-118"/>
         <source>%1 is currently syncing.  It will download headers and blocks from peers and validate them until reaching the tip of the block chain.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+125"/>
-        <source>Unknown. Syncing Headers (%1, %2%)...</source>
+        <location line="+124"/>
+        <source>Unknown. Syncing Headers (%1, %2%)…</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1627,7 +1632,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>Opening Wallet &lt;b&gt;%1&lt;/b&gt;...</source>
+        <source>Opening Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2157,7 +2162,7 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>Save...</source>
+        <source>Save…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2313,7 +2318,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+17"/>
         <location line="+23"/>
         <source>Cannot process payment request because BIP70 is not supported.
 Due to widespread security flaws in BIP70 it&apos;s strongly recommended that any merchant instructions to switch wallets be ignored.
@@ -2339,7 +2344,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
 <context>
     <name>PeerTableModel</name>
     <message>
-        <location filename="../peertablemodel.h" line="+91"/>
+        <location filename="../peertablemodel.h" line="+77"/>
         <source>User Agent</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2523,11 +2528,11 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <location line="+63"/>
-        <source>%1 didn&apos;t yet exit safely...</source>
+        <source>%1 didn&apos;t yet exit safely…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../modaloverlay.cpp" line="-36"/>
+        <location filename="../modaloverlay.cpp" line="-35"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2536,16 +2541,16 @@ If you are receiving this error you should request the merchant provide a BIP21 
     <name>QRImageWidget</name>
     <message>
         <location filename="../qrimagewidget.cpp" line="+30"/>
-        <source>&amp;Save Image...</source>
+        <source>Save Image…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>&amp;Copy Image</source>
+        <location line="+1"/>
+        <source>Copy Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+11"/>
         <source>Resulting URI too long, try to reduce the text for label / message.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2585,35 +2590,35 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <location line="+23"/>
         <location line="+36"/>
         <location line="+23"/>
-        <location line="+710"/>
+        <location line="+722"/>
         <location line="+26"/>
         <location line="+26"/>
         <location line="+23"/>
         <location line="+23"/>
         <location line="+23"/>
+        <location line="+29"/>
+        <location line="+26"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
         <location line="+26"/>
         <location line="+26"/>
         <location line="+23"/>
         <location line="+23"/>
         <location line="+23"/>
         <location line="+23"/>
-        <location line="+26"/>
-        <location line="+26"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
         <location line="+23"/>
         <location line="+26"/>
         <location line="+23"/>
         <location line="+23"/>
         <location line="+26"/>
-        <location filename="../rpcconsole.h" line="+141"/>
+        <location filename="../rpcconsole.h" line="+137"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
     <message>
-        <location line="-1534"/>
+        <location line="-1549"/>
         <source>Client version</source>
         <translation>Client version</translation>
     </message>
@@ -2654,12 +2659,12 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <location line="+29"/>
-        <location line="+910"/>
+        <location line="+922"/>
         <source>Network</source>
         <translation>Network</translation>
     </message>
     <message>
-        <location line="-903"/>
+        <location line="-915"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2705,29 +2710,29 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <location line="+80"/>
-        <location line="+693"/>
+        <location line="+708"/>
         <source>Received</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-613"/>
-        <location line="+590"/>
+        <location line="-628"/>
+        <location line="+605"/>
         <source>Sent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-564"/>
         <source>&amp;Peers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+76"/>
         <source>Banned peers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
-        <location filename="../rpcconsole.cpp" line="+1104"/>
+        <location line="+68"/>
+        <location filename="../rpcconsole.cpp" line="+1033"/>
         <source>Select a peer to view detailed information.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2737,7 +2742,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+124"/>
         <source>Starting Block</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2762,13 +2767,13 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1501"/>
-        <location line="+1069"/>
+        <location line="-1516"/>
+        <location line="+1081"/>
         <source>User Agent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1143"/>
+        <location line="-1155"/>
         <source>Node window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2793,7 +2798,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+546"/>
+        <location line="+558"/>
         <source>Permissions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2818,7 +2823,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Whether the peer requested us to relay transactions.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2898,7 +2903,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1273"/>
+        <location line="-1288"/>
         <source>Last block time</source>
         <translation>Last block time</translation>
     </message>
@@ -2923,7 +2928,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-242"/>
+        <location filename="../rpcconsole.cpp" line="-181"/>
         <source>In:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2941,31 +2946,6 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <location line="+155"/>
         <source>Clear console</source>
         <translation>Clear console</translation>
-    </message>
-    <message>
-        <location filename="../rpcconsole.cpp" line="-242"/>
-        <source>1 &amp;hour</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>1 &amp;day</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>1 &amp;week</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>1 &amp;year</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-4"/>
-        <source>&amp;Disconnect</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../rpcconsole.h" line="-1"/>
@@ -2998,7 +2978,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-155"/>
+        <location filename="../rpcconsole.cpp" line="-379"/>
         <source>Inbound: initiated by peer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3043,12 +3023,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+182"/>
-        <source>&amp;Unban</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+164"/>
+        <location line="+327"/>
         <source>Welcome to the %1 RPC console.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3083,17 +3058,47 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+117"/>
         <source>(peer id: %1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-180"/>
+        <location line="-119"/>
         <source>Executing command using &quot;%1&quot; wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+182"/>
+        <location line="-280"/>
+        <source>Disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 week</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Unban</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+378"/>
         <source>via %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3202,7 +3207,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../receivecoinsdialog.cpp" line="+46"/>
+        <location filename="../receivecoinsdialog.cpp" line="+47"/>
         <source>Copy URI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3227,7 +3232,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+140"/>
+        <location line="+125"/>
         <source>Could not unlock wallet.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3241,7 +3246,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     <name>ReceiveRequestDialog</name>
     <message>
         <location filename="../forms/receiverequestdialog.ui" line="+14"/>
-        <source>Request payment to ...</source>
+        <source>Request payment to …</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3281,7 +3286,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <location line="+10"/>
-        <source>&amp;Save Image...</source>
+        <source>&amp;Save Image…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3347,12 +3352,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Inputs...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
+        <location line="+30"/>
         <source>automatically selected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3502,7 +3502,12 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+52"/>
+        <source>To review recipient list click &quot;Show Details…&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
         <source>Create Unsigned</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3527,12 +3532,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>To review recipient list click &quot;Show Details...&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
+        <location line="+25"/>
         <source>Confirm send coins</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3732,7 +3732,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     <name>ShutdownWindow</name>
     <message>
         <location filename="../utilitydialog.cpp" line="+85"/>
-        <source>%1 is shutting down...</source>
+        <source>%1 is shutting down…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4425,7 +4425,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+75"/>
         <source>Abandon transaction</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4460,23 +4460,28 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Edit address label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+186"/>
+        <location line="+161"/>
         <source>Comma separated file</source>
         <comment>Name of CSV file format</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-185"/>
+        <location line="-167"/>
         <source>Show transaction details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="-96"/>
+        <source>Range…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+262"/>
         <source>Export Transaction History</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4912,13 +4917,18 @@ Go to File &gt; Open Wallet to load a wallet.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+1"/>
+        <source>Fee rate (%s) is lower than the minimum fee rate setting (%s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Ignoring duplicate -wallet %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Importing...</source>
+        <source>Importing…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
