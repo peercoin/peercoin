@@ -2294,14 +2294,6 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Temps de confirmació objectiu:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Habilita Replace-By-Fee: substitució per comissió</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Amb la substitució per comissió o Replace-By-Fee (BIP-125) pot incrementar la comissió de la transacció després d'enviar-la. Sense això, seria recomenable una comissió més alta per compensar el risc d'increment del retard de la transacció.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Neteja-ho &amp;tot</translation>
     </message>
@@ -2380,14 +2372,6 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>or</source>
         <translation>o</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Pot incrementar la comissió més tard (senyala Replace-By-Fee o substitució per comissió, BIP-125).</translation>
-    </message>
-    <message>
-        <source>Please, review your transaction.</source>
-        <translation>Reviseu la transacció</translation>
     </message>
     <message>
         <source>Transaction fee</source>
@@ -3476,10 +3460,6 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
         <translation>Error: ha fallat escoltar les connexions entrants (l'escoltament ha retornat l'error %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Import no vàlid per a -maxtxfee=&lt;amount&gt;: '%s' (cal que sigui com a mínim la comissió de minrelay de %s per evitar que les comissions s'encallin)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>L'import de la transacció és massa petit per enviar-la després que se'n dedueixi la comissió</translation>
     </message>
@@ -3562,10 +3542,6 @@ Nota: Com que la comissió es calcula en funció dels bytes, una comissió de "1
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Se suprimeixen totes les transaccions de la cartera..</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee especificat molt alt! Comissions tan grans podrien pagar-se en una única transacció.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

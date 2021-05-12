@@ -2097,14 +2097,6 @@ Tandaan: Dahil ang bayad  ay kinakalkula sa bawat-byte na batayan, ang bayad ng 
         <translation>Target na oras ng pagkumpirma:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Paganahin ang Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Sa Replace-By-Fee (BIP-125) maaari kang magpataas ng bayad sa transaksyon pagkatapos na maipadala ito. Nang wala ito, maaaring irekumenda ang mas mataas na bayad upang mabawi ang mas mataas na transaction delay risk.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Burahin Lahat</translation>
     </message>
@@ -2165,20 +2157,12 @@ Tandaan: Dahil ang bayad  ay kinakalkula sa bawat-byte na batayan, ang bayad ng 
         <translation>o</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Maaari mong dagdagan ang bayad mamaya (sumesenyas ng Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Pakiusap, suriin ang iyong transaksyon.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Bayad sa transaksyon</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Hindi sumesenyas ng Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3287,10 +3271,6 @@ Tandaan: Dahil ang bayad  ay kinakalkula sa bawat-byte na batayan, ang bayad ng 
         <translation>Kamalian: Nabigo ang pakikinig sa mga papasok na koneksyon (ang listen ay nagbalik ng error %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Hindi wastong halaga para sa -maxtxfee=&lt;amount&gt;: '%s' (dapat hindi bababa sa minrelay fee na %s upang maiwasan ang mga natigil na mga transaksyon)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Ang halaga ng transaksyon ay masyadong maliit na maipadala matapos na maibawas ang bayad</translation>
     </message>
@@ -3399,10 +3379,6 @@ Tandaan: Dahil ang bayad  ay kinakalkula sa bawat-byte na batayan, ang bayad ng 
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Z-in-a-zap ang lahat ng mga transaksyon mula sa walet...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee ay nakatakda nang napakataas! Ang mga bayad na ganito kalaki ay maaaring bayaran sa isang solong transaksyon.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

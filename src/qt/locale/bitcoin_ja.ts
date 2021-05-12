@@ -2294,14 +2294,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>目標承認時間</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Replace-By-Fee を有効化する</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Replace-By-Fee(手数料の上乗せ: BIP-125)機能を有効にすることで、トランザクション送信後でも手数料を上乗せすることができます。この機能を利用しない場合、予め手数料を多めに見積もっておかないと取引が遅れる可能性があります。</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>全てクリア(&amp;A)</translation>
     </message>
@@ -2386,20 +2378,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>または</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>手数料は後から上乗せ可能です(Replace-By-Fee(手数料の上乗せ: BIP-125)機能が有効)。</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>取引内容の最終確認をしてください。</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>取引手数料</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Replace-By-Fee(手数料の上乗せ: BIP-125)機能は有効になっていません。</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3600,10 +3584,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>エラー: 内向きの接続をリッスンするのに失敗しました（%s エラーが返却されました）</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>-maxtxfee=&lt;amount&gt; オプションに対する不正な amount: '%s'（トランザクション詰まり防止のため、最小中継手数料の %s より大きくする必要があります）</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>取引の手数料差引後金額が小さすぎるため、送金できません。</translation>
     </message>
@@ -3720,10 +3700,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>ウォレットから全取引を消去中...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee が非常に高く設定されています！ ひとつの取引でこの金額の手数料が支払われてしまうことがあります。</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

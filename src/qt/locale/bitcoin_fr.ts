@@ -2293,14 +2293,6 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
         <translation>Estimation du délai de confirmation :</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Activer Remplacer-par-des-frais</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Avec Remplacer-par-des-frais (BIP-125), vous pouvez augmenter les frais de transaction après qu’elle est envoyée. Sans cela, des frais plus élevés peuvent être recommandés pour compenser le risque accru de retard transactionnel.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>&amp;Tout effacer</translation>
     </message>
@@ -2385,20 +2377,12 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
         <translation>ou</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Vous pouvez augmenter les frais ultérieurement (signale Remplacer-par-des-frais, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Veuillez vérifier votre transaction.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Frais de transaction</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Ne signale pas Remplacer-par-des-frais, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3599,10 +3583,6 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
         <translation>Erreur : L’écoute des connexions entrantes a échoué (l’écoute a retourné l’erreur %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Montant invalide pour -maxtxfee=&lt;amount&gt; : « %s » (doit être au moins les frais minrelay de %s pour prévenir le blocage des transactions)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Le montant de la transaction est trop bas pour être envoyé une fois que les frais ont été déduits</translation>
     </message>
@@ -3719,10 +3699,6 @@ Note : Les frais étant calculés par octet, des frais de « 100 satoshis par
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Supprimer toutes les transactions du porte-monnaie…</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>La valeur -maxtxfee est très élevée ! Des frais aussi élevés pourraient être payés en une seule transaction.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

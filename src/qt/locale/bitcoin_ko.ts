@@ -2197,14 +2197,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>승인 시간 목표:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Replace-By-Fee 옵션 활성화</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Replace-By-Fee (BIP-125) 옵션은 보낸 거래의 수수료 상향을 지원해 줍니다. 이 옵션이 없을 경우 거래 지연을 방지하기 위해 더 높은 수수료가 권장됩니다.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>모두 지우기(&amp;A)</translation>
     </message>
@@ -2265,20 +2257,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>또는</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>추후에 거래 수수료를 올릴 수 있습니다 (Replace-By-Fee, BIP-125 지원)</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>거래를 재검토 하십시오</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>거래 수수료</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Replace-By-Fee, BIP-125 지원 안함</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3395,10 +3379,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>오류: 들어오는 연결을 허용하는데 실패했습니다 (listen returned error %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>유효하지 않은 금액 -maxtxfee=&lt;amount&gt;: '%s' (거래가 막히는 상황을 방지하게 위해 적어도 %s 의 중계 수수료를 지정해야 합니다)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>거래액이 수수료를 지불하기엔 너무 작습니다</translation>
     </message>
@@ -3507,10 +3487,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>지갑의 모든거래내역 건너뛰기...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee 값이 너무 큽니다!  하나의 거래에 너무 큰 수수료가 지불 됩니다.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

@@ -2168,10 +2168,6 @@
         <translation>Várható megerősítési idő:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Replace-By-Fee bekapcsolása</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Mindent &amp;töröl</translation>
     </message>
@@ -2234,10 +2230,6 @@
     <message>
         <source>or</source>
         <translation>vagy</translation>
-    </message>
-    <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Később növelheti a tranzakció díját (lásd Replace-By-Fee, BIP-125).</translation>
     </message>
     <message>
         <source>Please, review your transaction.</source>

@@ -2278,14 +2278,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>Циљно време потврде:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Омогући Замени-за-Провизију</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Са Замени-за-Провизију (BIP-125) се може повећати висина провизије за трансакцију након што је послата. Без овога, виша провизија може бити препоручена да се смањи ризик од кашњења трансакције. </translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Очисти &amp;Све</translation>
     </message>
@@ -2370,20 +2362,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>или</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Можете повећати провизију касније (сигнали Замени-са-Провизијом, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Молим, размотрите вашу трансакцију.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Провизија за трансакцију</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Не сигнализира Замени-са-Провизијом, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3577,10 +3561,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>Грешка: Претрага за долазним конекцијама није успела (претрага враћа грешку %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Неважећи износ за -maxtxfee=&lt;amount&gt;: '%s' (мора бити minrelay провизија од %s да би се спречило да се трансакција заглави)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Износ трансакције је толико мали за слање након што се одузме провизија</translation>
     </message>
@@ -3697,10 +3677,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Затварање свих трансакција из новчаника...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee је постављен сувише високо! Овако велике провизије могу бити наплаћене на само једној трансакцији.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

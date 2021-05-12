@@ -2294,14 +2294,6 @@ Nota: poiché la commissione è calcolata su base per byte, una commissione di "
         <translation>Obiettivo del tempo di conferma:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Attiva Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Con Replace-By-Fee (BIP-125) si puó aumentare la commissione sulla transazione dopo averla inviata. Senza questa, una commissione piú alta è consigliabile per compensare l'aumento del rischio dovuto al ritardo della transazione.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Cancella &amp;tutto</translation>
     </message>
@@ -2386,20 +2378,12 @@ Nota: poiché la commissione è calcolata su base per byte, una commissione di "
         <translation>o</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Si puó aumentare la commissione successivamente (segnalando Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Per favore, rivedi la tua transazione.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Commissione transazione</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Senza segnalare Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3600,10 +3584,6 @@ Nota: poiché la commissione è calcolata su base per byte, una commissione di "
         <translation>Errore: attesa per connessioni in arrivo fallita (errore riportato %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Importo non valido per -maxtxfee=&lt;amount&gt;: '%s' (deve essere almeno pari alla commissione 'minrelay fee' di %s per prevenire transazioni bloccate)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>L'importo della transazione risulta troppo basso per l'invio una volta dedotte le commissioni.</translation>
     </message>
@@ -3720,10 +3700,6 @@ Nota: poiché la commissione è calcolata su base per byte, una commissione di "
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Eliminazione dal portafoglio di tutte le transazioni...</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation>-maxtxfee è impostato molto alto! Commissioni così alte possono venir pagate anche su una singola transazione.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

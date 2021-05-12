@@ -2280,14 +2280,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>Επιβεβαίωση χρονικού στόχου :</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Ενεργοποίηση Αντικατάστασης-Aπό-Έξοδα</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Με την υπηρεσία αντικατάστασης-πληρωμής (BIP-125) μπορείτε να αυξήσετε το τέλος μιας συναλλαγής μετά την αποστολή. Χωρίς αυτό, μπορεί να συνιστάται υψηλότερη αμοιβή για την αντιστάθμιση του αυξημένου κινδύνου καθυστέρησης της συναλλαγής.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Καθαρισμός &amp;Όλων</translation>
     </message>
@@ -2368,21 +2360,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>ή</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation> Μπορείτε να αυξήσετε αργότερα την αμοιβή (σήματα Αντικατάσταση-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Παρακαλούμε, ελέγξτε τη συναλλαγή σας.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Κόστος συναλλαγής</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation> 
-Δεν σηματοδοτεί την Aντικατάσταση-Aπό-Έξοδο, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -3571,10 +3554,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation>Σφάλμα: Η ακρόαση για εισερχόμενες συνδέσεις απέτυχε (ακούστε επιστραμμένο σφάλμα %s)</translation>
     </message>
     <message>
-        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
-        <translation>Μη έγκυρο ποσό για το -maxtxfee =: '%s' (πρέπει να είναι τουλάχιστον το minrelay έξοδο του %s για την αποφυγή κολλημένων συναλλαγών)</translation>
-    </message>
-    <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
         <translation>Το ποσό της συναλλαγής είναι πολύ μικρό για να στείλει μετά την αφαίρεση του τέλους</translation>
     </message>
@@ -3691,10 +3670,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Μεταφορά όλων των συναλλαγών από το πορτοφόλι</translation>
-    </message>
-    <message>
-        <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation> -maxtxfee είναι καταχωρημένο πολύ υψηλά! Έξοδα τόσο υψηλά μπορούν να πληρωθούν σε μια ενιαία συναλλαγή.</translation>
     </message>
     <message>
         <source>This is the transaction fee you may pay when fee estimates are not available.</source>

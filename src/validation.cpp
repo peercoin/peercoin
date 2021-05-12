@@ -38,7 +38,6 @@
 #include <uint256.h>
 #include <undo.h>
 #include <util/moneystr.h>
-#include <util/rbf.h>
 #include <util/strencodings.h>
 #include <util/system.h>
 #include <util/translation.h>
@@ -3534,8 +3533,8 @@ bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAccepte
                 nPoSTemperature++;
             } else { // PoW
                 int d = ::ChainActive().Height() - pindex->nHeight;
-                if (fHavePoW || d > 36)
-                    nCooling = 0;
+//                if (fHavePoW || d > 36)
+//                    nCooling = 0;
                 nPoSTemperature -= nCooling;
                 nPoSTemperature = std::max((int)nPoSTemperature, 0);
             }

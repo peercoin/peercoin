@@ -2265,14 +2265,6 @@ Catatan: Karena biaya dihitung berdasarkan per byte, biaya "100 satoshi per kB" 
         <translation>Target waktu konfirmasi:</translation>
     </message>
     <message>
-        <source>Enable Replace-By-Fee</source>
-        <translation>Izinkan Replace-By-Fee</translation>
-    </message>
-    <message>
-        <source>With Replace-By-Fee (BIP-125) you can increase a transaction's fee after it is sent. Without this, a higher fee may be recommended to compensate for increased transaction delay risk.</source>
-        <translation>Dengan Replace-By-Fee (BIP-125) Anda dapat menambah biaya transaksi setelah dikirim. Tanpa ini, biaya yang lebih tinggi dapat direkomendasikan untuk mengkompensasi peningkatan risiko keterlambatan transaksi.</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation>Hapus &amp;Semua</translation>
     </message>
@@ -2341,20 +2333,12 @@ Catatan: Karena biaya dihitung berdasarkan per byte, biaya "100 satoshi per kB" 
         <translation>atau</translation>
     </message>
     <message>
-        <source>You can increase the fee later (signals Replace-By-Fee, BIP-125).</source>
-        <translation>Anda dapat menambah biaya kemudian (sinyal Replace-By-Fee, BIP-125).</translation>
-    </message>
-    <message>
         <source>Please, review your transaction.</source>
         <translation>Mohon periksa kembali transaksi anda.</translation>
     </message>
     <message>
         <source>Transaction fee</source>
         <translation>Biaya Transaksi</translation>
-    </message>
-    <message>
-        <source>Not signalling Replace-By-Fee, BIP-125.</source>
-        <translation>Tidak memberi sinyal Replace-By-Fee, BIP-125.</translation>
     </message>
     <message>
         <source>Total Amount</source>

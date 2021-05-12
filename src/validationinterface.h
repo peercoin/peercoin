@@ -108,7 +108,6 @@ protected:
      * - SIZELIMIT (removed in size limiting if the mempool exceeds -maxmempool megabytes)
      * - REORG (removed during a reorg)
      * - CONFLICT (removed because it conflicts with in-block transaction)
-     * - REPLACED (removed due to RBF replacement)
      *
      * This does not fire for transactions that are removed from the mempool
      * because they have been included in a block. Any client that is interested
