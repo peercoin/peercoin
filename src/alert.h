@@ -8,6 +8,7 @@
 
 #include "serialize.h"
 #include "sync.h"
+#include <net.h>
 
 #include <map>
 #include <set>
@@ -19,7 +20,7 @@ class CNode;
 class uint256;
 
 extern std::map<uint256, CAlert> mapAlerts;
-extern CCriticalSection cs_mapAlerts;
+extern RecursiveMutex cs_mapAlerts;
 
 /** Alerts are for notifying old versions if they become too obsolete and
  * need to upgrade.  The message is displayed in the status bar.
@@ -98,7 +99,7 @@ public:
     bool Cancels(const CAlert& alert) const;
     bool AppliesTo(int nVersion, const std::string& strSubVerIn) const;
     bool AppliesToMe() const;
-    bool RelayTo(CNode* pnode) const;
+    bool RelayTo(CNode* pnode, CConnman* connman) const;
     bool CheckSignature(const std::vector<unsigned char>& alertKey) const;
     bool ProcessAlert(const std::vector<unsigned char>& alertKey);
 

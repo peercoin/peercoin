@@ -1,21 +1,22 @@
 #include <kernelrecord.h>
-
+#include <key_io.h>
 #include <wallet/wallet.h>
 #include <base58.h>
+#include <chainparams.h>
 #include <timedata.h>
-
+#include <interfaces/wallet.h>
 #include <math.h>
 using namespace std;
 
-bool KernelRecord::showTransaction(const CWalletTx &wtx)
+bool KernelRecord::showTransaction(bool isCoinbase, int depth)
 {
-    if (wtx.IsCoinBase())
-    {
-        if (wtx.GetDepthInMainChain() < 2)
+    if (isCoinbase) {
+        if (depth < 2)
             return false;
-    } else
-        if (wtx.GetDepthInMainChain() == 0)
+    } else {
+        if (depth == 0)
             return false;
+    }
 
     return true;
 }
@@ -23,37 +24,38 @@ bool KernelRecord::showTransaction(const CWalletTx &wtx)
 /*
  * Decompose CWallet transaction to model kernel records.
  */
-vector<KernelRecord> KernelRecord::decomposeOutput(const CWallet *wallet, const CWalletTx &wtx)
+vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, const interfaces::WalletTx &wtx)
 {
-    const Consensus::Params& params = Params().GetConsensus();
     vector<KernelRecord> parts;
-    int64_t nTime = wtx.GetTxTime();
-    uint256 hash = wtx.GetHash();
-    std::map<std::string, std::string> mapValue = wtx.mapValue;
-    int nDayWeight = (min((GetAdjustedTime() - nTime), params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
+    int64_t nTime = wtx.tx->nTime;
+    uint256 hash = wtx.tx->GetHash();
+    std::map<std::string, std::string> mapValue = wtx.value_map;
 
-    if (showTransaction(wtx))
-    {
-        for (size_t nOut = 0; nOut < wtx.tx->vout.size(); nOut++)
-        {
+    int numBlocks;
+    interfaces::WalletTxStatus status;
+    interfaces::WalletOrderForm orderForm;
+    bool inMempool;
+    wallet.getWalletTxDetails(hash, status, orderForm, inMempool, numBlocks);
+
+    if (showTransaction(wtx.is_coinbase, status.depth_in_main_chain)) {
+        for (size_t nOut = 0; nOut < wtx.tx->vout.size(); nOut++) {
             CTxOut txOut = wtx.tx->vout[nOut];
-            if( wallet->IsMine(txOut) ) {
+            if (wallet.txoutIsMine(txOut)) {
                 CTxDestination address;
                 std::string addrStr;
 
-                uint64_t coinAge = max(txOut.nValue * nDayWeight / COIN, (int64_t)0);
-
-                if (ExtractDestination(txOut.scriptPubKey, address))
-                {
+                if (ExtractDestination(txOut.scriptPubKey, address)) {
+                    if (address.type() != typeid(PKHash)) // only PKHash can mint at the moment
+                        continue;
                     // Sent to Bitcoin Address
                     addrStr = EncodeDestination(address);
-                }
-                else
-                {
+                } else {
                     // Sent to IP, or other non-address transaction like OP_EVAL
                     addrStr = mapValue["to"];
                 }
-                parts.push_back(KernelRecord(hash, nTime, addrStr, txOut.nValue, nOut, wallet->IsSpent(hash, nOut), coinAge));
+                std::vector<interfaces::WalletTxOut> coins = wallet.getCoins({COutPoint(hash, nOut)});
+                bool isSpent = coins.size() >= 1 ? coins[0].is_spent : true;
+                parts.push_back(KernelRecord(hash, nTime, addrStr, txOut.nValue, nOut, isSpent));
             }
         }
     }
@@ -69,6 +71,13 @@ std::string KernelRecord::getTxID()
 int64_t KernelRecord::getAge() const
 {
     return (GetAdjustedTime() - nTime) / 86400;
+}
+
+int64_t KernelRecord::getCoinAge() const
+{
+    const Consensus::Params& params = Params().GetConsensus();
+    int nDayWeight = (min((GetAdjustedTime() - nTime), params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
+    return max(nValue * nDayWeight / COIN, (int64_t) 0);
 }
 
 double KernelRecord::getProbToMintStake(double difficulty, int timeOffset) const

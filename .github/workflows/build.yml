@@ -1,31 +1,23 @@
-name: Build
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    types: [opened, synchronize, reopened]
+name: Peercoin-artifact
+on: [push, pull_request]
+
+# Should do linux, mac and windows.
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: checkout
+        uses: actions/checkout@v2
       
       - name: dependencies
         run: |
           sudo apt-get -y install autoconf libprotobuf-dev protobuf-compiler libminiupnpc-dev libzmq3-dev libqrencode-dev libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libtool pkg-config libdb-dev libdb++-dev libboost-all-dev libssl-dev libevent-dev
           
-          
       - name: build
         run: |
           ./autogen.sh
-          ./configure --with-gui=qt5 --with-incompatible-bdb
+          ./configure --with-gui=qt5 --disable-bench --disable-tests --disable-ccache --with-incompatible-bdb
           make
+
+
+

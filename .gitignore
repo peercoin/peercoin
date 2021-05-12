@@ -1,22 +1,16 @@
-bin
-*.config
-*.creator
-*.files
-*.includes
-.deps
-*.user
-
 *.tar.gz
 
 *.exe
-src/*.exe
+*.pdb
 src/*/*.exe
 src/peercoin
 src/peercoind
 src/peercoin-cli
 src/peercoin-tx
+src/peercoin-wallet
+src/test/fuzz
+!src/test/fuzz/*.*
 src/test/test_peercoin
-src/test/test_peercoin_fuzzy
 src/qt/test/test_peercoin-qt
 
 # autoreconf
@@ -36,6 +30,7 @@ build-aux/m4/ltversion.m4
 build-aux/missing
 build-aux/compile
 build-aux/test-driver
+config.cache
 config.log
 config.status
 configure
@@ -43,6 +38,7 @@ libtool
 src/config/bitcoin-config.h
 src/config/bitcoin-config.h.in
 src/config/stamp-h1
+src/obj
 share/setup.nsi
 share/qt/Info.plist
 src/obj/build.h
@@ -71,12 +67,12 @@ src/qt/bitcoin-qt.includes
 *.pyc
 *.o
 *.o-*
-*.patch
 .ppcoin
 .peercoin
 *.a
 *.pb.cc
 *.pb.h
+*.dat
 
 *.log
 *.trs
@@ -85,6 +81,10 @@ src/qt/bitcoin-qt.includes
 *.json.h
 *.raw.h
 
+# Only ignore unexpected patches
+*.patch
+!depends/patches/**/*.patch
+
 #libtool object files
 *.lo
 *.la
@@ -92,11 +92,14 @@ src/qt/bitcoin-qt.includes
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-ppcoin-qt
-peercoin-qt
+!depends/Makefile
+src/qt/peercoin-qt
 PPCoin-Qt.app
 Peercoin-Qt.app
 background.tiff*
+
+# Qt Creator
+Makefile.am.user
 
 # Unit-tests
 Makefile.test
@@ -109,6 +112,9 @@ qrc_*.cpp
 # Mac specific
 .DS_Store
 build
+
+# Previous releases
+releases
 
 #lcov
 *.gcno
@@ -134,3 +140,12 @@ contrib/devtools/split-debug.sh
 
 #python stuff
 .mypy_cache
+# Output from running db4 installation
+db4/
+
+# clang-check
+*.plist
+
+osx_volname
+dist/
+*.background.tiff

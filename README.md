@@ -1,21 +1,21 @@
-
-Peercoin Official Development Repo
+# Peercoin Official Development Repo
 ==================================
 
 [![Build Status](https://travis-ci.org/peercoin/peercoin.svg?branch=master)](https://travis-ci.org/peercoin/peercoin)
+[![Peercoin-artifact](https://github.com/peercoin/peercoin/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/peercoin/peercoin/actions/workflows/build.yml)
 
 ### What is Peercoin?
 [Peercoin](https://peercoin.net) (abbreviated PPC), previously known as PPCoin, is the first [cryptocurrency](https://en.wikipedia.org/wiki/Cryptocurrency) design introducing [proof-of-stake consensus](https://peercoin.net/resources#whitepaper) as a security model, with a combined [proof-of-stake](https://peercoin.net/resources#whitepaper)/[proof-of-work](https://en.wikipedia.org/wiki/Proof-of-work_system) minting system. Peercoin is based on [Bitcoin](https://bitcoin.org), while introducing many important innovations to cryptocurrency field including new security model, energy efficiency, better minting model and more adaptive response to rapid change in network computation power.
 
 ### Peercoin Resources
 * Client and Source:
-[Client Binaries](https://peercoin.net/wallet),
+[Client Binaries](https://github.com/peercoin/peercoin/releases),
 [Source Code](https://github.com/peercoin/peercoin)
-* Documentation: [Peercoin Whitepaper](https://peercoin.net/resources#whitepaper),
-[Peercoin Docs](https://docs.peercoin.net)
+* Documentation: [Peercoin Docs](https://docs.peercoin.net)
 * Help: 
 [Forum](https://talk.peercoin.net),
 [Intro & Important Links](https://talk.peercoin.net/t/what-is-peercoin-intro-important-links/2889)
+[Telegram Chat](https://t.me/peercoin)
 
 Testing
 -------
@@ -32,16 +32,9 @@ Developers are strongly encouraged to write unit tests for new code, and to subm
 Unit tests can be compiled and run (assuming they weren't disabled in configure) with:
   make check
 
-Every pull request is built for both Windows and Linux on a dedicated server,
-and unit and sanity tests are automatically run. The binaries produced may be
-used for manual QA testing — a link to them will appear in a comment on the
-pull request posted by [BitcoinPullTester](https://github.com/BitcoinPullTester). See https://github.com/TheBlueMatt/test-scripts
-for the build/test scripts.
-
 ### Manual Quality Assurance (QA) Testing
 
-Large changes should have a test plan, and should be tested by somebody other
-than the developer who wrote the code.
+Large changes should have a test plan, and should be tested by somebody other than the developer who wrote the code.
 
 * Developers work in their own forks, then submit pull requests when they think their feature or bug fix is ready.
 * If it is a simple/trivial/non-controversial change, then one of the development team members simply pulls it.
@@ -66,3 +59,5 @@ The release branch is identified by it's major and minor version number e.g. `re
 The official release tags are always made on a release branch.
 Release branches will typically branch from or merge tested code from the master branch to freeze the code for release.
 Only critical patches can be applied through pull requests directly on this branch, all non critical features should follow the standard path through develop -> master -> release-*
+
+

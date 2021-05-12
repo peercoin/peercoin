@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2009-2018 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -51,7 +51,7 @@ void URITests::uriTests()
     QVERIFY(rv.address == QString("PHbS6MgBPu11wn3zsjkEewYUH7Fqmt8EMD"));
     QVERIFY(rv.label == QString());
 
-    QVERIFY(GUIUtil::parseBitcoinURI("peercoin://PHbS6MgBPu11wn3zsjkEewYUH7Fqmt8EMD?message=Wikipedia Example Address", &rv));
+    QVERIFY(GUIUtil::parseBitcoinURI("peercoin:PHbS6MgBPu11wn3zsjkEewYUH7Fqmt8EMD?message=Wikipedia Example Address", &rv));
     QVERIFY(rv.address == QString("PHbS6MgBPu11wn3zsjkEewYUH7Fqmt8EMD"));
     QVERIFY(rv.label == QString());
 
