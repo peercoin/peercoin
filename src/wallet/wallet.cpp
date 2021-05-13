@@ -9,6 +9,7 @@
 #include <consensus/consensus.h>
 #include <consensus/validation.h>
 #include <consensus/tx_verify.h>
+#include <external_signer.h>
 #include <fs.h>
 #include <index/txindex.h>
 #include <interfaces/chain.h>
