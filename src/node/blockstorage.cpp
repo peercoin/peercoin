@@ -22,6 +22,8 @@
 #include <util/system.h>
 #include <validation.h>
 
+#include <unordered_map>
+
 namespace node {
 std::atomic_bool fImporting(false);
 std::atomic_bool fReindex(false);
