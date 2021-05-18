@@ -417,6 +417,9 @@ private:
     /** Send `feefilter` message. */
 //    void MaybeSendFeefilter(CNode& node, std::chrono::microseconds current_time) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
+    /** Send `feefilter` message. */
+    void MaybeSendFeefilter(CNode& node, std::chrono::microseconds current_time) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+
     const CChainParams& m_chainparams;
     CConnman& m_connman;
     AddrMan& m_addrman;
