@@ -482,7 +482,7 @@ protected:
     // In-memory counter for external mempool tracking purposes.
     // This number is incremented once every time a transaction
     // is added or removed from the mempool for any reason.
-    mutable uint64_t m_sequence_number{1};
+    mutable uint64_t m_sequence_number GUARDED_BY(cs){1};
 
     bool m_is_loaded GUARDED_BY(cs){false};
 
@@ -574,7 +574,7 @@ private:
 
 public:
     indirectmap<COutPoint, const CTransaction*> mapNextTx GUARDED_BY(cs);
-    std::map<uint256, CAmount> mapDeltas;
+    std::map<uint256, CAmount> mapDeltas GUARDED_BY(cs);
 
     /** Create a new CTxMemPool.
      * Sanity checks will be off by default for performance, because otherwise
