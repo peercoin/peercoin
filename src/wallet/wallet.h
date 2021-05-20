@@ -69,6 +69,8 @@ std::unique_ptr<WalletDatabase> MakeWalletDatabase(const std::string& name, cons
 extern bool fWalletUnlockMintOnly;
 
 static const CAmount MIN_CHANGE = MIN_TXOUT_AMOUNT;
+//! -consolidatefeerate default
+static const CAmount DEFAULT_CONSOLIDATE_FEERATE{10000}; // 10 sat/vbyte
 /**
  * maximum fee increase allowed to do partial spend avoidance, even for nodes with this feature disabled by default
  *
@@ -622,6 +624,12 @@ public:
 
      /** If the cost to spend a change output at this feerate is greater than the value of the
       * output itself, just drop it to fees. */
+
+    /** When the actual feerate is less than the consolidate feerate, we will tend to make transactions which
+     * consolidate inputs. When the actual feerate is greater than the consolidate feerate, we will tend to make
+     * transactions which have the lowest fees.
+     */
+    CFeeRate m_consolidate_feerate{DEFAULT_CONSOLIDATE_FEERATE};
 
     /** The maximum fee amount we're willing to pay to prioritize partial spend avoidance. */
     CAmount m_max_aps_fee{DEFAULT_MAX_AVOIDPARTIALSPEND_FEE}; //!< note: this is absolute fee, not fee rate
