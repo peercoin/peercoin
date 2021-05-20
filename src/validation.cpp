@@ -2245,6 +2245,16 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
         nTime5 - nTimeStart // in microseconds (µs)
     );
 
+    TRACE7(validation, block_connected,
+        block.GetHash().ToString().c_str(),
+        pindex->nHeight,
+        block.vtx.size(),
+        nInputs,
+        nSigOpsCost,
+        GetTimeMicros() - nTimeStart, // in microseconds (µs)
+        block.GetHash().data()
+    );
+
     return true;
 }
 
