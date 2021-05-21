@@ -534,10 +534,7 @@ std::optional<SelectionResult> SelectCoins(const CWallet& wallet, const std::vec
     // Add preset inputs to result
     res->AddInput(preset_inputs);
 
-    setCoinsRet = res->GetInputSet();
-    nValueRet = res->GetSelectedValue();
-
-    return true;
+    return res;
 }
 
 static bool IsCurrentForAntiFeeSniping(interfaces::Chain& chain, const uint256& block_hash)
