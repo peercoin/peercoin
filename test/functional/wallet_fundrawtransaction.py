@@ -148,6 +148,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.test_external_inputs()
         self.test_22670()
         self.test_feerate_rounding()
+        self.test_input_confs_control()
 
     def test_change_position(self):
         """Ensure setting changePosition in fundraw with an exact match is handled properly."""
