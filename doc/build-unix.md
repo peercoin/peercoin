@@ -33,6 +33,7 @@ These dependencies are required:
 
  Library     | Purpose          | Description
  ------------|------------------|----------------------
+ libssl      | Math             | Random Number Generation, Reward calculation
  libboost    | Utility          | Library for threading, data structures, etc
  libevent    | Networking       | OS independent asynchronous networking
 
@@ -243,12 +244,6 @@ disable-wallet mode with:
 In this case there is no dependency on Berkeley DB.
 
 Mining is also possible in disable-wallet mode using the `getblocktemplate` RPC call.
-
-Disable checkpoints
--------------------
-It is possible to compile the node without the support for centrally issued checkpoints:
-
-    ./configure --disable-checkpoints
 
 
 Additional Configure Flags
