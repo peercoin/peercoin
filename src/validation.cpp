@@ -1262,7 +1262,7 @@ PackageMempoolAcceptResult MemPoolAccept::AcceptMultipleTransactions(const std::
         // package to spend. Since we already checked conflicts in the package and we don't allow
         // replacements, we don't need to track the coins spent. Note that this logic will need to be
         // updated if package replace-by-fee is allowed in the future.
-        assert(args.disallow_mempool_conflicts);
+        assert(!args.m_allow_bip125_replacement);
         m_viewmempool.PackageAddTransaction(ws.m_ptx);
     }
 
