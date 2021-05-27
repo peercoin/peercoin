@@ -2098,15 +2098,6 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
             connman->MarkAddressGood(pfrom->addr);
         }
 
-#ifdef ENABLE_CHECKPOINTS
-        // peercoin: relay sync-checkpoint
-        {
-            LOCK(cs_main);
-            if (!checkpointMessage.IsNull())
-                checkpointMessage.RelayTo(pfrom, connman);
-        }
-#endif
-
         // peercoin: relay alerts
         {
             LOCK(cs_mapAlerts);
@@ -2138,12 +2129,6 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
             assert(pfrom->fInbound == false);
             pfrom->fDisconnect = true;
         }
-
-#ifdef ENABLE_CHECKPOINTS
-        // peercoin: ask for pending sync-checkpoint if any
-        if (!::ChainstateActive().IsInitialBlockDownload())
-            AskForPendingSyncCheckpoint(pfrom);
-#endif
 
         return true;
     }
@@ -3433,20 +3418,6 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
         }
         return true;
     }
-
-#ifdef ENABLE_CHECKPOINTS
-    if (msg_type == NetMsgType::CHECKPOINT)
-    {
-         CSyncCheckpoint checkpoint;
-         vRecv >> checkpoint;
-
-         if (checkpoint.ProcessSyncCheckpoint(pfrom))
-             connman->ForEachNode([&checkpoint, connman](CNode* pnode) {
-                 checkpoint.RelayTo(pnode, connman);
-             });
-        return true;
-    }
-#endif
 
     if (msg_type == NetMsgType::NOTFOUND) {
         // Remove the NOTFOUND transactions from the peer
