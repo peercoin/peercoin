@@ -56,7 +56,6 @@
 
 #include <validationinterface.h>
 #include <walletinitinterface.h>
-//#include <checkpointsync.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -1056,15 +1055,6 @@ bool AppInitSanityChecks()
     // peercoin: init hash seed
     peercoinRandseed = GetRand(1 << 30);
 
-#ifdef ENABLE_CHECKPOINTS
-    // peercoin: moved here because ECC need to be initialized to execute this
-    if (gArgs.IsArgSet("-checkpointkey")) // peercoin: checkpoint master priv key
-    {
-        if (!SetCheckpointPrivKey(gArgs.GetArg("-checkpointkey", "")))
-            return InitError("Unable to sign checkpoint, wrong checkpointkey?");
-    }
-#endif
-
     // Sanity check
     if (!InitSanityCheck())
         return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down.").translated, PACKAGE_NAME));
@@ -1440,16 +1430,6 @@ bool AppInitMain(NodeContext& node)
                     strLoadError = _("Error initializing block database").translated;
                     break;
                 }
-
-#ifdef ENABLE_CHECKPOINTS
-                // peercoin: initialize synchronized checkpoint
-                if (!fReindex && !WriteSyncCheckpoint(chainparams.GenesisBlock().GetHash()))
-                    return error("LoadBlockIndex() : failed to init sync checkpoint");
-
-                // peercoin: if checkpoint master key changed must reset sync-checkpoint
-                if (!CheckCheckpointPubKey())
-                    return error("failed to reset checkpoint master pubkey");
-#endif
 
                 // At this point we're either in reindex or we've loaded a useful
                 // block tree into BlockIndex()!
