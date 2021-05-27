@@ -1438,15 +1438,6 @@ if test "x$use_ccache" = "xyes"; then
     AX_CHECK_PREPROC_FLAG([-Qunused-arguments],[CPPFLAGS="-Qunused-arguments $CPPFLAGS"])
 fi
 
-#dnl enable sync checkpoints
-#AC_MSG_CHECKING([if sync checkpoints should be enabled])
-#if test x$enable_checkpoints != xno; then
-#  AC_MSG_RESULT(yes)
-#  AC_DEFINE_UNQUOTED([ENABLE_CHECKPOINTS],[1],[Define to 1 to enable sync checkpoints])
-#else
-#  AC_MSG_RESULT(no)
-#fi
-
 dnl enable wallet
 AC_MSG_CHECKING([if wallet should be enabled])
 if test x$enable_wallet != xno; then
@@ -1548,7 +1539,6 @@ fi
 AM_CONDITIONAL([TARGET_DARWIN], [test x$TARGET_OS = xdarwin])
 AM_CONDITIONAL([BUILD_DARWIN], [test x$BUILD_OS = xdarwin])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
-AM_CONDITIONAL([ENABLE_CHECKPOINTS],[test x$enable_checkpoints = xyes])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$BUILD_TEST = xyes])
 AM_CONDITIONAL([ENABLE_FUZZ],[test x$enable_fuzz = xyes])
