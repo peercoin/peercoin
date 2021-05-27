@@ -119,20 +119,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Comma separated file</source>
-        <comment>Name of CSV file format</comment>
+        <extracomment>Expanded name of the CSV file format. See https://en.wikipedia.org/wiki/Comma-separated_values</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>There was an error trying to save the address list to %1. Please try again.</source>
-        <comment>An error message.</comment>
-        <extracomment>%1 is a name of the file (e.g., &quot;addrbook.csv&quot;) that the bitcoin addresses were exported to.</extracomment>
+        <extracomment>An error message. %1 is a stand-in argument for the name of the file we attempted to save to.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2"/>
+        <location line="-3"/>
         <source>Exporting Failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -316,7 +315,7 @@
 <context>
     <name>BitcoinApplication</name>
     <message>
-        <location filename="../bitcoin.cpp" line="+421"/>
+        <location filename="../bitcoin.cpp" line="+420"/>
         <source>Runaway exception</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1323,9 +1322,9 @@
     <message>
         <location line="+72"/>
     <message numerus="yes">
-        <location line="+7"/>
+        <location line="+9"/>
         <source>(sufficient to restore backups %n day(s) old)</source>
-        <comment>block chain pruning</comment>
+        <extracomment>Explanatory text on the capability of the current prune target.</extracomment>
         <translation type="unfinished">
             <numerusform></numerusform>
             <numerusform></numerusform>
@@ -1928,19 +1927,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
         <location line="+49"/>
-        <source>111.11111111 BTC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-42"/>
-        <location line="+49"/>
-        <source>909.09090909 BTC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-29"/>
         <source>closest matching &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2095,7 +2082,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <comment>Name of binary PSBT file format</comment>
+        <extracomment>Expanded name of the binary PSBT file format. See: BIP 174.</extracomment>
         <location line="+16"/>
         <source>Total balance that was used in stake generation</source>
         <translation type="unfinished"></translation>
@@ -2173,43 +2160,51 @@ If you are receiving this error you should request the merchant provide a BIP21 
 <context>
     <name>PeerTableModel</name>
     <message>
-        <location filename="../peertablemodel.h" line="+77"/>
+        <location filename="../peertablemodel.h" line="+101"/>
         <source>User Agent</source>
+        <extracomment>Title of Peers Table column which contains the peer&apos;s User Agent string.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-9"/>
         <source>Ping</source>
+        <extracomment>Title of Peers Table column which indicates the current latency of the connection with the peer.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-12"/>
+        <source>Peer</source>
+        <extracomment>Title of Peers Table column which contains a unique number used to identify a connection.</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <source>Sent</source>
+        <extracomment>Title of Peers Table column which indicates the total amount of network information we have sent to the peer.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+3"/>
         <source>Received</source>
+        <extracomment>Title of Peers Table column which indicates the total amount of network information we have received from the peer.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>Peer Id</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
+        <location line="-15"/>
         <source>Address</source>
+        <extracomment>Title of Peers Table column which contains the IP/Onion/I2P address of the connected peer.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+3"/>
         <source>Type</source>
+        <extracomment>Title of Peers Table column which describes the type of peer connection. The &quot;type&quot; describes why the connection exists.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+3"/>
         <source>Network</source>
+        <extracomment>Title of Peers Table column which states the network the peer connected through.</extracomment>
         <translation type="unfinished">Network</translation>
     </message>
 </context>
@@ -2439,9 +2434,9 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>PNG Image</source>
-        <comment>Name of PNG file format</comment>
+        <extracomment>Expanded name of the PNG file format. See https://en.wikipedia.org/wiki/Portable_Network_Graphics</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2851,7 +2846,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-379"/>
+        <location filename="../rpcconsole.cpp" line="-392"/>
         <source>Inbound: initiated by peer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2896,22 +2891,51 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+327"/>
+        <location line="+13"/>
+        <source>Ctrl++</source>
+        <extracomment>Main shortcut to increase the RPC console font size.</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ctrl+=</source>
+        <extracomment>Secondary shortcut to increase the RPC console font size.</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Ctrl+-</source>
+        <extracomment>Main shortcut to decrease the RPC console font size.</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ctrl+_</source>
+        <extracomment>Secondary shortcut to decrease the RPC console font size.</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+311"/>
         <source>Welcome to the %1 RPC console.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Use up and down arrows to navigate history, and %1 to clear screen.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
+        <source>Use %1 and %2 to increase or decrease the font size.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Type %1 for an overview of available commands.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>For more information on using this console type %1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2931,17 +2955,13 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
-        <source>(peer id: %1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location line="-2"/>
         <location line="+189"/>
         <source>Executing command using &quot;%1&quot; wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-280"/>
+        <location line="-283"/>
         <source>Disconnect</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2971,7 +2991,12 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+378"/>
+        <location line="+379"/>
+        <source>(peer: %1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>via %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3182,7 +3207,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
 <context>
     <name>RecentRequestsTableModel</name>
     <message>
-        <location filename="../recentrequeststablemodel.cpp" line="+27"/>
+        <location filename="../recentrequeststablemodel.cpp" line="+30"/>
         <source>Date</source>
         <translation type="unfinished">Date</translation>
     </message>
@@ -3212,7 +3237,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Requested</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3409,6 +3434,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
     </message>
     <message>
         <location line="+19"/>
+        <source>Partially Signed Transaction (Binary)</source>
+        <extracomment>Expanded name of the binary PSBT file format. See: BIP 174.</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3455,11 +3486,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
     <message>
         <location line="+23"/>
         <source>PSBT copied</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+166"/>
-        <location line="+183"/>
         <source>Watch-only balance:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3858,7 +3885,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
 <context>
     <name>TransactionDesc</name>
     <message numerus="yes">
-        <location filename="../transactiondesc.cpp" line="+34"/>
+        <location filename="../transactiondesc.cpp" line="+36"/>
         <source>Open for %n more block(s)</source>
         <translation>
             <numerusform>Open for %n more block</numerusform>
@@ -3876,7 +3903,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>0/unconfirmed, %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3891,12 +3918,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-1"/>
         <source>abandoned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>%1/unconfirmed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3906,7 +3933,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+51"/>
         <source>Status</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4124,7 +4151,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+62"/>
+        <location line="+60"/>
         <source>Open for %n more block(s)</source>
         <translation>
             <numerusform>Open for %n more block</numerusform>
@@ -4366,13 +4393,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+161"/>
-        <source>Comma separated file</source>
-        <comment>Name of CSV file format</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-167"/>
+        <location line="-6"/>
         <source>Show transaction details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4387,7 +4408,13 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+3"/>
+        <source>Comma separated file</source>
+        <extracomment>Expanded name of the CSV file format. See https://en.wikipedia.org/wiki/Comma-separated_values</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Confirmed</source>
         <translation type="unfinished">Confirmed</translation>
     </message>
@@ -4522,9 +4549,9 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Wallet Data</source>
-        <comment>Name of wallet data file format</comment>
+        <extracomment>Name of the wallet data file format.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4652,15 +4679,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
     <message>
         <location line="+4"/>
         <source>Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
         <source>%d of last 100 blocks have unexpected version</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
         <source>%s corrupt, salvage failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5008,15 +5027,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
     <message>
         <location line="+1"/>
         <source>Need to specify a port with -whitebind: &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Not enough file descriptors available.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Reducing -maxconnections from %d to %d, because of system limitations.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5081,11 +5092,6 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of &quot;100 
     <message>
         <location line="+1"/>
         <source>Transaction amounts must not be negative</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Transaction fee and change calculation failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

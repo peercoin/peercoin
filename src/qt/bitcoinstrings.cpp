@@ -61,12 +61,6 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Please contribute if you find %s useful. Visit %s for further information "
 "about the software."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
-"SQLiteDatabase: Failed to prepare the statement to fetch sqlite wallet "
-"schema version: %s"),
-QT_TRANSLATE_NOOP("bitcoin-core", ""
-"SQLiteDatabase: Failed to prepare the statement to fetch the application id: "
-"%s"),
-QT_TRANSLATE_NOOP("bitcoin-core", ""
 "SQLiteDatabase: Unknown sqlite wallet schema version %d. Only version %d is "
 "supported"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
@@ -173,8 +167,6 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Reducing -maxconnections from %d to %d, becau
 QT_TRANSLATE_NOOP("bitcoin-core", "Replaying blocks…"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Rescanning…"),
 QT_TRANSLATE_NOOP("bitcoin-core", "SQLiteDatabase: Failed to execute statement to verify database: %s"),
-QT_TRANSLATE_NOOP("bitcoin-core", "SQLiteDatabase: Failed to fetch sqlite wallet schema version: %s"),
-QT_TRANSLATE_NOOP("bitcoin-core", "SQLiteDatabase: Failed to fetch the application id: %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", "SQLiteDatabase: Failed to prepare statement to verify database: %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", "SQLiteDatabase: Failed to read database verification error: %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", "SQLiteDatabase: Unexpected application id. Expected %u, got %u"),
@@ -188,7 +180,6 @@ QT_TRANSLATE_NOOP("bitcoin-core", "The source code is available from %s."),
 QT_TRANSLATE_NOOP("bitcoin-core", "The specified config file %s does not exist"),
 QT_TRANSLATE_NOOP("bitcoin-core", "This is experimental software."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction amounts must not be negative"),
-QT_TRANSLATE_NOOP("bitcoin-core", "Transaction fee and change calculation failed"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction has too long of a mempool chain"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction must have at least one recipient"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction too large"),
