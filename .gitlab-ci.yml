@@ -43,17 +43,20 @@ build gitian builder:
         RUN apk add curl make ruby wget git sed
         RUN git clone https://github.com/devrandom/gitian-builder.git ${GITIAN_DIR}
         RUN mkdir ${GITIAN_DIR}/inputs ${GITIAN_DIR}/var
-        RUN wget -N -P ${GITIAN_DIR}/inputs https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+        RUN wget -N https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.14.sdk.tar.xz \
+            && tar xf MacOSX10.14.sdk.tar.xz \
+            && tar czf ${GITIAN_DIR}/inputs/MacOSX10.14.sdk.tar.gz MacOSX10.14.sdk \
+            && rm -rf MacOSX10.14.sdk MacOSX10.14.sdk.tar.xz
       EOF
 
-trusty base image:
+bionic base image:
   extends: .build docker job
   variables:
-    IMAGE: $CI_REGISTRY_IMAGE/gitian/base-trusty-amd64
+    IMAGE: $CI_REGISTRY_IMAGE/gitian/base-bionic-amd64
   script:
     - |
       docker build --tag $IMAGE --cache-from $IMAGE:$CI_COMMIT_REF_SLUG --build-arg BUILDKIT_INLINE_CACHE=1 -<<EOF
-        FROM ubuntu:trusty
+        FROM ubuntu:bionic
         ENV DEBIAN_FRONTEND=noninteractive
         RUN apt-get update && apt-get --no-install-recommends -y install pciutils build-essential git subversion language-pack-en wget lsb-release
         RUN useradd -ms /bin/bash -U ubuntu
@@ -77,13 +80,13 @@ trusty base image:
     DOCKER_BUILDKIT: 1
     USE_DOCKER: 1
     DEBIAN_FRONTEND: noninteractive
-    IMAGE: $CI_REGISTRY_IMAGE/gitian/base-trusty-amd64:$CI_COMMIT_REF_SLUG
+    IMAGE: $CI_REGISTRY_IMAGE/gitian/base-bionic-amd64:$CI_COMMIT_REF_SLUG
   before_script:
     - mv gitian-cache ${GITIAN_DIR}/cache || true
     - cd ${GITIAN_DIR}
     - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     - docker pull -q $IMAGE
-    - docker tag $IMAGE base-trusty-amd64
+    - docker tag $IMAGE base-bionic-amd64
   script:
     - make -j$(nproc) -C ${CI_PROJECT_DIR}/depends download SOURCES_PATH=${GITIAN_DIR}/cache/common
     - sed -i "s/^\ \ HOSTS=.*/\ \ HOSTS=\"${TARGET_ARCH}\"/g" ${CI_PROJECT_DIR}/contrib/gitian-descriptors/gitian-${TARGET_OS}.yml
@@ -114,7 +117,7 @@ intermediary:
       - TARGET_OS: win
         TARGET_ARCH: x86_64-w64-mingw32
       - TARGET_OS: osx
-        TARGET_ARCH: x86_64-apple-darwin11
+        TARGET_ARCH: x86_64-apple-darwin16
       - TARGET_OS: linux
         TARGET_ARCH: x86_64-linux-gnu
   artifacts:
@@ -131,10 +134,8 @@ manual:
   allow_failure: true
   parallel:
     matrix:
-      - TARGET_OS: win
-        TARGET_ARCH: i686-w64-mingw32
       - TARGET_OS: linux
-        TARGET_ARCH: [i686-pc-linux-gnu, arm-linux-gnueabihf, aarch64-linux-gnu]
+        TARGET_ARCH: [arm-linux-gnueabihf, aarch64-linux-gnu, riscv64-linux-gnu]
 
 full:
   extends: .build job
@@ -143,11 +144,11 @@ full:
   parallel:
     matrix:
       - TARGET_OS: win
-        TARGET_ARCH: [i686-w64-mingw32, x86_64-w64-mingw32]
+        TARGET_ARCH: [x86_64-w64-mingw32]
       - TARGET_OS: osx
-        TARGET_ARCH: [x86_64-apple-darwin11]
+        TARGET_ARCH: [x86_64-apple-darwin16]
       - TARGET_OS: linux
-        TARGET_ARCH: [i686-pc-linux-gnu, x86_64-linux-gnu, arm-linux-gnueabihf, aarch64-linux-gnu]
+        TARGET_ARCH: [x86_64-linux-gnu, arm-linux-gnueabihf, aarch64-linux-gnu, riscv64-linux-gnu]
 
 .docker peercoind job:
   extends: .build docker job
@@ -161,7 +162,7 @@ full:
     - rm peercoin/bin/peercoin-qt
     - |
       docker build --tag $IMAGE --tag $IMAGE:$CI_COMMIT_SHA --build-arg BUILDKIT_INLINE_CACHE=1 -f- .<<EOF
-        FROM ubuntu:focal
+        FROM ubuntu:bionic
         COPY peercoin /usr/local
       EOF
     - docker push $IMAGE:$CI_COMMIT_SHA
@@ -199,7 +200,7 @@ full docker peercoind:
   script:
     - cp -r contrib/appimage/{AppDir,AppImageBuilder.yml} .
     - tar xzf peercoin-*-$TARGET_ARCH.tar.gz -C AppDir --strip-components=1
-    - rm AppDir/bin/peercoin{-cli,-tx,d}
+    - rm AppDir/bin/peercoin{-cli,-tx,-wallet,d}
     - appimage-builder --skip-tests
   artifacts:
     paths:
@@ -231,32 +232,6 @@ full AppImage x86_64:
     - if: $CI_COMMIT_TAG
   needs: ["full: [linux, x86_64-linux-gnu]"]
   dependencies: ["full: [linux, x86_64-linux-gnu]"]
-
-manual AppImage i686:
-  extends: .AppImage job
-  variables:
-    TARGET_ARCH: i686-pc-linux-gnu
-    APT_ARCH: i386
-    BUILD_ARCH: i686
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: never
-    - if: $CI_COMMIT_TAG
-      when: never
-    - when: on_success
-  needs: ["manual: [linux, i686-pc-linux-gnu]"]
-  dependencies: ["manual: [linux, i686-pc-linux-gnu]"]
-
-full AppImage i686:
-  extends: .AppImage job
-  variables:
-    TARGET_ARCH: i686-pc-linux-gnu
-    APT_ARCH: i386
-    BUILD_ARCH: i686
-  rules:
-    - if: $CI_COMMIT_TAG
-  needs: ["full: [linux, i686-pc-linux-gnu]"]
-  dependencies: ["full: [linux, i686-pc-linux-gnu]"]
 
 .generate bootstrap.dat job:
   stage: package
@@ -341,7 +316,6 @@ upload:
   dependencies:
     - full
     - full AppImage x86_64
-    - full AppImage i686
   rules:
     - if: $CI_PIPELINE_SOURCE == "trigger"
       when: never
@@ -358,12 +332,10 @@ release:
   needs:
     - full
     - full AppImage x86_64
-    - full AppImage i686
     - upload
   dependencies:
     - full
     - full AppImage x86_64
-    - full AppImage i686
   rules:
     - if: $CI_PIPELINE_SOURCE == "trigger"
       when: never
