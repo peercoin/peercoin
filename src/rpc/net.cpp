@@ -31,8 +31,6 @@
 
 #include <univalue.h>
 
-//#include <checkpointsync.h>
-
 static UniValue getconnectioncount(const JSONRPCRequest& request)
 {
             RPCHelpMan{"getconnectioncount",
@@ -825,83 +823,6 @@ UniValue sendalert(const JSONRPCRequest& request)
     return result;
 }
 
-#ifdef ENABLE_CHECKPOINTS
-// RPC commands related to sync checkpoints
-// get information of sync-checkpoint (first introduced in ppcoin)
-UniValue getcheckpoint(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            "getcheckpoint\n"
-            "Show info of synchronized checkpoint.\n");
-
-    UniValue result(UniValue::VOBJ);
-    CBlockIndex* pindexCheckpoint;
-
-    result.pushKV("synccheckpoint", hashSyncCheckpoint.ToString());
-    if (::BlockIndex().count(hashSyncCheckpoint))
-    {
-        pindexCheckpoint = ::BlockIndex()[hashSyncCheckpoint];
-        result.pushKV("height", pindexCheckpoint->nHeight);
-        result.pushKV("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime());
-    }
-    result.pushKV("subscribemode", IsSyncCheckpointEnforced()? "enforce" : "advisory");
-    if (gArgs.IsArgSet("-checkpointkey"))
-        result.pushKV("checkpointmaster", true);
-
-    return result;
-}
-
-UniValue sendcheckpoint(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.size() != 1)
-        throw std::runtime_error(
-            "sendcheckpoint <blockhash>\n"
-            "Send a synchronized checkpoint.\n");
-
-    if (!gArgs.IsArgSet("-checkpointkey") || CSyncCheckpoint::strMasterPrivKey.empty())
-        throw std::runtime_error("Not a checkpointmaster node, first set checkpointkey in configuration and restart client. ");
-
-    std::string strHash = request.params[0].get_str();
-    uint256 hash(uint256S(strHash));
-
-    if (!SendSyncCheckpoint(hash))
-        throw std::runtime_error("Failed to send checkpoint, check log. ");
-
-    UniValue result(UniValue::VOBJ);
-    CBlockIndex* pindexCheckpoint;
-
-    result.pushKV("synccheckpoint", hashSyncCheckpoint.ToString().c_str());
-    if (::BlockIndex().count(hashSyncCheckpoint))
-    {
-        pindexCheckpoint = ::BlockIndex()[hashSyncCheckpoint];
-        result.pushKV("height", pindexCheckpoint->nHeight);
-        result.pushKV("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime());
-    }
-    result.pushKV("subscribemode", IsSyncCheckpointEnforced()? "enforce" : "advisory");
-    if (gArgs.IsArgSet("-checkpointkey"))
-        result.pushKV("checkpointmaster", true);
-
-    return result;
-}
-
-UniValue enforcecheckpoint(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.size() != 1)
-        throw std::runtime_error(
-            "enforcecheckpoint <enforce>\n"
-            "<enforce> is true or false to enable or disable enforcement of broadcasted checkpoints by developer.");
-
-    bool fEnforceCheckpoint = request.params[0].get_bool();
-    if (gArgs.IsArgSet("-checkpointkey") && !fEnforceCheckpoint)
-        throw std::runtime_error(
-            "checkpoint master node must enforce synchronized checkpoints.");
-    SetCheckpointEnforce(fEnforceCheckpoint);
-    return NullUniValue;
-}
-#endif
-
-
 void RegisterNetRPCCommands(CRPCTable &t)
 {
 // clang-format off
@@ -922,11 +843,6 @@ static const CRPCCommand commands[] =
     { "network",            "setnetworkactive",       &setnetworkactive,       {"state"} },
     { "network",            "getnodeaddresses",       &getnodeaddresses,       {"count"} },
     // peercoin:
-#ifdef ENABLE_CHECKPOINTS
-    { "network",            "getcheckpoint",          &getcheckpoint,          {} },
-    { "network",            "sendcheckpoint",         &sendcheckpoint,         {} },
-    { "network",            "enforcecheckpoint",      &enforcecheckpoint,      {} },
-#endif
     { "hidden",             "sendalert",              &sendalert,              {"message", "privatekey", "minver", "maxver", "priority", "id", "cancelupto" } },
 };
 // clang-format on

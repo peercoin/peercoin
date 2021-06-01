@@ -46,7 +46,6 @@
 
 #include <kernel.h>
 #include <bignum.h>
-//#include <checkpointsync.h>
 #include <wallet/wallet.h>
 
 #include <string>
@@ -2243,16 +2242,6 @@ void static UpdateTip(const CBlockIndex* pindexNew, const CChainParams& chainPar
             AppendWarning(warningMessages, strprintf(_("%d of last 100 blocks have unexpected version").translated, nUpgraded));
     }
 
-#ifdef ENABLE_CHECKPOINTS
-    if (!IsSyncCheckpointEnforced()) // checkpoint advisory mode
-    {
-        if (pindexNew->pprev && !CheckSyncCheckpoint(pindexNew->GetBlockHash(), pindexNew->pprev))
-            strCheckpointWarning = "Warning: checkpoint on different blockchain fork, contact developers to resolve the issue";
-        else
-            strCheckpointWarning = "";
-    }
-#endif
-
     LogPrintf("%s: new best=%s height=%d version=0x%08x log2_trust=%.8g moneysupply=%s tx=%lu date='%s' progress=%f cache=%.1fMiB(%utxo)%s\n", __func__,
       pindexNew->GetBlockHash().ToString(), pindexNew->nHeight, pindexNew->nVersion,
       log(pindexNew->nChainTrust.getdouble())/log(2.0),
@@ -3304,13 +3293,6 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
         }
     }
 
-#ifdef ENABLE_CHECKPOINTS
-    // peercoin: check that the block satisfies synchronized checkpoint
-    if (IsSyncCheckpointEnforced() // checkpoint enforce mode
-        && !::ChainstateActive().IsInitialBlockDownload() && !CheckSyncCheckpoint(block.GetHash(), pindexPrev))
-        return state.Invalid(BlockValidationResult::BLOCK_CHECKPOINT, "bad-block-void-by-checkpoint", "AcceptBlock() : rejected by synchronized checkpoint");
-#endif
-
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast() || block.GetBlockTime() + (IsProtocolV09(block.GetBlockTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9) < pindexPrev->GetBlockTime())
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "time-too-old", "block's timestamp is too early");
@@ -3499,10 +3481,6 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
     if (ppindex)
         *ppindex = pindex;
 
-    //ppcTODO - move this somewhere in the upper calls, where pfrom is visible
-//    // peercoin: ask for pending sync-checkpoint if any
-//    if (!IsInitialBlockDownload())
-//        AskForPendingSyncCheckpoint(pfrom);
     return true;
 }
 
@@ -3670,11 +3648,6 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
     FlushStateToDisk(chainparams, state, FlushStateMode::NONE);
     CheckBlockIndex(chainparams.GetConsensus());
 
-#ifdef ENABLE_CHECKPOINTS
-    // peercoin: check pending sync-checkpoint
-    AcceptPendingSyncCheckpoint();
-#endif
-
     return true;
 }
 
@@ -3720,11 +3693,6 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
     if (!::ChainstateActive().ActivateBestChain(state, chainparams, pblock))
         return error("%s: ActivateBestChain failed (%s)", __func__, state.ToString());
 
-#ifdef ENABLE_CHECKPOINTS
-    // peercoin: if responsible for sync-checkpoint send it
-    if (!CSyncCheckpoint::strMasterPrivKey.empty() && (int)gArgs.GetArg("-checkpointdepth", -1) >= 0)
-        SendSyncCheckpoint(AutoSelectSyncCheckpoint());
-#endif
     return true;
 }
 
@@ -3921,15 +3889,7 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams) EXCLUSIVE_LOCKS_RE
             return false;
         }
     }
-#ifdef ENABLE_CHECKPOINTS
-    // peercoin: load hashSyncCheckpoint
-    if (!pblocktree->ReadSyncCheckpoint(hashSyncCheckpoint))
-    {
-        LogPrintf("LoadBlockIndexDB(): synchronized checkpoint not read\n");
-        hashSyncCheckpoint = chainparams.GetConsensus().hashGenesisBlock;
-    }
-    LogPrintf("LoadBlockIndexDB(): synchronized checkpoint %s\n", hashSyncCheckpoint.ToString());
-#endif
+
     // Check whether we need to continue reindexing
     bool fReindexing = false;
     pblocktree->ReadReindexing(fReindexing);
