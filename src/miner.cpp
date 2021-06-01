@@ -31,7 +31,6 @@
 #include <utility>
 
 #include <boost/thread.hpp>
-
 int64_t nLastCoinStakeSearchInterval = 0;
 int64_t UpdateTime(CBlockHeader* pblock)
 {

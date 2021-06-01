@@ -13,6 +13,8 @@ General Peercoin questions and/or support requests are best directed to the Peer
 
 <!-- GUI-related issue? What is your operating system and its version? If Linux, what is your desktop environment and graphical shell? -->
 
+<!-- GUI-related issue? What is your operating system and its version? If Linux, what is your desktop environment and graphical shell? -->
+
 <!-- Any extra information that might be useful in the debugging process. -->
 
 <!--- This is normally the contents of a `debug.log` or `config.log` file. Raw text or a link to a pastebin type site are preferred. -->

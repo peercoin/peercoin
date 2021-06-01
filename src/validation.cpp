@@ -126,7 +126,6 @@ uint256 hashAssumeValid;
 arith_uint256 nMinimumChainWork;
 
 CTxMemPool mempool;
-
 // Internal stuff
 namespace {
     CBlockIndex* pindexBestInvalid = nullptr;
@@ -173,6 +172,8 @@ std::unique_ptr<CBlockTreeDB> pblocktree;
 // See definition for documentation
 bool CheckInputScripts(const CTransaction& tx, TxValidationState &state, const CCoinsViewCache &inputs, unsigned int flags, bool cacheSigStore, bool cacheFullScriptStore, PrecomputedTransactionData& txdata, std::vector<CScriptCheck> *pvChecks = nullptr);
 static FILE* OpenUndoFile(const FlatFilePos &pos, bool fReadOnly = false);
+static FlatFileSeq BlockFileSeq();
+static FlatFileSeq UndoFileSeq();
 static FlatFileSeq BlockFileSeq();
 static FlatFileSeq UndoFileSeq();
 
@@ -499,13 +500,18 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // Copy/alias what we need out of args
     TxValidationState &state = args.m_state;
     const int64_t nAcceptTime = args.m_accept_time;
+    const bool bypass_limits = args.m_bypass_limits;
     std::vector<COutPoint>& coins_to_uncache = args.m_coins_to_uncache;
 
     // Alias what we need out of ws
     std::set<uint256>& setConflicts = ws.m_conflicts;
+    CTxMemPool::setEntries& allConflicting = ws.m_all_conflicting;
     CTxMemPool::setEntries& setAncestors = ws.m_ancestors;
     std::unique_ptr<CTxMemPoolEntry>& entry = ws.m_entry;
+    bool& fReplacementTransaction = ws.m_replacement_transaction;
     CAmount& nModifiedFees = ws.m_modified_fees;
+    CAmount& nConflictingFees = ws.m_conflicting_fees;
+    size_t& nConflictingSize = ws.m_conflicting_size;
 
     if (!CheckTransaction(tx, state))
         return false; // state filled in by CheckTransaction
@@ -1121,6 +1127,7 @@ BlockMap& BlockIndex()
 {
     return g_blockman.m_block_index;
 }
+
 
 void AlertNotify(const std::string& strMessage, bool fUpdateUI)
 {
@@ -3158,7 +3165,6 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
                 strprintf("CheckBlock() : coinbase reward exceeded %s > %s",
                    FormatMoney(block.vtx[0]->GetValueOut()),
                    FormatMoney(block.IsProofOfWork()? GetProofOfWorkReward(block.nBits) : 0)));
-
     // Check transactions
     // Must check for duplicate inputs (see CVE-2018-17144)
     for (const auto& tx : block.vtx) {
@@ -3497,7 +3503,6 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
 //    // peercoin: ask for pending sync-checkpoint if any
 //    if (!IsInitialBlockDownload())
 //        AskForPendingSyncCheckpoint(pfrom);
-
     return true;
 }
 
@@ -3538,6 +3543,11 @@ bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAccepte
                 nPoSTemperature -= nCooling;
                 nPoSTemperature = std::max((int)nPoSTemperature, 0);
             }
+        }
+    }
+    if (NotifyHeaderTip()) {
+        if (::ChainstateActive().IsInitialBlockDownload() && ppindex && *ppindex) {
+            LogPrintf("Synchronizing blockheaders, height: %d (~%.2f%%)\n", (*ppindex)->nHeight, 100.0/((*ppindex)->nHeight+(GetAdjustedTime() - (*ppindex)->GetBlockTime()) / Params().GetConsensus().nPowTargetSpacing) * (*ppindex)->nHeight);
         }
     }
     if (NotifyHeaderTip()) {
@@ -3657,6 +3667,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
         return AbortNode(state, std::string("System error: ") + e.what());
     }
 
+    FlushStateToDisk(chainparams, state, FlushStateMode::NONE);
     CheckBlockIndex(chainparams.GetConsensus());
 
 #ifdef ENABLE_CHECKPOINTS
@@ -4309,7 +4320,6 @@ void UnloadBlockIndex()
     nLastBlockFile = 0;
     setDirtyBlockIndex.clear();
     setDirtyFileInfo.clear();
-
     ::ChainstateActive().UnloadBlockIndex();
 }
 

@@ -1332,6 +1332,8 @@ class msg_headers:
 
 class msg_merkleblock:
     command = b"merkleblock"
+    def deserialize(self, f):
+        pass  # Placeholder for now
 
     def deserialize(self, f):
         pass  # Placeholder for now

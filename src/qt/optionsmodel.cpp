@@ -20,7 +20,6 @@
 #include <util/string.h>
 
 #include <QDebug>
-
 #include <QSettings>
 #include <QStringList>
 

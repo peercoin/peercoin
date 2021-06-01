@@ -83,6 +83,17 @@ OpenRC).
 
 ### macOS
 
+NOTE: It is not currently possible to override `datadir` in
+`/etc/peercoin/peercoin.conf` with the current systemd, OpenRC, and Upstart init
+files out-of-the-box. This is because the command line options specified in the
+init files take precedence over the configurations in
+`/etc/peercoin/peercoin.conf`. However, some init systems have their own
+configuration mechanisms that would allow for overriding the command line
+options specified in the init files (e.g. setting `BITCOIND_DATADIR` for
+OpenRC).
+
+### macOS
+
 Binary:              `/usr/local/bin/peercoind`
 Configuration file:  `~/Library/Application Support/Peercoin/peercoin.conf`
 Data directory:      `~/Library/Application Support/Peercoin`
@@ -99,6 +110,8 @@ Installing this .service file consists of just copying it to
 
 To test, run `systemctl start peercoind` and to enable for system startup run
 `systemctl enable peercoind`
+
+NOTE: When installing for systemd in Debian/Ubuntu the .service file needs to be copied to the /lib/systemd/system directory instead.
 
 NOTE: When installing for systemd in Debian/Ubuntu the .service file needs to be copied to the /lib/systemd/system directory instead.
 

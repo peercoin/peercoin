@@ -219,6 +219,11 @@ cat /tmp/user/1000/testo9vsdjo3/node1/regtest/peercoind.pid
 Then you can use the pid to start `gdb`:
 
 ```bash
+```
+
+Then you can use the pid to start `gdb`:
+
+```bash
 gdb /home/example/peercoind <pid>
 ```
 

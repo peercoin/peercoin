@@ -126,6 +126,7 @@ protected:
      * - TransactionRemovedFromMempool(tx2 from block B)
      * - BlockConnected(A)
      * - BlockConnected(B)
+     * - BlockConnected(B)
      *
      * Called on a background thread.
      */

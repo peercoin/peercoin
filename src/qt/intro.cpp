@@ -127,6 +127,7 @@ Intro::Intro(QWidget *parent, int64_t blockchain_size_gb, int64_t chain_state_si
         .arg(tr("Peercoin"))
     );
     ui->lblExplanation2->setText(ui->lblExplanation2->text().arg(PACKAGE_NAME));
+
     startThread();
 }
 
@@ -209,6 +210,7 @@ bool Intro::showIfNeeded(interfaces::Node& node, bool& did_show_intro, bool& pru
         }
 
         // Additional preferences:
+
 
         settings.setValue("strDataDir", dataDir);
         settings.setValue("fReset", false);

@@ -25,6 +25,7 @@
 #include <util/vector.h>
 #include <wallet/coincontrol.h>
 #include <wallet/rpcwallet.h>
+#include <wallet/rpcwallet.h>
 #include <wallet/wallet.h>
 #include <wallet/walletdb.h>
 #include <wallet/walletutil.h>
@@ -1332,7 +1333,7 @@ static void ListTransactions(interfaces::Chain::Lock& locked_chain, const CWalle
                 else if (wtx.IsCoinStake())
                 {
                     PushCoinStakeCategory(entry, wtx);
-                }
+            }
             else
             {
                 entry.pushKV("category", "receive");
@@ -4284,7 +4285,6 @@ static const CRPCCommand commands[] =
     { "wallet",             "walletpassphrase",                 &walletpassphrase,              {"passphrase","timeout"} },
     { "wallet",             "walletpassphrasechange",           &walletpassphrasechange,        {"oldpassphrase","newpassphrase"} },
     { "wallet",             "walletprocesspsbt",                &walletprocesspsbt,             {"psbt","sign","sighashtype","bip32derivs"} },
-
     // peercoin commands
     { "wallet",             "listminting",                      &listminting,                   {"count", "from"} },
     { "wallet",             "makekeypair",                      &makekeypair,                   {"prefix"} },

@@ -206,6 +206,9 @@ class TestNode():
         if self.start_perf:
             self._start_perf()
 
+        if self.start_perf:
+            self._start_perf()
+
     def wait_for_rpc_connection(self):
         """Sets up an RPC connection to the peercoind process. Returns False if unable to connect."""
         # Poll at a rate of four times per second

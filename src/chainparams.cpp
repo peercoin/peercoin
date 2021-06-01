@@ -10,6 +10,7 @@
 #include <tinyformat.h>
 #include <util/system.h>
 #include <util/strencodings.h>
+#include <versionbitsinfo.h>
 
 #include <assert.h>
 
@@ -318,6 +319,7 @@ public:
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
 
         m_is_test_chain = true;
+        m_is_mockable_chain = true;
         m_is_mockable_chain = true;
         checkpointData = {
             {

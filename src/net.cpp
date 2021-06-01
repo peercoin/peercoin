@@ -92,7 +92,6 @@ std::string strSubVersion;
 
 // peercoin: temperature to measure how many PoS headers have been sent by this client
 std::map<CNetAddr, int32_t> mapPoSTemperature;
-
 void CConnman::AddOneShot(const std::string& strDest)
 {
     LOCK(cs_vOneShots);

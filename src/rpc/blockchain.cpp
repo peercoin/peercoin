@@ -40,7 +40,6 @@
 #include <miner.h>
 #include <kernel.h>
 #include <validation.h>
-
 #include <condition_variable>
 #include <memory>
 #include <mutex>
