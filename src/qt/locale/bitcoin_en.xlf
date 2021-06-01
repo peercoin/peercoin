@@ -444,6 +444,11 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">Sign &amp;message…</source>
         <context-group purpose="location"><context context-type="linenumber">314</context></context-group>
       </trans-unit>
+      <trans-unit id="_msg96" approved="yes">
+        <source xml:space="preserve">Sign messages with your Bitcoin addresses to prove you own them</source>
+        <target xml:space="preserve">Sign messages with your Bitcoin addresses to prove you own them</target>
+        <context-group purpose="location"><context context-type="linenumber">324</context></context-group>
+      </trans-unit>
       <trans-unit id="_msg97">
         <source xml:space="preserve">Sign messages with your Bitcoin addresses to prove you own them</source>
         <context-group purpose="location"><context context-type="linenumber">315</context></context-group>
@@ -645,15 +650,15 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">&amp;Window</source>
         <context-group purpose="location"><context context-type="linenumber">472</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg149">
+      <trans-unit id="_msg146">
         <source xml:space="preserve">Zoom</source>
         <context-group purpose="location"><context context-type="linenumber">484</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg150">
+      <trans-unit id="_msg147">
         <source xml:space="preserve">Main Window</source>
         <context-group purpose="location"><context context-type="linenumber">502</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg151">
+      <trans-unit id="_msg148">
         <source xml:space="preserve">%1 client</source>
         <context-group purpose="location"><context context-type="linenumber">759</context></context-group>
       </trans-unit>
