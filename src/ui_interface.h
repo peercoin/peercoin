@@ -98,8 +98,7 @@ public:
     ADD_SIGNALS_DECL_WRAPPER(NotifyNetworkActiveChanged, void, bool networkActive);
 
     /**
-     * New, updated or cancelled alert.
-     * @note sometimes called with lock cs_mapAlerts held.
+     * Status bar alerts changed.
      */
     ADD_SIGNALS_DECL_WRAPPER(NotifyAlertChanged, void, const uint256 &hash, ChangeType status);
 

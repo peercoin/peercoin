@@ -3,8 +3,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <alert.h>
-
 #include <warnings.h>
 
 #include <sync.h>
@@ -79,21 +77,6 @@ std::string GetWarnings(bool verbose)
         nPriority = 2000;
         warnings_concise = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
         warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.").translated;
-    }
-
-    // Alerts
-    {
-        LOCK(cs_mapAlerts);
-        for (const auto& item : mapAlerts)
-        {
-            const CAlert& alert = item.second;
-            if (alert.AppliesToMe() && alert.nPriority > nPriority)
-            {
-                nPriority = alert.nPriority;
-                warnings_concise = alert.strStatusBar;
-                warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + warnings_concise;
-            }
-        }
     }
 
     if (verbose) return warnings_verbose;

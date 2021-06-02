@@ -5,7 +5,6 @@
 
 #include <net_processing.h>
 
-#include <alert.h>
 #include <addrman.h>
 #include <banman.h>
 #include <blockencodings.h>
@@ -2098,13 +2097,6 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
             connman->MarkAddressGood(pfrom->addr);
         }
 
-        // peercoin: relay alerts
-        {
-            LOCK(cs_mapAlerts);
-            for (auto& item : mapAlerts)
-                item.second.RelayTo(pfrom, connman);
-        }
-
         std::string remoteAddr;
         if (fLogIPs)
             remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
@@ -3393,36 +3385,6 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
                 pfrom->m_tx_relay->minFeeFilter = newFeeFilter;
             }
             LogPrint(BCLog::NET, "received: feefilter of %d satoshi from peer=%d\n", newFeeFilter, pfrom->GetId());
-        }
-        return true;
-    }
-
-    if (fAlerts && msg_type == NetMsgType::ALERT)
-    {
-        CAlert alert;
-        vRecv >> alert;
-
-        uint256 alertHash = alert.GetHash();
-        if (pfrom->setKnown.count(alertHash) == 0)
-        {
-            if (alert.ProcessAlert(chainparams.AlertKey()))
-            {
-                // Relay
-                pfrom->setKnown.insert(alertHash);
-                connman->ForEachNode([&alert, connman](CNode* pnode) {
-                    alert.RelayTo(pnode, connman);
-                });
-            }
-            else {
-                // Small DoS penalty so peers that send us lots of
-                // duplicate/expired/invalid-signature/whatever alerts
-                // eventually get banned.
-                // This isn't a Misbehaving(100) (immediate ban) because the
-                // peer might be an older or different implementation with
-                // a different signature key, etc.
-                LOCK(cs_main);
-                Misbehaving(pfrom->GetId(), 10);
-            }
         }
         return true;
     }

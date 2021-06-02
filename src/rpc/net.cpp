@@ -26,7 +26,6 @@
 #include <version.h>
 #include <warnings.h>
 
-#include <alert.h>
 #include <key_io.h>
 
 #include <univalue.h>
@@ -759,70 +758,6 @@ static UniValue getnodeaddresses(const JSONRPCRequest& request)
     return ret;
 }
 
-// peercoin: send alert.  
-UniValue sendalert(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.size() < 6)
-        throw std::runtime_error(
-            "sendalert <message> <privatekey> <minver> <maxver> <priority> <id> [cancelupto]\n"
-            "<message> is the alert text message\n"
-            "<privatekey> is hex string of alert master private key\n"
-            "<minver> is the minimum applicable internal client version\n"
-            "<maxver> is the maximum applicable internal client version\n"
-            "<priority> is integer priority number\n"
-            "<id> is the alert id\n"
-            "[cancelupto] cancels all alert id's up to this number\n"
-            "Returns true or false.");
-
-    CAlert alert;
-    CKey key;
-
-    alert.strStatusBar = request.params[0].get_str();
-    alert.nMinVer = request.params[2].get_int();
-    alert.nMaxVer = request.params[3].get_int();
-    alert.nPriority = request.params[4].get_int();
-    alert.nID = request.params[5].get_int();
-    if (request.params.size() > 6)
-        alert.nCancel = request.params[6].get_int();
-    alert.nVersion = PROTOCOL_VERSION;
-    alert.nRelayUntil = GetAdjustedTime() + 365*24*60*60;
-    alert.nExpiration = GetAdjustedTime() + 365*24*60*60;
-
-    CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
-    sMsg << (CUnsignedAlert)alert;
-    alert.vchMsg = std::vector<unsigned char>(sMsg.begin(), sMsg.end());
-    
-    // read & check key
-    key = DecodeSecret(request.params[1].get_str());
-    if (!key.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
-    CPubKey pubkey = key.GetPubKey();
-    assert(key.VerifyPubKey(pubkey));
-
-    if (!key.Sign(Hash(alert.vchMsg.begin(), alert.vchMsg.end()), alert.vchSig))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to sign alert, check private key?");
-    if (!alert.ProcessAlert(Params().AlertKey()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Failed to process alert.");
-
-    // Relay alert
-    if(!g_rpc_node->connman)
-        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
-    CConnman * connman = g_rpc_node->connman.get();
-    connman->ForEachNode([&alert, connman](CNode* pnode) {
-        alert.RelayTo(pnode, connman);
-    });
-    UniValue result(UniValue::VOBJ);
-    result.pushKV("strStatusBar", alert.strStatusBar);
-    result.pushKV("nVersion", alert.nVersion);
-    result.pushKV("nMinVer", alert.nMinVer);
-    result.pushKV("nMaxVer", alert.nMaxVer);
-    result.pushKV("nPriority", alert.nPriority);
-    result.pushKV("nID", alert.nID);
-    if (alert.nCancel > 0)
-        result.pushKV("nCancel", alert.nCancel);
-    return result;
-}
-
 void RegisterNetRPCCommands(CRPCTable &t)
 {
 // clang-format off
@@ -842,8 +777,6 @@ static const CRPCCommand commands[] =
     { "network",            "clearbanned",            &clearbanned,            {} },
     { "network",            "setnetworkactive",       &setnetworkactive,       {"state"} },
     { "network",            "getnodeaddresses",       &getnodeaddresses,       {"count"} },
-    // peercoin:
-    { "hidden",             "sendalert",              &sendalert,              {"message", "privatekey", "minver", "maxver", "priority", "id", "cancelupto" } },
 };
 // clang-format on
 
