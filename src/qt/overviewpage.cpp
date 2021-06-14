@@ -66,18 +66,18 @@ public:
         QFont font = QFont();
         font.setPixelSize(20);
 
-        painter->setPen(foreground);
+        if (index.data(TransactionTableModel::WatchonlyRole).toBool()) {
         painter->setFont(font);
-        QRect boundingRect;
-        painter->drawText(addressRect, Qt::AlignLeft | Qt::AlignVCenter, address, &boundingRect);
-
-        if (index.data(TransactionTableModel::WatchonlyRole).toBool())
-        {
             QIcon iconWatchonly = qvariant_cast<QIcon>(index.data(TransactionTableModel::WatchonlyDecorationRole));
-            QRect watchonlyRect(boundingRect.right() + 5, mainRect.top()+ypad+halfheight, 16, halfheight);
+            QRect watchonlyRect(addressRect.left(), addressRect.top(), 16, addressRect.height());
             iconWatchonly = platformStyle->TextColorIcon(iconWatchonly);
             iconWatchonly.paint(painter, watchonlyRect);
+            addressRect.setLeft(addressRect.left() + watchonlyRect.width() + 5);
         }
+
+        painter->setPen(foreground);
+        QRect boundingRect;
+        painter->drawText(addressRect, Qt::AlignLeft | Qt::AlignVCenter, address, &boundingRect);
 
         if(amount < 0)
         {
