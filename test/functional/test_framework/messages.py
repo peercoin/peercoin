@@ -208,6 +208,12 @@ def tx_from_hex(hex_string):
     return from_hex(CTransaction(), hex_string)
 
 
+
+def tx_from_hex(hex_string):
+    """Deserialize from hex string to a transaction object"""
+    return FromHex(CTransaction(), hex_string)
+
+
 # Objects that map to bitcoind objects, which can be serialized/deserialized
 
 
