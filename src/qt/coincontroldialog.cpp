@@ -408,9 +408,6 @@ void CoinControlDialog::updateLabels(CCoinControl& m_coin_control, WalletModel *
     if (!model)
         return;
 
-    bool fNewFees = IsProtocolV07(GetAdjustedTime());
-    //CAmount nMinFeeBase = (fNewFees ? MIN_TX_FEE : MIN_TX_FEE_PREV7);
-
     // nPayAmount
     CAmount nPayAmount = 0;
     CMutableTransaction txDummy;
@@ -508,17 +505,6 @@ void CoinControlDialog::updateLabels(CCoinControl& m_coin_control, WalletModel *
             if (!CoinControlDialog::fSubtractFeeFromAmount)
                 nChange -= nPayFee;
 
-//ppcTODO maybe add this?:
-//            // if sub-cent change is required, the fee must be raised to at least unit's min fee
-//            // or until nChange becomes zero
-//            // NOTE: this depends on the exact behaviour of GetMinFee
-//            if (nPayFee < nMinFeeBase && nChange > 0 && nChange < nMinFeeBase)
-//            {
-//                int64_t nMoveToFee = min(nChange, nMinFeeBase - nPayFee);
-//                nChange -= nMoveToFee;
-//                nPayFee += nMoveToFee;
-//            }
-
             // ppcoin: sub-cent change is moved to fee
             if (nChange > 0 && nChange < MIN_CHANGE)
             {
@@ -531,23 +517,6 @@ void CoinControlDialog::updateLabels(CCoinControl& m_coin_control, WalletModel *
             if (nChange == 0 && !CoinControlDialog::fSubtractFeeFromAmount)
                 nBytes -= 34;
         }
-//ppcTODO maybe add this?:
-//            // Fee
-//            int64 nFee;
-//
-//            if (fNewFees)
-//                nFee = nTransactionFee * nBytes / 1000;
-//            else
-//                nFee = nTransactionFee * (1 + (int64)nBytes / 1000);
-//
-//            // Min Fee
-//            int64 nMinFee = txDummy.GetMinFee(nBytes);
-//
-//            if (nPayFee < max(nFee, nMinFee))
-//            {
-//                nPayFee = max(nFee, nMinFee);
-//                continue;
-//            }
 
         // after fee
         nAfterFee = std::max<CAmount>(nAmount - nPayFee, 0);
