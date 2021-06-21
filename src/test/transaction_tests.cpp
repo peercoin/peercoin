@@ -664,17 +664,9 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     std::string reason;
     BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
 
-    // Check dust with default relay fee:
-    CAmount nDustThreshold = 182 * dustRelayFee.GetFeePerK()/1000;
-    BOOST_CHECK_EQUAL(nDustThreshold, 546);
-    // dust:
-    t.vout[0].nValue = nDustThreshold - 1;
     reason.clear();
     BOOST_CHECK(!IsStandardTx(CTransaction(t), reason));
     BOOST_CHECK_EQUAL(reason, "dust");
-    // not dust:
-    t.vout[0].nValue = nDustThreshold;
-    BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
 
     // Disallowed nVersion
     t.nVersion = -1;
@@ -699,9 +691,6 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     t.nVersion = 2;
     BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
 
-    // Check dust with odd relay fee to verify rounding:
-    // nDustThreshold = 182 * 3702 / 1000
-    dustRelayFee = CFeeRate(3702);
     // dust:
     t.vout[0].nValue = 673 - 1;
     reason.clear();
@@ -710,7 +699,6 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     // not dust:
     t.vout[0].nValue = 673;
     BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
-    dustRelayFee = CFeeRate(DUST_RELAY_TX_FEE);
 
     t.vout[0].scriptPubKey = CScript() << OP_1;
     reason.clear();
