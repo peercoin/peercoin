@@ -496,18 +496,13 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // Copy/alias what we need out of args
     TxValidationState &state = args.m_state;
     const int64_t nAcceptTime = args.m_accept_time;
-    const bool bypass_limits = args.m_bypass_limits;
     std::vector<COutPoint>& coins_to_uncache = args.m_coins_to_uncache;
 
     // Alias what we need out of ws
     std::set<uint256>& setConflicts = ws.m_conflicts;
-    CTxMemPool::setEntries& allConflicting = ws.m_all_conflicting;
     CTxMemPool::setEntries& setAncestors = ws.m_ancestors;
     std::unique_ptr<CTxMemPoolEntry>& entry = ws.m_entry;
-    bool& fReplacementTransaction = ws.m_replacement_transaction;
     CAmount& nModifiedFees = ws.m_modified_fees;
-    CAmount& nConflictingFees = ws.m_conflicting_fees;
-    size_t& nConflictingSize = ws.m_conflicting_size;
 
     if (!CheckTransaction(tx, state))
         return false; // state filled in by CheckTransaction
