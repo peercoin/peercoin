@@ -44,7 +44,6 @@ class HTTPBasicsTest(BitcoinTestFramework):
         rpcauth = "rpcauth=rt:93648e835a54c573682c2eb19f882535$7681e9c5b74bdd85e78166031d2058e1069b3ed7ed967c93fc63abba06f31144"
         self.rpcuser = "rpcuser💻"
         self.rpcpassword = "rpcpassword🔑"
-        self.rpcpassword = "rpcpassword🔑"
 
         config = configparser.ConfigParser()
         config.read_file(open(self.options.configfile))

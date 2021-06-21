@@ -113,8 +113,6 @@ To test, run `systemctl start peercoind` and to enable for system startup run
 
 NOTE: When installing for systemd in Debian/Ubuntu the .service file needs to be copied to the /lib/systemd/system directory instead.
 
-NOTE: When installing for systemd in Debian/Ubuntu the .service file needs to be copied to the /lib/systemd/system directory instead.
-
 ### OpenRC
 
 Rename peercoind.openrc to peercoind and drop it in /etc/init.d.  Double

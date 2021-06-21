@@ -172,8 +172,6 @@ bool CheckInputScripts(const CTransaction& tx, TxValidationState &state, const C
 static FILE* OpenUndoFile(const FlatFilePos &pos, bool fReadOnly = false);
 static FlatFileSeq BlockFileSeq();
 static FlatFileSeq UndoFileSeq();
-static FlatFileSeq BlockFileSeq();
-static FlatFileSeq UndoFileSeq();
 
 bool CheckFinalTx(const CTransaction &tx, int flags)
 {
@@ -3520,11 +3518,6 @@ bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAccepte
                 nPoSTemperature -= nCooling;
                 nPoSTemperature = std::max((int)nPoSTemperature, 0);
             }
-        }
-    }
-    if (NotifyHeaderTip()) {
-        if (::ChainstateActive().IsInitialBlockDownload() && ppindex && *ppindex) {
-            LogPrintf("Synchronizing blockheaders, height: %d (~%.2f%%)\n", (*ppindex)->nHeight, 100.0/((*ppindex)->nHeight+(GetAdjustedTime() - (*ppindex)->GetBlockTime()) / Params().GetConsensus().nPowTargetSpacing) * (*ppindex)->nHeight);
         }
     }
     if (NotifyHeaderTip()) {

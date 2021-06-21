@@ -107,9 +107,6 @@ class CompactBlocksTest(BitcoinTestFramework):
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
 
-    def skip_test_if_missing_module(self):
-        self.skip_if_no_wallet()
-
     def build_block_on_tip(self, node, segwit=False):
         height = node.getblockcount()
         tip = node.getbestblockhash()

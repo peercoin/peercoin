@@ -170,7 +170,6 @@ BITCOIN_CORE_H = \
   outputtype.h \
   policy/policy.h \
   policy/settings.h \
-  policy/settings.h \
   pow.h \
   protocol.h \
   psbt.h \

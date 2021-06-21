@@ -223,7 +223,6 @@ BASE_SCRIPTS = [
     'feature_help.py',
     'feature_shutdown.py',
     'framework_test_script.py',
-    'framework_test_script.py',
     # Don't append tests at the end to avoid merge conflicts
     # Put them in a random line within the section that fits their approximate run-time
 ]

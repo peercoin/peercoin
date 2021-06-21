@@ -1576,10 +1576,6 @@ bool AppInitMain(NodeContext& node)
         InitError(strprintf(_("Error: Disk space is low for %s").translated, GetBlocksDir()));
         return false;
     }
-    if (!CheckDiskSpace(GetBlocksDir())) {
-        InitError(strprintf(_("Error: Disk space is low for %s").translated, GetBlocksDir()));
-        return false;
-    }
 
     // Either install a handler to notify us when genesis activates, or set fHaveGenesis directly.
     // No locking, as this happens before any background thread is started.

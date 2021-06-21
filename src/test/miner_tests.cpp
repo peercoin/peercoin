@@ -49,7 +49,6 @@ private:
 
 BlockAssembler MinerTestingSetup::AssemblerForTest(const CChainParams& params)
 {
-{
     BlockAssembler::Options options;
 
     options.nBlockMaxWeight = MAX_BLOCK_WEIGHT;
