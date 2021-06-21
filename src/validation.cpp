@@ -3490,7 +3490,6 @@ bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAccepte
 
         for (const CBlockHeader& header : headers) {
             bool fPoS = header.nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE;
-            bool fHavePoW = !fPoS && ::BlockIndex().count(header.GetHash());
 
             CBlockIndex *pindex = nullptr; // Use a temp pindex instead of ppindex to avoid a const_cast
             bool accepted = g_blockman.AcceptBlockHeader(header, state, chainparams, &pindex);
@@ -3507,9 +3506,6 @@ bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAccepte
             if (fPoS) {
                 nPoSTemperature++;
             } else { // PoW
-                int d = ::ChainActive().Height() - pindex->nHeight;
-//                if (fHavePoW || d > 36)
-//                    nCooling = 0;
                 nPoSTemperature -= nCooling;
                 nPoSTemperature = std::max((int)nPoSTemperature, 0);
             }
