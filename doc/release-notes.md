@@ -1,3 +1,5 @@
+# Release notes now being edited on https://github.com/bitcoin-core/bitcoin-devwiki/wiki/22.0-Release-Notes-draft
+
 *After branching off for a major version release of Bitcoin Core, use this
 template to create the initial release notes draft.*
 
@@ -215,6 +217,10 @@ Tools and Utilities
   execute when Bitcoin Core has finished with its startup
   sequence. (#15367)
 
+- A new `-rpcwaittimeout` argument to `bitcoin-cli` sets the timeout
+  in seconds to use with `-rpcwait`. If the timeout expires,
+  `bitcoin-cli` will report a failure. (#21056)
+
 Wallet
 ------
 
@@ -259,6 +265,9 @@ Wallet
   that when `true` allows using unsafe inputs to fund the transaction.
   Note that the resulting transaction may become invalid if one of the unsafe inputs disappears.
   If that happens, the transaction must be funded with different inputs and republished. (#21359)
+
+- We now support up to 20 keys in `multi()` and `sortedmulti()` descriptors
+  under `wsh()`. (#20867)
 
 GUI changes
 -----------
