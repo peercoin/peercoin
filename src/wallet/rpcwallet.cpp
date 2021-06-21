@@ -3409,17 +3409,12 @@ UniValue listminting(const JSONRPCRequest& request)
     const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
     double difficulty = p->GetBlockDifficulty();
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
-    const CWallet::TxItems & txOrdered = pwallet->wtxOrdered;
 
     std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(wallet);
     const auto& vwtx = iwallet->getWalletTxs();
     for(const auto& wtx : vwtx) {
         std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(*iwallet, wtx);
-/*
-    for (CWallet::TxItems::const_iterator it = txOrdered.begin(); it != txOrdered.end(); ++it)
-    {
-        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(pwallet, MakeWalletTx(pwallet, *it->second));
-*/
+
         int64_t minAge = nStakeMinAge / 60 / 60 / 24;
         for (auto& kr : txList) {
             if(!kr.spent) {
