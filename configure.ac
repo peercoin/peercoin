@@ -111,13 +111,6 @@ AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
 
 AC_ARG_VAR(PYTHONPATH, Augments the default search path for python module files)
 
-# Enable sync checkpoints
-AC_ARG_ENABLE([checkpoints],
-  [AS_HELP_STRING([--disable-checkpoints],
-  [disable sync checkpoints (enabled by default)])],
-  [enable_checkpoints=$enableval],
-  [enable_checkpoints=yes])
-
 AC_ARG_ENABLE([wallet],
   [AS_HELP_STRING([--disable-wallet],
   [disable wallet (enabled by default)])],
@@ -1715,7 +1708,6 @@ esac
 
 echo
 echo "Options used to compile and link:"
-echo "  checkpoints   = $enable_checkpoints"
 echo "  with wallet   = $enable_wallet"
 echo "  with gui / qt = $bitcoin_enable_qt"
 if test x$bitcoin_enable_qt != xno; then
