@@ -237,7 +237,6 @@ void SendCoinsEntry::updateDisplayUnit()
 
 void SendCoinsEntry::changeEvent(QEvent* e)
 {
-#ifdef Q_OS_MACOS
     if (e->type() == QEvent::PaletteChange) {
         ui->addressBookButton->setIcon(platformStyle->SingleColorIcon(QStringLiteral(":/icons/address-book")));
         ui->pasteButton->setIcon(platformStyle->SingleColorIcon(QStringLiteral(":/icons/editpaste")));
@@ -245,7 +244,6 @@ void SendCoinsEntry::changeEvent(QEvent* e)
         ui->deleteButton_is->setIcon(platformStyle->SingleColorIcon(QStringLiteral(":/icons/remove")));
         ui->deleteButton_s->setIcon(platformStyle->SingleColorIcon(QStringLiteral(":/icons/remove")));
     }
-#endif
 }
 
 bool SendCoinsEntry::updateLabel(const QString &address)
