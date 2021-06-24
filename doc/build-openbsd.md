@@ -97,7 +97,7 @@ To configure with GUI:
 
 To configure with GUI:
 ```bash
-./configure --with-gui=yes CC=cc CXX=c++ \
+./configure --with-gui=yes --disable-external-signer CC=cc CXX=c++ \
     BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
     BDB_CFLAGS="-I${BDB_PREFIX}/include" \
     MAKE=gmake
