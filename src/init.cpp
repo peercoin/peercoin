@@ -546,6 +546,15 @@ void SetupServerArgs()
     hidden_args.emplace_back("-daemon");
 #endif
 
+    // peercoin parameters
+    gArgs.AddArg("-printstakemodifier", "Print stakemodifier selection parameters if debug is enabled", ArgsManager::ALLOW_BOOL, OptionsCategory::DEBUG_TEST);
+    gArgs.AddArg("-printcoinstake", "Print coinstake if debug is enabled", ArgsManager::ALLOW_BOOL, OptionsCategory::DEBUG_TEST);
+    gArgs.AddArg("-printcoinage", "Print coinage if debug is enabled", ArgsManager::ALLOW_BOOL, OptionsCategory::DEBUG_TEST);
+    gArgs.AddArg("-printcreation", "Print coin creation if debug is enabled", ArgsManager::ALLOW_BOOL, OptionsCategory::DEBUG_TEST);
+
+    gArgs.AddArg("-reservebalance=<amt>", "Reserve this many coins", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    gArgs.AddArg("-minting", "Enable minting (default: true)", ArgsManager::ALLOW_BOOL, OptionsCategory::OPTIONS);
+
     // Add the hidden options
     gArgs.AddHiddenArgs(hidden_args);
 }
