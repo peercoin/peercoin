@@ -644,6 +644,33 @@ class ImportDescriptorsTest(BitcoinTestFramework):
         assert_equal(tx['complete'], True)
         self.nodes[1].sendrawtransaction(tx['hex'])
 
+        self.log.info("Amending multisig with new private keys")
+        self.nodes[1].createwallet(wallet_name="wmulti_priv3", descriptors=True)
+        wmulti_priv3 = self.nodes[1].get_wallet_rpc("wmulti_priv3")
+        res = wmulti_priv3.importdescriptors([
+            {
+                "desc": descsum_create("wsh(multi(2," + xprv1 + "/84h/0h/0h/*,[59b09cd6/84h/0h/0h]" + acc_xpub2 + "/*,[e81a0532/84h/0h/0h]" + acc_xpub3 + "/*))"),
+                "active": True,
+                "range": 1000,
+                "next_index": 0,
+                "timestamp": "now"
+            }])
+        assert_equal(res[0]['success'], True)
+        res = wmulti_priv3.importdescriptors([
+            {
+                "desc": descsum_create("wsh(multi(2," + xprv1 + "/84h/0h/0h/*,[59b09cd6/84h/0h/0h]" + acc_xprv2 + "/*,[e81a0532/84h/0h/0h]" + acc_xpub3 + "/*))"),
+                "active": True,
+                "range": 1000,
+                "next_index": 0,
+                "timestamp": "now"
+            }])
+        assert_equal(res[0]['success'], True)
+
+        rawtx = self.nodes[1].createrawtransaction([{'txid': txid2, 'vout': vout2}], {w0.getnewaddress(): 9.999})
+        tx = wmulti_priv3.signrawtransactionwithwallet(rawtx)
+        assert_equal(tx['complete'], True)
+        self.nodes[1].sendrawtransaction(tx['hex'])
+
         self.log.info("Combo descriptors cannot be active")
         self.test_importdesc({"desc": descsum_create("combo(tpubDCJtdt5dgJpdhW4MtaVYDhG4T4tF6jcLR1PxL43q9pq1mxvXgMS9Mzw1HnXG15vxUGQJMMSqCQHMTy3F1eW5VkgVroWzchsPD5BUojrcWs8/*)"),
                               "active": True,
