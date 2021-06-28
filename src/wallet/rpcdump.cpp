@@ -1466,10 +1466,6 @@ static UniValue ProcessDescriptorImport(CWallet& wallet, const UniValue& data, c
     } catch (const UniValue& e) {
         result.pushKV("success", UniValue(false));
         result.pushKV("error", e);
-    } catch (...) {
-        result.pushKV("success", UniValue(false));
-
-        result.pushKV("error", JSONRPCError(RPC_MISC_ERROR, "Missing required fields"));
     }
     if (warnings.size()) result.pushKV("warnings", warnings);
     return result;
