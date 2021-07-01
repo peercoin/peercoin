@@ -4355,7 +4355,7 @@ bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
     static unsigned int nStakeSplitAge = (60 * 60 * 24 * 90);
-    int64_t nCombineThreshold = GetProofOfWorkReward(GetLastBlockIndex(::ChainActive().Tip(), false)->nBits) / 3;
+    int64_t nCombineThreshold = GetProofOfWorkReward(GetLastBlockIndex(::ChainActive().Tip(), false)->nBits, txNew.nTime) / 3;
 
     CBigNum bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
