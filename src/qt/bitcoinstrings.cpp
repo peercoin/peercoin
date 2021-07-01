@@ -39,6 +39,9 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Error: Dumpfile version is not supported. This version of bitcoin-wallet "
 "only supports version 1 dumpfiles. Got dumpfile with version %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
+"Error: Legacy wallets only support the \"legacy\", \"p2sh-segwit\", and "
+"\"bech32\" address types"),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Error: Listening for incoming connections failed (listen returned error %s)"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "File %s already exists. If you are sure this is what you want, move it out "
@@ -81,9 +84,6 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Total length of network version string (%i) exceeds maximum length (%i). "
 "Reduce the number or size of uacomments."),
-QT_TRANSLATE_NOOP("bitcoin-core", ""
-"Transaction needs a change address, but we can't generate it. Please call "
-"keypoolrefill first."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Unable to replay blocks. You will need to rebuild the database using -"
 "reindex-chainstate."),
@@ -135,6 +135,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Error: Got key that was not hex: %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Error: Got value that was not hex: %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Error: Keypool ran out, please call keypoolrefill first"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Error: Missing checksum"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Error: No %s addresses available."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Error: Unable to parse version %u as a uint32_t"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Error: Unable to write record to new wallet"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Failed to listen on any port. Use -listen=0 if you want this."),
@@ -182,6 +183,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "This is experimental software."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction amounts must not be negative"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction has too long of a mempool chain"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction must have at least one recipient"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Transaction needs a change address, but we can't generate it. %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction too large"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to bind to %s on this computer (bind returned error %s)"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to bind to %s on this computer. %s is probably already running."),
@@ -194,6 +196,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Unknown -blockfilterindex value %s."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unknown address type '%s'"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unknown change type '%s'"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unknown network specified in -onlynet: '%s'"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Unknown new rules activated (versionbit %i)"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unsupported logging category %s=%s."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Upgrading UTXO database"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Upgrading txindex database"),
