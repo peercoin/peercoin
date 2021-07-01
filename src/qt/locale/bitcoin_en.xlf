@@ -101,18 +101,18 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <context-group purpose="location"><context context-type="linenumber">286</context></context-group>
         <note annotates="source" from="developer">Expanded name of the CSV file format. See: https://en.wikipedia.org/wiki/Comma-separated_values.</note>
       </trans-unit>
-      <trans-unit id="_msg24">
+      <trans-unit id="_msg23">
         <source xml:space="preserve">Comma separated file</source>
         <target xml:space="preserve"></target>
         <context-group purpose="location"><context context-type="linenumber">286</context></context-group>
         <note annotates="source" from="developer">Expanded name of the CSV file format. See https://en.wikipedia.org/wiki/Comma-separated_values</note>
       </trans-unit>
-      <trans-unit id="_msg25">
+      <trans-unit id="_msg24">
         <source xml:space="preserve">There was an error trying to save the address list to %1. Please try again.</source>
         <context-group purpose="location"><context context-type="linenumber">302</context></context-group>
         <note annotates="source" from="developer">An error message. %1 is a stand-in argument for the name of the file we attempted to save to.</note>
       </trans-unit>
-      <trans-unit id="_msg26">
+      <trans-unit id="_msg25">
         <source xml:space="preserve">Exporting Failed</source>
         <context-group purpose="location"><context context-type="linenumber">299</context></context-group>
       </trans-unit>
@@ -120,15 +120,15 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
   </body></file>
   <file original="../addresstablemodel.cpp" datatype="cpp" source-language="en"><body>
     <group restype="x-trolltech-linguist-context" resname="AddressTableModel">
-      <trans-unit id="_msg27">
+      <trans-unit id="_msg26">
         <source xml:space="preserve">Label</source>
         <context-group purpose="location"><context context-type="linenumber">168</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg28">
+      <trans-unit id="_msg27">
         <source xml:space="preserve">Address</source>
         <context-group purpose="location"><context context-type="linenumber">168</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg29">
+      <trans-unit id="_msg28">
         <source xml:space="preserve">(no label)</source>
         <context-group purpose="location"><context context-type="linenumber">206</context></context-group>
       </trans-unit>
@@ -152,7 +152,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">Repeat new passphrase</source>
         <context-group purpose="location"><context context-type="linenumber">84</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg34">
+      <trans-unit id="_msg33">
         <source xml:space="preserve">Show passphrase</source>
         <context-group purpose="location"><context context-type="linenumber">98</context></context-group>
       </trans-unit>
@@ -160,98 +160,98 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
   </body></file>
   <file original="../askpassphrasedialog.cpp" datatype="cpp" source-language="en"><body>
     <group restype="x-trolltech-linguist-context" resname="AskPassphraseDialog">
-      <trans-unit id="_msg35">
+      <trans-unit id="_msg34">
         <source xml:space="preserve">Encrypt wallet</source>
         <context-group purpose="location"><context context-type="linenumber">51</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg36">
+      <trans-unit id="_msg35">
         <source xml:space="preserve">This operation needs your wallet passphrase to unlock the wallet.</source>
         <context-group purpose="location"><context context-type="linenumber">54</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg37">
+      <trans-unit id="_msg36">
         <source xml:space="preserve">Unlock wallet</source>
         <context-group purpose="location"><context context-type="linenumber">59</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg38">
+      <trans-unit id="_msg37">
         <source xml:space="preserve">Change passphrase</source>
         <context-group purpose="location"><context context-type="linenumber">62</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg39">
+      <trans-unit id="_msg38">
         <source xml:space="preserve">Confirm wallet encryption</source>
         <context-group purpose="location"><context context-type="linenumber">110</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg40">
+      <trans-unit id="_msg39">
         <source xml:space="preserve">Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
         <context-group purpose="location"><context context-type="linenumber">111</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg41">
+      <trans-unit id="_msg40">
         <source xml:space="preserve">Are you sure you wish to encrypt your wallet?</source>
         <context-group purpose="location"><context context-type="linenumber">111</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg42">
+      <trans-unit id="_msg41">
         <source xml:space="preserve">Wallet encrypted</source>
         <context-group purpose="location"><context context-type="linenumber">129</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">173</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg43">
+      <trans-unit id="_msg42">
         <source xml:space="preserve">Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
         <context-group purpose="location"><context context-type="linenumber">48</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg44">
+      <trans-unit id="_msg43">
         <source xml:space="preserve">Enter the old passphrase and new passphrase for the wallet.</source>
         <context-group purpose="location"><context context-type="linenumber">63</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg45">
+      <trans-unit id="_msg44">
         <source xml:space="preserve">Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
         <context-group purpose="location"><context context-type="linenumber">118</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg46">
+      <trans-unit id="_msg45">
         <source xml:space="preserve">Wallet to be encrypted</source>
         <context-group purpose="location"><context context-type="linenumber">122</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg47">
+      <trans-unit id="_msg46">
         <source xml:space="preserve">Your wallet is about to be encrypted. </source>
         <context-group purpose="location"><context context-type="linenumber">124</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg48">
+      <trans-unit id="_msg47">
         <source xml:space="preserve">Your wallet is now encrypted. </source>
         <context-group purpose="location"><context context-type="linenumber">131</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg49">
+      <trans-unit id="_msg48">
         <source xml:space="preserve">IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
         <context-group purpose="location"><context context-type="linenumber">133</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg50">
+      <trans-unit id="_msg49">
         <source xml:space="preserve">Wallet encryption failed</source>
         <context-group purpose="location"><context context-type="linenumber">139</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">147</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">179</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">185</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg51">
+      <trans-unit id="_msg50">
         <source xml:space="preserve">Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
         <context-group purpose="location"><context context-type="linenumber">140</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg52">
+      <trans-unit id="_msg51">
         <source xml:space="preserve">The supplied passphrases do not match.</source>
         <context-group purpose="location"><context context-type="linenumber">148</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">186</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg53">
+      <trans-unit id="_msg52">
         <source xml:space="preserve">Wallet unlock failed</source>
         <context-group purpose="location"><context context-type="linenumber">159</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">165</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg54">
+      <trans-unit id="_msg53">
         <source xml:space="preserve">The passphrase entered for the wallet decryption was incorrect.</source>
         <context-group purpose="location"><context context-type="linenumber">160</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">180</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg55">
+      <trans-unit id="_msg54">
         <source xml:space="preserve">Wallet passphrase was successfully changed.</source>
         <context-group purpose="location"><context context-type="linenumber">174</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg56">
+      <trans-unit id="_msg55">
         <source xml:space="preserve">Warning: The Caps Lock key is on!</source>
         <context-group purpose="location"><context context-type="linenumber">220</context></context-group>
         <context-group purpose="location"><context context-type="linenumber">253</context></context-group>
@@ -260,11 +260,11 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
   </body></file>
   <file original="../bantablemodel.cpp" datatype="cpp" source-language="en"><body>
     <group restype="x-trolltech-linguist-context" resname="BanTableModel">
-      <trans-unit id="_msg57">
+      <trans-unit id="_msg56">
         <source xml:space="preserve">IP/Netmask</source>
         <context-group purpose="location"><context context-type="linenumber">85</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg58">
+      <trans-unit id="_msg57">
         <source xml:space="preserve">Banned Until</source>
         <context-group purpose="location"><context context-type="linenumber">85</context></context-group>
       </trans-unit>
@@ -272,7 +272,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
   </body></file>
   <file original="../bitcoin.cpp" datatype="cpp" source-language="en"><body>
     <group restype="x-trolltech-linguist-context" resname="BitcoinApplication">
-      <trans-unit id="_msg59">
+      <trans-unit id="_msg58">
         <source xml:space="preserve">Runaway exception</source>
         <context-group purpose="location"><context context-type="linenumber">433</context></context-group>
       </trans-unit>
@@ -284,14 +284,19 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">Internal error</source>
         <context-group purpose="location"><context context-type="linenumber">443</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg61">
-        <source xml:space="preserve">Internal error</source>
+      <trans-unit id="_msg59">
+        <source xml:space="preserve">A fatal error occurred. %1 can no longer continue safely and will quit.</source>
         <target xml:space="preserve"></target>
-        <context-group purpose="location"><context context-type="linenumber">430</context></context-group>
+        <context-group purpose="location"><context context-type="linenumber">422</context></context-group>
       </trans-unit>
       <trans-unit id="_msg62">
         <source xml:space="preserve">An internal error occurred. %1 will attempt to continue safely. This is an unexpected bug which can be reported as described below.</source>
         <context-group purpose="location"><context context-type="linenumber">444</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg61">
+        <source xml:space="preserve">An internal error occurred. %1 will attempt to continue safely. This is an unexpected bug which can be reported as described below.</source>
+        <target xml:space="preserve"></target>
+        <context-group purpose="location"><context context-type="linenumber">432</context></context-group>
       </trans-unit>
     </group>
     <group restype="x-trolltech-linguist-context" resname="QObject">
@@ -317,7 +322,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">Error: %1</source>
         <context-group purpose="location"><context context-type="linenumber">586</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg67">
+      <trans-unit id="_msg66">
         <source xml:space="preserve">%1 didn&apos;t yet exit safely…</source>
         <context-group purpose="location"><context context-type="linenumber">657</context></context-group>
       </trans-unit>
@@ -444,7 +449,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">Sign &amp;message…</source>
         <context-group purpose="location"><context context-type="linenumber">314</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg96" approved="yes">
+      <trans-unit id="_msg95" approved="yes">
         <source xml:space="preserve">Sign messages with your Bitcoin addresses to prove you own them</source>
         <target xml:space="preserve">Sign messages with your Bitcoin addresses to prove you own them</target>
         <context-group purpose="location"><context context-type="linenumber">324</context></context-group>
@@ -465,19 +470,19 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">&amp;Load PSBT from file…</source>
         <context-group purpose="location"><context context-type="linenumber">318</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg101">
+      <trans-unit id="_msg100">
         <source xml:space="preserve">Open &amp;URI…</source>
         <context-group purpose="location"><context context-type="linenumber">334</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg102">
+      <trans-unit id="_msg101">
         <source xml:space="preserve">Close Wallet…</source>
         <context-group purpose="location"><context context-type="linenumber">342</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg103">
+      <trans-unit id="_msg102">
         <source xml:space="preserve">Create Wallet…</source>
         <context-group purpose="location"><context context-type="linenumber">345</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg104">
+      <trans-unit id="_msg103">
         <source xml:space="preserve">Close All Wallets…</source>
         <context-group purpose="location"><context context-type="linenumber">349</context></context-group>
       </trans-unit>
@@ -497,43 +502,43 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">Tabs toolbar</source>
         <context-group purpose="location"><context context-type="linenumber">533</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg109">
+      <trans-unit id="_msg108">
         <source xml:space="preserve">Syncing Headers (%1%)…</source>
         <context-group purpose="location"><context context-type="linenumber">989</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg110">
+      <trans-unit id="_msg109">
         <source xml:space="preserve">Synchronizing with network…</source>
         <context-group purpose="location"><context context-type="linenumber">1036</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg111">
+      <trans-unit id="_msg110">
         <source xml:space="preserve">Indexing blocks on disk…</source>
         <context-group purpose="location"><context context-type="linenumber">1041</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg112">
+      <trans-unit id="_msg111">
         <source xml:space="preserve">Processing blocks on disk…</source>
         <context-group purpose="location"><context context-type="linenumber">1043</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg113">
+      <trans-unit id="_msg112">
         <source xml:space="preserve">Reindexing blocks on disk…</source>
         <context-group purpose="location"><context context-type="linenumber">1047</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg114">
+      <trans-unit id="_msg113">
         <source xml:space="preserve">Connecting to peers…</source>
         <context-group purpose="location"><context context-type="linenumber">1053</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg115">
+      <trans-unit id="_msg114">
         <source xml:space="preserve">Request payments (generates QR codes and bitcoin: URIs)</source>
         <context-group purpose="location"><context context-type="linenumber">265</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg116">
+      <trans-unit id="_msg115">
         <source xml:space="preserve">Show the list of used sending addresses and labels</source>
         <context-group purpose="location"><context context-type="linenumber">330</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg117">
+      <trans-unit id="_msg116">
         <source xml:space="preserve">Show the list of used receiving addresses and labels</source>
         <context-group purpose="location"><context context-type="linenumber">332</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg118">
+      <trans-unit id="_msg117">
         <source xml:space="preserve">&amp;Command-line options</source>
         <context-group purpose="location"><context context-type="linenumber">352</context></context-group>
       </trans-unit>
@@ -550,7 +555,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">%1 behind</source>
         <context-group purpose="location"><context context-type="linenumber">1085</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg121">
+      <trans-unit id="_msg120">
         <source xml:space="preserve">Catching up…</source>
         <context-group purpose="location"><context context-type="linenumber">1090</context></context-group>
       </trans-unit>
@@ -578,7 +583,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">Up to date</source>
         <context-group purpose="location"><context context-type="linenumber">1066</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg128">
+      <trans-unit id="_msg127">
         <source xml:space="preserve">Load Partially Signed Bitcoin Transaction</source>
         <context-group purpose="location"><context context-type="linenumber">319</context></context-group>
       </trans-unit>
@@ -650,15 +655,15 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source xml:space="preserve">&amp;Window</source>
         <context-group purpose="location"><context context-type="linenumber">472</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg146">
+      <trans-unit id="_msg145">
         <source xml:space="preserve">Zoom</source>
         <context-group purpose="location"><context context-type="linenumber">484</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg147">
+      <trans-unit id="_msg146">
         <source xml:space="preserve">Main Window</source>
         <context-group purpose="location"><context context-type="linenumber">502</context></context-group>
       </trans-unit>
-      <trans-unit id="_msg148">
+      <trans-unit id="_msg147">
         <source xml:space="preserve">%1 client</source>
         <context-group purpose="location"><context context-type="linenumber">759</context></context-group>
       </trans-unit>
@@ -1020,6 +1025,16 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
       <trans-unit id="_msg227">
         <source xml:space="preserve">Are you sure you wish to close all wallets?</source>
         <context-group purpose="location"><context context-type="linenumber">99</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg233">
+        <source xml:space="preserve">Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
+        <target xml:space="preserve"></target>
+        <context-group purpose="location"><context context-type="linenumber">115</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg234">
+        <source xml:space="preserve">External signer</source>
+        <target xml:space="preserve"></target>
+        <context-group purpose="location"><context context-type="linenumber">118</context></context-group>
       </trans-unit>
     </group>
   </body></file>

@@ -134,9 +134,6 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Total length of network version string (%i) exceeds maximum length (%i). "
 "Reduce the number or size of uacomments."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
-"Transaction needs a change address, but we can't generate it. Please call "
-"keypoolrefill first."),
-QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Unable to replay blocks. You will need to rebuild the database using -"
 "reindex-chainstate."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
