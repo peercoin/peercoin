@@ -9,6 +9,7 @@
 
 #include <consensus/validation.h>
 #include <coins.h>
+#include <kernel.h>
 
 bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
 {
@@ -35,7 +36,7 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
 
 bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string& reason)
 {
-    if (tx.nVersion > CTransaction::MAX_STANDARD_VERSION || tx.nVersion < 1) {
+    if (!IsProtocolV10(tx.nTime) && (tx.nVersion > CTransaction::MAX_STANDARD_VERSION-1) || tx.nVersion < 1) {
         reason = "version";
         return false;
     }
