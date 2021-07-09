@@ -2783,7 +2783,7 @@ bool CChainState::ActivateBestChainStep(BlockValidationState& state, CBlockIndex
         }
     }
 
-    if (fBlocksDisconnected && m_mempool) {
+    if (fBlocksDisconnected) {
         // If any blocks were disconnected, disconnectpool may be non empty.  Add
         // any disconnected transactions back to the mempool.
         MaybeUpdateMempoolForReorg(disconnectpool, true);
