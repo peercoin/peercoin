@@ -284,7 +284,7 @@ class RawTransactionsTest(BitcoinTestFramework):
                 }
             ])
 
-        self.log.info('Check that createrawtransaction accepts an array and object as outputs')
+        # Test that createrawtransaction accepts an array and object as outputs
         # One output
         tx = tx_from_hex(self.nodes[2].createrawtransaction(inputs=[{'txid': txid, 'vout': 9}], outputs={address: 99}))
         assert_equal(len(tx.vout), 1)
@@ -520,6 +520,8 @@ class RawTransactionsTest(BitcoinTestFramework):
         assert_equal(decrawtx['vin'][0]['coinbase'], coinbase)
 
     def transaction_version_number_tests(self):
+        self.log.info("Test transaction version numbers")
+
         self.log.info("Test transaction version numbers")
 
         # Test the minimum transaction version number that fits in a signed 32-bit integer.
