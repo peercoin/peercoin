@@ -21,8 +21,17 @@ src/qt/test/test_peercoin-qt
 Makefile.in
 aclocal.m4
 autom4te.cache/
+conftest*
 *.log
 *.trs
+
+coverage/
+coverage.html
+coverage.*.html
+*.gcda
+*.gcno
+*.gcov
+
 build-aux/config.guess
 build-aux/config.sub
 build-aux/depcomp
