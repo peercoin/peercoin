@@ -9,6 +9,7 @@
 #include <interfaces/init.h>
 #include <interfaces/node.h>
 #include <qt/bitcoin.h>
+#include <qt/initexecutor.h>
 #include <qt/test/apptests.h>
 #include <qt/test/optiontests.h>
 #include <qt/test/rpcnestedtests.h>
