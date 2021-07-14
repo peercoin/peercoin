@@ -2094,7 +2094,8 @@ echo "  ARFLAGS         = $ARFLAGS"
 echo
 if test x"$set_precomp" = x"yes"; then
 echo "  CC_FOR_BUILD            = $CC_FOR_BUILD"
-echo "  CFLAGS_FOR_BUILD        = $CFLAGS_FOR_BUILD"
 echo "  CPPFLAGS_FOR_BUILD      = $CPPFLAGS_FOR_BUILD"
+echo "  SECP_CFLAGS_FOR_BUILD   = $SECP_CFLAGS_FOR_BUILD"
+echo "  CFLAGS_FOR_BUILD        = $CFLAGS_FOR_BUILD"
 echo "  LDFLAGS_FOR_BUILD       = $LDFLAGS_FOR_BUILD"
 fi
