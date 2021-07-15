@@ -217,6 +217,7 @@ BASE_SCRIPTS = [
     'rpc_createmultisig.py --legacy-wallet',
     'rpc_createmultisig.py --descriptors',
     'rpc_packages.py',
+    'mempool_package_limits.py',
     'rpc_preciousblock.py',
     'wallet_importprunedfunds.py --legacy-wallet',
     'wallet_importprunedfunds.py --descriptors',
