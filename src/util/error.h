@@ -31,6 +31,7 @@ enum class TransactionError {
     SIGHASH_MISMATCH,
     EXTERNAL_SIGNER_NOT_FOUND,
     EXTERNAL_SIGNER_FAILED,
+    INVALID_PACKAGE,
 };
 
 bilingual_str TransactionErrorString(const TransactionError error);
