@@ -1,5 +1,3 @@
-# Release notes now being edited on https://github.com/bitcoin-core/bitcoin-devwiki/wiki/22.0-Release-Notes-draft
-
 *After branching off for a major version release of Bitcoin Core, use this
 template to create the initial release notes draft.*
 
@@ -178,10 +176,6 @@ Files
 
 New settings
 ------------
-
-- The `-natpmp` option has been added to use NAT-PMP to map the listening port.
-  If both UPnP and NAT-PMP are enabled, a successful allocation from UPnP
-  prevails over one from NAT-PMP. (#18077)
 
 Updated settings
 ----------------
