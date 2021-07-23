@@ -1016,10 +1016,13 @@ int64_t GetProofOfWorkReward(unsigned int nBits, uint32_t nTime)
 
     int64_t nSubsidy = bnUpperBound.getuint64();
     nSubsidy = (nSubsidy / CENT) * CENT;
+
+    nSubsidy = std::min(nSubsidy, IsProtocolV10(nTime) ? MAX_MINT_PROOF_OF_WORK_V10 : MAX_MINT_PROOF_OF_WORK);
+
     if (gArgs.GetBoolArg("-printcreation", false))
         LogPrintf("%s: create=%s nBits=0x%08x nSubsidy=%lld\n", __func__, FormatMoney(nSubsidy), nBits, nSubsidy);
 
-    return std::min(nSubsidy, IsProtocolV10(nTime) ? MAX_MINT_PROOF_OF_WORK_V10 : MAX_MINT_PROOF_OF_WORK);
+    return nSubsidy;
 }
 
 // peercoin: miner's coin stake is rewarded based on coin age spent (coin-days)
