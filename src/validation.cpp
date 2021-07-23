@@ -464,7 +464,6 @@ private:
         std::unique_ptr<CTxMemPoolEntry> m_entry;
         std::list<CTransactionRef> m_replaced_transactions;
 
-        bool m_replacement_transaction;
         CAmount m_base_fees;
         CAmount m_modified_fees;
         /** Total modified fees of all transactions being replaced. */
@@ -724,8 +723,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         }
     }
 
-        // We classify this as a consensus error because a transaction depending on something it
-        // conflicts with would be inconsistent.
+
     return true;
 }
 
