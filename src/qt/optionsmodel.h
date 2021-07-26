@@ -62,6 +62,7 @@ public:
         PruneSize,              // int
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
+        SplitCoins,             // bool
         Listen,                 // bool
         OptionIDRowCount,
     };

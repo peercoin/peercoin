@@ -3975,6 +3975,8 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     }
 
     walletInstance->m_spend_zero_conf_change = gArgs.GetBoolArg("-spendzeroconfchange", DEFAULT_SPEND_ZEROCONF_CHANGE);
+    walletInstance->m_split_coins = gArgs.GetBoolArg("-splitcoins", DEFAULT_SPLIT_COINS);
+    walletInstance->WalletLogPrintf("Wallet will%s split coins during minting\n", walletInstance->m_split_coins? "" : " not");
 
     walletInstance->WalletLogPrintf("Wallet completed loading in %15dms\n", GetTimeMillis() - nStart);
 
@@ -4465,7 +4467,7 @@ bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_
                 nCredit += pcoin.txout.nValue;
                 vwtxPrev.push_back(tx);
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
-                if (header.GetBlockTime() + nStakeSplitAge > txNew.nTime)
+                if ((header.GetBlockTime() + nStakeSplitAge > txNew.nTime) && pwallet->m_split_coins)
                     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
                 if (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false))
                     LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);

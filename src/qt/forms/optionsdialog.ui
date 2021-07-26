@@ -226,6 +226,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="splitCoins">
+            <property name="toolTip">
+             <string>Whether to split coins or not during minting.</string>
+            </property>
+            <property name="text">
+             <string>&amp;Split coins when minting</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
