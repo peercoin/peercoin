@@ -76,6 +76,7 @@ static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
     (382019, 0x7f5cf5ebu )
     (408500, 0x68cadee2u )
     (412691, 0x93138e67u )
+    (441093, 0x1d72888au )
     ;
 
 // Whether the given coinstake is subject to new v0.3 protocol
