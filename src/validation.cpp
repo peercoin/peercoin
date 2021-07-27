@@ -722,6 +722,8 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         }
     }
 
+        std::string err_string;
+
 
     return true;
 }
