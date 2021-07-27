@@ -25,6 +25,7 @@
 #include <node/coinstats.h>
 #include <node/ui_interface.h>
 #include <policy/policy.h>
+#include <policy/rbf.h>
 #include <policy/settings.h>
 #include <pow.h>
 #include <primitives/block.h>
