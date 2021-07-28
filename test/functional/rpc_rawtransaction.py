@@ -75,14 +75,11 @@ class RawTransactionsTest(BitcoinTestFramework):
     def run_test(self):
         self.log.info("Prepare some coins for multiple *rawtransaction commands")
         self.generate(self.nodes[2], 1)
-        self.sync_all()
         self.generate(self.nodes[0], COINBASE_MATURITY + 1)
-        self.sync_all()
         for amount in [1.5, 1.0, 5.0]:
             self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), amount)
         self.sync_all()
         self.generate(self.nodes[0], 5)
-        self.sync_all()
 
         self.getrawtransaction_tests()
         self.createrawtransaction_tests()
@@ -98,13 +95,11 @@ class RawTransactionsTest(BitcoinTestFramework):
         addr = self.nodes[1].getnewaddress()
         txid = self.nodes[0].sendtoaddress(addr, 10)
         self.generate(self.nodes[0], 1)
-        self.sync_all()
         vout = find_vout_for_address(self.nodes[1], txid, addr)
         rawTx = self.nodes[1].createrawtransaction([{'txid': txid, 'vout': vout}], {self.nodes[1].getnewaddress(): 9.999})
         rawTxSigned = self.nodes[1].signrawtransactionwithwallet(rawTx)
         txId = self.nodes[1].sendrawtransaction(rawTxSigned['hex'])
         self.generate(self.nodes[0], 1)
-        self.sync_all()
 
         for n in [0, 3]:
             self.log.info(f"Test getrawtransaction {'with' if n == 0 else 'without'} -txindex")
@@ -137,7 +132,6 @@ class RawTransactionsTest(BitcoinTestFramework):
         # Make a tx by sending, then generate 2 blocks; block1 has the tx in it
         tx = self.nodes[2].sendtoaddress(self.nodes[1].getnewaddress(), 1)
         block1, block2 = self.generate(self.nodes[2], 2)
-        self.sync_all()
         for n in [0, 3]:
             self.log.info(f"Test getrawtransaction {'with' if n == 0 else 'without'} -txindex, with blockhash")
             # We should be able to get the raw transaction by providing the correct block
@@ -492,7 +486,6 @@ class RawTransactionsTest(BitcoinTestFramework):
 
         self.log.info("Test sendrawtransaction/testmempoolaccept with tx already in the chain")
         self.generate(self.nodes[2], 1)
-        self.sync_blocks()
         for node in self.nodes:
             testres = node.testmempoolaccept([rawTxSigned['hex']])[0]
             assert_equal(testres['allowed'], False)
@@ -566,7 +559,6 @@ class RawTransactionsTest(BitcoinTestFramework):
         txId = self.nodes[0].sendtoaddress(mSigObj, 1.2)
         self.sync_all()
         self.generate(self.nodes[0], 1)
-        self.sync_all()
         # node2 has both keys of the 2of2 ms addr, tx should affect the balance
         assert_equal(self.nodes[2].getbalance(), bal + Decimal('1.200000'))
 
@@ -588,7 +580,6 @@ class RawTransactionsTest(BitcoinTestFramework):
         rawTx = self.nodes[0].decoderawtransaction(decTx['hex'])
         self.sync_all()
         self.generate(self.nodes[0], 1)
-        self.sync_all()
 
         # THIS IS AN INCOMPLETE FEATURE
         # NODE2 HAS TWO OF THREE KEYS AND THE FUNDS SHOULD BE SPENDABLE AND COUNT AT BALANCE CALCULATION
@@ -611,7 +602,6 @@ class RawTransactionsTest(BitcoinTestFramework):
         rawTx = self.nodes[0].decoderawtransaction(rawTxSigned['hex'])
         self.sync_all()
         self.generate(self.nodes[0], 1)
-        self.sync_all()
         assert_equal(self.nodes[0].getbalance(), bal + Decimal('9754.14') + Decimal('2.190000'))  # block reward + tx
 
         # 2of2 test for combining transactions
@@ -631,7 +621,6 @@ class RawTransactionsTest(BitcoinTestFramework):
         rawTx2 = self.nodes[0].decoderawtransaction(decTx['hex'])
         self.sync_all()
         self.generate(self.nodes[0], 1)
-        self.sync_all()
 
         assert_equal(self.nodes[2].getbalance(), bal)  # the funds of a 2of2 multisig tx should not be marked as spendable
 
@@ -656,7 +645,6 @@ class RawTransactionsTest(BitcoinTestFramework):
         rawTx2 = self.nodes[0].decoderawtransaction(rawTxComb)
         self.sync_all()
         self.generate(self.nodes[0], 1)
-        self.sync_all()
         assert_equal(self.nodes[0].getbalance(), bal + Decimal('9744.46') + Decimal('2.190000'))  # block reward + tx
 
 
