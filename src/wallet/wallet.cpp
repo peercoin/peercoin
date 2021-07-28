@@ -4451,7 +4451,7 @@ bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_
                 {
                     // convert to pay to public key type
                     CKey key;
-                    if (!pwallet->GetLegacyScriptPubKeyMan()->GetKey(CKeyID(Hash160(vSolutions[0])), key))
+                    if (!pwallet->GetLegacyScriptPubKeyMan()->GetKey(CKeyID(uint160(vSolutions[0])), key))
                     {
                         if (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false))
                             LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
