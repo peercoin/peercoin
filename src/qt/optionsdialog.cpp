@@ -230,6 +230,7 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->splitCoins, OptionsModel::SplitCoins);
     mapper->addMapping(ui->checkGithub, OptionsModel::CheckGithub);
     mapper->addMapping(ui->coinControlFeatures, OptionsModel::CoinControlFeatures);
+    mapper->addMapping(ui->subFeeFromAmount, OptionsModel::SubFeeFromAmount);
     mapper->addMapping(ui->externalSignerPath, OptionsModel::ExternalSignerPath);
 
     /* Network */

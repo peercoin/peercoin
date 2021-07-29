@@ -118,6 +118,11 @@ void OptionsModel::Init(bool resetSettings)
     if (!gArgs.SoftSetArg("-signer", settings.value("external_signer_path").toString().toStdString())) {
         addOverriddenOption("-signer");
     }
+
+    if (!settings.contains("SubFeeFromAmount")) {
+        settings.setValue("SubFeeFromAmount", false);
+    }
+    m_sub_fee_from_amount = settings.value("SubFeeFromAmount", false).toBool();
     if (!settings.contains("bSplitCoins"))
         settings.setValue("bSplitCoins", DEFAULT_SPLIT_COINS);
     if (!m_node.softSetBoolArg("-splitcoins", settings.value("bSplitCoins").toBool()))
@@ -337,6 +342,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("bSpendZeroConfChange");
         case ExternalSignerPath:
             return settings.value("external_signer_path");
+        case SubFeeFromAmount:
+            return m_sub_fee_from_amount;
         case SplitCoins:
             return settings.value("bSplitCoins");
         case CheckGithub:
@@ -466,6 +473,10 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 settings.setValue("external_signer_path", value.toString());
                 setRestartRequired(true);
             }
+            break;
+        case SubFeeFromAmount:
+            m_sub_fee_from_amount = value.toBool();
+            settings.setValue("SubFeeFromAmount", m_sub_fee_from_amount);
             break;
         case SplitCoins:
             if (settings.value("bSplitCoins") != value) {
