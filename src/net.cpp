@@ -3090,7 +3090,7 @@ uint64_t CConnman::CalculateKeyedNetGroup(const CAddress& ad) const
 
 void CaptureMessageToFile(const CAddress& addr,
                           const std::string& msg_type,
-                          const Span<const unsigned char>& data,
+                          Span<const unsigned char> data,
                           bool is_incoming)
 {
     // Note: This function captures the message at the time of processing,
@@ -3121,6 +3121,6 @@ void CaptureMessageToFile(const CAddress& addr,
 
 std::function<void(const CAddress& addr,
                    const std::string& msg_type,
-                   const Span<const unsigned char>& data,
+                   Span<const unsigned char> data,
                    bool is_incoming)>
     CaptureMessage = CaptureMessageToFile;
