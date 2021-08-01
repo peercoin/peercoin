@@ -925,6 +925,10 @@ bool ReadBlockFromDisk(CBlock& block, const FlatFilePos& pos, const Consensus::P
     if (block.IsProofOfWork() && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
 
+    // Set flag if proof of stake
+    if (block.IsProofOfStake())
+        block.nFlags |= CBlockIndex::BLOCK_PROOF_OF_STAKE;
+
     return true;
 }
 
