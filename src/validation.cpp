@@ -578,10 +578,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
 
     // Alias what we need out of ws
     TxValidationState& state = ws.m_state;
-    std::set<uint256>& setConflicts = ws.m_conflicts;
-    CTxMemPool::setEntries& setAncestors = ws.m_ancestors;
     std::unique_ptr<CTxMemPoolEntry>& entry = ws.m_entry;
-    CAmount& nModifiedFees = ws.m_modified_fees;
 
     if (!CheckTransaction(tx, state)) {
         return false; // state filled in by CheckTransaction
@@ -693,9 +690,9 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
 
     int64_t nSigOpsCost = GetTransactionSigOpCost(tx, m_view, STANDARD_SCRIPT_VERIFY_FLAGS);
 
-    // nModifiedFees includes any fee deltas from PrioritiseTransaction
-    nModifiedFees = ws.m_base_fees;
-    m_pool.ApplyDelta(hash, nModifiedFees);
+    // ws.m_modified_fees includes any fee deltas from PrioritiseTransaction
+    ws.m_modified_fees = ws.m_base_fees;
+    m_pool.ApplyDelta(hash, ws.m_modified_fees);
 
     // Keep track of transactions that spend a coinbase, which we re-scan
     // during reorgs to ensure COINBASE_MATURITY is still met.
@@ -716,46 +713,10 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         return state.Invalid(TxValidationResult::TX_NOT_STANDARD, "bad-txns-too-many-sigops",
                 strprintf("%d", nSigOpsCost));
 
-    ws.m_iters_conflicting = m_pool.GetIterSet(setConflicts);
-    // Calculate in-mempool ancestors, up to a limit.
-    if (setConflicts.size() == 1) {
-        // In general, when we receive an RBF transaction with mempool conflicts, we want to know whether we
-        // would meet the chain limits after the conflicts have been removed. However, there isn't a practical
-        // way to do this short of calculating the ancestor and descendant sets with an overlay cache of
-        // changed mempool entries. Due to both implementation and runtime complexity concerns, this isn't
-        // very realistic, thus we only ensure a limited set of transactions are RBF'able despite mempool
-        // conflicts here. Importantly, we need to ensure that some transactions which were accepted using
-        // the below carve-out are able to be RBF'ed, without impacting the security the carve-out provides
-        // for off-chain contract systems (see link in the comment below).
-        //
-        // Specifically, the subset of RBF transactions which we allow despite chain limits are those which
-        // conflict directly with exactly one other transaction (but may evict children of said transaction),
-        // and which are not adding any new mempool dependencies. Note that the "no new mempool dependencies"
-        // check is accomplished later, so we don't bother doing anything about it here, but if BIP 125 is
-        // amended, we may need to move that check to here instead of removing it wholesale.
-        //
-        // Such transactions are clearly not merging any existing packages, so we are only concerned with
-        // ensuring that (a) no package is growing past the package size (not count) limits and (b) we are
-        // not allowing something to effectively use the (below) carve-out spot when it shouldn't be allowed
-        // to.
-        //
-        // To check these we first check if we meet the RBF criteria, above, and increment the descendant
-        // limits by the direct conflict and its descendants (as these are recalculated in
-        // CalculateMempoolAncestors by assuming the new transaction being added is a new descendant, with no
-        // removals, of each parent's existing dependent set). The ancestor count limits are unmodified (as
-        // the ancestor limits should be the same for both our new transaction and any conflicts).
-        // We don't bother incrementing m_limit_descendants by the full removal count as that limit never comes
-        // into force here (as we're only adding a single transaction).
-        assert(ws.m_iters_conflicting.size() == 1);
-        CTxMemPool::txiter conflict = *ws.m_iters_conflicting.begin();
-
-        m_limit_descendants += 1;
-        m_limit_descendant_size += conflict->GetSizeWithDescendants();
-    }
 
     std::string errString;
-    if (!m_pool.CalculateMemPoolAncestors(*entry, setAncestors, m_limit_ancestors, m_limit_ancestor_size, m_limit_descendants, m_limit_descendant_size, errString)) {
-        setAncestors.clear();
+    if (!m_pool.CalculateMemPoolAncestors(*entry, ws.m_ancestors, m_limit_ancestors, m_limit_ancestor_size, m_limit_descendants, m_limit_descendant_size, errString)) {
+        ws.m_ancestors.clear();
         // If CalculateMemPoolAncestors fails second time, we want the original error string.
         std::string dummy_err_string;
         // Contracting/payment channels CPFP carve-out:
@@ -770,7 +731,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         // outputs - one for each counterparty. For more info on the uses for
         // this, see https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2018-November/016518.html
         if (ws.m_vsize > EXTRA_DESCENDANT_TX_SIZE_LIMIT ||
-                !m_pool.CalculateMemPoolAncestors(*entry, setAncestors, 2, m_limit_ancestor_size, m_limit_descendants + 1, m_limit_descendant_size + EXTRA_DESCENDANT_TX_SIZE_LIMIT, dummy_err_string)) {
+                !m_pool.CalculateMemPoolAncestors(*entry, ws.m_ancestors, 2, m_limit_ancestor_size, m_limit_descendants + 1, m_limit_descendant_size + EXTRA_DESCENDANT_TX_SIZE_LIMIT, dummy_err_string)) {
             return state.Invalid(TxValidationResult::TX_MEMPOOL_POLICY, "too-long-mempool-chain", errString);
         }
     }
@@ -848,11 +809,10 @@ bool MemPoolAccept::Finalize(const ATMPArgs& args, Workspace& ws)
     TxValidationState& state = ws.m_state;
     const bool bypass_limits = args.m_bypass_limits;
 
-    CTxMemPool::setEntries& setAncestors = ws.m_ancestors;
     std::unique_ptr<CTxMemPoolEntry>& entry = ws.m_entry;
 
     // Store transaction in memory
-    m_pool.addUnchecked(*entry, setAncestors);
+    m_pool.addUnchecked(*entry, ws.m_ancestors);
 
     // trim mempool and check if tx was trimmed
     if (!bypass_limits) {
