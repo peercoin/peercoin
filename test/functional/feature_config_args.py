@@ -258,6 +258,10 @@ class ConfArgsTest(BitcoinTestFramework):
         none_existent_conf_file = os.path.join(default_data_dir, "none_existent_bitcoin.conf")
         self.nodes[0].assert_start_raises_init_error(['-conf=' + none_existent_conf_file], 'Error: Error reading configuration file: specified config file "' + none_existent_conf_file + '" could not be opened.')
 
+        # Check that an explicitly specified config file that cannot be opened fails
+        none_existent_conf_file = os.path.join(default_data_dir, "none_existent_bitcoin.conf")
+        self.nodes[0].assert_start_raises_init_error(['-conf=' + none_existent_conf_file], 'Error: Error reading configuration file: specified config file "' + none_existent_conf_file + '" could not be opened.')
+
         # Create the directory and ensure the config file now works
         os.mkdir(new_data_dir)
         self.start_node(0, [f'-conf={conf_file}'])
