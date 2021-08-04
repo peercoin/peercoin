@@ -265,7 +265,8 @@ static RPCHelpMan getnewaddress()
 
     OutputType output_type = pwallet->m_default_address_type;
     if (!request.params[1].isNull()) {
-        if (!ParseOutputType(request.params[1].get_str(), output_type)) {
+        std::optional<OutputType> parsed = ParseOutputType(request.params[1].get_str());
+        if (!parsed) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[1].get_str()));
         }
     }
@@ -309,7 +310,8 @@ static RPCHelpMan getrawchangeaddress()
 
     OutputType output_type = pwallet->m_default_change_type.value_or(pwallet->m_default_address_type);
     if (!request.params[0].isNull()) {
-        if (!ParseOutputType(request.params[0].get_str(), output_type)) {
+        std::optional<OutputType> parsed = ParseOutputType(request.params[0].get_str());
+        if (!parsed) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[0].get_str()));
         }
     }
@@ -1000,7 +1002,8 @@ static RPCHelpMan addmultisigaddress()
 
     OutputType output_type = pwallet->m_default_address_type;
     if (!request.params[3].isNull()) {
-        if (!ParseOutputType(request.params[3].get_str(), output_type)) {
+        std::optional<OutputType> parsed = ParseOutputType(request.params[3].get_str());
+        if (!parsed) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[3].get_str()));
         }
     }
@@ -3123,11 +3126,11 @@ void FundTransaction(CWallet& wallet, CMutableTransaction& tx, CAmount& fee_out,
             if (options.exists("changeAddress") || options.exists("change_address")) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Cannot specify both change address and address type options");
             }
-            OutputType out_type;
-            if (!ParseOutputType(options["change_type"].get_str(), out_type)) {
+            if (std::optional<OutputType> parsed = ParseOutputType(options["change_type"].get_str())) {
+                coinControl.m_change_type.emplace(parsed.value());
+            } else {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown change type '%s'", options["change_type"].get_str()));
             }
-            coinControl.m_change_type.emplace(out_type);
         }
 
         const UniValue include_watching_option = options.exists("include_watching") ? options["include_watching"] : options["includeWatching"];
