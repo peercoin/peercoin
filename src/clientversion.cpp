@@ -33,7 +33,9 @@ const std::string CLIENT_NAME("Satoshi");
 #else
     #define BUILD_DESC "v" STRINGIZE(PEERCOIN_VERSION_MAJOR) "." STRINGIZE(PEERCOIN_VERSION_MINOR) \
                        "." STRINGIZE(PEERCOIN_VERSION_REVISION) "." STRINGIZE(PEERCOIN_VERSION_BUILD)
-    #ifdef BUILD_GIT_COMMIT
+    #if CLIENT_VERSION_IS_RELEASE
+        #define BUILD_SUFFIX ""
+    #elif defined(BUILD_GIT_COMMIT)
         #define BUILD_SUFFIX "-" BUILD_GIT_COMMIT
     #elif defined(GIT_COMMIT_ID)
         #define BUILD_SUFFIX "-g" GIT_COMMIT_ID
