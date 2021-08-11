@@ -722,7 +722,6 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         }
     }
 
-
     return true;
 }
 
