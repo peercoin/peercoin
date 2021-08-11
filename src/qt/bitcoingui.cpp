@@ -1458,9 +1458,8 @@ void BitcoinGUI::setEncryptionStatus(int status)
 
 void BitcoinGUI::updateWalletStatus()
 {
-    if (!walletFrame) {
-        return;
-    }
+    assert(walletFrame);
+
     WalletView * const walletView = walletFrame->currentWalletView();
     if (!walletView) {
         return;
