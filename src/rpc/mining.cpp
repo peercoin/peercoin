@@ -1078,9 +1078,11 @@ static RPCHelpMan estimatesmartfee()
     RPCTypeCheck(request.params, {UniValue::VNUM, UniValue::VSTR});
     RPCTypeCheckArgument(request.params[0], UniValue::VNUM);
 
+    const NodeContext& node = EnsureAnyNodeContext(request.context);
+
     UniValue result(UniValue::VOBJ);
     result.pushKV("feerate", 0.01);
-    result.pushKV("blocks", EnsureAnyChainman(context).ActiveChain().Height());
+    result.pushKV("blocks", EnsureAnyChainman(node).ActiveChain().Height());
     return result;
 },
 };
