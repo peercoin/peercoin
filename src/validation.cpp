@@ -723,6 +723,8 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         }
     }
 
+        // We classify this as a consensus error because a transaction depending on something it
+        // conflicts with would be inconsistent.
     return true;
 }
 
