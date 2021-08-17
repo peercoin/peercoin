@@ -4528,7 +4528,7 @@ bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_
     {
         uint64_t nCoinAge;
         CCoinsViewCache view(&::ChainstateActive().CoinsTip());
-        if (!GetCoinAge((const CTransaction)txNew, view, nCoinAge, true))
+        if (!GetCoinAge((const CTransaction)txNew, view, nCoinAge, txNew.nTime, true))
             return error("CreateCoinStake : failed to calculate coin age");
 
         CAmount nReward = GetProofOfStakeReward(nCoinAge, txNew.nTime, ::ChainActive().Tip()->nMoneySupply);
@@ -4566,9 +4566,9 @@ bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_
             return error("CreateCoinStake : exceeded coinstake size limit");
 
         // Check enough fee is paid
-        if (nMinFee < GetMinFee(CTransaction(txNew)) - nMinFeeBase)
+        if (nMinFee < GetMinFee(CTransaction(txNew), txNew.nTime) - nMinFeeBase)
         {
-            nMinFee = GetMinFee(CTransaction(txNew)) - nMinFeeBase;
+            nMinFee = GetMinFee(CTransaction(txNew), txNew.nTime) - nMinFeeBase;
             continue; // try signing again
         }
         else

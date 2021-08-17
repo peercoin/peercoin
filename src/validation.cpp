@@ -509,6 +509,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // Time (prevent mempool memory exhaustion attack)
     // moved from CheckTransaction() to here, because it makes no sense to make GetAdjustedTime() a part of the consensus rules - user can set his clock to whatever he wishes.
     if (tx.nTime > GetAdjustedTime() + (IsProtocolV09(GetAdjustedTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9))
+        return state.Invalid(TxValidationResult::TX_CONSENSUS, "timestamp-too-far");
 
     // Coinbase is only valid in a block, not as a loose transaction
     if (tx.IsCoinBase() || tx.IsCoinStake())
@@ -590,11 +591,11 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "non-BIP68-final");
 
     CAmount nFees = 0;
-    if (!Consensus::CheckTxInputs(tx, state, m_view, GetSpendHeight(m_view), nFees, Params().GetConsensus())) {
+    if (!Consensus::CheckTxInputs(tx, state, m_view, GetSpendHeight(m_view), nFees, Params().GetConsensus(), tx.nTime ? tx.nTime : GetAdjustedTime())) {
         return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), state.ToString());
     }
 
-    if (nFees < GetMinFee(tx))
+    if (nFees < GetMinFee(tx, tx.nTime ? tx.nTime : GetAdjustedTime()))
         return state.Invalid(TxValidationResult::TX_CONSENSUS, "fee is below minimum");
 
     // Check for non-standard pay-to-script-hash in inputs
@@ -1955,7 +1956,7 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
         {
             CAmount txfee = 0;
             TxValidationState tx_state;
-            if (!Consensus::CheckTxInputs(tx, tx_state, view, pindex->nHeight, txfee, chainparams.GetConsensus(), (pindex->pprev? pindex->pprev->nMoneySupply : 0))) {
+            if (!Consensus::CheckTxInputs(tx, tx_state, view, pindex->nHeight, txfee, chainparams.GetConsensus(), tx.nTime ? tx.nTime : block.nTime, (pindex->pprev? pindex->pprev->nMoneySupply : 0))) {
                 // Any transaction validation failure in ConnectBlock is a block consensus failure
                 state.Invalid(BlockValidationResult::BLOCK_CONSENSUS,
                             tx_state.GetRejectReason(), tx_state.GetDebugMessage());
@@ -3147,7 +3148,7 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
     // Check coinbase reward
     CAmount nCoinbaseCost = 0;
     if (block.IsProofOfWork())
-        nCoinbaseCost = (GetMinFee(*block.vtx[0]) < PERKB_TX_FEE)? 0 : (GetMinFee(*block.vtx[0]) - PERKB_TX_FEE);
+        nCoinbaseCost = (GetMinFee(*block.vtx[0], block.nTime) < PERKB_TX_FEE)? 0 : (GetMinFee(*block.vtx[0], block.nTime) - PERKB_TX_FEE);
     if (block.vtx[0]->GetValueOut() > (block.IsProofOfWork()? (GetProofOfWorkReward(block.nBits, block.GetBlockTime()) - nCoinbaseCost) : 0))
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cb-amount",
                 strprintf("CheckBlock() : coinbase reward exceeded %s > %s",
@@ -4794,7 +4795,7 @@ static CMainCleanup instance_of_cmaincleanup;
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, bool isTrueCoinAge)
+bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, unsigned int nTimeTx, bool isTrueCoinAge)
 {
     arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
     nCoinAge = 0;
@@ -4814,7 +4815,7 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
 
         if (isTrueCoinAge && !view.GetCoin(prevout, coin))
             continue;  // previous transaction not in main chain
-        if (tx.nTime < coin.nTime)
+        if (nTimeTx < coin.nTime)
             return false;  // Transaction timestamp violation
 
         CDiskTxPos postx;
@@ -4833,13 +4834,13 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
             if (txPrev->GetHash() != prevout.hash)
                 return error("%s() : txid mismatch in GetCoinAge()", __PRETTY_FUNCTION__);
 
-            if (header.GetBlockTime() + Params().GetConsensus().nStakeMinAge > tx.nTime)
+            if (header.GetBlockTime() + Params().GetConsensus().nStakeMinAge > nTimeTx)
                 continue; // only count coins meeting min age requirement
 
             int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
-            int nEffectiveAge = tx.nTime-txPrev->nTime;
+            int nEffectiveAge = nTimeTx-txPrev->nTime;
 
-            if (!isTrueCoinAge || IsProtocolV09(tx.nTime))
+            if (!isTrueCoinAge || IsProtocolV09(nTimeTx))
                 nEffectiveAge = std::min(nEffectiveAge, 365 * 24 * 60 * 60);
 
             bnCentSecond += arith_uint256(nValueIn) * nEffectiveAge / CENT;
