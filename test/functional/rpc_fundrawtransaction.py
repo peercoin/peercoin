@@ -1296,7 +1296,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         wallet.sendrawtransaction(signedtx['hex'])
 
         # And we can also use them once they're confirmed.
-        self.nodes[0].generate(1)
+        self.generate(self.nodes[0], 1)
         rawtx = wallet.createrawtransaction([], [{self.nodes[2].getnewaddress(): 3}])
         fundedtx = wallet.fundrawtransaction(rawtx, {"include_unsafe": True})
         tx_dec = wallet.decoderawtransaction(fundedtx['hex'])

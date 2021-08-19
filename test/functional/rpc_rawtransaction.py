@@ -187,13 +187,13 @@ class RawTransactionsTest(BitcoinTestFramework):
     def getrawtransaction_tests(self):
         addr = self.nodes[1].getnewaddress()
         txid = self.nodes[0].sendtoaddress(addr, 10)
-        self.nodes[0].generate(1)
+        self.generate(self.nodes[0], 1)
         self.sync_all()
         vout = find_vout_for_address(self.nodes[1], txid, addr)
         rawTx = self.nodes[1].createrawtransaction([{'txid': txid, 'vout': vout}], {self.nodes[1].getnewaddress(): 9.999})
         rawTxSigned = self.nodes[1].signrawtransactionwithwallet(rawTx)
         txId = self.nodes[1].sendrawtransaction(rawTxSigned['hex'])
-        self.nodes[0].generate(1)
+        self.generate(self.nodes[0], 1)
         self.sync_all()
 
         for n in [0, 3]:
@@ -226,7 +226,7 @@ class RawTransactionsTest(BitcoinTestFramework):
 
         # Make a tx by sending, then generate 2 blocks; block1 has the tx in it
         tx = self.nodes[2].sendtoaddress(self.nodes[1].getnewaddress(), 1)
-        block1, block2 = self.nodes[2].generate(2)
+        block1, block2 = self.generate(self.nodes[2], 2)
         self.sync_all()
         for n in [0, 3]:
             self.log.info(f"Test getrawtransaction {'with' if n == 0 else 'without'} -txindex, with blockhash")
