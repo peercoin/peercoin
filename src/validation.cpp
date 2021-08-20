@@ -465,8 +465,10 @@ private:
         bool m_replacement_transaction;
         CAmount m_base_fees;
         CAmount m_modified_fees;
-        CAmount m_conflicting_fees;
-        size_t m_conflicting_size;
+        /** Total modified fees of all transactions being replaced. */
+        CAmount m_conflicting_fees{0};
+        /** Total virtual size of all transactions being replaced. */
+        size_t m_conflicting_size{0};
 
         const CTransactionRef& m_ptx;
         const uint256& m_hash;
