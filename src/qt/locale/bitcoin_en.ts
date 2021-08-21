@@ -762,8 +762,8 @@
         <source>%n active connection(s) to Bitcoin network.</source>
         <extracomment>A substring of the tooltip.</extracomment>
         <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n active connection to Bitcoin network.</numerusform>
+            <numerusform>%n active connections to Bitcoin network.</numerusform>
         </translation>
     </message>
     <message>
@@ -1374,8 +1374,8 @@
         <location line="+3"/>
         <source>(%n GB needed for full chain)</source>
         <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+            <numerusform>(sufficient to restore backups %n day old)</numerusform>
+            <numerusform>(sufficient to restore backups %n days old)</numerusform>
         </translation>
     </message>
 </context>
