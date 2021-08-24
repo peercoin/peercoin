@@ -163,7 +163,7 @@ public:
     //
     // If a new asmap was provided, the existing records
     // would be re-bucketed accordingly.
-    std::vector<bool> m_asmap;
+    const std::vector<bool> m_asmap;
 
     // Read asmap from provided binary file
     static std::vector<bool> DecodeAsmap(fs::path path);
@@ -174,7 +174,7 @@ public:
     template <typename Stream>
     void Unserialize(Stream& s_) EXCLUSIVE_LOCKS_REQUIRED(!cs);
 
-    explicit CAddrMan(bool deterministic, int32_t consistency_check_ratio);
+    explicit CAddrMan(std::vector<bool> asmap, bool deterministic, int32_t consistency_check_ratio);
 
     ~CAddrMan()
     {
