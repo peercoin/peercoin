@@ -252,7 +252,7 @@ public:
     int64_t nLastBlockTime;
     int64_t nTimeConnected;
     int64_t nTimeOffset;
-    std::string addrName;
+    std::string m_addr_name;
     int nVersion;
     std::string cleanSubVer;
     bool fInbound;
@@ -664,8 +664,6 @@ public:
     {
         return nLocalServices;
     }
-
-    std::string GetAddrName() const;
 
     std::string ConnectionTypeAsString() const { return ::ConnectionTypeAsString(m_conn_type); }
 
