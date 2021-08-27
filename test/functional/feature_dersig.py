@@ -8,7 +8,6 @@ Test the DERSIG soft-fork activation on regtest.
 """
 
 from test_framework.blocktools import (
-    DERSIG_HEIGHT,
     create_block,
     create_coinbase,
 )
