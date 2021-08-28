@@ -2881,7 +2881,6 @@ bool CConnman::DisconnectNode(NodeId id)
 
 void CConnman::RecordBytesRecv(uint64_t bytes)
 {
-    LOCK(cs_totalBytesRecv);
     nTotalBytesRecv += bytes;
 }
 
@@ -2958,7 +2957,6 @@ uint64_t CConnman::GetOutboundTargetBytesLeft() const
 
 uint64_t CConnman::GetTotalBytesRecv() const
 {
-    LOCK(cs_totalBytesRecv);
     return nTotalBytesRecv;
 }
 
