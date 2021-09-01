@@ -110,6 +110,10 @@ if BUILD_BITCOIN_UTIL
   bin_PROGRAMS += peercoin-util
 endif
 
+if BUILD_BITCOIN_CHAINSTATE
+  bin_PROGRAMS += bitcoin-chainstate
+endif
+
 .PHONY: FORCE check-symbols check-security
 # bitcoin core #
 BITCOIN_CORE_H = \
