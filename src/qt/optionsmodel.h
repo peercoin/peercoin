@@ -72,6 +72,7 @@ public:
         SplitCoins,             // bool
         CheckGithub,            // bool
         Listen,                 // bool
+        Server,                 // bool
         OptionIDRowCount,
     };
 
