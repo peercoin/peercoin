@@ -33,7 +33,7 @@
           <string>Automatically start %1 after logging in to the system.</string>
          </property>
          <property name="text">
-          <string>&amp;Start %1 on system login</string>
+          <string>Start %1 on system &amp;login</string>
          </property>
         </widget>
        </item>
