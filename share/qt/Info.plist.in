@@ -16,6 +16,11 @@
   <key>CFBundlePackageType</key>
   <string>APPL</string>
 
+  <key>CFBundleSupportedPlatforms</key>
+  <array>
+	   <string>MacOSX</string>
+  </array>
+
   <key>NSHumanReadableCopyright</key>
   <string>@PEERCOIN_VERSION_MAJOR@.@PEERCOIN_VERSION_MINOR@.@PEERCOIN_VERSION_REVISION@.@PEERCOIN_VERSION_BUILD@, Copyright © 2011-@COPYRIGHT_YEAR@ @COPYRIGHT_HOLDERS_FINAL@</string>
 
