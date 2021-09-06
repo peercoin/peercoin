@@ -39,7 +39,7 @@ CoinEligibilityFilter filter_confirmed(1, 1, 0);
 CoinEligibilityFilter filter_standard_extra(6, 6, 0);
 CoinSelectionParams coin_selection_params(/* change_output_size= */ 0,
                                           /* change_spend_size= */ 0,
-                                          /* tx_no_inputs_size= */ 0, /* avoid_partial= */ false);
+                                          /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
 
 static void add_coin(const CAmount& nValue, int nInput, std::vector<CInputCoin>& set)
 {
@@ -285,7 +285,7 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
     // Make sure that effective value is working in AttemptSelection when BnB is used
     CoinSelectionParams coin_selection_params_bnb(/* change_output_size= */ 0,
                                                   /* change_spend_size= */ 0,
-                                                  /* tx_no_inputs_size= */ 0, /* avoid_partial= */ false);
+                                                  /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
     CoinSet setCoinsRet;
     CAmount nValueRet;
     empty_wallet();
@@ -647,7 +647,7 @@ BOOST_AUTO_TEST_CASE(SelectCoins_test)
         // Perform selection
         CoinSelectionParams cs_params(/* change_output_size= */ 34,
                                       /* change_spend_size= */ 148,
-                                      /* tx_no_inputs_size= */ 0, /* avoid_partial= */ false);
+                                      /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
         CoinSet out_set;
         CAmount out_value = 0;
         CCoinControl cc;

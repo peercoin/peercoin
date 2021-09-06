@@ -52,7 +52,7 @@ static void CoinSelection(benchmark::Bench& bench)
     const CoinEligibilityFilter filter_standard(1, 6, 0);
     const CoinSelectionParams coin_selection_params(/* change_output_size= */ 34,
                                                     /* change_spend_size= */ 148,
-                                                    /* tx_no_inputs_size= */ 0, /* avoid_partial= */ false);
+                                                    /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
     bench.run([&] {
         std::set<CInputCoin> setCoinsRet;
         CAmount nValueRet;
