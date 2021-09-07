@@ -11,6 +11,7 @@
 #include <netaddress.h>
 #include <serialize.h>
 #include <streams.h>
+#include <util/asmap.h>
 
 #include <cmath>
 #include <optional>
@@ -1030,7 +1031,7 @@ std::vector<bool> CAddrMan::DecodeAsmap(fs::path path)
             bits.push_back((cur_byte >> bit) & 1);
         }
     }
-    if (!SanityCheckASMap(bits)) {
+    if (!SanityCheckASMap(bits, 128)) {
         LogPrintf("Sanity check of asmap file %s failed\n", path);
         return {};
     }
