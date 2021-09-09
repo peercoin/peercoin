@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
                                                   /* change_spend_size= */ 0,
                                                   /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
     {
-        std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
+        std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabase());
         wallet->LoadWallet();
         LOCK(wallet->cs_wallet);
         wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
     }
 
     {
-        std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
+        std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabase());
         wallet->LoadWallet();
         LOCK(wallet->cs_wallet);
         wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
@@ -318,7 +318,7 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
 
 BOOST_AUTO_TEST_CASE(knapsack_solver_test)
 {
-    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
+    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabase());
     wallet->LoadWallet();
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
@@ -599,7 +599,7 @@ BOOST_AUTO_TEST_CASE(knapsack_solver_test)
 
 BOOST_AUTO_TEST_CASE(ApproximateBestSubset)
 {
-    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
+    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabase());
     wallet->LoadWallet();
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
@@ -622,7 +622,7 @@ BOOST_AUTO_TEST_CASE(ApproximateBestSubset)
 // Tests that with the ideal conditions, the coin selector will always be able to find a solution that can pay the target value
 BOOST_AUTO_TEST_CASE(SelectCoins_test)
 {
-    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
+    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabase());
     wallet->LoadWallet();
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
