@@ -91,6 +91,33 @@ static inline bool copy_file(const path& from, const path& to, copy_options opti
     return std::filesystem::copy_file(from, to, options);
 }
 
+// Disallow implicit std::string conversion for system_complete to avoid
+// locale-dependent encoding on windows.
+static inline path system_complete(const path& p)
+{
+    return boost::filesystem::system_complete(p);
+}
+
+// Disallow implicit std::string conversion for exists to avoid
+// locale-dependent encoding on windows.
+static inline bool exists(const path& p)
+{
+    return boost::filesystem::exists(p);
+}
+
+// Allow explicit quoted stream I/O.
+static inline auto quoted(const std::string& s)
+{
+    return boost::io::quoted(s, '&');
+}
+
+// Allow safe path append operations.
+static inline path operator+(path p1, path p2)
+{
+    p1 += std::move(p2);
+    return p1;
+}
+
 /**
  * Convert path object to a byte string. On POSIX, paths natively are byte
  * strings, so this is trivial. On Windows, paths natively are Unicode, so an
