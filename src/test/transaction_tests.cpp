@@ -800,10 +800,10 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     CheckIsStandard(t);
 
     // dust:
-    t.vout[0].nValue = 673 - 1;
+    t.vout[0].nValue = 674 - 1;
     CheckIsNotStandard(t, "dust");
     // not dust:
-    t.vout[0].nValue = 673;
+    t.vout[0].nValue = 674;
     CheckIsStandard(t);
 
     t.vout[0].scriptPubKey = CScript() << OP_1;
