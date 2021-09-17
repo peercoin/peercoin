@@ -151,11 +151,11 @@ AC_DEFUN([BITCOIN_QT_CONFIGURE],[
     elif test "x$TARGET_OS" = xlinux; then
       dnl workaround for https://bugreports.qt.io/browse/QTBUG-74874
       AX_CHECK_LINK_FLAG([-lxcb-shm], [QT_LIBS="$QT_LIBS -lxcb-shm"], [AC_MSG_ERROR([could not link against -lxcb-shm])])
-      _BITCOIN_QT_CHECK_STATIC_PLUGIN([QXcbIntegrationPlugin], [-lqxcb])
-      _BITCOIN_QT_CHECK_STATIC_PLUGIN([QWaylandIntegrationPlugin], [-lqwayland-generic])
-      _BITCOIN_QT_CHECK_STATIC_PLUGIN([QWaylandEglClientBufferPlugin], [-lqt-plugin-wayland-egl -lwayland-egl])
-      _BITCOIN_QT_CHECK_STATIC_PLUGIN([QWaylandBradientDecorationPlugin], [-lbradient])
-      _BITCOIN_QT_CHECK_STATIC_PLUGIN([QWaylandXdgShellIntegrationPlugin], [-lxdg-shell])
+      _BITCOIN_QT_CHECK_STATIC_PLUGINS([QXcbIntegrationPlugin], [-lqxcb])
+      _BITCOIN_QT_CHECK_STATIC_PLUGINS([QWaylandIntegrationPlugin], [-lqwayland-generic])
+      _BITCOIN_QT_CHECK_STATIC_PLUGINS([QWaylandEglClientBufferPlugin], [-lqt-plugin-wayland-egl -lwayland-egl])
+      _BITCOIN_QT_CHECK_STATIC_PLUGINS([QWaylandBradientDecorationPlugin], [-lbradient])
+      _BITCOIN_QT_CHECK_STATIC_PLUGINS([QWaylandXdgShellIntegrationPlugin], [-lxdg-shell])
       AC_DEFINE(QT_QPA_PLATFORM_LINUX, 1, [Define this symbol if the qt platform is xcb or wayland])
     elif test "x$TARGET_OS" = xdarwin; then
       AX_CHECK_LINK_FLAG([[-framework IOKit]],[QT_LIBS="$QT_LIBS -framework IOKit"],[AC_MSG_ERROR(could not iokit framework)])
