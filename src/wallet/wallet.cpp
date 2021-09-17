@@ -1448,10 +1448,12 @@ bool CWallet::SetWalletFlags(uint64_t overwriteFlags, bool memonly)
 
 int64_t CWalletTx::GetTxTime() const
 {
-//    int64_t n = nTimeSmart;
-//    return n ? n : nTimeReceived;
     // peercoin: we still have the timestamp, so use it to avoid confusion
-    return tx->nTime;
+    if (tx->nTime)
+        return tx->nTime;
+
+    int64_t n = nTimeSmart;
+    return n ? n : nTimeReceived;
 }
 
 // Helper for producing a max-sized low-S low-R signature (eg 71 bytes)
@@ -4354,8 +4356,6 @@ void CWallet::ConnectScriptPubKeyManNotifiers()
 typedef std::vector<unsigned char> valtype;
 bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew)
 {
-    txNew.nVersion = 2; // coinstake will stay version 2 for now
-
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
     static unsigned int nStakeSplitAge = (60 * 60 * 24 * 90);
