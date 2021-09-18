@@ -43,7 +43,7 @@ const unsigned int nProtocolV09SwitchTime     = 1591617600; // Mon  8 Jun 12:00:
 const unsigned int nProtocolV09TestSwitchTime = 1581940800; // Mon 17 Feb 12:00:00 UTC 2020
 
 // Protocol switch time for v10 kernel protocol
-const unsigned int nProtocolV10SwitchTime     = 1633348800; // Mon  4 Oct 12:00:00 UTC 2021
+const unsigned int nProtocolV10SwitchTime     = 1635768000; // Mon  1 Nov 12:00:00 UTC 2021
 const unsigned int nProtocolV10TestSwitchTime = 1625140800; // Thu  1 Jul 12:00:00 UTC 2021
 
 
@@ -76,7 +76,7 @@ static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
     (382019, 0x7f5cf5ebu )
     (408500, 0x68cadee2u )
     (412691, 0x93138e67u )
-    (441270, 0xc064febeu )
+    (441299, 0x03e195cbu )
     ;
 
 // Whether the given coinstake is subject to new v0.3 protocol

@@ -1448,10 +1448,12 @@ bool CWallet::SetWalletFlags(uint64_t overwriteFlags, bool memonly)
 
 int64_t CWalletTx::GetTxTime() const
 {
-//    int64_t n = nTimeSmart;
-//    return n ? n : nTimeReceived;
     // peercoin: we still have the timestamp, so use it to avoid confusion
-    return tx->nTime;
+    if (tx->nTime)
+        return tx->nTime;
+
+    int64_t n = nTimeSmart;
+    return n ? n : nTimeReceived;
 }
 
 // Helper for producing a max-sized low-S low-R signature (eg 71 bytes)

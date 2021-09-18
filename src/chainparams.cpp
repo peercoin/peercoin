@@ -248,18 +248,18 @@ public:
                 {382019, uint256S("0x3ab75769d7957d9bf0857b5019d0a0e41044fa9ecf30b2f9c32aa457b0864ce5")},
                 {408500, uint256S("0x1636ac08b073d26b28fa40243d58dd5deb215752efe094c92c61998e4e9baf3f")},
                 {412691, uint256S("0x0e20318be88f07f521453435b37cfc516c3de07264a78ed7170985a1126126ab")},
-                {441270, uint256S("0xa0b864311128b31064bad64c3df6b0d3a8c0c1cd0ea0529df9d04356931374ad")},
+                {441299, uint256S("0x4091d0836a37c50ceee876000ac0cb251fd10031dab901d2c0677cd86283096e")},
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block a0b864311128b31064bad64c3df6b0d3a8c0c1cd0ea0529df9d04356931374ad (height 441270)
-            1627392308, // * UNIX timestamp of last known number of transactions
-            860888,     // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x4091d0836a37c50ceee876000ac0cb251fd10031dab901d2c0677cd86283096e (height 441299)
+            1631795531, // * UNIX timestamp of last known number of transactions
+            860917,     // * total number of transactions between genesis and that timestamp
 
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            0.003059708 // * estimated number of transactions per second after that timestamp
-                        // 860888/(1627392308-1346029522) = 0.003059708
+            0.003012664 // * estimated number of transactions per second after that timestamp
+                        // 860917/(1631795531-1346029522) = 0.003012664
         };
     }
 };
