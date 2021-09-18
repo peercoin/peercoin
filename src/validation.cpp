@@ -4838,7 +4838,7 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
                 continue; // only count coins meeting min age requirement
 
             int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
-            int nEffectiveAge = nTimeTx-txPrev->nTime;
+            int nEffectiveAge = nTimeTx-(txPrev->nTime ? txPrev->nTime : header.GetBlockTime());
 
             if (!isTrueCoinAge || IsProtocolV09(nTimeTx))
                 nEffectiveAge = std::min(nEffectiveAge, 365 * 24 * 60 * 60);
