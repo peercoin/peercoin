@@ -19,5 +19,9 @@ jobs:
           ./configure --with-gui=qt5 --disable-bench --disable-tests --disable-ccache --with-incompatible-bdb
           make
 
-
-
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: peercoin-qt
+          path: src/qt/peercoin-qt
+          retention-days: 55
