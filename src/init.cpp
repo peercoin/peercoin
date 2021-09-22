@@ -1361,6 +1361,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
                                 nBlockTreeDBCache,
                                 nCoinDBCache,
                                 nCoinCacheUsage,
+                                ShutdownRequested,
                                 []() {
                                     uiInterface.ThreadSafeMessageBox(
                                                                      _("Error reading from database, shutting down."),
