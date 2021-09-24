@@ -3022,7 +3022,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
                     vin.scriptWitness.SetNull();
                 }
 
-                nFeeNeeded = GetMinFee(nBytes, txNew.nVersion < 3 ? txNew.nTime : 1447700000);
+                nFeeNeeded = GetMinFee(nBytes, txNew.nVersion < 3 ? txNew.nTime : 1591617600);
 
                 if (nFeeRet >= nFeeNeeded) {
                     // Reduce fee to only the needed amount if possible. This
@@ -3037,7 +3037,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
                     // change output. Only try this once.
                     if (nChangePosInOut == -1 && nSubtractFeeFromAmount == 0 && pick_new_inputs) {
                         unsigned int tx_size_with_change = nBytes + coin_selection_params.change_output_size + 2; // Add 2 as a buffer in case increasing # of outputs changes compact size
-                        CAmount fee_needed_with_change = GetMinFee(tx_size_with_change,  txNew.nVersion < 3 ? txNew.nTime : 1447700000);
+                        CAmount fee_needed_with_change = GetMinFee(tx_size_with_change,  txNew.nVersion < 3 ? txNew.nTime : 1591617600);
                         CAmount minimum_value_for_change = MIN_TXOUT_AMOUNT;  //ppcTODO - is this correct?
                         if (nFeeRet >= fee_needed_with_change + minimum_value_for_change) {
                             pick_new_inputs = false;
