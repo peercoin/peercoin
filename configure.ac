@@ -1220,8 +1220,6 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <xmmintrin.h>]], [[
 
 AC_MSG_CHECKING(for strong getauxval support in the system headers)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #include <arm_acle.h>
-    #include <arm_neon.h>
     #include <sys/auxv.h>
   ]], [[
     getauxval(AT_HWCAP);
