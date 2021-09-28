@@ -39,7 +39,6 @@ void DummyWalletInit::AddWalletOptions(ArgsManager& argsman) const
         "-mintxfee=<amt>",
         "-paytxfee=<amt>",
         "-rescan",
-        "-salvagewallet",
         "-signer=<cmd>",
         "-spendzeroconfchange",
         "-txconfirmtarget=<n>",
