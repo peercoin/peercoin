@@ -653,7 +653,7 @@ void CTxMemPool::removeForReorg(CChainState& active_chainstate, int flags)
                 if (it2 != mapTx.end())
                     continue;
                 const Coin &coin = active_chainstate.CoinsTip().AccessCoin(txin.prevout);
-                if (m_check_ratio != 0) assert(!coin.IsSpent());
+                assert(!coin.IsSpent());
                 unsigned int nMemPoolHeight = active_chainstate.m_chain.Tip()->nHeight + 1;
                 if (coin.IsSpent() || (coin.IsCoinBase() && ((signed long)nMemPoolHeight) - coin.nHeight < Params().GetConsensus().nCoinbaseMaturity)) {
                     should_remove = true;
