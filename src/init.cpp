@@ -998,6 +998,37 @@ bool AppInitParameterInteraction(const ArgsManager& args)
         return InitError(_("No proxy server specified. Use -proxy=<ip> or -proxy=<ip:port>."));
     }
 
+#if defined(USE_SYSCALL_SANDBOX)
+    if (args.IsArgSet("-sandbox") && !args.IsArgNegated("-sandbox")) {
+        const std::string sandbox_arg{args.GetArg("-sandbox", "")};
+        bool log_syscall_violation_before_terminating{false};
+        if (sandbox_arg == "log-and-abort") {
+            log_syscall_violation_before_terminating = true;
+        } else if (sandbox_arg == "abort") {
+            // log_syscall_violation_before_terminating is false by default.
+        } else {
+            return InitError(Untranslated("Unknown syscall sandbox mode (-sandbox=<mode>). Available modes are \"log-and-abort\" and \"abort\"."));
+        }
+        // execve(...) is not allowed by the syscall sandbox.
+        const std::vector<std::string> features_using_execve{
+            "-alertnotify",
+            "-blocknotify",
+            "-signer",
+            "-startupnotify",
+            "-walletnotify",
+        };
+        for (const std::string& feature_using_execve : features_using_execve) {
+            if (!args.GetArg(feature_using_execve, "").empty()) {
+                return InitError(Untranslated(strprintf("The experimental syscall sandbox feature (-sandbox=<mode>) is incompatible with %s (which uses execve).", feature_using_execve)));
+            }
+        }
+        if (!SetupSyscallSandbox(log_syscall_violation_before_terminating)) {
+            return InitError(Untranslated("Installation of the syscall sandbox failed."));
+        }
+        LogPrintf("Experimental syscall sandbox enabled (-sandbox=%s): bitcoind will terminate if an unexpected (not allowlisted) syscall is invoked.\n", sandbox_arg);
+    }
+#endif // USE_SYSCALL_SANDBOX
+
     return true;
 }
 
