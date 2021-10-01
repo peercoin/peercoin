@@ -149,6 +149,14 @@ Updated RPCs
   field, which will show a warning if a non-legacy address type is requested
   when using uncompressed public keys. (#23113)
 
+- `listunspent` now includes `ancestorcount`, `ancestorsize`, and
+  `ancestorfees` for each transaction output that is still in the mempool.
+  (#12677)
+
+- `lockunspent` now optionally takes a third parameter, `persistent`, which
+  causes the lock to be written persistently to the wallet database. This
+  allows UTXOs to remain locked even after node restarts or crashes. (#23065)
+
 New RPCs
 --------
 
