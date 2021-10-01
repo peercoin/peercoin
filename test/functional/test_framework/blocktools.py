@@ -104,6 +104,8 @@ def create_coinbase(height, pubkey=None, timestamp=None):
 
     If pubkey is passed in, the coinbase output will be a P2PK output;
     otherwise an anyone-can-spend output."""
+    If pubkey is passed in, the coinbase output will be a P2PK output;
+    otherwise an anyone-can-spend output."""
     coinbase = CTransaction()
     coinbase.vin.append(CTxIn(COutPoint(0, 0xffffffff), script_BIP34_coinbase_height(height), 0xffffffff))
     coinbaseoutput = CTxOut()

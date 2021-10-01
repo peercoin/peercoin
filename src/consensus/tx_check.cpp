@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <consensus/tx_check.h>
+
 #include <primitives/transaction.h>
 #include <consensus/validation.h>
 #include <chainparams.h>
@@ -36,7 +37,7 @@ bool CheckTransaction(const CTransaction& tx, TxValidationState& state)
             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-txouttotal-toolarge");
         // peercoin: enforce minimum output amount
         if ((!txout.IsEmpty()) && txout.nValue < MIN_TXOUT_AMOUNT &&
-            !(IsZeroAllowed(tx.nTime) && (txout.nValue == 0)))
+            (tx.nVersion < 3 && !(IsZeroAllowed(tx.nTime) && (txout.nValue == 0))))
             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-txoutvalue-belowminimum");
     }
 

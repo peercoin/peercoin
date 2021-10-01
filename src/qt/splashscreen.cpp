@@ -70,9 +70,9 @@ SplashScreen::SplashScreen(interfaces::Node& node, Qt::WindowFlags f, const Netw
     QRect rectIcon(QPoint(40,30), requiredSize);
     pixPaint.drawPixmap(rectIcon, icon);
 
-    QRect rectAvatar(QPoint(75,105), QSize(1000/3,1000/3));
+    QRect rectAvatar(QPoint(75,105), QSize(718/2,523/2));
 
-    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/scarab"));
+    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/tardigrade"));
 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));

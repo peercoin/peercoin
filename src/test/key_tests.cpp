@@ -219,5 +219,4 @@ BOOST_AUTO_TEST_CASE(key_key_negation)
     BOOST_CHECK(vch_sig_cmp == vch_sig);
     BOOST_CHECK(key.GetPubKey().data()[0] == 0x03);
 }
-
 BOOST_AUTO_TEST_SUITE_END()

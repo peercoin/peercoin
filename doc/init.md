@@ -83,6 +83,17 @@ OpenRC).
 
 ### macOS
 
+NOTE: It is not currently possible to override `datadir` in
+`/etc/peercoin/peercoin.conf` with the current systemd, OpenRC, and Upstart init
+files out-of-the-box. This is because the command line options specified in the
+init files take precedence over the configurations in
+`/etc/peercoin/peercoin.conf`. However, some init systems have their own
+configuration mechanisms that would allow for overriding the command line
+options specified in the init files (e.g. setting `BITCOIND_DATADIR` for
+OpenRC).
+
+### macOS
+
 Binary:              `/usr/local/bin/peercoind`
 Configuration file:  `~/Library/Application Support/Peercoin/peercoin.conf`
 Data directory:      `~/Library/Application Support/Peercoin`

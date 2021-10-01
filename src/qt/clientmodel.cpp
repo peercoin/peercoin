@@ -9,7 +9,6 @@
 #include <qt/guiutil.h>
 #include <qt/peertablemodel.h>
 
-#include <alert.h>
 #include <clientversion.h>
 #include <interfaces/handler.h>
 #include <interfaces/node.h>
@@ -120,18 +119,6 @@ void ClientModel::updateNetworkActive(bool networkActive)
 
 void ClientModel::updateAlert(const QString &hash, int status)
 {
-    // Show error message notification for new alert
-    if(status == CT_NEW)
-    {
-        uint256 hash_256;
-        hash_256.SetHex(hash.toStdString());
-        CAlert alert = CAlert::getAlertByHash(hash_256);
-        if(!alert.IsNull())
-        {
-            Q_EMIT message(tr("Network Alert"), QString::fromStdString(alert.strStatusBar), CClientUIInterface::ICON_ERROR);
-        }
-    }
-
     Q_EMIT alertsChanged(getStatusBarWarnings());
 }
 

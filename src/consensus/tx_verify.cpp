@@ -159,7 +159,7 @@ int64_t GetTransactionSigOpCost(const CTransaction& tx, const CCoinsViewCache& i
     return nSigOps;
 }
 
-bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight, CAmount& txfee, const Consensus::Params& params, uint64_t nMoneySupply)
+bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight, CAmount& txfee, const Consensus::Params& params, unsigned int nTimeTx, uint64_t nMoneySupply)
 {
     // are the actual inputs available?
     if (!inputs.HaveInputs(tx)) {
@@ -180,7 +180,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, 
         }
 
         // peercoin: check transaction timestamp
-        if (coin.nTime > tx.nTime)
+        if (coin.nTime > nTimeTx)
             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-spent-too-early", strprintf("%s : transaction timestamp earlier than input transaction", __func__));
 
         // Check for negative or overflow input values
@@ -194,11 +194,11 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, 
     {
         // peercoin: coin stake tx earns reward instead of paying fee
         uint64_t nCoinAge;
-        if (!GetCoinAge(tx, inputs, nCoinAge))
+        if (!GetCoinAge(tx, inputs, nCoinAge, nTimeTx))
             return state.Invalid(TxValidationResult::TX_CONSENSUS, "unable to get coin age for coinstake");
         CAmount nStakeReward = tx.GetValueOut() - nValueIn;
-        CAmount nCoinstakeCost = (GetMinFee(tx) < PERKB_TX_FEE) ? 0 : (GetMinFee(tx) - PERKB_TX_FEE);
-        if (nMoneySupply && nStakeReward > GetProofOfStakeReward(nCoinAge, tx.nTime, nMoneySupply) - nCoinstakeCost)
+        CAmount nCoinstakeCost = (GetMinFee(tx, nTimeTx) < PERKB_TX_FEE) ? 0 : (GetMinFee(tx, nTimeTx) - PERKB_TX_FEE);
+        if (nMoneySupply && nStakeReward > GetProofOfStakeReward(nCoinAge, nTimeTx, nMoneySupply) - nCoinstakeCost)
             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-coinstake-too-large");
     }
     else
@@ -214,23 +214,23 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, 
             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-fee-outofrange");
         }
         // peercoin: enforce transaction fees for every block
-        if (txfee_aux < GetMinFee(tx))
+        if (txfee_aux < GetMinFee(tx, nTimeTx))
             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-fee-not-enough");
         txfee = txfee_aux;
     }
     return true;
 }
 
-CAmount GetMinFee(const CTransaction& tx)
+CAmount GetMinFee(const CTransaction& tx, unsigned int nTimeTx)
 {
     size_t nBytes = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-    return GetMinFee(nBytes, tx.nTime);
+    return GetMinFee(nBytes, nTimeTx);
 }
 
 CAmount GetMinFee(size_t nBytes, uint32_t nTime)
 {
     CAmount nMinFee;
-    if (IsProtocolV07(nTime)) // RFC-0007
+    if (IsProtocolV07(nTime) || !nTime) // RFC-0007
         nMinFee = (nBytes < 100) ? MIN_TX_FEE : (CAmount)(nBytes * (PERKB_TX_FEE / 1000));
     else
         nMinFee = (1 + (CAmount)nBytes / 1000) * PERKB_TX_FEE;

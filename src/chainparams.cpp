@@ -10,6 +10,7 @@
 #include <tinyformat.h>
 #include <util/system.h>
 #include <util/strencodings.h>
+#include <versionbitsinfo.h>
 
 #include <assert.h>
 
@@ -247,18 +248,20 @@ public:
                 {382019, uint256S("0x3ab75769d7957d9bf0857b5019d0a0e41044fa9ecf30b2f9c32aa457b0864ce5")},
                 {408500, uint256S("0x1636ac08b073d26b28fa40243d58dd5deb215752efe094c92c61998e4e9baf3f")},
                 {412691, uint256S("0x0e20318be88f07f521453435b37cfc516c3de07264a78ed7170985a1126126ab")},
-                {441667, uint256S("0x4636d75163248acd32c212bd1b17f556bdeb3f40316eef662f6736d1c529ae07")},
-                {444932, uint256S("0x000000003f7d1f4b55d529fdcf3983c3c8a969ab0900dee41bed0bdaf1c3a9d7")},
+                {441299, uint256S("0x4091d0836a37c50ceee876000ac0cb251fd10031dab901d2c0677cd86283096e")},
+                {442735, uint256S("0x1b83b33894d51be0b8b323bfab093f638915236e0e40ba3b52bb33fdbc4053cd")},
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 000000003f7d1f4b55d529fdcf3983c3c8a969ab0900dee41bed0bdaf1c3a9d7 (height 444932)
-            1588604853, // * UNIX timestamp of last known number of transactions
-            868816,     // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x1b83b33894d51be0b8b323bfab093f638915236e0e40ba3b52bb33fdbc4053cd (height 442735)
+            1632053274, // * UNIX timestamp of last known number of transactions
+            863997,     // * total number of transactions between genesis and that timestamp
+
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            0.003581633 // * estimated number of transactions per second after that timestamp
-                        // 868816/(1588604853-1346029522) = 0.003581633
+            0.003020718 // * estimated number of transactions per second after that timestamp
+                        // 863997/(1632053274-1346029522) = 0.003020718
+
         };
     }
 };

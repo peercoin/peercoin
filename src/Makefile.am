@@ -102,7 +102,6 @@ endif
 BITCOIN_CORE_H = \
   addrdb.h \
   addrman.h \
-  alert.h \
   attributes.h \
   banman.h \
   base58.h \
@@ -248,7 +247,7 @@ BITCOIN_CORE_H = \
   zmq/zmqnotificationinterface.h \
   zmq/zmqpublishnotifier.h \
   zmq/zmqrpc.h \
-## --- ppcoin headers start from this line --- ##
+## --- peercoin headers start from this line --- ##
   kernel.h \
   kernelrecord.h
 
@@ -267,7 +266,6 @@ libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_server_a_SOURCES = \
   addrdb.cpp \
   addrman.cpp \
-  alert.cpp \
   banman.cpp \
   blockencodings.cpp \
   blockfilter.cpp \

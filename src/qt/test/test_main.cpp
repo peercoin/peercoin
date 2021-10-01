@@ -15,6 +15,7 @@
 #include <test/util/setup_common.h>
 
 #ifdef ENABLE_WALLET
+#include <qt/test/addressbooktests.h>
 #include <qt/test/wallettests.h>
 #endif // ENABLE_WALLET
 
@@ -88,6 +89,10 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_WALLET
     WalletTests test5(*node);
     if (QTest::qExec(&test5) != 0) {
+        fInvalid = true;
+    }
+    AddressBookTests test6(*node);
+    if (QTest::qExec(&test6) != 0) {
         fInvalid = true;
     }
 #endif

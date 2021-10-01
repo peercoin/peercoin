@@ -20,7 +20,6 @@
 #include <util/string.h>
 
 #include <QDebug>
-
 #include <QSettings>
 #include <QStringList>
 
@@ -115,6 +114,10 @@ void OptionsModel::Init(bool resetSettings)
         settings.setValue("bSpendZeroConfChange", true);
     if (!m_node.softSetBoolArg("-spendzeroconfchange", settings.value("bSpendZeroConfChange").toBool()))
         addOverriddenOption("-spendzeroconfchange");
+    if (!settings.contains("bSplitCoins"))
+        settings.setValue("bSplitCoins", DEFAULT_SPLIT_COINS);
+    if (!m_node.softSetBoolArg("-splitcoins", settings.value("bSplitCoins").toBool()))
+        addOverriddenOption("-splitcoins");
 #endif
 
     // Network
@@ -305,6 +308,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
 #ifdef ENABLE_WALLET
         case SpendZeroConfChange:
             return settings.value("bSpendZeroConfChange");
+        case SplitCoins:
+            return settings.value("bSplitCoins");
 #endif
         case DisplayUnit:
             return nDisplayUnit;
@@ -418,6 +423,12 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
         case SpendZeroConfChange:
             if (settings.value("bSpendZeroConfChange") != value) {
                 settings.setValue("bSpendZeroConfChange", value);
+                setRestartRequired(true);
+            }
+            break;
+        case SplitCoins:
+            if (settings.value("bSplitCoins") != value) {
+                settings.setValue("bSplitCoins", value.toBool());
                 setRestartRequired(true);
             }
             break;

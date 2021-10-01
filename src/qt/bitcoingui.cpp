@@ -38,7 +38,6 @@
 #include <util/system.h>
 
 #include <wallet/wallet.h>
-
 #include <QAction>
 #include <QApplication>
 #include <QComboBox>
@@ -61,6 +60,7 @@
 #include <QToolBar>
 #include <QFontDatabase>
 #include <QDesktopServices>
+#include <QWindow>
 
 #include <QUrlQuery>
 #include <QVBoxLayout>
@@ -97,7 +97,6 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     QApplication::setWindowIcon(m_network_style->getTrayAndWindowIcon());
     setWindowIcon(m_network_style->getTrayAndWindowIcon());
     updateWindowTitle();
-
     QFontDatabase::addApplicationFont(":/fonts/notosans-regular");
     QFile styleFile(":/themes/default");
     styleFile.open(QFile::ReadOnly);
@@ -487,7 +486,6 @@ void BitcoinGUI::createMenuBar()
         file->addAction(signMessageAction);
         file->addAction(verifyMessageAction);
         //file->addAction(multisigAction);
-        file->addSeparator();
     }
     file->addAction(quitAction);
 

@@ -38,6 +38,19 @@
         </widget>
        </item>
        <item>
+        <spacer name="horizontalSpacer_0_Main">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>5</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2_Main">
          <item>
           <widget class="QLabel" name="databaseCacheLabel">
@@ -160,6 +173,16 @@
             </property>
             <property name="text">
              <string>&amp;Spend unconfirmed change</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="splitCoins">
+            <property name="toolTip">
+             <string>Whether to split coins or not during minting.</string>
+            </property>
+            <property name="text">
+             <string>&amp;Split coins when minting</string>
             </property>
            </widget>
           </item>

@@ -25,6 +25,7 @@
 #include <util/vector.h>
 #include <wallet/coincontrol.h>
 #include <wallet/rpcwallet.h>
+#include <wallet/rpcwallet.h>
 #include <wallet/wallet.h>
 #include <wallet/walletdb.h>
 #include <wallet/walletutil.h>
@@ -1332,7 +1333,7 @@ static void ListTransactions(interfaces::Chain::Lock& locked_chain, const CWalle
                 else if (wtx.IsCoinStake())
                 {
                     PushCoinStakeCategory(entry, wtx);
-                }
+            }
             else
             {
                 entry.pushKV("category", "receive");
@@ -2925,7 +2926,7 @@ static UniValue listunspent(const JSONRPCRequest& request)
         cctl.m_max_depth = nMaxDepth;
         auto locked_chain = pwallet->chain().lock();
         LOCK(pwallet->cs_wallet);
-        pwallet->AvailableCoins(*locked_chain, vecOutputs, !include_unsafe, &cctl, nMinimumAmount, nMaximumAmount, nMinimumSumAmount, nMaximumCount);
+        pwallet->AvailableCoins(*locked_chain, vecOutputs, !include_unsafe, &cctl, 0, nMinimumAmount, nMaximumAmount, nMinimumSumAmount, nMaximumCount);
     }
 
     LOCK(pwallet->cs_wallet);
@@ -3408,17 +3409,12 @@ UniValue listminting(const JSONRPCRequest& request)
     const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
     double difficulty = p->GetBlockDifficulty();
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
-    const CWallet::TxItems & txOrdered = pwallet->wtxOrdered;
 
     std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(wallet);
     const auto& vwtx = iwallet->getWalletTxs();
     for(const auto& wtx : vwtx) {
         std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(*iwallet, wtx);
-/*
-    for (CWallet::TxItems::const_iterator it = txOrdered.begin(); it != txOrdered.end(); ++it)
-    {
-        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(pwallet, MakeWalletTx(pwallet, *it->second));
-*/
+
         int64_t minAge = nStakeMinAge / 60 / 60 / 24;
         for (auto& kr : txList) {
             if(!kr.spent) {
@@ -4284,7 +4280,6 @@ static const CRPCCommand commands[] =
     { "wallet",             "walletpassphrase",                 &walletpassphrase,              {"passphrase","timeout"} },
     { "wallet",             "walletpassphrasechange",           &walletpassphrasechange,        {"oldpassphrase","newpassphrase"} },
     { "wallet",             "walletprocesspsbt",                &walletprocesspsbt,             {"psbt","sign","sighashtype","bip32derivs"} },
-
     // peercoin commands
     { "wallet",             "listminting",                      &listminting,                   {"count", "from"} },
     { "wallet",             "makekeypair",                      &makekeypair,                   {"prefix"} },
