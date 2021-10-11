@@ -222,6 +222,16 @@ static void MutateTxTime(CMutableTransaction& tx, const std::string& cmdVal)
     tx.nTime = (unsigned int) newTime;
 }
 
+template <typename T>
+static T TrimAndParse(const std::string& int_str, const std::string& err)
+{
+    const auto parsed{ToIntegral<T>(TrimString(int_str))};
+    if (!parsed.has_value()) {
+        throw std::runtime_error(err + " '" + int_str + "'");
+    }
+    return parsed.value();
+}
+
 static void MutateTxAddInput(CMutableTransaction& tx, const std::string& strInput)
 {
     std::vector<std::string> vStrInputParts;
@@ -248,8 +258,9 @@ static void MutateTxAddInput(CMutableTransaction& tx, const std::string& strInpu
 
     // extract the optional sequence number
     uint32_t nSequenceIn = CTxIn::SEQUENCE_FINAL;
-    if (vStrInputParts.size() > 2)
-        nSequenceIn = std::stoul(vStrInputParts[2]);
+    if (vStrInputParts.size() > 2) {
+        nSequenceIn = TrimAndParse<uint32_t>(vStrInputParts.at(2), "invalid TX sequence id");
+    }
 
     // append to transaction input list
     CTxIn txin(txid, vout, CScript(), nSequenceIn);
