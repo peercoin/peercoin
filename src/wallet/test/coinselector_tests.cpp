@@ -269,8 +269,9 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
     {
         std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
         wallet->LoadWallet();
-        wallet->SetupLegacyScriptPubKeyMan();
         LOCK(wallet->cs_wallet);
+        wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
+        wallet->SetupDescriptorScriptPubKeyMans();
 
         std::vector<COutput> coins;
         CoinSet setCoinsRet;
@@ -292,8 +293,9 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
     {
         std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
         wallet->LoadWallet();
-        wallet->SetupLegacyScriptPubKeyMan();
         LOCK(wallet->cs_wallet);
+        wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
+        wallet->SetupDescriptorScriptPubKeyMans();
 
         std::vector<COutput> coins;
         CoinSet setCoinsRet;
@@ -313,8 +315,9 @@ BOOST_AUTO_TEST_CASE(knapsack_solver_test)
 {
     std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
     wallet->LoadWallet();
-    wallet->SetupLegacyScriptPubKeyMan();
     LOCK(wallet->cs_wallet);
+    wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
+    wallet->SetupDescriptorScriptPubKeyMans();
 
     CoinSet setCoinsRet, setCoinsRet2;
     CAmount nValueRet;
@@ -593,8 +596,9 @@ BOOST_AUTO_TEST_CASE(ApproximateBestSubset)
 {
     std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
     wallet->LoadWallet();
-    wallet->SetupLegacyScriptPubKeyMan();
     LOCK(wallet->cs_wallet);
+    wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
+    wallet->SetupDescriptorScriptPubKeyMans();
 
     CoinSet setCoinsRet;
     CAmount nValueRet;
@@ -615,8 +619,9 @@ BOOST_AUTO_TEST_CASE(SelectCoins_test)
 {
     std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
     wallet->LoadWallet();
-    wallet->SetupLegacyScriptPubKeyMan();
     LOCK(wallet->cs_wallet);
+    wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
+    wallet->SetupDescriptorScriptPubKeyMans();
 
     // Random generator stuff
     std::default_random_engine generator;
