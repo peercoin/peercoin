@@ -13,7 +13,7 @@
 typedef int64_t CAmount;
 
 static constexpr CAmount COIN = 1000000;
-static const CAmount CENT = 10000;
+static constexpr CAmount CENT = 10000;
 
 static const CAmount MIN_TX_FEE_PREV7 = CENT;
 static const CAmount MIN_TX_FEE = CENT / 10;
