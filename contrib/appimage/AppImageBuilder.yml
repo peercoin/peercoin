@@ -1,0 +1,74 @@
+version: 1
+AppDir:
+  path: AppDir
+  app_info:
+    id: peercoin-qt
+    name: Peercoin-Qt
+    icon: peercoin
+    version: !ENV ${VERSION}
+    exec: bin/peercoin-qt
+    exec_args: $@
+  runtime:
+    env:
+      APPDIR_LIBRARY_PATH: $APPDIR/lib
+  apt:
+    arch: !ENV ${APT_ARCH}
+    sources:
+      - sourceline: deb ${SOURCES_REPO} bionic main restricted universe multiverse
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
+      - sourceline: deb ${SOURCES_REPO} bionic-updates main restricted universe multiverse
+      - sourceline: deb ${SOURCES_REPO} bionic-backports main restricted universe multiverse
+    include:
+      - libc6
+      - libzmq5
+      # Full bundle requirements
+      - libx11-6
+      - libgl1
+      - libglapi-mesa
+      - libdrm2
+      - libegl1
+      - libxcb-shape0
+      - libxcb1
+      - libx11-xcb1
+      - fontconfig-config
+      - libfontconfig1
+      - libfreetype6
+      - libglx0
+      - libxcb-xfixes0
+      - libxcb-render0
+      - libxcb-glx0
+      - libxcb-shm0
+      - libglvnd0
+      - libxcb-dri3-0
+      - libxcb-dri2-0
+      - libxcb-present0
+    exclude:
+      - phonon4qt5
+      - libkf5service-bin
+      - libpam-runtime
+      - hicolor-icon-theme
+      - sound-theme-freedesktop
+      - perl
+      - perl-base
+      - kwayland-data
+      - libwacom2
+      - libasound2
+      - breeze
+      - breeze-icon-theme
+      - breeze-cursor-theme
+      - kwin-style-breeze
+      - kde-style-breeze
+      - plasma-integration
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
+AppImage:
+  arch: !ENV ${BUILD_ARCH}
+  # export UPDATE_INFO="zsync|https://github..."
+  # !ENV ${UPDATE_INFO}
+  update-information: None
+  sign-key: None

@@ -1,23 +1,213 @@
 name: Peercoin-artifact
 on: [push, pull_request]
 
-# Should do linux, mac and windows.
+env:
+  DOCKER_BUILDKIT: 1
+  GITIAN_DIR: /opt/gitian-builder
+  DEBIAN_FRONTEND: noninteractive
+  USE_DOCKER: 1
+
 jobs:
-  linux:
+  binaries:
     runs-on: ubuntu-latest
+    container: docker:stable-dind
+    strategy:
+      matrix:
+        os: [linux]
+        arch: [x86_64-linux-gnu, arm-linux-gnueabihf, aarch64-linux-gnu, riscv64-linux-gnu]
+        include:
+          - os: osx
+            arch: x86_64-apple-darwin16
+          - os: win
+            arch: x86_64-w64-mingw32
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      
-      - name: dependencies
+      - name: Set up environment
         run: |
-          sudo apt-get -y install autoconf libprotobuf-dev protobuf-compiler libminiupnpc-dev libzmq3-dev libqrencode-dev libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libtool pkg-config libdb-dev libdb++-dev libboost-all-dev libssl-dev libevent-dev
-          
-      - name: build
+          apk add --no-cache curl make ruby wget git sed tar grep
+          git clone https://github.com/devrandom/gitian-builder.git ${GITIAN_DIR}
+          mkdir -p ${GITIAN_DIR}/inputs ${GITIAN_DIR}/var
+          wget https://github.com/mikefarah/yq/releases/download/v4.13.5/yq_linux_amd64.tar.gz -O - |\
+            tar xz && mv yq_linux_amd64 /usr/bin/yq
+
+      - name: Fetch OSX SDK
+        if: ${{ matrix.os == 'osx' }}
         run: |
-          ./autogen.sh
-          ./configure --with-gui=qt5 --disable-bench --disable-tests --disable-ccache --with-incompatible-bdb
-          make
+          wget -N https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.14.sdk.tar.xz
+          tar xf MacOSX10.14.sdk.tar.xz
+          tar czf ${GITIAN_DIR}/inputs/MacOSX10.14.sdk.tar.gz MacOSX10.14.sdk
+          rm -rf MacOSX10.14.sdk MacOSX10.14.sdk.tar.xz
 
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
+      - name: Detect suite
+        id: detect
+        run: |
+          DESCRIPTOR=$PWD/contrib/gitian-descriptors/gitian-${{ matrix.os }}.yml
+          NAME=$(yq e '.name' ${DESCRIPTOR})
+          echo ::set-output name=descriptor::${DESCRIPTOR}
+          echo ::set-output name=name::${NAME}
+          echo ::set-output name=version::$(echo ${NAME} | grep -Eo [0-9.]+)
+          echo ::set-output name=suite::$(yq e '.suites[0]' ${DESCRIPTOR})
+          echo ::set-output name=architecture::$(yq e '.architectures[0]' ${DESCRIPTOR})
 
+      - name: Build gitian base image
+        run: |
+          docker build --tag base-${{ steps.detect.outputs.suite }}-${{ steps.detect.outputs.architecture }} -<<EOF
+            FROM ubuntu:${{ steps.detect.outputs.suite }}
+            ENV DEBIAN_FRONTEND=noninteractive
+            RUN apt-get update && apt-get --no-install-recommends -y install pciutils build-essential git subversion language-pack-en wget lsb-release
+            RUN useradd -ms /bin/bash -U ubuntu
+            USER ubuntu:ubuntu
+            WORKDIR /home/ubuntu
+            CMD ["sleep", "infinity"]
+          EOF
+
+      - name: Cache common
+        uses: actions/cache@v2
+        with:
+          path: gitian-cache/common
+          key: gitian-${{ steps.detect.outputs.suite }}-${{ steps.detect.outputs.version }}-common-${{ hashFiles('.github/**') }}
+          restore-keys: |
+            gitian-${{ steps.detect.outputs.suite }}-${{ steps.detect.outputs.version }}-common-
+
+      - name: Cache arch
+        uses: actions/cache@v2
+        with:
+          path: gitian-cache/${{ steps.detect.outputs.name }}/${{ matrix.arch }}
+          key: gitian-${{ steps.detect.outputs.name }}-${{ matrix.arch }}-${{ hashFiles('.github/**') }}
+          restore-keys: |
+            gitian-${{ steps.detect.outputs.name }}-${{ matrix.arch }}-
+
+      - name: Build binary
+        run: |
+          export BUILD_DIR=$PWD
+          mv gitian-cache ${GITIAN_DIR}/cache || true
+          cd ${GITIAN_DIR}
+          make -j$(nproc) -C ${BUILD_DIR}/depends download SOURCES_PATH=${GITIAN_DIR}/cache/common
+          sed -i "s/^\ \ \(HOSTS=\"\).*/\ \ \1${{ matrix.arch }}\"/g" ${{ steps.detect.outputs.descriptor }}
+          ./bin/gbuild -j $(nproc) -m 30000 --commit peercoin=${{ github.sha }} --url peercoin=${BUILD_DIR} ${{ steps.detect.outputs.descriptor }}
+          mv ${GITIAN_DIR}/cache ${BUILD_DIR}/gitian-cache
+          cp -r ${GITIAN_DIR}/build/out/* ${BUILD_DIR}/
+
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha8::$(echo ${{ github.sha }} | cut -c1-8)"
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.detect.outputs.name }}-${{ steps.slug.outputs.sha8 }}-${{ matrix.arch }}
+          path: |
+            *.tar.gz
+            *.zip
+            *.exe
+            *.dmg
+            !*-debug*
+            !*-unsigned.tar.gz
+          retention-days: 5
+  docker:
+    runs-on: ubuntu-latest
+    needs: [binaries]
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          path: contrib/docker
+
+      - name: Place artifacts
+        working-directory: contrib/docker
+        run: |
+          mkdir -p linux/amd64 linux/arm64 linux/arm/v7 linux/riscv64
+          mv peercoin-*x86_64-linux-gnu*/peercoin-*-x86_64-linux-gnu.tar.gz linux/amd64/
+          mv peercoin-*arm-linux-gnueabihf*/peercoin-*-arm-linux-gnueabihf.tar.gz linux/arm/v7/
+          mv peercoin-*aarch64-linux-gnu*/peercoin-*-aarch64-linux-gnu.tar.gz linux/arm64/
+          mv peercoin-*riscv64-linux-gnu*/peercoin-*-riscv64-linux-gnu.tar.gz linux/riscv64/
+
+      - uses: crazy-max/ghaction-docker-buildx@v1
+
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Prepare docker build
+        id: prepare
+        shell: bash
+        run: |
+          PUSH=false
+          TAG_NAME=blank
+          if [ $GITHUB_REF == "refs/heads/develop" ]; then
+            if [ "${{ github.repository }}" == "peercoin/peercoin" ]; then
+              PUSH=true
+            fi
+            TAG_NAME=develop
+          fi
+          echo ::set-output name=push::${PUSH}
+          echo ::set-output name=branch::${TAG_NAME}
+
+      - name: Build and push
+        working-directory: contrib/docker
+        run: |
+          docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64,linux/riscv64 \
+            --output "type=image,push=${{ steps.prepare.outputs.push }}" \
+            --progress=plain \
+            --tag ghcr.io/peercoin/peercoin/peercoind:${{ steps.prepare.outputs.branch }} \
+          .
+  appimage:
+    runs-on: ubuntu-latest
+    container: appimagecrafters/appimage-builder:latest
+    needs: [binaries]
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            arch: x86_64-linux-gnu
+            platform: linux/amd64
+            sources_repo: http://archive.ubuntu.com/ubuntu
+            apt_arch: amd64
+            build_arch: x86_64
+          - os: linux
+            arch: arm-linux-gnueabihf
+            platform: linux/arm/v7
+            sources_repo: http://ports.ubuntu.com/ubuntu-ports
+            apt_arch: armhf
+            build_arch: armhf
+          - os: linux
+            arch: aarch64-linux-gnu
+            platform: linux/arm64
+            sources_repo: http://ports.ubuntu.com/ubuntu-ports
+            apt_arch: arm64
+            build_arch: aarch64
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          path: contrib/appimage
+
+      - name: Set up environment
+        working-directory: contrib/appimage
+        run: |
+          apt-get -qq update
+          apt-get install -qqy git wget ca-certificates
+          pip3 install --upgrade git+https://www.opencode.net/azubieta/appimagecraft.git
+
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha8::$(echo ${{ github.sha }} | cut -c1-8)"
+
+      - name: Build AppImage
+        working-directory: contrib/appimage
+        run: |
+          tar xzf peercoin-*${{ matrix.arch }}*/peercoin-*-${{ matrix.arch }}.tar.gz -C AppDir --strip-components=1
+          VERSION=${{ steps.slug.outputs.sha8 }} SOURCES_REPO=${{ matrix.sources_repo }} TARGET_ARCH=${{ matrix.target_arch }} APT_ARCH=${{ matrix.apt_arch }} BUILD_ARCH=${{ matrix.build_arch }} appimage-builder --skip-tests
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Peercoin-AppImage-${{ steps.slug.outputs.sha8 }}-${{ matrix.arch }}
+          path: |
+            contrib/appimage/*.AppImage*
+          retention-days: 5
