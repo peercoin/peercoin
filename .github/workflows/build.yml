@@ -204,6 +204,7 @@ jobs:
         run: |
           tar xzf peercoin-*${{ matrix.arch }}*/peercoin-*-${{ matrix.arch }}.tar.gz -C AppDir --strip-components=1
           VERSION=${{ steps.slug.outputs.sha8 }} SOURCES_REPO=${{ matrix.sources_repo }} TARGET_ARCH=${{ matrix.target_arch }} APT_ARCH=${{ matrix.apt_arch }} BUILD_ARCH=${{ matrix.build_arch }} appimage-builder --skip-tests
+          chmod +x *.AppImage*
 
       - uses: actions/upload-artifact@v2
         with:
