@@ -701,7 +701,18 @@ peercoin_wallet_SOURCES += init/bitcoin-wallet.cpp
 peercoin_wallet_CPPFLAGS = $(bitcoin_bin_cppflags)
 peercoin_wallet_CXXFLAGS = $(bitcoin_bin_cxxflags)
 peercoin_wallet_LDFLAGS = $(bitcoin_bin_ldflags)
-peercoin_wallet_LDADD = $(LIBBITCOIN_WALLET_TOOL) $(bitcoin_bin_ldadd)
+peercoin_wallet_LDADD = \
+  $(LIBBITCOIN_WALLET_TOOL) \
+  $(LIBBITCOIN_WALLET) \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBUNIVALUE) \
+  $(LIBBITCOIN_CONSENSUS) \
+  $(LIBBITCOIN_CRYPTO) \
+  $(LIBSECP256K1) \
+  $(BOOST_LIBS) \
+  $(BDB_LIBS) \
+  $(SQLITE_LIBS)
 
 if TARGET_WINDOWS
 peercoin_wallet_SOURCES += bitcoin-wallet-res.rc
