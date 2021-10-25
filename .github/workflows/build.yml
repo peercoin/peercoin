@@ -107,13 +107,16 @@ jobs:
     needs: [binaries]
     steps:
       - uses: actions/checkout@v2
+        # this needs to be changed to peercoin/packaging
+        with:
+          repository: ihavenoface/packaging
 
       - uses: actions/download-artifact@v2
         with:
-          path: contrib/docker
+          path: docker
 
       - name: Place artifacts
-        working-directory: contrib/docker
+        working-directory: docker
         run: |
           mkdir -p linux/amd64 linux/arm64 linux/arm/v7 linux/riscv64
           mv peercoin-*x86_64-linux-gnu*/peercoin-*-x86_64-linux-gnu.tar.gz linux/amd64/
@@ -145,7 +148,7 @@ jobs:
           echo ::set-output name=branch::${TAG_NAME}
 
       - name: Build and push
-        working-directory: contrib/docker
+        working-directory: docker
         run: |
           docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64,linux/riscv64 \
             --output "type=image,push=${{ steps.prepare.outputs.push }}" \
@@ -179,13 +182,16 @@ jobs:
             build_arch: aarch64
     steps:
       - uses: actions/checkout@v2
+        # this needs to be changed to peercoin/packaging
+        with:
+          repository: ihavenoface/packaging
 
       - uses: actions/download-artifact@v2
         with:
-          path: contrib/appimage
+          path: appimage
 
       - name: Set up environment
-        working-directory: contrib/appimage
+        working-directory: appimage
         run: |
           apt-get -qq update
           apt-get install -qqy git wget ca-certificates
@@ -196,7 +202,7 @@ jobs:
         run: echo "::set-output name=sha8::$(echo ${{ github.sha }} | cut -c1-8)"
 
       - name: Build AppImage
-        working-directory: contrib/appimage
+        working-directory: appimage
         run: |
           tar xzf peercoin-*${{ matrix.arch }}*/peercoin-*-${{ matrix.arch }}.tar.gz -C AppDir --strip-components=1
           VERSION=${{ steps.slug.outputs.sha8 }} SOURCES_REPO=${{ matrix.sources_repo }} APT_ARCH=${{ matrix.apt_arch }} BUILD_ARCH=${{ matrix.build_arch }} appimage-builder --skip-tests
