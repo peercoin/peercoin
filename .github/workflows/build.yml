@@ -68,17 +68,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: gitian-cache/common
-          key: gitian-${{ steps.detect.outputs.suite }}-${{ steps.detect.outputs.version }}-common-${{ hashFiles('.github/**') }}
-          restore-keys: |
-            gitian-${{ steps.detect.outputs.suite }}-${{ steps.detect.outputs.version }}-common-
+          key: gitian-${{ steps.detect.outputs.suite }}-${{ steps.detect.outputs.version }}-common-${{ hashFiles('depends/packages/*', '.github/**') }}
 
       - name: Cache arch
         uses: actions/cache@v2
         with:
           path: gitian-cache/${{ steps.detect.outputs.name }}/${{ matrix.arch }}
-          key: gitian-${{ steps.detect.outputs.name }}-${{ matrix.arch }}-${{ hashFiles('.github/**') }}
-          restore-keys: |
-            gitian-${{ steps.detect.outputs.name }}-${{ matrix.arch }}-
+          key: gitian-${{ steps.detect.outputs.name }}-${{ matrix.arch }}-${{ hashFiles('depends/packages/*', '.github/**') }}
 
       - name: Build binary
         run: |
@@ -203,7 +199,7 @@ jobs:
         working-directory: contrib/appimage
         run: |
           tar xzf peercoin-*${{ matrix.arch }}*/peercoin-*-${{ matrix.arch }}.tar.gz -C AppDir --strip-components=1
-          VERSION=${{ steps.slug.outputs.sha8 }} SOURCES_REPO=${{ matrix.sources_repo }} TARGET_ARCH=${{ matrix.target_arch }} APT_ARCH=${{ matrix.apt_arch }} BUILD_ARCH=${{ matrix.build_arch }} appimage-builder --skip-tests
+          VERSION=${{ steps.slug.outputs.sha8 }} SOURCES_REPO=${{ matrix.sources_repo }} APT_ARCH=${{ matrix.apt_arch }} BUILD_ARCH=${{ matrix.build_arch }} appimage-builder --skip-tests
           chmod +x *.AppImage*
 
       - uses: actions/upload-artifact@v2
