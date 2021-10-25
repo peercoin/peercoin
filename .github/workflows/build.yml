@@ -212,5 +212,5 @@ jobs:
         with:
           name: Peercoin-AppImage-${{ steps.slug.outputs.sha8 }}-${{ matrix.arch }}
           path: |
-            contrib/appimage/*.AppImage*
+            appimage/*.AppImage*
           retention-days: 5
