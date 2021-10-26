@@ -139,7 +139,7 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
         // Show progress dialog
         connect(_walletModel, &WalletModel::showProgress, this, &WalletView::showProgress);
 
-        this->unlockWallet();
+        this->decryptForMinting(true);
     }
 }
 
