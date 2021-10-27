@@ -27,7 +27,6 @@ jobs:
         name:
           - armhf-linux
           - aarch64-linux
-          - riscv64-linux
           - x86_64-linux
           - x86_64-macos
           - x86_64-win
@@ -38,9 +37,6 @@ jobs:
           - os: linux
             name: aarch64-linux
             host: aarch64-linux-gnu
-          - os: linux
-            name: riscv64-linux
-            host: riscv64-linux-gnu
           - os: linux
             name: x86_64-linux
             host: x86_64-linux-gnu
@@ -147,9 +143,8 @@ jobs:
     needs: [binary]
     steps:
       - uses: actions/checkout@v2
-        # this needs to be changed to peercoin/packaging
         with:
-          repository: ihavenoface/packaging
+          repository: peercoin/packaging
 
       - uses: actions/download-artifact@v2
         with:
@@ -158,10 +153,9 @@ jobs:
       - name: Place artifacts
         working-directory: docker
         run: |
-          mkdir -p linux/amd64 linux/arm64 linux/arm/v7 linux/riscv64
+          mkdir -p linux/amd64 linux/arm64 linux/arm/v7
           mv peercoin-*-armhf-linux/peercoin-*-arm-linux-gnueabihf.tar.gz linux/arm/v7/
           mv peercoin-*-aarch64-linux/peercoin-*-aarch64-linux-gnu.tar.gz linux/arm64/
-          mv peercoin-*-riscv64-linux/peercoin-*-riscv64-linux-gnu.tar.gz linux/riscv64/
           mv peercoin-*-x86_64-linux/peercoin-*-x86_64-linux-gnu.tar.gz linux/amd64/
 
       - uses: crazy-max/ghaction-docker-buildx@v1
@@ -190,7 +184,7 @@ jobs:
       - name: Build and push
         working-directory: docker
         run: |
-          docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64,linux/riscv64 \
+          docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 \
             --output "type=image,push=${{ steps.prepare.outputs.push }}" \
             --progress=plain \
             --tag ghcr.io/peercoin/peercoin/peercoind:${{ steps.prepare.outputs.branch }} \
@@ -220,9 +214,8 @@ jobs:
             apt_arch: amd64
     steps:
       - uses: actions/checkout@v2
-        # this needs to be changed to peercoin/packaging
         with:
-          repository: ihavenoface/packaging
+          repository: peercoin/packaging
 
       - uses: actions/download-artifact@v2
         with:
