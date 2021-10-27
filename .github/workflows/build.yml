@@ -11,7 +11,7 @@ on:
       - '**/*.md'
 
 env:
-  MAKEJOBS: "-j 3"
+  MAKEJOBS: 3
   DOCKER_BUILDKIT: 1
   GITIAN_DIR: /opt/gitian-builder
   GITIAN_CACHE: /opt/gitian-builder/cache
@@ -116,14 +116,14 @@ jobs:
         if: steps.gitian-common.outputs.cache-hit != 'true'
         run: |
           cd ${GITIAN_DIR}
-          make "${MAKEJOBS}" -C ${{ steps.detect.outputs.build-dir }}/depends download SOURCES_PATH=${GITIAN_CACHE}/common
+          make -j $MAKEJOBS -C ${{ steps.detect.outputs.build-dir }}/depends download SOURCES_PATH=${GITIAN_CACHE}/common
           cd -
 
       - name: Build binary
         run: |
           cd ${GITIAN_DIR}
           sed -i "s/^\ \ \(HOSTS=\"\).*/\ \ \1${{ matrix.host }}\"/g" ${{ steps.detect.outputs.descriptor }}
-          ./bin/gbuild "${MAKEJOBS}" --commit peercoin=${{ github.sha }} --url peercoin=${{ steps.detect.outputs.build-dir }} ${{ steps.detect.outputs.descriptor }}
+          ./bin/gbuild -j $MAKEJOBS --commit peercoin=${{ github.sha }} --url peercoin=${{ steps.detect.outputs.build-dir }} ${{ steps.detect.outputs.descriptor }}
           cp -r ${GITIAN_DIR}/build/out/* ${{ steps.detect.outputs.build-dir }}/
           cd -
 
