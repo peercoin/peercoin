@@ -280,7 +280,7 @@ bool CheckSequenceLocksAtTip(CBlockIndex* tip,
 // Returns the script flags which should be checked for a given block
 static unsigned int GetBlockScriptFlags(const CBlockIndex& block_index, const ChainstateManager& chainman);
 
-static void LimitMempoolSize(CTxMemPool& pool, CCoinsViewCache& coins_cache, size_t limit, std::chrono::seconds age)
+static void LimitMempoolSize(CTxMemPool& pool, CCoinsViewCache& coins_cache, std::chrono::seconds age)
     EXCLUSIVE_LOCKS_REQUIRED(::cs_main, pool.cs)
 {
     AssertLockHeld(::cs_main);
@@ -291,7 +291,7 @@ static void LimitMempoolSize(CTxMemPool& pool, CCoinsViewCache& coins_cache, siz
     }
 
     std::vector<COutPoint> vNoSpendsRemaining;
-    pool.TrimToSize(limit, &vNoSpendsRemaining);
+    pool.TrimToSize(pool.m_max_size_bytes, &vNoSpendsRemaining);
     for (const COutPoint& removed : vNoSpendsRemaining)
         coins_cache.Uncache(removed);
 }
@@ -436,7 +436,6 @@ void CChainState::MaybeUpdateMempoolForReorg(
     LimitMempoolSize(
         *m_mempool,
         this->CoinsTip(),
-        gArgs.GetIntArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE_MB) * 1000000,
         std::chrono::hours{gArgs.GetIntArg("-mempoolexpiry", DEFAULT_MEMPOOL_EXPIRY)});
 }
 
@@ -1001,7 +1000,7 @@ bool MemPoolAccept::Finalize(const ATMPArgs& args, Workspace& ws)
     // in the package. LimitMempoolSize() should be called at the very end to make sure the mempool
     // is still within limits and package submission happens atomically.
     if (!args.m_package_submission && !bypass_limits) {
-        LimitMempoolSize(m_pool, m_active_chainstate.CoinsTip(), gArgs.GetIntArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE_MB) * 1000000, std::chrono::hours{gArgs.GetIntArg("-mempoolexpiry", DEFAULT_MEMPOOL_EXPIRY)});
+        LimitMempoolSize(m_pool, m_active_chainstate.CoinsTip(), std::chrono::hours{gArgs.GetIntArg("-mempoolexpiry", DEFAULT_MEMPOOL_EXPIRY)});
         if (!m_pool.exists(GenTxid::Txid(hash)))
             return state.Invalid(TxValidationResult::TX_MEMPOOL_POLICY, "mempool full");
     }
@@ -1067,7 +1066,6 @@ bool MemPoolAccept::SubmitPackage(const ATMPArgs& args, std::vector<Workspace>& 
     // It may or may not be the case that all the transactions made it into the mempool. Regardless,
     // make sure we haven't exceeded max mempool size.
     LimitMempoolSize(m_pool, m_active_chainstate.CoinsTip(),
-                     gArgs.GetIntArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE_MB) * 1000000,
                      std::chrono::hours{gArgs.GetIntArg("-mempoolexpiry", DEFAULT_MEMPOOL_EXPIRY)});
 
     // Find the wtxids of the transactions that made it into the mempool. Allow partial submission,
@@ -2454,7 +2452,7 @@ CoinsCacheSizeState CChainState::GetCoinsCacheSizeState()
     AssertLockHeld(::cs_main);
     return this->GetCoinsCacheSizeState(
         m_coinstip_cache_size_bytes,
-        gArgs.GetIntArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE_MB) * 1000000);
+        m_mempool ? m_mempool->m_max_size_bytes : 0);
 }
 
 CoinsCacheSizeState CChainState::GetCoinsCacheSizeState(

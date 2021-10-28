@@ -565,6 +565,8 @@ public:
 
     using Options = kernel::MemPoolOptions;
 
+    const int64_t m_max_size_bytes;
+
     /** Create a new CTxMemPool.
      * Sanity checks will be off by default for performance, because otherwise
      * accepting transactions becomes O(N^2) where N is the number of transactions
