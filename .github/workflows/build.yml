@@ -354,7 +354,7 @@ jobs:
           ${{ steps.detect.outputs.tag-name }}
 
       - uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-        if: ${{ steps.detect.outputs.tag-name == 'latest' }} || startsWith(steps.detect.outputs.tag-name, 'v')
+        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
         with:
           repo_token: ${{ github.token }}
           automatic_release_tag: ${{ steps.detect.outputs.tag-name }}
