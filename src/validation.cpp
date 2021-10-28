@@ -488,6 +488,7 @@ private:
     struct Workspace {
         explicit Workspace(const CTransactionRef& ptx) : m_ptx(ptx), m_hash(ptx->GetHash()) {}
         std::set<uint256> m_conflicts;
+        CTxMemPool::setEntries m_iters_conflicting;
         CTxMemPool::setEntries m_all_conflicting;
         CTxMemPool::setEntries m_ancestors;
         std::unique_ptr<CTxMemPoolEntry> m_entry;
@@ -702,7 +703,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         return state.Invalid(TxValidationResult::TX_NOT_STANDARD, "bad-txns-too-many-sigops",
                 strprintf("%d", nSigOpsCost));
 
-    const CTxMemPool::setEntries setIterConflicting = m_pool.GetIterSet(setConflicts);
+    ws.m_iters_conflicting = m_pool.GetIterSet(setConflicts);
     // Calculate in-mempool ancestors, up to a limit.
     if (setConflicts.size() == 1) {
         // In general, when we receive an RBF transaction with mempool conflicts, we want to know whether we
@@ -732,8 +733,8 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         // the ancestor limits should be the same for both our new transaction and any conflicts).
         // We don't bother incrementing m_limit_descendants by the full removal count as that limit never comes
         // into force here (as we're only adding a single transaction).
-        assert(setIterConflicting.size() == 1);
-        CTxMemPool::txiter conflict = *setIterConflicting.begin();
+        assert(ws.m_iters_conflicting.size() == 1);
+        CTxMemPool::txiter conflict = *ws.m_iters_conflicting.begin();
 
         m_limit_descendants += 1;
         m_limit_descendant_size += conflict->GetSizeWithDescendants();
