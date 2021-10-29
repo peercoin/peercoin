@@ -301,16 +301,36 @@ jobs:
             TAG_NAME_NO_DOT=${TAG_NAME/ppc\./}
             RELEASE_TITLE="Release ${TAG_NAME_NO_DOT/ppc/}"
           fi
+          if [[ -z "${{ secrets.GPG_PRIVATE_KEY }}" ]]; then
+            TAG_NAME=noop
+            RELEASE_TITLE=noop
+          fi
           echo ::set-output name=tag-name::$TAG_NAME
           echo ::set-output name=release-title::"${RELEASE_TITLE}"
           echo ::set-output name=sha8::$(echo ${{ github.sha }} | cut -c1-8)
 
       - name: Set up environment
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
-        run: apt-get update && apt-get install -y mktorrent bash
+        run: apt-get update && apt-get install -y mktorrent gpg bash
 
       - uses: actions/download-artifact@v2
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+
+      - name: Import GPG key
+        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: GPG user IDs
+        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        run: |
+          echo "fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}"
+          echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
+          echo "name:        ${{ steps.import_gpg.outputs.name }}"
+          echo "email:       ${{ steps.import_gpg.outputs.email }}"
+          gpg --keyserver hkp://keyserver.ubuntu.com --send-key ${{ steps.import_gpg.outputs.keyid }}
 
       - name: Create torrent
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
@@ -324,6 +344,8 @@ jobs:
           ${{ steps.detect.outputs.tag-name }}/
           cd ${{ steps.detect.outputs.tag-name }}
           sha256sum * > SHA256SUMS
+          gpg --digest-algo sha256 --clearsign SHA256SUMS
+          rm SHA256SUMS
           cd -
           mktorrent -w ${{ github.server_url }}/${{ github.repository }}/releases/download \
             -o ${{ steps.detect.outputs.tag-name }}/peercoin-${{ steps.detect.outputs.tag-name }}.torrent \
