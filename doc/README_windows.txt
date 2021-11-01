@@ -1,4 +1,4 @@
-Peercoin 0.11.0 BETA
+Peercoin 0.11.1 BETA
 
 Copyright (c) 2011-2021 Peercoin Developers
 Distributed under the MIT software license, see the accompanying
