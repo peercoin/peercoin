@@ -226,7 +226,7 @@ jobs:
         run: |
           apt-get -qq update
           apt-get install -qqy git wget ca-certificates
-          pip3 install --upgrade git+https://www.opencode.net/azubieta/appimagecraft.git
+          pip3 install --upgrade git+https://github.com/AppImageCrafters/appimage-builder.git
 
       - name: Get short SHA
         id: slug
