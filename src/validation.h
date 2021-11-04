@@ -516,6 +516,9 @@ public:
     /** Chain parameters for this chainstate */
     const CChainParams& m_params;
 
+    /** Chain parameters for this chainstate */
+    const CChainParams& m_params;
+
     //! The chainstate manager that owns this chainstate. The reference is
     //! necessary so that this instance can check whether it is the active
     //! chainstate within deeply nested method calls.
