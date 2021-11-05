@@ -488,13 +488,17 @@ bool ParseFixedPoint(const std::string &val, int decimals, int64_t *amount_out)
     if (ptr < end && val[ptr] == '.')
     {
         ++ptr;
+        int peercoin_digits = 6;
         if (ptr < end && IsDigit(val[ptr]))
         {
             while (ptr < end && IsDigit(val[ptr])) {
-                if (!ProcessMantissaDigit(val[ptr], mantissa, mantissa_tzeros))
-                    return false; /* overflow */
+                if (peercoin_digits) {
+                    if (!ProcessMantissaDigit(val[ptr], mantissa, mantissa_tzeros))
+                        return false; /* overflow */
+                    ++point_ofs;
+                    --peercoin_digits;
+                    }
                 ++ptr;
-                ++point_ofs;
             }
         } else return false; /* missing expected digit */
     }
