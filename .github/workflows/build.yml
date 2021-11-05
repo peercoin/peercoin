@@ -354,11 +354,29 @@ jobs:
             -a udp://exodus.desync.com:6969/announce \
           ${{ steps.detect.outputs.tag-name }}
 
+      - uses: actions/checkout@v2
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Generate Changelog
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git tag -l --format='%(contents)' ${GITHUB_REF/refs\/tags\//} > ${{ github.workspace }}-CHANGELOG.txt
+
       - uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && github.ref == 'refs/heads/develop' }}
         with:
           repo_token: ${{ github.token }}
           automatic_release_tag: ${{ steps.detect.outputs.tag-name }}
           prerelease: true
           title: "${{ steps.detect.outputs.release-title }}"
+          files: ${{ steps.detect.outputs.tag-name }}/*
+
+      - uses: softprops/action-gh-release@6034af24fba4e5a8e975aaa6056554efe4c794d0
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
+        with:
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          token: ${{ github.token }}
+          prerelease: true
+          name: "${{ steps.detect.outputs.release-title }}"
           files: ${{ steps.detect.outputs.tag-name }}/*
