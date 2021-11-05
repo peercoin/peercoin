@@ -360,7 +360,7 @@ jobs:
       - name: Generate Changelog
         if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
         run: |
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git fetch --depth=1 origin +${{ github.ref }}:${{ github.ref }}
           git tag -l --format='%(contents)' ${GITHUB_REF/refs\/tags\//} > ${{ github.workspace }}-CHANGELOG.txt
 
       - uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
