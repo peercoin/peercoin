@@ -1582,7 +1582,7 @@ if test "x$seccomp_found" != "xno"; then
     ]])],[
       AC_MSG_RESULT(yes)
       seccomp_found="yes"
-      AC_DEFINE(USE_SYSCALL_SANDBOX, 1, [Define this symbol to build with syscall sandbox support.])
+      AC_DEFINE([USE_SYSCALL_SANDBOX], [1], [Define this symbol to build with syscall sandbox support.])
     ],[
       AC_MSG_RESULT(no)
       seccomp_found="no"
