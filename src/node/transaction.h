@@ -11,10 +11,12 @@
 
 class CBlockIndex;
 class CTxMemPool;
-struct NodeContext;
 namespace Consensus {
 struct Params;
 }
+
+namespace node {
+struct NodeContext;
 
 /**
  * Submit a transaction to the mempool and (optionally) relay it to all P2P peers.
@@ -48,5 +50,6 @@ NODISCARD TransactionError BroadcastTransaction(NodeContext& node, CTransactionR
  * @returns                    The tx if found, otherwise nullptr
  */
 CTransactionRef GetTransaction(const CBlockIndex* const block_index, const CTxMemPool* const mempool, const uint256& hash, const Consensus::Params& consensusParams, uint256& hashBlock);
+} // namespace node
 
 #endif // BITCOIN_NODE_TRANSACTION_H

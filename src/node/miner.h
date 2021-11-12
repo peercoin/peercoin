@@ -26,6 +26,7 @@ class CWallet;
 
 namespace Consensus { struct Params; };
 
+namespace node {
 static const bool DEFAULT_PRINTPRIORITY = false;
 
 struct CBlockTemplate
@@ -214,5 +215,6 @@ void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwalle
 
 /** Update an old GenerateCoinbaseCommitment from CreateNewBlock after the block txs have changed */
 void RegenerateCommitments(CBlock& block, ChainstateManager& chainman);
+} // namespace node
 
 #endif // BITCOIN_NODE_MINER_H

@@ -57,6 +57,16 @@
 #include <memory>
 #include <mutex>
 
+using node::BlockManager;
+using node::CCoinsStats;
+using node::CoinStatsHashType;
+using node::GetUTXOStats;
+using node::IsBlockPruned;
+using node::NodeContext;
+using node::ReadBlockFromDisk;
+using node::SnapshotMetadata;
+using node::UndoReadFromDisk;
+
 struct CUpdatedBlock
 {
     uint256 hash;

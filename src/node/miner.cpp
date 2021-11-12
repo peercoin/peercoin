@@ -39,6 +39,7 @@
 
 #include <boost/thread.hpp>
 int64_t nLastCoinStakeSearchInterval = 0;
+namespace node {
 int64_t UpdateTime(CBlockHeader* pblock)
 {
     int64_t nOldTime = pblock->nTime;
@@ -714,3 +715,4 @@ void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwalle
     // peercoin: mint proof-of-stake blocks in the background
     threadGroup.create_thread(boost::bind(&ThreadStakeMinter, pwallet, m_node));
 }
+} // namespace node
