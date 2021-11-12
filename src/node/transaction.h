@@ -22,6 +22,9 @@ namespace Consensus {
 struct Params;
 }
 
+namespace node {
+struct NodeContext;
+
 /** Maximum fee rate for sendrawtransaction and testmempoolaccept RPC calls.
  * Also used by the GUI when broadcasting a completed PSBT.
  * By default, a transaction with a fee rate higher than this will be rejected
@@ -77,5 +80,6 @@ CTransactionRef GetTransaction(const CBlockIndex* const block_index, const CTxMe
  * @returns                    The tx if found, otherwise nullptr
  */
 CTransactionRef GetTransaction(const CBlockIndex* const block_index, const CTxMemPool* const mempool, const uint256& hash, const Consensus::Params& consensusParams, uint256& hashBlock);
+} // namespace node
 
 #endif // BITCOIN_NODE_TRANSACTION_H

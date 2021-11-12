@@ -10,9 +10,6 @@
 #include <optional>
 
 class ChainstateManager;
-namespace Consensus {
-    struct Params;
-}
 class CTxMemPool;
 namespace Consensus {
 struct Params;

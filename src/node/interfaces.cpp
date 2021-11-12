@@ -1041,7 +1041,7 @@ public:
     bool havePruned() override
     {
         LOCK(cs_main);
-        return ::fHavePruned;
+        return node::fHavePruned;
     }
     bool isReadyToBroadcast() override { return !::fImporting && !::fReindex && !isInitialBlockDownload(); }
     bool isInitialBlockDownload() override { return ::ChainstateActive().IsInitialBlockDownload(); }
