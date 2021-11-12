@@ -21,4 +21,4 @@ void SetfLargeWorkInvalidChainFound(bool flag);
 bilingual_str GetWarnings(bool verbose);
 
 extern std::string strMintWarning;
-#endif //  BITCOIN_WARNINGS_H
+#endif // BITCOIN_WARNINGS_H
