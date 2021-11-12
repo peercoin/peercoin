@@ -19,6 +19,7 @@
 #include <univalue.h>
 
 
+namespace wallet {
 static void ParseRecipients(const UniValue& address_amounts, const UniValue& subtract_fee_outputs, std::vector<CRecipient> &recipients) {
     std::set<CTxDestination> destinations;
     int i = 0;
@@ -1363,3 +1364,4 @@ RPCHelpMan walletcreatefundedpsbt()
 },
     };
 }
+} // namespace wallet

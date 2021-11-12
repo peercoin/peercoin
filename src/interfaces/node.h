@@ -23,7 +23,6 @@
 #include <vector>
 
 class BanMan;
-class CCoinControl;
 class CNodeStats;
 class Coin;
 class RPCTimerInterface;
@@ -36,6 +35,9 @@ struct bilingual_str;
 namespace node {
 struct NodeContext;
 } // namespace node
+namespace wallet {
+class CCoinControl;
+} // namespace wallet
 
 namespace interfaces {
 class Handler;

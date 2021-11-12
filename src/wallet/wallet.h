@@ -42,11 +42,16 @@
 
 #include <boost/signals2/signal.hpp>
 
-struct WalletContext;
 
 using LoadWalletFn = std::function<void(std::unique_ptr<interfaces::Wallet> wallet)>;
 
+class CScript;
+enum class FeeEstimateMode;
+struct FeeCalculation;
 struct bilingual_str;
+
+namespace wallet {
+struct WalletContext;
 
 //! Explicitly unload and delete the wallet.
 //! Blocks the current thread after signaling the unload intent so that all
@@ -98,7 +103,6 @@ static constexpr size_t DUMMY_NESTED_P2WPKH_INPUT_SIZE = 91;
 
 class CCoinControl;
 class COutput;
-class CScript;
 class CWalletTx;
 class ReserveDestination;
 
@@ -918,5 +922,6 @@ bool AddWalletSetting(interfaces::Chain& chain, const std::string& wallet_name);
 bool RemoveWalletSetting(interfaces::Chain& chain, const std::string& wallet_name);
 
 bool DummySignInput(const SigningProvider& provider, CTxIn &tx_in, const CTxOut &txout, bool use_max_sig);
+} // namespace wallet
 
 #endif // BITCOIN_WALLET_WALLET_H

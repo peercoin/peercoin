@@ -12,6 +12,7 @@
 
 #include <optional>
 
+namespace wallet {
 //! final minimum change amount after paying for fees
 static const CAmount MIN_FINAL_CHANGE = MIN_TXOUT_AMOUNT;
 
@@ -247,5 +248,6 @@ std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& ut
 
 // Original coin selection algorithm as a fallback
 std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue);
+} // namespace wallet
 
 #endif // BITCOIN_WALLET_COINSELECTION_H
