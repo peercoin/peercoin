@@ -923,6 +923,7 @@ bool AddWalletSetting(interfaces::Chain& chain, const std::string& wallet_name);
 bool RemoveWalletSetting(interfaces::Chain& chain, const std::string& wallet_name);
 
 bool DummySignInput(const SigningProvider& provider, CTxIn &tx_in, const CTxOut &txout, bool use_max_sig);
+} // namespace wallet
 
 bool FillInputToWeight(CTxIn& txin, int64_t target_weight);
 } // namespace wallet

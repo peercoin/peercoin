@@ -13,7 +13,6 @@
 #include <vector>
 
 class ArgsManager;
-class CWallet;
 namespace interfaces {
 class Chain;
 class Wallet;
