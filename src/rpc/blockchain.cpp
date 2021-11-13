@@ -1381,7 +1381,6 @@ static UniValue SoftForkMajorityDesc(int version, const CBlockIndex* pindex, con
     rv.pushKV("status", activated);
     return rv;
 }
-    bip9.pushKV("min_activation_height", consensusParams.vDeployments[id].min_activation_height);
 
 static UniValue SoftForkDesc(const std::string &name, int version, const CBlockIndex* pindex, const Consensus::Params& consensusParams)
 {
@@ -1468,6 +1467,11 @@ RPCHelpMan getblockchaininfo()
     };
 }
 
+    {RPCResult::Type::NUM, "height", /*optional=*/true, "height of the first block which the rules are or will be enforced (only for \"buried\" type, or \"bip9\" type with \"active\" status)"},
+    {RPCResult::Type::BOOL, "active", "true if the rules are enforced for the mempool and the next block"},
+        {RPCResult::Type::STR, "status", "bip9 status of specified block (one of \"defined\", \"started\", \"locked_in\", \"active\", \"failed\")"},
+        {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
+        {RPCResult::Type::STR, "status-next", "bip9 status of next block"},
 /** Comparison function for sorting the getchaintips heads.  */
 struct CompareBlocksByHeight
 {
