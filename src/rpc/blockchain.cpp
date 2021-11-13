@@ -1472,6 +1472,10 @@ RPCHelpMan getblockchaininfo()
         {RPCResult::Type::STR, "status", "bip9 status of specified block (one of \"defined\", \"started\", \"locked_in\", \"active\", \"failed\")"},
         {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
         {RPCResult::Type::STR, "status-next", "bip9 status of next block"},
+                {RPCResult::Type::STR, "hash", "requested block hash (or tip)"},
+                {RPCResult::Type::NUM, "height", "requested block height (or tip)"},
+            deploymentinfo.pushKV("hash", tip->GetBlockHash().ToString());
+            deploymentinfo.pushKV("height", tip->nHeight);
 /** Comparison function for sorting the getchaintips heads.  */
 struct CompareBlocksByHeight
 {
