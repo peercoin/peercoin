@@ -312,8 +312,9 @@ This example lists the steps necessary to setup and build a command line only, n
 
 Note:
 Enabling wallet support requires either compiling against a Berkeley DB newer than 4.8 (package `db`) using `--with-incompatible-bdb`,
-or building and depending on a local version of Berkeley DB 4.8.
-As mentioned above, when maintaining portability of the wallet between the standard Peercoin Core distributions and independently built
+or building and depending on a local version of Berkeley DB 4.8. The readily available Arch Linux packages are currently built using
+`--with-incompatible-bdb` according to the [PKGBUILD](https://github.com/archlinux/svntogit-community/blob/packages/bitcoin/trunk/PKGBUILD).
+As mentioned above, when maintaining portability of the wallet between the standard Peercoin distributions and independently built
 node software is desired, Berkeley DB 4.8 must be used.
 
 
