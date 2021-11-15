@@ -20,6 +20,7 @@
 extern int64_t nLastCoinStakeSearchInterval;
 class ChainstateManager;
 
+class ChainstateManager;
 class CBlockIndex;
 class CChainParams;
 class CScript;
