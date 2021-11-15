@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_MINER_H
-#define BITCOIN_MINER_H
+#ifndef BITCOIN_NODE_MINER_H
+#define BITCOIN_NODE_MINER_H
 
 #include <primitives/block.h>
 #include <txmempool.h>
@@ -213,4 +213,4 @@ void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwalle
 /** Update an old GenerateCoinbaseCommitment from CreateNewBlock after the block txs have changed */
 void RegenerateCommitments(CBlock& block, ChainstateManager& chainman);
 
-#endif // BITCOIN_MINER_H
+#endif // BITCOIN_NODE_MINER_H
