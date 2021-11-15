@@ -8,16 +8,16 @@
 
 #include <primitives/block.h>
 #include <txmempool.h>
-#include <validation.h>
 #include <node/context.h>
 #include <memory>
 #include <optional>
 #include <stdint.h>
 
-#include <boost/multi_index_container.hpp>
 #include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
 
 extern int64_t nLastCoinStakeSearchInterval;
+class ChainstateManager;
 
 class CBlockIndex;
 class CChainParams;

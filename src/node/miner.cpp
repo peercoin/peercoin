@@ -24,6 +24,7 @@
 #include <util/ref.h>
 #include <util/system.h>
 #include <util/translation.h>
+#include <validation.h>
 #include <kernel.h>
 #include <net.h>
 #include <interfaces/chain.h>
