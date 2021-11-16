@@ -9,6 +9,7 @@
 #include <consensus/merkle.h>
 #include <deploymentinfo.h>
 #include <hash.h> // for signet block challenge hash
+#include <script/interpreter.h>
 #include <util/system.h>
 
 #include <assert.h>
