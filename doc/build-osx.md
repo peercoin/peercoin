@@ -76,6 +76,9 @@ Note: If you run into issues while installing Homebrew or pulling packages, refe
 
 The first step is to download the required dependencies.
 These dependencies represent the packages required to get a barebones installation up and running.
+
+See [dependencies.md](dependencies.md) for a complete overview.
+
 To install, run the following from your terminal:
 
 ``` bash
