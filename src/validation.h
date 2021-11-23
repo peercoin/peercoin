@@ -903,6 +903,17 @@ private:
         CBlockIndex** ppindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
     friend CChainState;
 
+    /**
+     * If a block header hasn't already been seen, call CheckBlockHeader on it, ensure
+     * that it doesn't descend from an invalid block, and then add it to m_block_index.
+     */
+    bool AcceptBlockHeader(
+        const CBlockHeader& block,
+        BlockValidationState& state,
+        const CChainParams& chainparams,
+        CBlockIndex** ppindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    friend CChainState;
+
 public:
     std::thread m_load_block;
     //! A single BlockManager instance is shared across each constructed

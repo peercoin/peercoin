@@ -3650,7 +3650,7 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
             // hasn't been validated up to BLOCK_VALID_SCRIPTS. This is a performance
             // optimization, in the common case of adding a new block to the tip,
             // we don't need to iterate over the failed blocks list.
-            for (const CBlockIndex* failedit : m_failed_blocks) {
+            for (const CBlockIndex* failedit : m_blockman.m_failed_blocks) {
                 if (pindexPrev->GetAncestor(failedit->nHeight) == failedit) {
                     assert(failedit->nStatus & BLOCK_FAILED_VALID);
                     CBlockIndex* invalid_walk = pindexPrev;
