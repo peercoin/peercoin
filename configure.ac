@@ -1392,15 +1392,15 @@ if test "$enable_wallet" != "no"; then
       PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.7.17], [have_sqlite=yes], [have_sqlite=no])
     fi
     AC_MSG_CHECKING([whether to build wallet with support for sqlite])
-    if test "x$use_sqlite" = "xno"; then
+    if test "$use_sqlite" = "no"; then
       use_sqlite=no
-    elif test "x$have_sqlite" = "xno"; then
-      if test "x$use_sqlite" = "xyes"; then
+    elif test "$have_sqlite" = "no"; then
+      if test "$use_sqlite" = "yes"; then
         AC_MSG_ERROR([sqlite support requested but cannot be built. Use --without-sqlite])
       fi
       use_sqlite=no
     else
-      if test x$use_sqlite != xno; then
+      if test "$use_sqlite" != "no"; then
         AC_DEFINE([USE_SQLITE],[1],[Define if sqlite support should be compiled in])
         use_sqlite=yes
       fi
@@ -1837,12 +1837,12 @@ if test "x$have_natpmp" = xno; then
   AC_MSG_RESULT([no])
   use_natpmp=no
 else
-  if test "x$use_natpmp" != xno; then
+  if test "$use_natpmp" != "no"; then
     AC_MSG_RESULT([yes])
     AC_MSG_CHECKING([whether to build with NAT-PMP enabled by default])
     use_natpmp=yes
     natpmp_setting=0
-    if test "x$use_natpmp_default" != xno; then
+    if test "$use_natpmp_default" != "no"; then
       use_natpmp_default=yes
       natpmp_setting=1
     fi
