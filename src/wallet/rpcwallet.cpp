@@ -20,7 +20,6 @@
 #include <script/sign.h>
 #include <util/bip32.h>
 #include <util/fees.h>
-#include <util/message.h> // For MessageSign()
 #include <util/moneystr.h>
 #include <util/string.h>
 #include <util/system.h>
@@ -48,7 +47,7 @@
 using interfaces::FoundBlock;
 
 static const std::string WALLET_ENDPOINT_BASE = "/wallet/";
-static const std::string HELP_REQUIRING_PASSPHRASE{"\nRequires wallet passphrase to be set with walletpassphrase call if wallet is encrypted.\n"};
+const std::string HELP_REQUIRING_PASSPHRASE{"\nRequires wallet passphrase to be set with walletpassphrase call if wallet is encrypted.\n"};
 
 static inline bool GetAvoidReuseFlag(const CWallet& wallet, const UniValue& param) {
     bool can_avoid_reuse = wallet.IsWalletFlagSet(WALLET_FLAG_AVOID_REUSE);
@@ -4823,6 +4822,7 @@ RPCHelpMan removeprunedfunds();
 RPCHelpMan importmulti();
 RPCHelpMan importdescriptors();
 RPCHelpMan listdescriptors();
+RPCHelpMan signmessage();
 
 Span<const CRPCCommand> GetWalletRPCCommands()
 {
