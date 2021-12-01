@@ -45,8 +45,6 @@
 
 #include <map>
 
-using interfaces::FoundBlock;
-
 
 /** Checks if a CKey is in the given CWallet compressed or otherwise*/
 bool HaveKey(const SigningProvider& wallet, const CKey& key)
@@ -4591,6 +4589,15 @@ RPCHelpMan walletpassphrase();
 RPCHelpMan walletpassphrasechange();
 RPCHelpMan walletlock();
 RPCHelpMan encryptwallet();
+
+// transactions
+RPCHelpMan listreceivedbyaddress();
+RPCHelpMan listreceivedbylabel();
+RPCHelpMan listtransactions();
+RPCHelpMan listsinceblock();
+RPCHelpMan gettransaction();
+RPCHelpMan abandontransaction();
+RPCHelpMan rescanblockchain();
 
 Span<const CRPCCommand> GetWalletRPCCommands()
 {
