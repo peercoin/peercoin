@@ -19,7 +19,6 @@
 #include <script/descriptor.h>
 #include <script/sign.h>
 #include <util/fees.h>
-#include <util/moneystr.h>
 #include <util/string.h>
 #include <util/system.h>
 #include <util/translation.h>
@@ -4596,6 +4595,16 @@ RPCHelpMan listlabels();
 #ifdef ENABLE_EXTERNAL_SIGNER
 RPCHelpMan walletdisplayaddress();
 #endif // ENABLE_EXTERNAL_SIGNER
+
+// coins
+RPCHelpMan getreceivedbyaddress();
+RPCHelpMan getreceivedbylabel();
+RPCHelpMan getbalance();
+RPCHelpMan getunconfirmedbalance();
+RPCHelpMan lockunspent();
+RPCHelpMan listlockunspent();
+RPCHelpMan getbalances();
+RPCHelpMan listunspent();
 
 // encryption
 RPCHelpMan walletpassphrase();
