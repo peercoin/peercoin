@@ -137,6 +137,7 @@ BITCOIN_CORE_H = \
   compat/cpuid.h \
   compat/endian.h \
   compressor.h \
+  node/connection_types.h \
   consensus/consensus.h \
   consensus/tx_check.h \
   consensus/tx_verify.h \
@@ -363,6 +364,7 @@ libbitcoin_node_a_SOURCES = \
   node/caches.cpp \
   node/chainstate.cpp \
   node/coin.cpp \
+  node/connection_types.cpp \
   node/context.cpp \
   node/interfaces.cpp \
   node/miner.cpp \
