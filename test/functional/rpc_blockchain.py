@@ -79,6 +79,7 @@ class BlockchainTest(BitcoinTestFramework):
         )
 
         self._test_getblockchaininfo()
+        self._test_getdeploymentinfo()
         self._test_getchaintxstats()
         self._test_gettxoutsetinfo()
         self._test_getblockheader()
