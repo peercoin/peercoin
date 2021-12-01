@@ -18,15 +18,16 @@ RPCHelpMan walletpassphrase()
                 {
                     {"passphrase", RPCArg::Type::STR, RPCArg::Optional::NO, "The wallet passphrase"},
                     {"timeout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The time to keep the decryption key in seconds; capped at 100000000 (~3 years)."},
+                    {"mintonly", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED, "Unlock for minting only"},
                 },
                 RPCResult{RPCResult::Type::NONE, "", ""},
                 RPCExamples{
             "\nUnlock the wallet for 60 seconds\n"
-            + HelpExampleCli("walletpassphrase", "\"my pass phrase\" 60") +
+            + HelpExampleCli("walletpassphrase", "\"my pass phrase\" 60, false") +
             "\nLock the wallet again (before 60 seconds)\n"
             + HelpExampleCli("walletlock", "") +
             "\nAs a JSON-RPC call\n"
-            + HelpExampleRpc("walletpassphrase", "\"my pass phrase\", 60")
+            + HelpExampleRpc("walletpassphrase", "\"my pass phrase\", 60, false")
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
@@ -97,7 +98,16 @@ RPCHelpMan walletpassphrase()
         }
     }, nSleepTime);
 
-    return NullUniValue;
+    // peercoin: if user OS account compromised prevent trivial sendmoney commands
+    if (request.params.size() > 2)
+        fWalletUnlockMintOnly = request.params[2].get_bool();
+    else
+        fWalletUnlockMintOnly = false;
+
+    UniValue ret(UniValue::VOBJ);
+    ret.pushKV("unlocked_minting_only", fWalletUnlockMintOnly);
+
+    return ret;
 },
     };
 }
