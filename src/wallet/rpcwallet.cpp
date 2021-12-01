@@ -18,7 +18,6 @@
 #include <rpc/util.h>
 #include <script/descriptor.h>
 #include <script/sign.h>
-#include <util/bip32.h>
 #include <util/fees.h>
 #include <util/moneystr.h>
 #include <util/string.h>
@@ -4583,6 +4582,20 @@ RPCHelpMan importmulti();
 RPCHelpMan importdescriptors();
 RPCHelpMan listdescriptors();
 RPCHelpMan signmessage();
+
+// addresses
+RPCHelpMan getnewaddress();
+RPCHelpMan getrawchangeaddress();
+RPCHelpMan setlabel();
+RPCHelpMan listaddressgroupings();
+RPCHelpMan addmultisigaddress();
+RPCHelpMan keypoolrefill();
+RPCHelpMan newkeypool();
+RPCHelpMan getaddressesbylabel();
+RPCHelpMan listlabels();
+#ifdef ENABLE_EXTERNAL_SIGNER
+RPCHelpMan walletdisplayaddress();
+#endif // ENABLE_EXTERNAL_SIGNER
 
 // encryption
 RPCHelpMan walletpassphrase();
