@@ -1392,8 +1392,16 @@ static UniValue SoftForkDesc(const std::string &name, int version, const CBlockI
     return rv;
 }
 
+namespace {
+/* TODO: when -dprecatedrpc=softforks is removed, drop these */
+UniValue DeploymentInfo(const CBlockIndex* tip, const Consensus::Params& consensusParams);
+extern const std::vector<RPCResult> RPCHelpForDeployment;
+}
+
+// used by rest.cpp:rest_chaininfo, so cannot be static
 RPCHelpMan getblockchaininfo()
 {
+    /* TODO: from v24, remove -deprecatedrpc=softforks */
     return RPCHelpMan{"getblockchaininfo",
                 "Returns an object containing various state info regarding blockchain processing.\n",
                 {},
@@ -1411,31 +1419,11 @@ RPCHelpMan getblockchaininfo()
                         {RPCResult::Type::BOOL, "initialblockdownload", "(debug information) estimate of whether this node is in Initial Block Download mode"},
                         {RPCResult::Type::STR_HEX, "chainwork", "total amount of work in active chain, in hexadecimal"},
                         {RPCResult::Type::NUM, "size_on_disk", "the estimated size of the block and undo files on disk"},
-                        {RPCResult::Type::OBJ_DYN, "softforks", "status of softforks",
+                        {RPCResult::Type::OBJ_DYN, "softforks", "(DEPRECATED, returned only if config option -deprecatedrpc=softforks is passed) status of softforks",
                         {
                             {RPCResult::Type::OBJ, "xxxx", "name of the softfork",
-                            {
-                                {RPCResult::Type::STR, "type", "one of \"buried\", \"bip9\""},
-                                {RPCResult::Type::OBJ, "bip9", /*optional=*/true, "status of bip9 softforks (only for \"bip9\" type)",
-                                {
-                                    {RPCResult::Type::STR, "status", "one of \"defined\", \"started\", \"locked_in\", \"active\", \"failed\""},
-                                    {RPCResult::Type::NUM, "bit", /*optional=*/true, "the bit (0-28) in the block version field used to signal this softfork (only for \"started\" and \"locked_in\" status)"},
-                                    {RPCResult::Type::NUM_TIME, "start_time", "the minimum median time past of a block at which the bit gains its meaning"},
-                                    {RPCResult::Type::NUM_TIME, "timeout", "the median time past of a block at which the deployment is considered failed if not yet locked in"},
-                                    {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
-                                    {RPCResult::Type::NUM, "min_activation_height", "minimum height of blocks for which the rules may be enforced"},
-                                    {RPCResult::Type::OBJ, "statistics", /*optional=*/true, "numeric statistics about signalling for a softfork (only for \"started\" and \"locked_in\" status)",
-                                    {
-                                        {RPCResult::Type::NUM, "period", "the length in blocks of the signalling period"},
-                                        {RPCResult::Type::NUM, "threshold", /*optional=*/true, "the number of blocks with the version bit set required to activate the feature (only for \"started\" status)"},
-                                        {RPCResult::Type::NUM, "elapsed", "the number of blocks elapsed since the beginning of the current period"},
-                                        {RPCResult::Type::NUM, "count", "the number of blocks with the version bit set in the current period"},
-                                        {RPCResult::Type::BOOL, "possible", /*optional=*/true, "returns false if there are not enough blocks left in this period to pass activation threshold (only for \"started\" status)"},
-                                    }},
-                                }},
-                                {RPCResult::Type::NUM, "height", /*optional=*/true, "height of the first block which the rules are or will be enforced (only for \"buried\" type, or \"bip9\" type with \"active\" status)"},
-                                {RPCResult::Type::BOOL, "active", "true if the rules are enforced for the mempool and the next block"},
-                            }},
+                                RPCHelpForDeployment
+                            },
                         }},
                         {RPCResult::Type::STR, "warnings", "any network and blockchain warnings"},
                     }},
@@ -2622,6 +2610,7 @@ static const CRPCCommand commands[] =
     { "blockchain",         &getblockheader,                     },
     { "blockchain",         &getchaintips,                       },
     { "blockchain",         &getdifficulty,                      },
+    { "blockchain",         &getdeploymentinfo,                  },
     { "blockchain",         &getmempoolancestors,                },
     { "blockchain",         &getmempooldescendants,              },
     { "blockchain",         &getmempoolentry,                    },
