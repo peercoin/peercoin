@@ -234,8 +234,8 @@ TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const
                                            /*coins_db_in_memory=*/true);
     assert(!maybe_load_error.has_value());
 
-    auto maybe_verify_error = VerifyLoadedChainstate(*Assert(m_node.chainman), options);
-    assert(!maybe_verify_error.has_value());
+    std::tie(status, error) = VerifyLoadedChainstate(*Assert(m_node.chainman), options);
+    assert(status == node::ChainstateLoadStatus::SUCCESS);
 
     BlockValidationState state;
     if (!m_node.chainman->ActiveChainstate().ActivateBestChain(state)) {

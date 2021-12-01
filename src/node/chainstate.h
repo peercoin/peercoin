@@ -54,20 +54,7 @@ enum class ChainstateLoadingError {
  *  4. Hard failure
  *    - a failure that definitively cannot be recovered from with a reindex
  *
- *  Currently, LoadChainstate returns a std::optional<ChainstateLoadingError>
- *  which:
- *
- *  - if has_value()
- *      - Either "Soft failure", "Hard failure", or "Shutdown requested",
- *        differentiable by the specific enumerator.
- *
- *        Note that a return value of SHUTDOWN_PROBED means ONLY that "during
- *        this sequence, when we explicitly checked shutdown_requested() at
- *        arbitrary points, one of those calls returned true". Therefore, a
- *        return value other than SHUTDOWN_PROBED does not guarantee that
- *        shutdown hasn't been called indirectly.
- *  - else
- *      - Success!
+ *  LoadChainstate returns a (status code, error string) tuple.
  */
 std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
                                                      ChainstateManager& chainman,
