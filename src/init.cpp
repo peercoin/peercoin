@@ -1424,8 +1424,21 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         node.chainman = std::make_unique<ChainstateManager>(chainman_opts);
         ChainstateManager& chainman = *node.chainman;
 
-        const bool fReset = fReindex;
         bilingual_str strLoadError;
+
+        node::ChainstateLoadOptions options;
+        options.mempool = Assert(node.mempool.get());
+        options.reindex = node::fReindex;
+        options.reindex_chainstate = fReindexChainState;
+        options.prune = node::fPruneMode;
+        options.check_blocks = args.GetIntArg("-checkblocks", DEFAULT_CHECKBLOCKS);
+        options.check_level = args.GetIntArg("-checklevel", DEFAULT_CHECKLEVEL);
+        options.check_interrupt = ShutdownRequested;
+        options.coins_error_cb = [] {
+            uiInterface.ThreadSafeMessageBox(
+                _("Error reading from database, shutting down."),
+                "", CClientUIInterface::MSG_ERROR);
+        };
 
         uiInterface.InitMessage(_("Loading block index…").translated);
         const int64_t load_block_index_start_time = GetTimeMillis();
@@ -1519,7 +1532,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
         if (!fLoaded && !ShutdownRequested()) {
             // first suggest a reindex
-            if (!fReset) {
+            if (!options.reindex) {
                 bool fRet = uiInterface.ThreadSafeQuestion(
                     strLoadError + Untranslated(".\n\n") + _("Do you want to rebuild the block database now?"),
                     strLoadError.original + ".\nPlease restart with -reindex or -reindex-chainstate to recover.",
