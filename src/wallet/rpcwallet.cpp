@@ -11,27 +11,19 @@
 #include <outputtype.h>
 #include <policy/feerate.h>
 #include <policy/fees.h>
-#include <policy/policy.h>
 #include <policy/rbf.h>
-#include <rpc/rawtransaction_util.h>
 #include <rpc/server.h>
 #include <rpc/util.h>
 #include <script/descriptor.h>
 #include <script/sign.h>
-#include <util/fees.h>
 #include <util/string.h>
 #include <util/system.h>
 #include <util/translation.h>
-#include <util/url.h>
-#include <util/vector.h>
 #include <wallet/coincontrol.h>
-#include <wallet/context.h>
-#include <wallet/feebumper.h>
 #include <wallet/load.h>
 #include <wallet/receive.h>
 #include <wallet/rpcwallet.h>
 #include <wallet/rpc/util.h>
-#include <wallet/spend.h>
 #include <wallet/wallet.h>
 #include <wallet/walletdb.h>
 #include <wallet/walletutil.h>
@@ -4611,6 +4603,17 @@ RPCHelpMan walletpassphrase();
 RPCHelpMan walletpassphrasechange();
 RPCHelpMan walletlock();
 RPCHelpMan encryptwallet();
+
+// spend
+RPCHelpMan sendtoaddress();
+RPCHelpMan sendmany();
+RPCHelpMan settxfee();
+RPCHelpMan fundrawtransaction();
+RPCHelpMan bumpfee();
+RPCHelpMan psbtbumpfee();
+RPCHelpMan send();
+RPCHelpMan walletprocesspsbt();
+RPCHelpMan walletcreatefundedpsbt();
 
 // transactions
 RPCHelpMan listreceivedbyaddress();
