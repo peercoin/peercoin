@@ -32,6 +32,7 @@
 #include <wallet/load.h>
 #include <wallet/receive.h>
 #include <wallet/rpcwallet.h>
+#include <wallet/rpc/util.h>
 #include <wallet/spend.h>
 #include <wallet/wallet.h>
 #include <wallet/walletdb.h>
@@ -45,36 +46,6 @@
 #include <map>
 
 using interfaces::FoundBlock;
-
-static const std::string WALLET_ENDPOINT_BASE = "/wallet/";
-const std::string HELP_REQUIRING_PASSPHRASE{"\nRequires wallet passphrase to be set with walletpassphrase call if wallet is encrypted.\n"};
-
-static inline bool GetAvoidReuseFlag(const CWallet& wallet, const UniValue& param) {
-    bool can_avoid_reuse = wallet.IsWalletFlagSet(WALLET_FLAG_AVOID_REUSE);
-    bool avoid_reuse = param.isNull() ? can_avoid_reuse : param.get_bool();
-
-    if (avoid_reuse && !can_avoid_reuse) {
-        throw JSONRPCError(RPC_WALLET_ERROR, "wallet does not have the \"avoid reuse\" feature enabled");
-    }
-
-    return avoid_reuse;
-}
-
-
-/** Used by RPC commands that have an include_watchonly parameter.
- *  We default to true for watchonly wallets if include_watchonly isn't
- *  explicitly set.
- */
-static bool ParseIncludeWatchonly(const UniValue& include_watchonly, const CWallet& wallet)
-{
-    if (include_watchonly.isNull()) {
-        // if include_watchonly isn't explicitly set, then check if we have a watchonly wallet
-        return wallet.IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
-    }
-
-    // otherwise return whatever include_watchonly was set to
-    return include_watchonly.get_bool();
-}
 
 
 /** Checks if a CKey is in the given CWallet compressed or otherwise*/
@@ -191,13 +162,6 @@ static void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, UniValue
         entry.pushKV(item.first, item.second);
 }
 
-static std::string LabelFromValue(const UniValue& value)
-{
-    std::string label = value.get_str();
-    if (label == "*")
-        throw JSONRPCError(RPC_WALLET_INVALID_LABEL_NAME, "Invalid label name");
-    return label;
-}
 
 /**
  * Update coin control with fee estimation based on the given parameters
