@@ -3,36 +3,21 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <consensus/amount.h>
 #include <core_io.h>
-#include <interfaces/chain.h>
 #include <interfaces/wallet.h>
 #include <key_io.h>
-#include <node/context.h>
-#include <outputtype.h>
 #include <rpc/server.h>
 #include <rpc/util.h>
-#include <script/descriptor.h>
-#include <script/sign.h>
 #include <timedata.h>
-#include <util/string.h>
-#include <util/system.h>
 #include <util/translation.h>
-#include <wallet/coincontrol.h>
-#include <wallet/load.h>
 #include <wallet/receive.h>
 #include <wallet/rpc/wallet.h>
 #include <wallet/rpc/util.h>
 #include <wallet/wallet.h>
-#include <wallet/walletdb.h>
-#include <wallet/walletutil.h>
 
 #include <optional>
-#include <stdint.h>
 
 #include <univalue.h>
-
-#include <map>
 
 #include <kernelrecord.h>
 #include <miner.h>
@@ -805,21 +790,8 @@ static RPCHelpMan upgradewallet()
     };
 }
 
-RPCHelpMan abortrescan();
-RPCHelpMan dumpprivkey();
-RPCHelpMan importprivkey();
-RPCHelpMan importaddress();
-RPCHelpMan importpubkey();
-RPCHelpMan dumpwallet();
-RPCHelpMan importwallet();
-RPCHelpMan importmulti();
-RPCHelpMan importdescriptors();
-RPCHelpMan listdescriptors();
-RPCHelpMan signmessage();
-RPCHelpMan backupwallet();
-RPCHelpMan restorewallet();
-
 // addresses
+RPCHelpMan getaddressinfo();
 RPCHelpMan getnewaddress();
 RPCHelpMan getrawchangeaddress();
 RPCHelpMan setlabel();
@@ -832,6 +804,20 @@ RPCHelpMan listlabels();
 #ifdef ENABLE_EXTERNAL_SIGNER
 RPCHelpMan walletdisplayaddress();
 #endif // ENABLE_EXTERNAL_SIGNER
+
+// backup
+RPCHelpMan abortrescan();
+RPCHelpMan dumpprivkey();
+RPCHelpMan importprivkey();
+RPCHelpMan importaddress();
+RPCHelpMan importpubkey();
+RPCHelpMan dumpwallet();
+RPCHelpMan importwallet();
+RPCHelpMan importmulti();
+RPCHelpMan importdescriptors();
+RPCHelpMan listdescriptors();
+RPCHelpMan backupwallet();
+RPCHelpMan restorewallet();
 
 // coins
 RPCHelpMan getreceivedbyaddress();
@@ -856,6 +842,10 @@ RPCHelpMan fundrawtransaction();
 RPCHelpMan send();
 RPCHelpMan walletprocesspsbt();
 RPCHelpMan walletcreatefundedpsbt();
+RPCHelpMan signrawtransactionwithwallet();
+
+// signmessage
+RPCHelpMan signmessage();
 
 // transactions
 RPCHelpMan listreceivedbyaddress();
