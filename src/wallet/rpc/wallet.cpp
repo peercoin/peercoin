@@ -11,6 +11,7 @@
 #include <rpc/util.h>
 #include <timedata.h>
 #include <util/translation.h>
+#include <wallet/context.h>
 #include <wallet/receive.h>
 #include <wallet/rpc/wallet.h>
 #include <wallet/rpc/util.h>
@@ -228,6 +229,7 @@ static RPCHelpMan loadwallet()
 
     DatabaseOptions options;
     DatabaseStatus status;
+    ReadDatabaseArgs(*context.args, options);
     options.require_existing = true;
     bilingual_str error;
     std::vector<bilingual_str> warnings;
@@ -389,6 +391,7 @@ static RPCHelpMan createwallet()
 
     DatabaseOptions options;
     DatabaseStatus status;
+    ReadDatabaseArgs(*context.args, options);
     options.require_create = true;
     options.create_flags = flags;
     options.create_passphrase = passphrase;
