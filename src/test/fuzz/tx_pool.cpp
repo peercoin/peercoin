@@ -38,6 +38,15 @@ public:
     }
 };
 
+class DummyChainState final : public CChainState
+{
+public:
+    void SetMempool(CTxMemPool* mempool)
+    {
+        m_mempool = mempool;
+    }
+};
+
 void initialize_tx_pool()
 {
     static const auto testing_setup = MakeNoLogFileContext<const TestingSetup>();
