@@ -806,7 +806,6 @@ RPCHelpMan walletdisplayaddress();
 #endif // ENABLE_EXTERNAL_SIGNER
 
 // backup
-RPCHelpMan abortrescan();
 RPCHelpMan dumpprivkey();
 RPCHelpMan importprivkey();
 RPCHelpMan importaddress();
@@ -855,6 +854,7 @@ RPCHelpMan listsinceblock();
 RPCHelpMan gettransaction();
 RPCHelpMan abandontransaction();
 RPCHelpMan rescanblockchain();
+RPCHelpMan abortrescan();
 
 Span<const CRPCCommand> GetWalletRPCCommands()
 {
