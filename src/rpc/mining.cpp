@@ -458,8 +458,8 @@ static RPCHelpMan getmininginfo()
                     RPCResult::Type::OBJ, "", "",
                     {
                         {RPCResult::Type::NUM, "blocks", "The current block"},
-                        {RPCResult::Type::NUM, "currentblockweight", /* optional */ true, "The block weight of the last assembled block (only present if a block was ever assembled)"},
-                        {RPCResult::Type::NUM, "currentblocktx", /* optional */ true, "The number of block transactions of the last assembled block (only present if a block was ever assembled)"},
+                        {RPCResult::Type::NUM, "currentblockweight", /*optional=*/true, "The block weight of the last assembled block (only present if a block was ever assembled)"},
+                        {RPCResult::Type::NUM, "currentblocktx", /*optional=*/true, "The number of block transactions of the last assembled block (only present if a block was ever assembled)"},
                         {RPCResult::Type::NUM, "difficulty", "The current difficulty"},
                         {RPCResult::Type::NUM, "networkhashps", "The network hashes per second"},
                         {RPCResult::Type::NUM, "pooledtx", "The size of the mempool"},
@@ -591,12 +591,12 @@ static RPCHelpMan getblocktemplate()
                 {RPCResult::Type::STR_HEX, "noncerange", "A range of valid nonces"},
                 {RPCResult::Type::NUM, "sigoplimit", "limit of sigops in blocks"},
                 {RPCResult::Type::NUM, "sizelimit", "limit of block size"},
-                {RPCResult::Type::NUM, "weightlimit", /* optional */ true, "limit of block weight"},
+                {RPCResult::Type::NUM, "weightlimit", /*optional=*/true, "limit of block weight"},
                 {RPCResult::Type::NUM_TIME, "curtime", "current timestamp in " + UNIX_EPOCH_TIME},
                 {RPCResult::Type::STR, "bits", "compressed target of next block"},
                 {RPCResult::Type::NUM, "height", "The height of the next block"},
-                {RPCResult::Type::STR_HEX, "signet_challenge", /* optional */ true, "Only on signet"},
-                {RPCResult::Type::STR_HEX, "default_witness_commitment", /* optional */ true, "a valid witness commitment for the unmodified block template"},
+                {RPCResult::Type::STR_HEX, "signet_challenge", /*optional=*/true, "Only on signet"},
+                {RPCResult::Type::STR_HEX, "default_witness_commitment", /*optional=*/true, "a valid witness commitment for the unmodified block template"},
             }},
         },
         RPCExamples{
@@ -1058,8 +1058,8 @@ static RPCHelpMan estimatesmartfee()
                 RPCResult{
                     RPCResult::Type::OBJ, "", "",
                     {
-                        {RPCResult::Type::NUM, "feerate", /* optional */ true, "estimate fee rate in " + CURRENCY_UNIT + "/kvB (only present if no errors were encountered)"},
-                        {RPCResult::Type::ARR, "errors", /* optional */ true, "Errors encountered during processing (if there are any)",
+                        {RPCResult::Type::NUM, "feerate", /*optional=*/true, "estimate fee rate in " + CURRENCY_UNIT + "/kvB (only present if no errors were encountered)"},
+                        {RPCResult::Type::ARR, "errors", /*optional=*/true, "Errors encountered during processing (if there are any)",
                             {
                                 {RPCResult::Type::STR, "", "error"},
                             }},
