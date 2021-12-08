@@ -63,7 +63,7 @@
     </message>
     <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Эдгээр Биткойн хаягууд нь илгээх хаягууд. Хүлээн авах хаяг болон тоо хэмжээг илгээхээсээ өмнө сайн нягталж үзэж байна уу</translation>
+        <translation>Эдгээр Пиркойн хаягууд нь илгээх хаягууд. Хүлээн авах хаяг болон тоо хэмжээг илгээхээсээ өмнө сайн нягталж үзэж байна уу</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -686,7 +686,7 @@
     </message>
     <message>
         <source>Warning: Invalid Bitcoin address</source>
-        <translation>Анхаар:Буруу Биткойны хаяг байна</translation>
+        <translation>Анхаар:Буруу Пиркойны хаяг байна</translation>
     </message>
     <message>
         <source>(no label)</source>
