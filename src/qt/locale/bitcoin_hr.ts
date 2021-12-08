@@ -1602,16 +1602,6 @@
         <translation>&amp;Pokrenite %1 kod prijave u sustav</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Check this box to follow the centrally issued checkpoints.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Enforce checkpoints</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location line="+9"/>
         <source>Size of &amp;database cache</source>
         <translation>Veličina predmemorije baze podataka</translation>
