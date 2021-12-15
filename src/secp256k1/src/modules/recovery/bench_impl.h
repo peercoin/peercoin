@@ -52,8 +52,6 @@ void run_recovery_bench(int iters, int argc, char** argv) {
     bench_recover_data data;
     int d = argc == 1;
 
-    int iters = get_iters(20000);
-
     data.ctx = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);
 
     if (d || have_flag(argc, argv, "ecdsa") || have_flag(argc, argv, "recover") || have_flag(argc, argv, "ecdsa_recover")) run_benchmark("ecdsa_recover", bench_recover, bench_recover_setup, NULL, &data, 10, iters);
