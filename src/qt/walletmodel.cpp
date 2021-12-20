@@ -325,8 +325,6 @@ bool WalletModel::setWalletLocked(bool locked, const SecureString &passPhrase, i
         if (!m_wallet->unlock(passPhrase))
             return false;
 
-        fWalletUnlockMintOnly = fMintOnly;
-
         if (nSeconds > 0 && nSeconds < std::numeric_limits<int>::max())  // seconds
             m_wallet->relockWalletAfterDuration(nSeconds);
 
