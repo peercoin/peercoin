@@ -411,7 +411,7 @@ static bool rest_filter_header(const std::any& context, HTTPRequest* req, const 
 
     switch (rf) {
     case RetFormat::BINARY: {
-        CDataStream ssHeader(SER_NETWORK, PROTOCOL_VERSION | RPCSerializationFlags());
+        CDataStream ssHeader{SER_NETWORK, PROTOCOL_VERSION};
         for (const uint256& header : filter_headers) {
             ssHeader << header;
         }
@@ -422,7 +422,7 @@ static bool rest_filter_header(const std::any& context, HTTPRequest* req, const 
         return true;
     }
     case RetFormat::HEX: {
-        CDataStream ssHeader(SER_NETWORK, PROTOCOL_VERSION | RPCSerializationFlags());
+        CDataStream ssHeader{SER_NETWORK, PROTOCOL_VERSION};
         for (const uint256& header : filter_headers) {
             ssHeader << header;
         }
@@ -511,7 +511,7 @@ static bool rest_block_filter(const std::any& context, HTTPRequest* req, const s
 
     switch (rf) {
     case RetFormat::BINARY: {
-        CDataStream ssResp(SER_NETWORK, PROTOCOL_VERSION | RPCSerializationFlags());
+        CDataStream ssResp{SER_NETWORK, PROTOCOL_VERSION};
         ssResp << filter;
 
         std::string binaryResp = ssResp.str();
@@ -520,7 +520,7 @@ static bool rest_block_filter(const std::any& context, HTTPRequest* req, const s
         return true;
     }
     case RetFormat::HEX: {
-        CDataStream ssResp(SER_NETWORK, PROTOCOL_VERSION | RPCSerializationFlags());
+        CDataStream ssResp{SER_NETWORK, PROTOCOL_VERSION};
         ssResp << filter;
 
         std::string strHex = HexStr(ssResp) + "\n";
