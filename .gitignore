@@ -113,7 +113,6 @@ Makefile
 src/qt/peercoin-qt
 PPCoin-Qt.app
 Peercoin-Qt.app
-background.tiff*
 
 # Qt Creator
 Makefile.am.user
@@ -169,6 +168,5 @@ db4/
 
 osx_volname
 dist/
-*.background.tiff
 
 /guix-build-*
