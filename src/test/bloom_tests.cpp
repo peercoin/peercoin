@@ -43,8 +43,9 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize)
     stream << filter;
 
     std::vector<uint8_t> expected = ParseHex("03614e9b050000000000000001");
+    auto result{MakeUCharSpan(stream)};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(stream.begin(), stream.end(), expected.begin(), expected.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(), expected.begin(), expected.end());
 
     BOOST_CHECK_MESSAGE( filter.contains(ParseHex("99108ad8ed9bb6274d3980bab5a85c048f0950c8")), "Bloom filter doesn't contain just-inserted object!");
 }
@@ -69,8 +70,9 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize_with_tweak)
     stream << filter;
 
     std::vector<uint8_t> expected = ParseHex("03ce4299050000000100008001");
+    auto result{MakeUCharSpan(stream)};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(stream.begin(), stream.end(), expected.begin(), expected.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(), expected.begin(), expected.end());
 }
 
 BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
@@ -89,8 +91,9 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     stream << filter;
 
     std::vector<unsigned char> expected = ParseHex("038fc16b080000000000000001");
+    auto result{MakeUCharSpan(stream)};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(stream.begin(), stream.end(), expected.begin(), expected.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(), expected.begin(), expected.end());
 }
 
 BOOST_AUTO_TEST_CASE(bloom_match)
@@ -336,8 +339,9 @@ BOOST_AUTO_TEST_CASE(merkle_block_3_and_serialize)
     merkleStream << merkleBlock;
 
     std::vector<uint8_t> expected = ParseHex("01000000c6ea48b2ceb01563ff317b7eb6b7d9c35120b16ed65119c41c1fb20000000000c89d8542ad87d6d5eac869b9c19abd4b826552ef09e45cfb5d010dbe4e192ff03a8e315008c0001c01d9ba490100000001c89d8542ad87d6d5eac869b9c19abd4b826552ef09e45cfb5d010dbe4e192ff00101");
+    auto result{MakeUCharSpan(merkleStream)};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), merkleStream.begin(), merkleStream.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), result.begin(), result.end());
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_4)
