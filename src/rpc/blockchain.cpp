@@ -1459,7 +1459,7 @@ RPCHelpMan getblockchaininfo()
     obj.pushKV("verificationprogress",  GuessVerificationProgress(Params().TxData(), tip));
     obj.pushKV("initialblockdownload",  active_chainstate.IsInitialBlockDownload());
     obj.pushKV("chainwork",             tip->nChainTrust.GetHex());
-    obj.pushKV("size_on_disk",          CalculateCurrentUsage());
+    obj.pushKV("size_on_disk", chainman.m_blockman.CalculateCurrentUsage());
 
     UniValue softforks(UniValue::VARR);
     softforks.push_back(SoftForkDesc("bip34", 2, tip, Params().GetConsensus()));
