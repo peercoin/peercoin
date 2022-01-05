@@ -22,7 +22,6 @@
 #include <net.h>
 #include <net_processing.h>
 #include <node/blockstorage.h>
-#include <logging/timer.h>
 #include <node/coinstats.h>
 #include <node/context.h>
 #include <node/utxo_snapshot.h>
