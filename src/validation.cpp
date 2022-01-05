@@ -1407,7 +1407,7 @@ void CChainState::InvalidBlockFound(CBlockIndex* pindex, const BlockValidationSt
     if (state.GetResult() != BlockValidationResult::BLOCK_MUTATED) {
         pindex->nStatus |= BLOCK_FAILED_VALID;
         m_chainman.m_failed_blocks.insert(pindex);
-        m_blockman.setDirtyBlockIndex.insert(pindex);
+        m_blockman.m_dirty_blockindex.insert(pindex);
         setBlockIndexCandidates.erase(pindex);
         InvalidChainFound(pindex);
     }
@@ -2105,7 +2105,7 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
 
     if (!pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
         pindex->RaiseValidity(BLOCK_VALID_SCRIPTS);
-        m_blockman.setDirtyBlockIndex.insert(pindex);
+        m_blockman.m_dirty_blockindex.insert(pindex);
     }
 
     assert(pindex->phashBlock);
@@ -2913,14 +2913,14 @@ bool CChainState::InvalidateBlock(BlockValidationState& state, CBlockIndex* pind
         // are no blocks that meet the "have data and are not invalid per
         // nStatus" criteria for inclusion in setBlockIndexCandidates).
         invalid_walk_tip->nStatus |= BLOCK_FAILED_VALID;
-        m_blockman.setDirtyBlockIndex.insert(invalid_walk_tip);
+        m_blockman.m_dirty_blockindex.insert(invalid_walk_tip);
         setBlockIndexCandidates.erase(invalid_walk_tip);
         setBlockIndexCandidates.insert(invalid_walk_tip->pprev);
         if (invalid_walk_tip->pprev == to_mark_failed && (to_mark_failed->nStatus & BLOCK_FAILED_VALID)) {
             // We only want to mark the last disconnected block as BLOCK_FAILED_VALID; its children
             // need to be BLOCK_FAILED_CHILD instead.
             to_mark_failed->nStatus = (to_mark_failed->nStatus ^ BLOCK_FAILED_VALID) | BLOCK_FAILED_CHILD;
-            m_blockman.setDirtyBlockIndex.insert(to_mark_failed);
+            m_blockman.m_dirty_blockindex.insert(to_mark_failed);
         }
 
         // Add any equal or more work headers to setBlockIndexCandidates
@@ -2950,7 +2950,7 @@ bool CChainState::InvalidateBlock(BlockValidationState& state, CBlockIndex* pind
 
         // Mark pindex (or the last disconnected block) as invalid, even when it never was in the main chain
         to_mark_failed->nStatus |= BLOCK_FAILED_VALID;
-        m_blockman.setDirtyBlockIndex.insert(to_mark_failed);
+        m_blockman.m_dirty_blockindex.insert(to_mark_failed);
         setBlockIndexCandidates.erase(to_mark_failed);
         m_chainman.m_failed_blocks.insert(to_mark_failed);
 
@@ -2989,7 +2989,7 @@ void CChainState::ResetBlockFailureFlags(CBlockIndex *pindex) {
     while (it != m_blockman.m_block_index.end()) {
         if (!it->second->IsValid() && it->second->GetAncestor(nHeight) == pindex) {
             it->second->nStatus &= ~BLOCK_FAILED_MASK;
-            m_blockman.setDirtyBlockIndex.insert(it->second);
+            m_blockman.m_dirty_blockindex.insert(it->second);
             if (it->second->IsValid(BLOCK_VALID_TRANSACTIONS) && it->second->HaveTxsDownloaded() && setBlockIndexCandidates.value_comp()(m_chain.Tip(), it->second)) {
                 setBlockIndexCandidates.insert(it->second);
             }
@@ -3006,7 +3006,7 @@ void CChainState::ResetBlockFailureFlags(CBlockIndex *pindex) {
     while (pindex != nullptr) {
         if (pindex->nStatus & BLOCK_FAILED_MASK) {
             pindex->nStatus &= ~BLOCK_FAILED_MASK;
-            m_blockman.setDirtyBlockIndex.insert(pindex);
+            m_blockman.m_dirty_blockindex.insert(pindex);
             m_chainman.m_failed_blocks.erase(pindex);
         }
         pindex = pindex->pprev;
@@ -3026,7 +3026,7 @@ void CChainState::ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pi
         pindexNew->nStatus |= BLOCK_OPT_WITNESS;
     }
     pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
-    m_blockman.setDirtyBlockIndex.insert(pindexNew);
+    m_blockman.m_dirty_blockindex.insert(pindexNew);
 
     if (pindexNew->pprev == nullptr || pindexNew->pprev->HaveTxsDownloaded()) {
         // If pindexNew is the genesis block or all parents are BLOCK_VALID_TRANSACTIONS.
@@ -3421,7 +3421,7 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
                     CBlockIndex* invalid_walk = pindexPrev;
                     while (invalid_walk != failedit) {
                         invalid_walk->nStatus |= BLOCK_FAILED_CHILD;
-                        m_blockman.setDirtyBlockIndex.insert(invalid_walk);
+                        m_blockman.m_dirty_blockindex.insert(invalid_walk);
                         invalid_walk = invalid_walk->pprev;
                     }
                     LogPrint(BCLog::VALIDATION, "%s: %s prev block invalid\n", __func__, hash.ToString());
@@ -3543,7 +3543,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
         !ContextualCheckBlock(block, state, m_params.GetConsensus(), pindex->pprev)) {
         if (state.IsInvalid() && state.GetResult() != BlockValidationResult::BLOCK_MUTATED) {
             pindex->nStatus |= BLOCK_FAILED_VALID;
-            m_blockman.setDirtyBlockIndex.insert(pindex);
+            m_blockman.m_dirty_blockindex.insert(pindex);
         }
         return error("%s: %s", __func__, state.ToString());
     }
@@ -4961,7 +4961,7 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
             index->nStatus |= BLOCK_OPT_WITNESS;
         }
 
-        m_blockman.setDirtyBlockIndex.insert(index);
+        m_blockman.m_dirty_blockindex.insert(index);
         // Changes to the block index will be flushed to disk after this call
         // returns in `ActivateSnapshot()`, when `MaybeRebalanceCaches()` is
         // called, since we've added a snapshot chainstate and therefore will
