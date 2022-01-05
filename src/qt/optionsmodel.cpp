@@ -89,12 +89,6 @@ void OptionsModel::Init(bool resetSettings)
     // by command-line and show this in the UI.
 
     // Main
-    if (!settings.contains("bPrune"))
-        settings.setValue("bPrune", false);
-    if (!settings.contains("nPruneSize"))
-        settings.setValue("nPruneSize", DEFAULT_PRUNE_TARGET_GB);
-    SetPruneEnabled(settings.value("bPrune").toBool());
-
     if (!settings.contains("nDatabaseCache"))
         settings.setValue("nDatabaseCache", (qint64)nDefaultDbCache);
     if (!m_node.softSetArg("-dbcache", settings.value("nDatabaseCache").toString().toStdString()))
