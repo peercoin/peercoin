@@ -3980,6 +3980,9 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     walletInstance->m_split_coins = gArgs.GetBoolArg("-splitcoins", DEFAULT_SPLIT_COINS);
     walletInstance->WalletLogPrintf("Wallet will%s split coins during minting\n", walletInstance->m_split_coins? "" : " not");
 
+    walletInstance->m_check_github = gArgs.GetBoolArg("-checkgithub", DEFAULT_CHECK_GITHUB);
+    walletInstance->WalletLogPrintf("Wallet will%s check github for newer version on startup\n", walletInstance->m_check_github? "" : " not");
+
     walletInstance->WalletLogPrintf("Wallet completed loading in %15dms\n", GetTimeMillis() - nStart);
 
     // Try to top up keypool. No-op if the wallet is locked.
