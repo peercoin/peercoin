@@ -77,19 +77,19 @@ private:
     std::set<int> m_dirty_fileinfo;
 
     RecursiveMutex cs_LastBlockFile;
-    std::vector<CBlockFileInfo> vinfoBlockFile;
-    int nLastBlockFile = 0;
+    std::vector<CBlockFileInfo> m_blockfile_info;
+    int m_last_blockfile = 0;
     /** Global flag to indicate we should check to see if there are
      *  block/undo files that should be deleted.  Set on startup
      *  or if we allocate more file space when we're in prune mode
      */
-    bool fCheckForPruning = false;
+    bool m_check_for_pruning = false;
 
     /** Dirty block index entries. */
-    std::set<CBlockIndex*> setDirtyBlockIndex;
+    std::set<CBlockIndex*> m_dirty_blockindex;
 
     /** Dirty block file entries. */
-    std::set<int> setDirtyFileInfo;
+    std::set<int> m_dirty_fileinfo;
 
 public:
     BlockMap m_block_index GUARDED_BY(cs_main);
