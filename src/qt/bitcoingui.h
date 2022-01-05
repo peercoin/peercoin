@@ -13,9 +13,13 @@
 
 #include <amount.h>
 
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMap>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QPoint>
 #include <QSystemTrayIcon>
 
@@ -231,6 +235,7 @@ public Q_SLOTS:
        @param[in] ret       pointer to a bool that will be modified to whether Ok was clicked (modal only)
     */
     void message(const QString& title, QString message, unsigned int style, bool* ret = nullptr);
+    void onResult(QNetworkReply *reply);
 
 #ifdef ENABLE_WALLET
     void setCurrentWallet(WalletModel* wallet_model);

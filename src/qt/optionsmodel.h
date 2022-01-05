@@ -63,6 +63,7 @@ public:
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
         SplitCoins,             // bool
+        CheckGithub,            // bool
         Listen,                 // bool
         OptionIDRowCount,
     };

@@ -118,6 +118,10 @@ void OptionsModel::Init(bool resetSettings)
         settings.setValue("bSplitCoins", DEFAULT_SPLIT_COINS);
     if (!m_node.softSetBoolArg("-splitcoins", settings.value("bSplitCoins").toBool()))
         addOverriddenOption("-splitcoins");
+    if (!settings.contains("bCheckGithub"))
+        settings.setValue("bCheckGithub", DEFAULT_CHECK_GITHUB);
+    if (!m_node.softSetBoolArg("-checkgithub", settings.value("bCheckGithub").toBool()))
+        addOverriddenOption("-checkgithub");
 #endif
 
     // Network
@@ -310,6 +314,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("bSpendZeroConfChange");
         case SplitCoins:
             return settings.value("bSplitCoins");
+        case CheckGithub:
+            return settings.value("bCheckGithub");
 #endif
         case DisplayUnit:
             return nDisplayUnit;
@@ -429,6 +435,12 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
         case SplitCoins:
             if (settings.value("bSplitCoins") != value) {
                 settings.setValue("bSplitCoins", value.toBool());
+                setRestartRequired(true);
+            }
+            break;
+        case CheckGithub:
+            if (settings.value("bCheckGithub") != value) {
+                settings.setValue("bCheckGithub", value.toBool());
                 setRestartRequired(true);
             }
             break;
