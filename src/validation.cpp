@@ -3955,10 +3955,6 @@ void UnloadBlockIndex(CTxMemPool* mempool, ChainstateManager& chainman)
     chainman.Unload();
     pindexBestHeader = nullptr;
     if (mempool) mempool->clear();
-    vinfoBlockFile.clear();
-    nLastBlockFile = 0;
-    setDirtyBlockIndex.clear();
-    setDirtyFileInfo.clear();
 }
 
 bool ChainstateManager::LoadBlockIndex()
