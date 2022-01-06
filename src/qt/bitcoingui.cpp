@@ -236,7 +236,8 @@ void BitcoinGUI::onResult(QNetworkReply *reply) {
         QByteArray result = reply->readAll();
         QJsonDocument jsonResponse = QJsonDocument::fromJson(result);
         QJsonObject obj = jsonResponse.object();
-        if(std::regex_search(obj["tag_name"].toString().toStdString(), matches, versionRgx) && matches.size()==4) {
+        std::string tag_name = obj["tag_name"].toString().toStdString();
+        if(std::regex_search(tag_name, matches, versionRgx) && matches.size()==4) {
             newVersion = std::stoi(matches[1].str()) * 1000000 + std::stoi(matches[2]) * 10000 + std::stoi(matches[3]) * 100;
             if (newVersion > PEERCOIN_VERSION) {
                 char versionInfo[200];
