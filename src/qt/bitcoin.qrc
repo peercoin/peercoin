@@ -28,6 +28,7 @@
         <file alias="edit">res/icons/edit.png</file>
         <file alias="history">res/icons/history.png</file>
         <file alias="minting">res/icons/minting.png</file>
+        <file alias="minted">res/icons/minted.png</file>
         <file alias="transactions">res/icons/transactions.png</file>
         <file alias="overview">res/icons/overview.png</file>
         <file alias="export">res/icons/export.png</file>
