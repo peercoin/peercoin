@@ -70,7 +70,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
 
         uint32_t nSequence;
         if (rawTx.nLockTime) {
-            nSequence = CTxIn::SEQUENCE_FINAL - 1;
+            nSequence = CTxIn::MAX_SEQUENCE_NONFINAL; /* CTxIn::SEQUENCE_FINAL - 1 */
         } else {
             nSequence = CTxIn::SEQUENCE_FINAL;
         }
