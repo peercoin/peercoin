@@ -5478,3 +5478,16 @@ void ChainstateManager::MaybeRebalanceCaches()
         }
     }
 }
+
+ChainstateManager::~ChainstateManager()
+{
+    LOCK(::cs_main);
+    UnloadBlockIndex(/*mempool=*/nullptr, *this);
+
+    // TODO: The version bits cache and warning cache should probably become
+    // non-globals
+    g_versionbitscache.Clear();
+    for (auto& i : warningcache) {
+        i.clear();
+    }
+}
