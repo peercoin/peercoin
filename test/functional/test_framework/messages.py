@@ -509,7 +509,7 @@ class CTransaction:
 
     def __init__(self, tx=None):
         if tx is None:
-            self.nVersion = 1
+            self.nVersion = 2
             self.nTime = int(time.time())
             self.vin = []
             self.vout = []
