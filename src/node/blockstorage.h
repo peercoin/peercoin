@@ -49,7 +49,7 @@ extern std::atomic_bool fReindex;
 // we ever switch to another associative container, we need to either use a
 // container that has stable addressing (true of all std associative
 // containers), or make the key a `std::unique_ptr<CBlockIndex>`
-typedef std::unordered_map<uint256, CBlockIndex, BlockHasher> BlockMap;
+using BlockMap = std::unordered_map<uint256, CBlockIndex, BlockHasher>;
 
 struct CBlockIndexWorkComparator {
     bool operator()(const CBlockIndex* pa, const CBlockIndex* pb) const;
