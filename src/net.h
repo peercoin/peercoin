@@ -233,8 +233,8 @@ struct LocalServiceInfo {
     uint16_t nPort;
 };
 
-extern RecursiveMutex cs_mapLocalHost;
-extern std::map<CNetAddr, LocalServiceInfo> mapLocalHost GUARDED_BY(cs_mapLocalHost);
+extern RecursiveMutex g_maplocalhost_mutex;
+extern std::map<CNetAddr, LocalServiceInfo> mapLocalHost GUARDED_BY(g_maplocalhost_mutex);
 extern std::map<CNetAddr, int32_t> mapPoSTemperature;
 
 extern const std::string NET_MESSAGE_COMMAND_OTHER;
