@@ -761,7 +761,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
 
     // Check large scriptSig (non-standard if size is >1650 bytes)
     t.vout.resize(1);
-    t.vout[0].nValue = MAX_MONEY;
+    t.vout[0].nValue = std::numeric_limits<CAmount>::max();
     t.vout[0].scriptPubKey = GetScriptForDestination(PKHash(key.GetPubKey()));
     // OP_PUSHDATA2 with len (3 bytes) + data (1647 bytes) = 1650 bytes
     t.vin[0].scriptSig = CScript() << std::vector<unsigned char>(1647, 0); // 1650

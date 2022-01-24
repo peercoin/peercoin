@@ -2893,8 +2893,8 @@ static UniValue listunspent(const JSONRPCRequest& request)
     }
 
     CAmount nMinimumAmount = 0;
-    CAmount nMaximumAmount = MAX_MONEY;
-    CAmount nMinimumSumAmount = MAX_MONEY;
+    CAmount nMaximumAmount = std::numeric_limits<CAmount>::max();
+    CAmount nMinimumSumAmount = std::numeric_limits<CAmount>::max();
     uint64_t nMaximumCount = 0;
 
     if (!request.params[4].isNull()) {

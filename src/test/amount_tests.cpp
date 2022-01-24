@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_CASE(MoneyRangeTest)
     BOOST_CHECK_EQUAL(MoneyRange(CAmount(-1)), false);
     BOOST_CHECK_EQUAL(MoneyRange(CAmount(0)), true);
     BOOST_CHECK_EQUAL(MoneyRange(CAmount(1)), true);
-    BOOST_CHECK_EQUAL(MoneyRange(MAX_MONEY), true);
-    BOOST_CHECK_EQUAL(MoneyRange(MAX_MONEY + CAmount(1)), false);
+    BOOST_CHECK_EQUAL(MoneyRange(std::numeric_limits<CAmount>::max()), true);
+    BOOST_CHECK_EQUAL(MoneyRange(std::numeric_limits<CAmount>::max() + CAmount(1)), false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

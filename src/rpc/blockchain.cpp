@@ -1659,8 +1659,8 @@ static UniValue getblockstats(const JSONRPCRequest& request)
 
     CAmount maxfee = 0;
     CAmount maxfeerate = 0;
-    CAmount minfee = MAX_MONEY;
-    CAmount minfeerate = MAX_MONEY;
+    CAmount minfee = std::numeric_limits<CAmount>::max();
+    CAmount minfeerate = std::numeric_limits<CAmount>::max();
     CAmount total_out = 0;
     CAmount totalfee = 0;
     int64_t inputs = 0;
@@ -1770,8 +1770,8 @@ static UniValue getblockstats(const JSONRPCRequest& request)
     ret_all.pushKV("medianfee", CalculateTruncatedMedian(fee_array));
     ret_all.pushKV("mediantime", pindex->GetMedianTimePast());
     ret_all.pushKV("mediantxsize", CalculateTruncatedMedian(txsize_array));
-    ret_all.pushKV("minfee", (minfee == MAX_MONEY) ? 0 : minfee);
-    ret_all.pushKV("minfeerate", (minfeerate == MAX_MONEY) ? 0 : minfeerate);
+    ret_all.pushKV("minfee", (minfee == std::numeric_limits<CAmount>::max()) ? 0 : minfee);
+    ret_all.pushKV("minfeerate", (minfeerate == std::numeric_limits<CAmount>::max()) ? 0 : minfeerate);
     ret_all.pushKV("mintxsize", mintxsize == MAX_BLOCK_SERIALIZED_SIZE ? 0 : mintxsize);
     ret_all.pushKV("outs", outputs);
     ret_all.pushKV("subsidy", GetProofOfWorkReward(pindex->nBits, pindex->nTime));

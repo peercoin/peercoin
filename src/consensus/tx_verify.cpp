@@ -236,6 +236,6 @@ CAmount GetMinFee(size_t nBytes, uint32_t nTime)
         nMinFee = (1 + (CAmount)nBytes / 1000) * PERKB_TX_FEE;
 
     if (!MoneyRange(nMinFee))
-        nMinFee = MAX_MONEY;
+        nMinFee = std::numeric_limits<CAmount>::max();
     return nMinFee;
 }

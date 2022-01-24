@@ -86,7 +86,7 @@ bool SelectCoinsBnB(std::vector<OutputGroup>& utxo_pool, const CAmount& target_v
 
     CAmount curr_waste = 0;
     std::vector<bool> best_selection;
-    CAmount best_waste = MAX_MONEY;
+    CAmount best_waste = std::numeric_limits<CAmount>::max();
 
     // Depth First search loop for choosing the UTXOs
     for (size_t i = 0; i < TOTAL_TRIES; ++i) {

@@ -497,7 +497,7 @@ bool SignTransaction(CMutableTransaction& mtx, const SigningProvider* keystore, 
         UpdateInput(txin, sigdata);
 
         // amount must be specified for valid segwit signature
-        if (amount == MAX_MONEY && !txin.scriptWitness.IsNull()) {
+        if (amount == std::numeric_limits<CAmount>::max() && !txin.scriptWitness.IsNull()) {
             input_errors[i] = "Missing amount";
             continue;
         }
