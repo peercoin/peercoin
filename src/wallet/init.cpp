@@ -47,6 +47,7 @@ void WalletInit::AddWalletOptions() const
     gArgs.AddArg("-spendzeroconfchange", strprintf("Spend unconfirmed change when sending transactions (default: %u)", DEFAULT_SPEND_ZEROCONF_CHANGE), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
     gArgs.AddArg("-splitcoins", strprintf("Split coins during minting (default: %u)", DEFAULT_SPLIT_COINS), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
     gArgs.AddArg("-checkgithub", strprintf("Check github for newer version (default: %u)", DEFAULT_CHECK_GITHUB), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    gArgs.AddArg("-txversion=<n>", "Set default transaction version", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
     gArgs.AddArg("-txconfirmtarget=<n>", strprintf("If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)", DEFAULT_TX_CONFIRM_TARGET), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
     gArgs.AddArg("-upgradewallet", "Upgrade wallet to latest format on startup", ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
     gArgs.AddArg("-wallet=<path>", "Specify wallet database path. Can be specified multiple times to load multiple wallets. Path is interpreted relative to <walletdir> if it is not absolute, and will be created if it does not exist (as a directory containing a wallet.dat file and log files). For backwards compatibility this will also accept names of existing data files in <walletdir>.)", ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::WALLET);
