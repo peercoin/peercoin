@@ -2943,7 +2943,7 @@ void CConnman::RecordBytesRecv(uint64_t bytes)
 
 void CConnman::RecordBytesSent(uint64_t bytes)
 {
-    LOCK(cs_totalBytesSent);
+    LOCK(m_total_bytes_sent_mutex);
     nTotalBytesSent += bytes;
 
     const auto now = GetTime<std::chrono::seconds>();
@@ -2959,7 +2959,7 @@ void CConnman::RecordBytesSent(uint64_t bytes)
 
 uint64_t CConnman::GetMaxOutboundTarget() const
 {
-    LOCK(cs_totalBytesSent);
+    LOCK(m_total_bytes_sent_mutex);
     return nMaxOutboundLimit;
 }
 
@@ -2970,7 +2970,7 @@ std::chrono::seconds CConnman::GetMaxOutboundTimeframe() const
 
 std::chrono::seconds CConnman::GetMaxOutboundTimeLeftInCycle() const
 {
-    LOCK(cs_totalBytesSent);
+    LOCK(m_total_bytes_sent_mutex);
     if (nMaxOutboundLimit == 0)
         return 0s;
 
@@ -2984,7 +2984,7 @@ std::chrono::seconds CConnman::GetMaxOutboundTimeLeftInCycle() const
 
 bool CConnman::OutboundTargetReached(bool historicalBlockServingLimit) const
 {
-    LOCK(cs_totalBytesSent);
+    LOCK(m_total_bytes_sent_mutex);
     if (nMaxOutboundLimit == 0)
         return false;
 
@@ -3004,7 +3004,7 @@ bool CConnman::OutboundTargetReached(bool historicalBlockServingLimit) const
 
 uint64_t CConnman::GetOutboundTargetBytesLeft() const
 {
-    LOCK(cs_totalBytesSent);
+    LOCK(m_total_bytes_sent_mutex);
     if (nMaxOutboundLimit == 0)
         return 0;
 
@@ -3018,7 +3018,7 @@ uint64_t CConnman::GetTotalBytesRecv() const
 
 uint64_t CConnman::GetTotalBytesSent() const
 {
-    LOCK(cs_totalBytesSent);
+    LOCK(m_total_bytes_sent_mutex);
     return nTotalBytesSent;
 }
 
