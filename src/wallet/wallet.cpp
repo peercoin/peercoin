@@ -2835,6 +2835,7 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
     }
 
     CMutableTransaction txNew;
+    txNew.nVersion = gArgs.GetArg("-txversion", CTransaction::CURRENT_VERSION);
 
     txNew.nLockTime = GetLocktimeForNewTransaction(chain(), locked_chain);
 
