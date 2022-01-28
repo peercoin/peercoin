@@ -1518,14 +1518,14 @@ static RPCHelpMan getdeploymentinfo()
             LOCK(cs_main);
             const CChainState& active_chainstate = chainman.ActiveChainstate();
 
-            const CBlockIndex* tip;
+            const CBlockIndex* blockindex;
             if (request.params[0].isNull()) {
-                tip = active_chainstate.m_chain.Tip();
-                CHECK_NONFATAL(tip);
+                blockindex = active_chainstate.m_chain.Tip();
+                CHECK_NONFATAL(blockindex);
             } else {
                 const uint256 hash(ParseHashV(request.params[0], "blockhash"));
-                tip = chainman.m_blockman.LookupBlockIndex(hash);
-                if (!tip) {
+                blockindex = chainman.m_blockman.LookupBlockIndex(hash);
+                if (!blockindex) {
                     throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
                 }
             }
@@ -1533,9 +1533,9 @@ static RPCHelpMan getdeploymentinfo()
             const Consensus::Params& consensusParams = Params().GetConsensus();
 
             UniValue deploymentinfo(UniValue::VOBJ);
-            deploymentinfo.pushKV("hash", tip->GetBlockHash().ToString());
-            deploymentinfo.pushKV("height", tip->nHeight);
-            deploymentinfo.pushKV("deployments", DeploymentInfo(tip, consensusParams));
+            deploymentinfo.pushKV("hash", blockindex->GetBlockHash().ToString());
+            deploymentinfo.pushKV("height", blockindex->nHeight);
+            deploymentinfo.pushKV("deployments", DeploymentInfo(blockindex, consensusParams));
             return deploymentinfo;
         },
     };
