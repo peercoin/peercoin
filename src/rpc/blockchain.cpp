@@ -1392,7 +1392,7 @@ static UniValue SoftForkDesc(const std::string &name, int version, const CBlockI
 }
 
 namespace {
-/* TODO: when -dprecatedrpc=softforks is removed, drop these */
+/* TODO: when -deprecatedrpc=softforks is removed, drop these */
 UniValue DeploymentInfo(const CBlockIndex* tip, const Consensus::Params& consensusParams);
 extern const std::vector<RPCResult> RPCHelpForDeployment;
 }
