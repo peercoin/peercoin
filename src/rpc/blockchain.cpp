@@ -1473,10 +1473,8 @@ RPCHelpMan getblockchaininfo()
         {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
         {RPCResult::Type::STR, "status-next", "status of deployment at the next block"},
         {RPCResult::Type::STR, "signalling", "indicates blocks that signalled with a # and blocks that did not with a -"},
-                {RPCResult::Type::STR, "hash", "requested block hash (or tip)"},
-                {RPCResult::Type::NUM, "height", "requested block height (or tip)"},
-            deploymentinfo.pushKV("hash", tip->GetBlockHash().ToString());
-            deploymentinfo.pushKV("height", tip->nHeight);
+
+
 /** Comparison function for sorting the getchaintips heads.  */
 struct CompareBlocksByHeight
 {
