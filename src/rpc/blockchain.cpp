@@ -1498,9 +1498,9 @@ RPCHelpMan getblockchaininfo()
 static RPCHelpMan getdeploymentinfo()
 {
     return RPCHelpMan{"getdeploymentinfo",
-        "Returns an object containing various state info regarding soft-forks.",
+        "Returns an object containing various state info regarding deployments of consensus changes.",
         {
-            {"blockhash", RPCArg::Type::STR_HEX, RPCArg::Default{"chain tip"}, "The block hash at which to query fork state"},
+            {"blockhash", RPCArg::Type::STR_HEX, RPCArg::Default{"hash of current chain tip"}, "The block hash at which to query deployment state"},
         },
         RPCResult{
             RPCResult::Type::OBJ, "", "", {
