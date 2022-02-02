@@ -6,7 +6,6 @@
 #include <txdb.h>
 
 #include <chain.h>
-#include <node/ui_interface.h>
 #include <pow.h>
 #include <random.h>
 #include <shutdown.h>
@@ -18,7 +17,6 @@
 #include <stdint.h>
 
 static constexpr uint8_t DB_COIN{'C'};
-static constexpr uint8_t DB_COINS{'c'};
 static constexpr uint8_t DB_BLOCK_FILES{'f'};
 static constexpr uint8_t DB_BLOCK_INDEX{'b'};
 
@@ -29,6 +27,7 @@ static constexpr uint8_t DB_REINDEX_FLAG{'R'};
 static constexpr uint8_t DB_LAST_BLOCK{'l'};
 
 // Keys used in previous version that might still be found in the DB:
+static constexpr uint8_t DB_COINS{'c'};
 static constexpr uint8_t DB_TXINDEX_BLOCK{'T'};
 //               uint8_t DB_TXINDEX{'t'}
 
@@ -50,6 +49,15 @@ std::optional<bilingual_str> CheckLegacyTxindex(CBlockTreeDB& block_tree_db)
     return std::nullopt;
 }
 
+bool CCoinsViewDB::NeedsUpgrade()
+{
+    std::unique_ptr<CDBIterator> cursor{m_db->NewIterator()};
+    // DB_COINS was deprecated in v0.15.0, commit
+    // 1088b02f0ccd7358d2b7076bb9e122d59d502d02
+    cursor->Seek(std::make_pair(DB_COINS, uint256{}));
+    return cursor->Valid();
+}
+
 namespace {
 
 struct CoinEntry {
@@ -60,7 +68,7 @@ struct CoinEntry {
     SERIALIZE_METHODS(CoinEntry, obj) { READWRITE(obj.key, obj.outpoint->hash, VARINT(obj.outpoint->n)); }
 };
 
-}
+} // namespace
 
 CCoinsViewDB::CCoinsViewDB(fs::path ldb_path, size_t nCacheSize, bool fMemory, bool fWipe) :
     m_db(std::make_unique<CDBWrapper>(ldb_path, nCacheSize, fMemory, fWipe, true)),
