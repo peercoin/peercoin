@@ -32,6 +32,9 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Error reading %s! All keys read correctly, but transaction data or address "
 "book entries might be missing or incorrect."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
+"Error reading %s! Transaction data may be missing or incorrect. Rescanning "
+"wallet."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Error: Dumpfile format record is incorrect. Got \"%s\", expected \"format\"."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Error: Dumpfile identifier record is incorrect. Got \"%s\", expected \"%s\"."),
@@ -46,6 +49,10 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "File %s already exists. If you are sure this is what you want, move it out "
 "of the way first."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
+"Invalid or corrupt peers.dat (%s). If you believe this is a bug, please "
+"report it to %s. As a workaround, you can move the file (%s) out of the way "
+"(rename, move, or delete) to have a new one created on the next start."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "More than one onion bind address is provided. Using %s for the automatically "
 "created Tor onion service."),
@@ -67,10 +74,17 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "SQLiteDatabase: Unknown sqlite wallet schema version %d. Only version %d is "
 "supported"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
+"The -txindex upgrade started by a previous version can not be completed. "
+"Restart with the previous version or run a full -reindex."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
 "The block database contains a block which appears to be from the future. "
 "This may be due to your computer's date and time being set incorrectly. Only "
 "rebuild the block database if you are sure that your computer's date and "
 "time are correct"),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
+"The block index db contains a legacy 'txindex'. To clear the occupied disk "
+"space, run a full -reindex, otherwise ignore this error. This error message "
+"will not be displayed again."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "This error could occur if this wallet was not shutdown cleanly and was last "
 "loaded using a build with a newer version of Berkeley DB. If so, please use "
@@ -105,6 +119,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "%s is set very high!"),
 QT_TRANSLATE_NOOP("bitcoin-core", "-maxmempool must be at least %d MB"),
 QT_TRANSLATE_NOOP("bitcoin-core", "A fatal internal error occurred, see debug.log for details"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Cannot resolve -%s address: '%s'"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Cannot set -forcednsseed to true when setting -dnsseed to false."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Cannot set -peerblockfilters without -blockfilterindex."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Cannot write to data directory '%s'; check permissions."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Change index out of range"),
@@ -150,6 +165,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Info: Minting suspended due to block creation
 QT_TRANSLATE_NOOP("bitcoin-core", "Info: Minting suspended due to locked wallet."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Info: Minting suspended while synchronizing wallet."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Initialization sanity check failed. %s is shutting down."),
+QT_TRANSLATE_NOOP("bitcoin-core", "Input not found or already spent"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Insufficient funds"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Invalid -i2psam address or hostname: '%s'"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Invalid -onion address or hostname: '%s'"),
@@ -161,7 +177,10 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Loading P2P addresses…"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Loading banlist…"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Loading block index…"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Loading wallet…"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Missing amount"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Missing solving data for estimating transaction size"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Need to specify a port with -whitebind: '%s'"),
+QT_TRANSLATE_NOOP("bitcoin-core", "No addresses available"),
 QT_TRANSLATE_NOOP("bitcoin-core", "No proxy server specified. Use -proxy=<ip> or -proxy=<ip:port>."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Not enough file descriptors available."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Reducing -maxconnections from %d to %d, because of system limitations."),
@@ -183,7 +202,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "This is experimental software."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction amounts must not be negative"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction has too long of a mempool chain"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction must have at least one recipient"),
-QT_TRANSLATE_NOOP("bitcoin-core", "Transaction needs a change address, but we can't generate it. %s"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Transaction needs a change address, but we can't generate it."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Transaction too large"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to bind to %s on this computer (bind returned error %s)"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to bind to %s on this computer. %s is probably already running."),
@@ -191,6 +210,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Unable to create the PID file '%s': %s"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to generate initial keys"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to generate keys"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to open %s for writing"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Unable to parse -maxuploadtarget: '%s'"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unable to start HTTP server. See debug log for details."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unknown -blockfilterindex value %s."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unknown address type '%s'"),
@@ -199,7 +219,6 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Unknown network specified in -onlynet: '%s'")
 QT_TRANSLATE_NOOP("bitcoin-core", "Unknown new rules activated (versionbit %i)"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Unsupported logging category %s=%s."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Upgrading UTXO database"),
-QT_TRANSLATE_NOOP("bitcoin-core", "Upgrading txindex database"),
 QT_TRANSLATE_NOOP("bitcoin-core", "User Agent comment (%s) contains unsafe characters."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Verifying blocks…"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Verifying wallet(s)…"),
