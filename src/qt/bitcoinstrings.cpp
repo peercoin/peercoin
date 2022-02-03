@@ -82,6 +82,10 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "reaching the Tor network is not provided (no -proxy= and no -onion= given) "
 "or it is explicitly forbidden (-onion=0)"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
+"Invalid or corrupt peers.dat (%s). If you believe this is a bug, please "
+"report it to %s. As a workaround, you can move the file (%s) out of the way "
+"(rename, move, or delete) to have a new one created on the next start."),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
 "More than one onion bind address is provided. Using %s for the automatically "
 "created Tor onion service."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
@@ -107,6 +111,9 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "SQLiteDatabase: Unknown sqlite wallet schema version %d. Only version %d is "
 "supported"),
+QT_TRANSLATE_NOOP("bitcoin-core", ""
+"The -txindex upgrade started by a previous version can not be completed. "
+"Restart with the previous version or run a full -reindex."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "The block database contains a block which appears to be from the future. "
 "This may be due to your computer's date and time being set incorrectly. Only "
