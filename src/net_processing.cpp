@@ -2537,6 +2537,9 @@ void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, Peer& peer,
         }
     }
 
+    // Consider immediately downloading blocks.
+    HeadersDirectFetchBlocks(pfrom, pindexLast);
+
     return;
 }
 
