@@ -488,7 +488,7 @@ void TransactionView::editLabel()
                 : EditAddressDialog::EditSendingAddress, this);
             dlg->setModel(addressBook);
             dlg->loadRow(idx);
-            GUIUtil::ShowModalDialogAndDeleteOnClose(dlg);
+            GUIUtil::ShowModalDialogAsynchronously(dlg);
         }
         else
         {
@@ -497,7 +497,7 @@ void TransactionView::editLabel()
                 this);
             dlg->setModel(addressBook);
             dlg->setAddress(address);
-            GUIUtil::ShowModalDialogAndDeleteOnClose(dlg);
+            GUIUtil::ShowModalDialogAsynchronously(dlg);
         }
     }
 }
