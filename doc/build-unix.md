@@ -83,7 +83,7 @@ Build requirements:
 
 Now, you can either build from self-compiled [depends](/depends/README.md) or install the required dependencies:
 
-    sudo apt-get install libevent-dev libboost-dev libboost-test-dev libssl-dev
+    sudo apt-get install libevent-dev libboost-dev libssl-dev
 
 SQLite is required for the descriptor wallet:
 
