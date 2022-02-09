@@ -655,7 +655,7 @@ bitcoin_bin_ldadd = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-bitcoin_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
+bitcoin_bin_ldadd += $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
 
 peercoind_SOURCES = $(bitcoin_daemon_sources) init/bitcoind.cpp
 peercoind_CPPFLAGS = $(bitcoin_bin_cppflags)
@@ -685,7 +685,7 @@ peercoin_cli_LDADD = \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-peercoin_cli_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+peercoin_cli_LDADD += $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
 # peercoin-tx binary #
@@ -707,8 +707,7 @@ peercoin_tx_LDADD = \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
-
-peercoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+peercoin_tx_LDADD += $(CRYPTO_LIBS)
 #
 
 # bitcoin-wallet binary #
@@ -726,7 +725,6 @@ peercoin_wallet_LDADD = \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1) \
-  $(BOOST_LIBS) \
   $(BDB_LIBS) \
   $(SQLITE_LIBS)
 
@@ -752,8 +750,6 @@ bitcoin_util_LDADD = \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
-
-bitcoin_util_LDADD += $(BOOST_LIBS)
 #
 
 # peercoinconsensus library #
