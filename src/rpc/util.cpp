@@ -31,6 +31,16 @@ std::string GetAllOutputTypes()
     return Join(ret, ", ");
 }
 
+std::string GetAllOutputTypes()
+{
+    std::vector<std::string> ret;
+    using U = std::underlying_type<TxoutType>::type;
+    for (U i = (U)TxoutType::NONSTANDARD; i <= (U)TxoutType::WITNESS_UNKNOWN; ++i) {
+        ret.emplace_back(GetTxnOutputType(static_cast<TxoutType>(i)));
+    }
+    return Join(ret, ", ");
+}
+
 void RPCTypeCheck(const UniValue& params,
                   const std::list<UniValueType>& typesExpected,
                   bool fAllowNull)
