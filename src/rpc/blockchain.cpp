@@ -57,8 +57,8 @@
 #include <mutex>
 
 using node::BlockManager;
-using node::CCoinsStats;
-using node::CoinStatsHashType;
+using kernel::CCoinsStats;
+using kernel::CoinStatsHashType;
 using node::GetUTXOStats;
 using node::NodeContext;
 using node::ReadBlockFromDisk;

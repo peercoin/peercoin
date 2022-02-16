@@ -194,7 +194,7 @@ static void FinalizeHash(std::nullptr_t, CCoinsStats& stats) {}
 std::optional<CCoinsStats> GetUTXOStats(CCoinsView* view, BlockManager& blockman, CoinStatsHashType hash_type, const std::function<void()>& interruption_point, const CBlockIndex* pindex, bool index_requested)
 {
     // Use CoinStatsIndex if it is requested and available and a hash_type of Muhash or None was requested
-    if ((hash_type == CoinStatsHashType::MUHASH || hash_type == CoinStatsHashType::NONE) && g_coin_stats_index && index_requested) {
+    if ((hash_type == kernel::CoinStatsHashType::MUHASH || hash_type == kernel::CoinStatsHashType::NONE) && g_coin_stats_index && index_requested) {
         if (pindex) {
             return g_coin_stats_index->LookUpStats(pindex);
         } else {
@@ -209,6 +209,6 @@ std::optional<CCoinsStats> GetUTXOStats(CCoinsView* view, BlockManager& blockman
     // best block.
     assert(!pindex || pindex->GetBlockHash() == view->GetBestBlock());
 
-    return ComputeUTXOStats(hash_type, view, blockman, interruption_point);
+    return kernel::ComputeUTXOStats(hash_type, view, blockman, interruption_point);
 }
 } // namespace node
