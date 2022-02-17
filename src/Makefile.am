@@ -189,7 +189,6 @@ BITCOIN_CORE_H = \
   node/caches.h \
   node/chainstate.h \
   node/coin.h \
-  node/coinstats.h \
   node/context.h \
   node/miner.h \
   node/minisketchwrapper.h \
@@ -358,7 +357,6 @@ libbitcoin_node_a_SOURCES = \
   node/caches.cpp \
   node/chainstate.cpp \
   node/coin.cpp \
-  node/coinstats.cpp \
   node/context.cpp \
   node/interfaces.cpp \
   node/miner.cpp \
