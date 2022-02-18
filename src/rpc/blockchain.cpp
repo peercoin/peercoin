@@ -56,9 +56,10 @@
 #include <memory>
 #include <mutex>
 
-using node::BlockManager;
 using kernel::CCoinsStats;
 using kernel::CoinStatsHashType;
+
+using node::BlockManager;
 using node::GetUTXOStats;
 using node::NodeContext;
 using node::ReadBlockFromDisk;
