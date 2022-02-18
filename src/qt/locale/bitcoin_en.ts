@@ -312,7 +312,7 @@
 <context>
     <name>BitcoinApplication</name>
     <message>
-        <location filename="../bitcoin.cpp" line="+429"/>
+        <location filename="../bitcoin.cpp" line="+433"/>
         <source>Runaway exception</source>
         <translation type="unfinished"></translation>
     </message>
@@ -569,7 +569,7 @@
         <translation>&amp;Send</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+7"/>
         <source>&amp;Receive</source>
         <translation>&amp;Receive</translation>
     </message>
@@ -752,8 +752,18 @@
         <source>%1 client</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+65"/>
+        <source>&amp;Hide</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>S&amp;how</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message numerus="yes">
-        <location line="+158"/>
+        <location line="+117"/>
         <source>%n active connection(s) to Bitcoin network.</source>
         <extracomment>A substring of the tooltip.</extracomment>
         <translation type="unfinished">
@@ -2271,7 +2281,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../psbtoperationsdialog.cpp" line="+58"/>
+        <location filename="../psbtoperationsdialog.cpp" line="+61"/>
         <source>Failed to load transaction: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2643,7 +2653,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoin.cpp" line="-272"/>
+        <location filename="../bitcoin.cpp" line="-276"/>
         <source>Do you want to reset settings to default values, or to abort without making changes?</source>
         <extracomment>Explanatory text shown on startup when the settings file cannot be read. Prompts user to make a choice between resetting or aborting.</extracomment>
         <translation type="unfinished"></translation>
@@ -2655,7 +2665,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+359"/>
+        <location line="+373"/>
         <source>Error: Specified data directory &quot;%1&quot; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2878,7 +2888,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <location line="+68"/>
-        <location filename="../rpcconsole.cpp" line="+1158"/>
+        <location filename="../rpcconsole.cpp" line="+1160"/>
         <source>Select a peer to view detailed information.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4160,7 +4170,7 @@ For more information on using this console, type %6.
 <context>
     <name>TrafficGraphWidget</name>
     <message>
-        <location filename="../trafficgraphwidget.cpp" line="+82"/>
+        <location filename="../trafficgraphwidget.cpp" line="+79"/>
         <source>kB/s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4836,7 +4846,7 @@ For more information on using this console, type %6.
 <context>
     <name>WalletFrame</name>
     <message>
-        <location filename="../walletframe.cpp" line="+42"/>
+        <location filename="../walletframe.cpp" line="+45"/>
         <source>No wallet has been loaded.
 Go to File &gt; Open Wallet to load a wallet.
 - OR -</source>
@@ -4902,7 +4912,7 @@ Go to File &gt; Open Wallet to load a wallet.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5040,8 +5050,8 @@ Go to File &gt; Open Wallet to load a wallet.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Change index out of range</source>
+        <location line="-58"/>
+        <source>The -txindex upgrade started by a previous version cannot be completed. Restart with the previous version or run a full -reindex.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5403,6 +5413,11 @@ Go to File &gt; Open Wallet to load a wallet.
     <message>
         <location line="+1"/>
         <source>Transaction amounts must not be negative</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Transaction change output index out of range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

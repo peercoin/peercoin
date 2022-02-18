@@ -112,7 +112,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "SQLiteDatabase: Unknown sqlite wallet schema version %d. Only version %d is "
 "supported"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
-"The -txindex upgrade started by a previous version can not be completed. "
+"The -txindex upgrade started by a previous version cannot be completed. "
 "Restart with the previous version or run a full -reindex."),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "The block database contains a block which appears to be from the future. "
