@@ -69,6 +69,7 @@
 #include <validationinterface.h>
 #include <walletinitinterface.h>
 
+#include <algorithm>
 #include <condition_variable>
 #include <cstdint>
 #include <cstdio>
@@ -1399,10 +1400,10 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     assert(!node.mempool);
     assert(!node.chainman);
-    int check_ratio = std::min<int>(std::max<int>(args.GetIntArg("-checkmempool", chainparams.DefaultConsistencyChecks() ? 1 : 0), 0), 1000000);
+    const int mempool_check_ratio = std::clamp<int>(args.GetIntArg("-checkmempool", chainparams.DefaultConsistencyChecks() ? 1 : 0), 0, 1000000);
 
     for (bool fLoaded = false; !fLoaded && !ShutdownRequested();) {
-        node.mempool = std::make_unique<CTxMemPool>(node.fee_estimator.get(), check_ratio);
+        node.mempool = std::make_unique<CTxMemPool>(node.fee_estimator.get(), mempool_check_ratio);
 
         node.chainman = std::make_unique<ChainstateManager>();
         ChainstateManager& chainman = *node.chainman;
