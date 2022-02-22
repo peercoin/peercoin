@@ -308,10 +308,10 @@ public:
             m_assumed_blockchain_size = 1;
             m_assumed_chain_state_size = 0;
             chainTxData = ChainTxData{
-                // Data from RPC: getchaintxstats 4096 000000187d4440e5bff91488b700a140441e089a8aaea707414982460edbfe54
-                /* nTime    */ 1626696658,
-                /* nTxCount */ 387761,
-                /* dTxRate  */ 0.04035946932424404,
+                // Data from RPC: getchaintxstats 4096 0000003d9144c56ac110ae04a0c271a0acce2f14f426b39fdf0d938c96d2eb09
+                /* nTime    */ 1645631279,
+                /* nTxCount */ 1257429,
+                /* dTxRate  */ 0.1389638742514995,
             };
         } else {
             const auto signet_challenge = args.GetArgs("-signetchallenge");
