@@ -4659,8 +4659,6 @@ void PeerManagerImpl::MaybeSendAddr(CNode& node, Peer& peer, std::chrono::micros
 /*
 void PeerManagerImpl::MaybeSendFeefilter(CNode& pto, std::chrono::microseconds current_time)
 {
-    AssertLockHeld(cs_main);
-
     if (m_ignore_incoming_txs) return;
     if (!pto.m_tx_relay) return;
     if (pto.GetCommonVersion() < FEEFILTER_VERSION) return;
@@ -5208,5 +5206,6 @@ bool PeerManagerImpl::SendMessages(CNode* pto)
         if (!vGetData.empty())
             m_connman.PushMessage(pto, msgMaker.Make(NetMsgType::GETDATA, vGetData));
     } // release cs_main
+    MaybeSendFeefilter(*pto, current_time);
     return true;
 }
