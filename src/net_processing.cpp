@@ -389,6 +389,9 @@ struct Peer {
      * reorgs) **/
     std::unique_ptr<HeadersSyncState> m_headers_sync PT_GUARDED_BY(m_headers_sync_mutex) GUARDED_BY(m_headers_sync_mutex) {};
 
+    /** Whether we've sent our peer a sendheaders message. **/
+    std::atomic<bool> m_sent_sendheaders{false};
+
     explicit Peer(NodeId id, ServiceFlags our_services)
         : m_id{id}
         , m_our_services{our_services}
@@ -682,6 +685,9 @@ private:
 
     /** Send `addr` messages on a regular schedule. */
     void MaybeSendAddr(CNode& node, Peer& peer, std::chrono::microseconds current_time);
+
+    /** Send a single `sendheaders` message, after we have completed headers sync with a peer. */
+    void MaybeSendSendHeaders(CNode& node, Peer& peer);
 
     /** Relay (gossip) an address to a few randomly chosen nodes.
      *
@@ -3431,13 +3437,6 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                       pfrom.ConnectionTypeAsString());
         }
 
-        if (pfrom.GetCommonVersion() >= SENDHEADERS_VERSION) {
-            // Tell our peer we prefer to receive headers rather than inv's
-            // We send this to non-NODE NETWORK peers as well, because even
-            // non-NODE NETWORK peers can announce blocks (such as pruning
-            // nodes)
-            m_connman.PushMessage(&pfrom, msgMaker.Make(NetMsgType::SENDHEADERS));
-        }
         if (pfrom.GetCommonVersion() >= SHORT_IDS_BLOCKS_VERSION) {
             // Tell our peer we are willing to provide version 2 cmpctblocks.
             // However, we do not request new block announcements using
@@ -5411,6 +5410,8 @@ bool PeerManagerImpl::SendMessages(CNode* pto)
     if (pto->fDisconnect) return true;
 
     MaybeSendAddr(*pto, *peer, current_time);
+
+    MaybeSendSendHeaders(*pto, *peer);
 
     {
         LOCK(cs_main);
