@@ -366,31 +366,31 @@
     <message numerus="yes">
         <source>%n second(s)</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n másodperc</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n minute(s)</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n perc</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n hour(s)</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n óra</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n day(s)</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n nap</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n week(s)</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n hét</numerusform>
         </translation>
     </message>
     <message>
@@ -400,7 +400,7 @@
     <message numerus="yes">
         <source>%n year(s)</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n év</numerusform>
         </translation>
     </message>
     </context>
@@ -615,6 +615,18 @@
         <translation type="unfinished">Nem lehet írni a '%s' könyvtárba; ellenőrizze a jogosultságokat.</translation>
     </message>
     <message>
+        <source>The -txindex upgrade started by a previous version cannot be completed. Restart with the previous version or run a full -reindex.</source>
+        <translation type="unfinished">A -txindex frissítése nem fejezhető be mivel egy korábbi verzió kezdte el. Indítsa újra az előző verziót vagy futtassa a teljes -reindex parancsot.</translation>
+    </message>
+    <message>
+        <source>Cannot provide specific connections and have addrman find outgoing connections at the same time.</source>
+        <translation type="unfinished">Nem lehetséges a megadott kapcsolatok és az addrman által felderített kapcsolatok egyidejű használata.</translation>
+    </message>
+    <message>
+        <source>Error loading %s: External signer wallet being loaded without external signer support compiled</source>
+        <translation type="unfinished">Hiba %s betöltése közben: Külső aláíró tárca betöltése külső aláírók támogatása nélkül</translation>
+    </message>
+    <message>
         <source>Config setting for %s only applied on %s network when in [%s] section.</source>
         <translation type="unfinished">A konfigurációs beálltás %s kizárólag az %s hálózatra vonatkozik amikor a [%s] szekcióban van.</translation>
     </message>
@@ -656,11 +668,11 @@
     </message>
     <message>
         <source>Error initializing block database</source>
-        <translation type="unfinished">A blokkadatbázis inicializálása nem sikerült</translation>
+        <translation type="unfinished">A blokkadatbázis előkészítése nem sikerült</translation>
     </message>
     <message>
         <source>Error initializing wallet database environment %s!</source>
-        <translation type="unfinished">A tárca-adatbázis inicializálása nem sikerült: %s!</translation>
+        <translation type="unfinished">A tárca-adatbázis előkészítése nem sikerült: %s!</translation>
     </message>
     <message>
         <source>Error loading %s</source>
@@ -963,6 +975,10 @@
         <translation type="unfinished">Tranzakció összege nem lehet negatív</translation>
     </message>
     <message>
+        <source>Transaction change output index out of range</source>
+        <translation type="unfinished">Tartományon kivüli tranzakció visszajáró index</translation>
+    </message>
+    <message>
         <source>Transaction has too long of a mempool chain</source>
         <translation type="unfinished">A tranzakcóihoz tartozó mempool elődlánc túl hosszú</translation>
     </message>
@@ -1257,7 +1273,7 @@
     <message numerus="yes">
         <source>Processed %n block(s) of transaction history.</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>A tranzakció történetből %n blokk feldolgozva.</numerusform>
         </translation>
     </message>
     <message>
@@ -1340,11 +1356,19 @@
         <source>%1 client</source>
         <translation type="unfinished">%1 kliens</translation>
     </message>
+    <message>
+        <source>&amp;Hide</source>
+        <translation type="unfinished">&amp;Elrejt</translation>
+    </message>
+    <message>
+        <source>S&amp;how</source>
+        <translation type="unfinished">&amp;Mutat</translation>
+    </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin network.</source>
         <extracomment>A substring of the tooltip.</extracomment>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n aktív kapcsolat a Bitcoin hálózathoz.</numerusform>
         </translation>
     </message>
     <message>
@@ -1817,6 +1841,10 @@
 <context>
     <name>Intro</name>
     <message>
+        <source>%1 GB of space available</source>
+        <translation type="unfinished">%1 GB szabad hely áll rendelkezésre</translation>
+    </message>
+    <message>
         <source>(of %1 GB needed)</source>
         <translation type="unfinished">(a szükséges %1 GB-ból)</translation>
     </message>
@@ -1836,7 +1864,7 @@
         <source>(sufficient to restore backups %n day(s) old)</source>
         <extracomment>Explanatory text on the capability of the current prune target.</extracomment>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>(elegendő %n nappal ezelőtti biztonsági mentések visszaállításához)</numerusform>
         </translation>
     </message>
     <message>
@@ -2183,7 +2211,7 @@
     </message>
     <message>
         <source>Show only a tray icon after minimizing the window.</source>
-        <translation type="unfinished">Kicsinyítés után csak eszköztár-ikont mutass</translation>
+        <translation type="unfinished">Kicsinyítés után csak az eszköztár-ikont mutassa.</translation>
     </message>
     <message>
         <source>&amp;Minimize to the tray instead of the taskbar</source>
@@ -2191,7 +2219,7 @@
     </message>
     <message>
         <source>M&amp;inimize on close</source>
-        <translation type="unfinished">K&amp;icsinyítés záráskor</translation>
+        <translation type="unfinished">K&amp;icsinyítés bezáráskor</translation>
     </message>
     <message>
         <source>&amp;Display</source>
@@ -3347,7 +3375,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
         <source>Payment request expired.</source>
         <translation type="unfinished">A fizetési kérelem lejárt.</translation>
     </message>
-            <numerusform />
+            <numerusform>A megerősítésnek becsült kezdete %n blokkon belül várható.</numerusform>
         </translation>
     <message>
         <source>Warning: Invalid Bitcoin address</source>
@@ -3668,7 +3696,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
         <source>Credit</source>
         <translation type="unfinished">Jóváírás</translation>
     </message>
-            <numerusform />
+            <numerusform>Beérik %n blokk múlva</numerusform>
         </translation>
     <message>
         <source>not accepted</source>
@@ -4019,7 +4047,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
     </message>
     <message>
         <source>to</source>
-        <translation type="unfinished">meddig</translation>
+        <translation type="unfinished">-</translation>
     </message>
 </context>
 <context>
