@@ -95,6 +95,8 @@ struct CoinSelectionParams {
     CAmount m_min_change_target{MIN_CHANGE};
     /** Cost of creating the change output. */
     CAmount m_change_fee{0};
+    /** The pre-determined minimum value to target when funding a change output. */
+    CAmount m_change_target{0};
     /** Cost of creating the change output + cost of spending the change output in the future. */
     CAmount m_cost_of_change{0};
     /** Size of the transaction before coin selection, consisting of the header and recipient
@@ -193,6 +195,21 @@ struct OutputGroup
  * @return The waste
  */
 [[nodiscard]] CAmount GetSelectionWaste(const std::set<COutput>& inputs, CAmount change_cost, CAmount target, bool use_effective_value = true);
+
+
+/** Chooose a random change target for each transaction to make it harder to fingerprint the Core
+ * wallet based on the change output values of transactions it creates.
+ * The random value is between 50ksat and min(2 * payment_value, 1milsat)
+ * When payment_value <= 25ksat, the value is just 50ksat.
+ *
+ * Making change amounts similar to the payment value may help disguise which output(s) are payments
+ * are which ones are change. Using double the payment value may increase the number of inputs
+ * needed (and thus be more expensive in fees), but breaks analysis techniques which assume the
+ * coins selected are just sufficient to cover the payment amount ("unnecessary input" heuristic).
+ *
+ * @param[in]   payment_value   Average payment value of the transaction output(s).
+ */
+[[nodiscard]] CAmount GenerateChangeTarget(CAmount payment_value, FastRandomContext& rng);
 
 struct SelectionResult
 {
