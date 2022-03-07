@@ -12,7 +12,7 @@
 * Documentation: [Peercoin Docs](https://docs.peercoin.net)
 * Help: 
 [Forum](https://talk.peercoin.net),
-[Intro & Important Links](https://talk.peercoin.net/t/what-is-peercoin-intro-important-links/2889)
+[Intro & Important Links](https://talk.peercoin.net/t/what-is-peercoin-intro-important-links/2889),
 [Telegram Chat](https://t.me/peercoin)
 
 Testing
