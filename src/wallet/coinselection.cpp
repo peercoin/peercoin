@@ -216,6 +216,7 @@ static void ApproximateBestSubset(const std::vector<OutputGroup>& groups, const 
 {
     std::vector<char> vfIncluded;
 
+    // Worst case "best" approximation is just all of the groups.
     vfBest.assign(groups.size(), true);
     nBest = nTotalLower;
 
@@ -241,6 +242,8 @@ static void ApproximateBestSubset(const std::vector<OutputGroup>& groups, const 
                     if (nTotal >= nTargetValue)
                     {
                         fReachedTarget = true;
+                        // If the total is between nTargetValue and nBest, it's our new best
+                        // approximation.
                         if (nTotal < nBest)
                         {
                             nBest = nTotal;
@@ -255,12 +258,15 @@ static void ApproximateBestSubset(const std::vector<OutputGroup>& groups, const 
     }
 }
 
-std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue, FastRandomContext& rng)
+std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue,
+                                              CAmount change_target, FastRandomContext& rng)
 {
     SelectionResult result(nTargetValue);
 
     // List of values less than target
     std::optional<OutputGroup> lowest_larger;
+    // Groups with selection amount smaller than the target and any change we might produce.
+    // Don't include groups larger than this, because they will only cause us to overshoot.
     std::vector<OutputGroup> applicable_groups;
     CAmount nTotalLower = 0;
 

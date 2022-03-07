@@ -19,6 +19,7 @@ using wallet::CWalletTx;
 using wallet::CoinEligibilityFilter;
 using wallet::CoinSelectionParams;
 using wallet::CreateDummyWalletDatabase;
+using wallet::MIN_CHANGE;
 using wallet::OutputGroup;
 using wallet::SelectCoinsBnB;
 using wallet::TxStateInactive;

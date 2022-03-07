@@ -90,6 +90,9 @@ struct CoinSelectionParams {
     size_t change_output_size = 0;
     /** Size of the input to spend a change output in virtual bytes. */
     size_t change_spend_size = 0;
+    /** Mininmum change to target in Knapsack solver: select coins to cover the payment and
+     * at least this value of change. */
+    CAmount m_min_change_target{MIN_CHANGE};
     /** Cost of creating the change output. */
     CAmount m_change_fee{0};
     /** Cost of creating the change output + cost of spending the change output in the future. */
@@ -249,7 +252,8 @@ std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& ut
 std::optional<std::pair<std::set<CInputCoin>, CAmount>> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value);
 
 // Original coin selection algorithm as a fallback
-std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue, FastRandomContext& rng);
+std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue,
+                                              CAmount change_target, FastRandomContext& rng);
 } // namespace wallet
 
 #endif // BITCOIN_WALLET_COINSELECTION_H
