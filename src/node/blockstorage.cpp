@@ -95,9 +95,7 @@ CBlockIndex* BlockManager::InsertBlockIndex(const uint256& hash)
     return pindex;
 }
 
-bool BlockManager::LoadBlockIndex(
-    const Consensus::Params& consensus_params,
-    ChainstateManager& chainman)
+bool BlockManager::LoadBlockIndex(const Consensus::Params& consensus_params)
 {
     if (!m_block_tree_db->LoadBlockIndexGuts(consensus_params, [this](const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main) { return this->InsertBlockIndex(hash); })) {
         return false;
@@ -113,26 +111,6 @@ bool BlockManager::LoadBlockIndex(
          [](const CBlockIndex* pa, const CBlockIndex* pb) {
              return pa->nHeight < pb->nHeight;
          });
-
-    // Find start of assumed-valid region.
-    int first_assumed_valid_height = std::numeric_limits<int>::max();
-
-    for (const CBlockIndex* block : vSortedByHeight) {
-        if (block->IsAssumedValid()) {
-            auto chainstates = chainman.GetAll();
-
-            // If we encounter an assumed-valid block index entry, ensure that we have
-            // one chainstate that tolerates assumed-valid entries and another that does
-            // not (i.e. the background validation chainstate), since assumed-valid
-            // entries should always be pending validation by a fully-validated chainstate.
-            auto any_chain = [&](auto fnc) { return std::any_of(chainstates.cbegin(), chainstates.cend(), fnc); };
-            assert(any_chain([](auto chainstate) { return chainstate->reliesOnAssumedValid(); }));
-            assert(any_chain([](auto chainstate) { return !chainstate->reliesOnAssumedValid(); }));
-
-            first_assumed_valid_height = block->nHeight;
-            break;
-        }
-    }
 
     for (CBlockIndex* pindex : vSortedByHeight) {
         if (ShutdownRequested()) return false;
@@ -245,9 +223,9 @@ bool BlockManager::WriteBlockIndexDB()
     return true;
 }
 
-bool BlockManager::LoadBlockIndexDB(ChainstateManager& chainman)
+bool BlockManager::LoadBlockIndexDB()
 {
-    if (!LoadBlockIndex(::Params().GetConsensus(), chainman)) {
+    if (!LoadBlockIndex(::Params().GetConsensus())) {
         return false;
     }
 
