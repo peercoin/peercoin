@@ -400,7 +400,8 @@ void ReadSigNetArgs(const ArgsManager& args, CChainParams::SigNetOptions& option
 
 class CRegTestParams : public CChainParams {
 public:
-    explicit CRegTestParams(const ArgsManager& args) {
+    explicit CRegTestParams(const RegTestOptions& opts)
+    {
         strNetworkID =  CBaseChainParams::REGTEST;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
@@ -490,17 +491,18 @@ public:
         fRequireStandard = false;
         //fMineBlocksOnDemand = true;
     }
-    void UpdateActivationParametersFromArgs(const ArgsManager& args);
 };
 
-static void MaybeUpdateHeights(const ArgsManager& args, Consensus::Params& consensus)
+void ReadRegTestArgs(const ArgsManager& args, CChainParams::RegTestOptions& options)
 {
+    if (auto value = args.GetBoolArg("-fastprune")) options.fastprune = *value;
+
     for (const std::string& arg : args.GetArgs("-testactivationheight")) {
         const auto found{arg.find('@')};
         if (found == std::string::npos) {
             throw std::runtime_error(strprintf("Invalid format (%s) for -testactivationheight=name@height.", arg));
         }
-        const auto name{arg.substr(0, found)};
+
         const auto value{arg.substr(found + 1)};
         int32_t height;
         if (!ParseInt32(value, &height) || height < 0 || height >= std::numeric_limits<int>::max()) {
@@ -545,7 +547,9 @@ std::unique_ptr<const CChainParams> CreateChainParams(const ArgsManager& args, c
         ReadSigNetArgs(args, opts);
         return std::make_unique<const SigNetParams>(opts);
     } else if (chain == CBaseChainParams::REGTEST) {
-        return std::unique_ptr<CChainParams>(new CRegTestParams(args));
+        auto opts = CChainParams::RegTestOptions{};
+        ReadRegTestArgs(args, opts);
+        return std::make_unique<const CRegTestParams>(opts);
     }
     throw std::runtime_error(strprintf("%s: Unknown chain %s.", __func__, chain));
 }
