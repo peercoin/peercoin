@@ -92,7 +92,7 @@ struct CoinSelectionParams {
     size_t change_spend_size = 0;
     /** Mininmum change to target in Knapsack solver: select coins to cover the payment and
      * at least this value of change. */
-    CAmount m_min_change_target{MIN_CHANGE};
+    CAmount m_min_change_target{0};
     /** Cost of creating the change output. */
     CAmount m_change_fee{0};
     /** The pre-determined minimum value to target when funding a change output. */

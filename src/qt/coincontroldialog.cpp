@@ -38,7 +38,6 @@
 #include <timedata.h> // for GetAdjustedTime()
 
 using wallet::CCoinControl;
-using wallet::MIN_CHANGE;
 
 QList<CAmount> CoinControlDialog::payAmounts;
 bool CoinControlDialog::fSubtractFeeFromAmount = false;
