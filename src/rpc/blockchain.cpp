@@ -36,8 +36,8 @@
 #include <txdb.h>
 #include <txmempool.h>
 #include <undo.h>
+#include <univalue.h>
 #include <util/strencodings.h>
-#include <util/string.h>
 #include <util/translation.h>
 #include <validation.h>
 #include <validationinterface.h>
@@ -2193,41 +2193,6 @@ static RPCHelpMan getblockstats()
     };
 }
 
-static RPCHelpMan savemempool()
-{
-    return RPCHelpMan{"savemempool",
-                "\nDumps the mempool to disk. It will fail until the previous dump is fully loaded.\n",
-                {},
-                RPCResult{
-                    RPCResult::Type::OBJ, "", "",
-                    {
-                        {RPCResult::Type::STR, "filename", "the directory and file where the mempool was saved"},
-                    }},
-                RPCExamples{
-                    HelpExampleCli("savemempool", "")
-            + HelpExampleRpc("savemempool", "")
-                },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    const ArgsManager& args{EnsureAnyArgsman(request.context)};
-    const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
-
-    if (!mempool.IsLoaded()) {
-        throw JSONRPCError(RPC_MISC_ERROR, "The mempool was not loaded yet");
-    }
-
-    if (!DumpMempool(mempool)) {
-        throw JSONRPCError(RPC_MISC_ERROR, "Unable to dump mempool to disk");
-    }
-
-    UniValue ret(UniValue::VOBJ);
-    ret.pushKV("filename", fs::path((args.GetDataDirNet() / "mempool.dat")).u8string());
-
-    return ret;
-},
-    };
-}
-
 namespace {
 //! Search for a given set of pubkey scripts
 bool FindScriptPubKey(std::atomic<int>& scan_progress, const std::atomic<bool>& should_abort, int64_t& count, CCoinsViewCursor* cursor, const std::set<CScript>& needles, std::map<COutPoint, Coin>& out_results, std::function<void()>& interruption_point)
@@ -2667,6 +2632,14 @@ UniValue CreateUTXOSnapshot(
 },
     };
 }
+
+
+RPCHelpMan getmempoolancestors();
+RPCHelpMan getmempooldescendants();
+RPCHelpMan getmempoolentry();
+RPCHelpMan getmempoolinfo();
+RPCHelpMan getrawmempool();
+RPCHelpMan savemempool();
 
 void RegisterBlockchainRPCCommands(CRPCTable &t)
 {
