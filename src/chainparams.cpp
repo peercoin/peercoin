@@ -536,26 +536,6 @@ const CChainParams &Params() {
     return *globalChainParams;
 }
 
-std::unique_ptr<const CChainParams> CChainParams::SigNet(const SigNetOptions& options)
-{
-    return std::make_unique<const SigNetParams>(options);
-}
-
-std::unique_ptr<const CChainParams> CChainParams::RegTest(const RegTestOptions& options)
-{
-    return std::make_unique<const CRegTestParams>(options);
-}
-
-std::unique_ptr<const CChainParams> CChainParams::Main()
-{
-    return std::make_unique<const CMainParams>();
-}
-
-std::unique_ptr<const CChainParams> CChainParams::TestNet()
-{
-    return std::make_unique<const CTestNetParams>();
-}
-
 std::unique_ptr<const CChainParams> CreateChainParams(const ArgsManager& args, const std::string& chain)
 {
     if (chain == CBaseChainParams::MAIN) {

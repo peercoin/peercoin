@@ -3,22 +3,24 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CHAINPARAMS_H
-#define BITCOIN_CHAINPARAMS_H
+#ifndef BITCOIN_KERNEL_CHAINPARAMS_H
+#define BITCOIN_KERNEL_CHAINPARAMS_H
 
-#include <kernel/chainparams.h>
-
-#include <chainparamsbase.h>
 #include <consensus/params.h>
 #include <netaddress.h>
 #include <primitives/block.h>
 #include <protocol.h>
+#include <uint256.h>
 #include <util/hash_type.h>
 
 #include <cstdint>
+#include <iterator>
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 typedef std::map<int, uint256> MapCheckpoints;
@@ -51,26 +53,6 @@ struct AssumeutxoData {
     //! which we do not necessarily have at the time of snapshot load.
     const unsigned int nChainTx;
 };
-
-using MapAssumeutxo = std::map<int, const AssumeutxoData>;
-
-/**
- * Holds configuration for use during UTXO snapshot load and validation. The contents
- * here are security critical, since they dictate which UTXO snapshots are recognized
- * as valid.
- */
-struct AssumeutxoData {
-    //! The expected hash of the deserialized UTXO set.
-    const AssumeutxoHash hash_serialized;
-
-    //! Used to populate the nChainTx value, which is used during BlockManager::LoadBlockIndex().
-    //!
-    //! We need to hardcode the value here because this is computed cumulatively using block data,
-    //! which we do not necessarily have at the time of snapshot load.
-    const unsigned int nChainTx;
-};
-
-std::ostream& operator<<(std::ostream& o, const AssumeutxoData& aud);
 
 using MapAssumeutxo = std::map<int, const AssumeutxoData>;
 
@@ -117,8 +99,6 @@ public:
     }
 
     const CBlock& GenesisBlock() const { return genesis; }
-    /** Make miner wait to have peers to avoid wasting work */
-    bool MiningRequiresPeers() const { return fMiningRequiresPeers; }
     /** Default value for -checkmempool and -checkblockindex argument */
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
     /** Policy: Filter transactions that do not match well-defined patterns */
@@ -130,6 +110,8 @@ public:
     uint64_t PruneAfterHeight() const { return nPruneAfterHeight; }
     /** Minimum free space (in GB) needed for data directory */
     uint64_t AssumedBlockchainSize() const { return m_assumed_blockchain_size; }
+    /** Minimum free space (in GB) needed for data directory when pruned; Does not include prune target*/
+    uint64_t AssumedChainStateSize() const { return m_assumed_chain_state_size; }
     /** Whether it is possible to mine blocks on demand (no retargeting) */
     bool MineBlocksOnDemand() const { return consensus.fPowNoRetargeting; }
     /** Return the network string */
@@ -186,13 +168,13 @@ protected:
     uint16_t nDefaultPort;
     uint64_t nPruneAfterHeight;
     uint64_t m_assumed_blockchain_size;
+    uint64_t m_assumed_chain_state_size;
     std::vector<std::string> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     std::string bech32_hrp;
     std::string strNetworkID;
     CBlock genesis;
     std::vector<uint8_t> vFixedSeeds;
-    bool fMiningRequiresPeers;
     bool fDefaultConsistencyChecks;
     bool fRequireStandard;
     bool m_is_test_chain;
@@ -202,23 +184,4 @@ protected:
     ChainTxData chainTxData;
 };
 
-/**
- * Creates and returns a std::unique_ptr<CChainParams> of the chosen chain.
- * @returns a CChainParams* of the chosen chain.
- * @throws a std::runtime_error if the chain is not supported.
- */
-std::unique_ptr<const CChainParams> CreateChainParams(const ArgsManager& args, const std::string& chain);
-
-/**
- * Return the currently selected parameters. This won't change after app
- * startup, except for unit tests.
- */
-const CChainParams &Params();
-
-/**
- * Sets the params returned by Params() to those for the given chain name.
- * @throws std::runtime_error when the chain is not supported.
- */
-void SelectParams(const std::string& chain);
-
-#endif // BITCOIN_CHAINPARAMS_H
+#endif // BITCOIN_KERNEL_CHAINPARAMS_H
