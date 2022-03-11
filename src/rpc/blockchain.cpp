@@ -1471,7 +1471,7 @@ RPCHelpMan getblockchaininfo()
     {RPCResult::Type::BOOL, "active", "true if the rules are enforced for the mempool and the next block"},
         {RPCResult::Type::STR, "status", "status of deployment at specified block (one of \"defined\", \"started\", \"locked_in\", \"active\", \"failed\")"},
         {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
-        {RPCResult::Type::STR, "status-next", "status of deployment at the next block"},
+        {RPCResult::Type::STR, "status_next", "status of deployment at the next block"},
         {RPCResult::Type::STR, "signalling", "indicates blocks that signalled with a # and blocks that did not with a -"},
 
 
