@@ -175,6 +175,7 @@ inline std::vector<OutputGroup>& KnapsackGroupOutputs(const std::vector<COutput>
 // Branch and bound coin selection tests
 BOOST_AUTO_TEST_CASE(bnb_search_test)
 {
+    FastRandomContext rand{};
     // Setup
     std::vector<CInputCoin> utxo_pool;
     SelectionResult expected_result(CAmount(0));
@@ -348,6 +349,9 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
 
 BOOST_AUTO_TEST_CASE(knapsack_solver_test)
 {
+    FastRandomContext rand{};
+    const auto temp1{[&rand](std::vector<OutputGroup>& g, const CAmount& v) { return KnapsackSolver(g, v, rand); }};
+    const auto KnapsackSolver{temp1};
     std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabase());
     wallet->LoadWallet();
     LOCK(wallet->cs_wallet);
@@ -657,6 +661,7 @@ BOOST_AUTO_TEST_CASE(knapsack_solver_test)
 
 BOOST_AUTO_TEST_CASE(ApproximateBestSubset)
 {
+    FastRandomContext rand{};
     std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabase());
     wallet->LoadWallet();
     LOCK(wallet->cs_wallet);
@@ -670,7 +675,7 @@ BOOST_AUTO_TEST_CASE(ApproximateBestSubset)
         add_coin(coins, *wallet, 1000 * COIN);
     add_coin(coins, *wallet, 3 * COIN);
 
-    const auto result = KnapsackSolver(KnapsackGroupOutputs(coins, *wallet, filter_standard), 1003 * COIN);
+    const auto result = KnapsackSolver(KnapsackGroupOutputs(coins, *wallet, filter_standard), 1003 * COIN, rand);
     BOOST_CHECK(result);
     BOOST_CHECK_EQUAL(result->GetSelectedValue(), 1003 * COIN);
     BOOST_CHECK_EQUAL(result->GetInputSet().size(), 2U);

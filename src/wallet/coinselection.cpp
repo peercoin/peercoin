@@ -165,14 +165,14 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
     return result;
 }
 
-std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value)
+std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value, FastRandomContext& rng)
 {
     SelectionResult result(target_value);
 
     std::vector<size_t> indexes;
     indexes.resize(utxo_pool.size());
     std::iota(indexes.begin(), indexes.end(), 0);
-    Shuffle(indexes.begin(), indexes.end(), FastRandomContext());
+    Shuffle(indexes.begin(), indexes.end(), rng);
 
     CAmount selected_eff_value = 0;
     for (const size_t i : indexes) {
@@ -219,8 +219,6 @@ static void ApproximateBestSubset(const std::vector<OutputGroup>& groups, const 
     vfBest.assign(groups.size(), true);
     nBest = nTotalLower;
 
-    FastRandomContext insecure_rand;
-
     for (int nRep = 0; nRep < iterations && nBest != nTargetValue; nRep++)
     {
         vfIncluded.assign(groups.size(), false);
@@ -257,7 +255,7 @@ static void ApproximateBestSubset(const std::vector<OutputGroup>& groups, const 
     }
 }
 
-std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue)
+std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue, FastRandomContext& rng)
 {
     SelectionResult result(nTargetValue);
 
@@ -266,7 +264,7 @@ std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, 
     std::vector<OutputGroup> applicable_groups;
     CAmount nTotalLower = 0;
 
-    Shuffle(groups.begin(), groups.end(), FastRandomContext());
+    Shuffle(groups.begin(), groups.end(), rng);
 
     for (const OutputGroup& group : groups) {
         if (group.GetSelectionAmount() == nTargetValue) {

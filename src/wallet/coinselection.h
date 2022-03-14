@@ -70,8 +70,9 @@ public:
 };
 
 /** Parameters for one iteration of Coin Selection. */
-struct CoinSelectionParams
-{
+struct CoinSelectionParams {
+    /** Randomness to use in the context of coin selection. */
+    FastRandomContext& rng_fast;
     /** Size of a change output in bytes, determined by the output type. */
     size_t change_output_size = 0;
     /** Size of the input to spend a change output in virtual bytes. */
@@ -223,7 +224,7 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
  * @param[in]  target_value The target value to select for
  * @returns If successful, a SelectionResult, otherwise, std::nullopt
  */
-std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value);
+std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value, FastRandomContext& rng);
 
 /** Select coins by Single Random Draw. OutputGroups are selected randomly from the eligible
  * outputs until the target is satisfied
@@ -235,7 +236,7 @@ std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& ut
 std::optional<std::pair<std::set<CInputCoin>, CAmount>> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value);
 
 // Original coin selection algorithm as a fallback
-std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue);
+std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue, FastRandomContext& rng);
 } // namespace wallet
 
 #endif // BITCOIN_WALLET_COINSELECTION_H
