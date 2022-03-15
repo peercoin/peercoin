@@ -45,6 +45,11 @@ bool CBlockIndexWorkComparator::operator()(const CBlockIndex* pa, const CBlockIn
     return false;
 }
 
+bool CBlockIndexHeightOnlyComparator::operator()(const CBlockIndex* pa, const CBlockIndex* pb) const
+{
+    return pa->nHeight < pb->nHeight;
+}
+
 static FILE* OpenUndoFile(const FlatFilePos& pos, bool fReadOnly = false);
 static FlatFileSeq BlockFileSeq();
 static FlatFileSeq UndoFileSeq();
@@ -126,10 +131,8 @@ bool BlockManager::LoadBlockIndex(const Consensus::Params& consensus_params)
     for (auto& [_, block_index] : m_block_index) {
         vSortedByHeight.push_back(&block_index);
     }
-    sort(vSortedByHeight.begin(), vSortedByHeight.end(),
-         [](const CBlockIndex* pa, const CBlockIndex* pb) {
-             return pa->nHeight < pb->nHeight;
-         });
+    std::sort(vSortedByHeight.begin(), vSortedByHeight.end(),
+              CBlockIndexHeightOnlyComparator());
 
     for (CBlockIndex* pindex : vSortedByHeight) {
         if (ShutdownRequested()) return false;

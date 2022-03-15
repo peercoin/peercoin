@@ -69,10 +69,16 @@
 using node::BLOCKFILE_CHUNK_SIZE;
 using node::BlockManager;
 using node::BlockMap;
+using node::CBlockIndexHeightOnlyComparator;
 using node::CBlockIndexWorkComparator;
 using node::CCoinsStats;
 using node::CoinStatsHashType;
+using node::fHavePruned;
+using node::fImporting;
+using node::fPruneMode;
+using node::fReindex;
 using node::GetUTXOStats;
+using node::nPruneTarget;
 using node::OpenBlockFile;
 using node::ReadBlockFromDisk;
 using node::SnapshotMetadata;
@@ -4235,10 +4241,8 @@ bool ChainstateManager::LoadBlockIndex()
         for (auto& [_, block_index] : m_blockman.m_block_index) {
             vSortedByHeight.push_back(&block_index);
         }
-        sort(vSortedByHeight.begin(), vSortedByHeight.end(),
-             [](const CBlockIndex* pa, const CBlockIndex* pb) {
-                 return pa->nHeight < pb->nHeight;
-             });
+        std::sort(vSortedByHeight.begin(), vSortedByHeight.end(),
+                  CBlockIndexHeightOnlyComparator());
 
         // Find start of assumed-valid region.
         int first_assumed_valid_height = std::numeric_limits<int>::max();
