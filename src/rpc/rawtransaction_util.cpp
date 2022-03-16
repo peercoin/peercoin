@@ -48,6 +48,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
     for (unsigned int idx = 0; idx < inputs.size(); idx++) {
         const UniValue& input = inputs[idx];
         const UniValue& o = input.get_obj();
+        CScript scriptSig;
 
         uint256 txid = ParseHashO(o, "txid");
 
@@ -76,7 +77,15 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
             }
         }
 
-        CTxIn in(COutPoint(txid, nOutput), CScript(), nSequence);
+        // set redeem script
+        const UniValue& rs = find_value(o, "redeemScript");
+        if (!rs.isNull()) {
+            std::vector<unsigned char> redeemScriptData(ParseHex(rs.getValStr()));
+            CScript redeemScript(redeemScriptData.begin(), redeemScriptData.end());
+            scriptSig = redeemScript;
+        }
+
+        CTxIn in(COutPoint(txid, nOutput), scriptSig, nSequence);
 
         rawTx.vin.push_back(in);
     }
@@ -111,10 +120,13 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
 
             CTxOut out(0, CScript() << OP_RETURN << data);
             rawTx.vout.push_back(out);
+        } else if (name_ == "coinstake") {
+            rawTx.nVersion = 1;
+            rawTx.vout.push_back(CTxOut(0, CScript()));
         } else {
             CTxDestination destination = DecodeDestination(name_);
             if (!IsValidDestination(destination)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + name_);
             }
 
             if (!destinations.insert(destination).second) {
