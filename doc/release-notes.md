@@ -1,16 +1,6 @@
-*After branching off for a major version release of Bitcoin Core, use this
-template to create the initial release notes draft.*
-
 *The release notes draft is a temporary file that can be added to by anyone. See
 [/doc/developer-notes.md#release-notes](/doc/developer-notes.md#release-notes)
 for the process.*
-
-*Create the draft, named* "*version* Release Notes Draft"
-*(e.g. "23.0 Release Notes Draft"), as a collaborative wiki in:*
-
-https://github.com/bitcoin-core/bitcoin-devwiki/wiki/
-
-*Before the final release, move the notes back to this git repository.*
 
 *version* Release Notes Draft
 ===============================
