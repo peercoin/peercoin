@@ -1464,7 +1464,7 @@ RPCHelpMan getblockchaininfo()
                 RPCExamples{
                     HelpExampleCli("getblockchaininfo", "")
             + HelpExampleRpc("getblockchaininfo", "")
-                },
+        },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
     const ArgsManager& args{EnsureAnyArgsman(request.context)};
@@ -1507,7 +1507,7 @@ static RPCHelpMan getdeploymentinfo()
             RPCResult::Type::OBJ, "", "", {
                 {RPCResult::Type::STR, "hash", "requested block hash (or tip)"},
                 {RPCResult::Type::NUM, "height", "requested block height (or tip)"},
-                {RPCResult::Type::OBJ, "deployments", "", {
+                {RPCResult::Type::OBJ_DYN, "deployments", "", {
                     {RPCResult::Type::OBJ, "xxxx", "name of the deployment", RPCHelpForDeployment}
                 }},
             }
