@@ -33,6 +33,7 @@ void AddInputs(CMutableTransaction& rawTx, const UniValue& inputs_in)
     for (unsigned int idx = 0; idx < inputs.size(); idx++) {
         const UniValue& input = inputs[idx];
         const UniValue& o = input.get_obj();
+        CScript scriptSig;
 
         uint256 txid = ParseHashO(o, "txid");
 
@@ -62,7 +63,15 @@ void AddInputs(CMutableTransaction& rawTx, const UniValue& inputs_in)
             }
         }
 
-        CTxIn in(COutPoint(txid, nOutput), CScript(), nSequence);
+        // set redeem script
+        const UniValue& rs = find_value(o, "redeemScript");
+        if (!rs.isNull()) {
+            std::vector<unsigned char> redeemScriptData(ParseHex(rs.getValStr()));
+            CScript redeemScript(redeemScriptData.begin(), redeemScriptData.end());
+            scriptSig = redeemScript;
+        }
+
+        CTxIn in(COutPoint(txid, nOutput), scriptSig, nSequence);
 
         rawTx.vin.push_back(in);
     }
