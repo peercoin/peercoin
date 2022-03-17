@@ -170,3 +170,5 @@ osx_volname
 dist/
 
 /guix-build-*
+
+/ci/scratch/
