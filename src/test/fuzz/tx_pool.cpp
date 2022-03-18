@@ -3,6 +3,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <consensus/validation.h>
+#include <mempool_args.h>
+#include <node/context.h>
 #include <node/miner.h>
 #include <test/fuzz/FuzzedDataProvider.h>
 #include <test/fuzz/fuzz.h>
@@ -15,6 +17,7 @@
 #include <validationinterface.h>
 
 using node::BlockAssembler;
+using node::NodeContext;
 
 namespace {
 
@@ -125,6 +128,19 @@ void MockTime(FuzzedDataProvider& fuzzed_data_provider, const CChainState& chain
                                   chainstate.m_chain.Tip()->GetMedianTimePast() + 1,
                                   std::numeric_limits<decltype(chainstate.m_chain.Tip()->nTime)>::max());
     SetMockTime(time);
+}
+
+CTxMemPool MakeMempool(const NodeContext& node)
+{
+    // Take the default options for tests...
+    CTxMemPool::Options mempool_opts{MemPoolOptionsForTest(node)};
+
+    // ...override specific options for this specific fuzz suite
+    mempool_opts.estimator = nullptr;
+    mempool_opts.check_ratio = 1;
+
+    // ...and construct a CTxMemPool from it
+    return CTxMemPool{mempool_opts};
 }
 
 FUZZ_TARGET_INIT(tx_pool_standard, initialize_tx_pool)
