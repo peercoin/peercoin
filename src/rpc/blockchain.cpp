@@ -1475,8 +1475,8 @@ RPCHelpMan getblockchaininfo()
     CHECK_NONFATAL(tip);
     const int height = tip->nHeight;
     UniValue obj(UniValue::VOBJ);
-    obj.pushKV("chain",                 Params().NetworkIDString());
-    obj.pushKV("blocks",                height);
+    obj.pushKV("chain", Params().NetworkIDString());
+    obj.pushKV("blocks", height);
     obj.pushKV("headers", chainman.pindexBestHeader ? chainman.pindexBestHeader->nHeight : -1);
     obj.pushKV("bestblockhash",         tip->GetBlockHash().GetHex());
     obj.pushKV("difficulty",            (double)GetDifficulty(tip, tip));
