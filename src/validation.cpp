@@ -1679,8 +1679,8 @@ void CChainState::InvalidChainFound(CBlockIndex* pindexNew)
     if (!m_chainman.m_best_invalid || pindexNew->nChainTrust > m_chainman.m_best_invalid->nChainTrust) {
         m_chainman.m_best_invalid = pindexNew;
     }
-    if (m_chainman.pindexBestHeader != nullptr && m_chainman.pindexBestHeader->GetAncestor(pindexNew->nHeight) == pindexNew) {
-        m_chainman.pindexBestHeader = m_chain.Tip();
+    if (m_chainman.m_best_header != nullptr && m_chainman.m_best_header->GetAncestor(pindexNew->nHeight) == pindexNew) {
+        m_chainman.m_best_header = m_chain.Tip();
     }
 
     LogPrintf("%s: invalid block=%s  height=%d  log2_trust=%.8g  moneysupply=%s  date=%s  moneysupply=%s\n", __func__,
@@ -2182,7 +2182,7 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
                 //  artificially set the default assumed verified block further back.
                 // The test against nMinimumChainWork prevents the skipping when denied access to any chain at
                 //  least as good as the expected chain.
-                fScriptChecks = (GetBlockProofEquivalentTime(*m_chainman.pindexBestHeader, *pindex, *m_chainman.pindexBestHeader, m_params.GetConsensus()) <= 60 * 60 * 24 * 7 * 2);
+                fScriptChecks = (GetBlockProofEquivalentTime(*m_chainman.m_best_header, *pindex, *m_chainman.m_best_header, m_params.GetConsensus()) <= 60 * 60 * 24 * 7 * 2);
             }
         }
     }
@@ -3005,7 +3005,7 @@ static bool NotifyHeaderTip(CChainState& chainstate) LOCKS_EXCLUDED(cs_main) {
     CBlockIndex* pindexHeader = nullptr;
     {
         LOCK(cs_main);
-        pindexHeader = chainstate.m_chainman.pindexBestHeader;
+        pindexHeader = chainstate.m_chainman.m_best_header;
 
         if (pindexHeader != pindexHeaderOld) {
             fNotify = true;
@@ -3757,7 +3757,7 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
             }
         }
     }
-    CBlockIndex* pindex{m_blockman.AddToBlockIndex(block, pindexBestHeader)};
+    CBlockIndex* pindex{m_blockman.AddToBlockIndex(block, m_best_header)};
 
     if (ppindex)
         *ppindex = pindex;
@@ -4363,8 +4363,8 @@ bool ChainstateManager::LoadBlockIndex()
             if (pindex->nStatus & BLOCK_FAILED_MASK && (!m_best_invalid || pindex->nChainWork > m_best_invalid->nChainWork)) {
                 m_best_invalid = pindex;
             }
-            if (pindex->IsValid(BLOCK_VALID_TREE) && (pindexBestHeader == nullptr || CBlockIndexWorkComparator()(pindexBestHeader, pindex)))
-                pindexBestHeader = pindex;
+            if (pindex->IsValid(BLOCK_VALID_TREE) && (m_best_header == nullptr || CBlockIndexWorkComparator()(m_best_header, pindex)))
+                m_best_header = pindex;
         }
 
         needs_init = m_blockman.m_block_index.empty();
@@ -4399,7 +4399,7 @@ bool CChainState::LoadGenesisBlock()
         if (blockPos.IsNull()) {
             return error("%s: writing genesis block to disk failed", __func__);
         }
-        CBlockIndex* pindex = m_blockman.AddToBlockIndex(block, m_chainman.pindexBestHeader);
+        CBlockIndex* pindex = m_blockman.AddToBlockIndex(block, m_chainman.m_best_header);
         ReceivedBlockTransactions(block, pindex, blockPos);
     } catch (const std::runtime_error& e) {
         return error("%s: failed to write genesis block: %s", __func__, e.what());
@@ -5425,7 +5425,7 @@ void ChainstateManager::Unload()
 
     m_failed_blocks.clear();
     m_blockman.Unload();
-    pindexBestHeader = nullptr;
+    m_best_header = nullptr;
     m_best_invalid = nullptr;
 }
 

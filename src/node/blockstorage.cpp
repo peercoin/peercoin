@@ -234,7 +234,7 @@ void BlockManager::Unload()
     m_dirty_blockindex.clear();
     m_dirty_fileinfo.clear();
 
-    fHavePruned = false;
+    m_have_pruned = false;
 }
 
 bool BlockManager::WriteBlockIndexDB()
