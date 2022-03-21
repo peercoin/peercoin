@@ -91,7 +91,7 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTransactionRef& tx, CAmount fee,
       nModFeesWithAncestors{nFee},
       nSigOpCostWithAncestors{sigOpCost} {}
 
-void CTxMemPoolEntry::UpdateFeeDelta(int64_t newFeeDelta)
+void CTxMemPoolEntry::UpdateFeeDelta(CAmount newFeeDelta)
 {
     nModFeesWithDescendants += newFeeDelta - feeDelta;
     nModFeesWithAncestors += newFeeDelta - feeDelta;
