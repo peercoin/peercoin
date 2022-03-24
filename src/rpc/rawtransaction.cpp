@@ -32,7 +32,6 @@
 #include <script/standard.h>
 #include <uint256.h>
 #include <util/bip32.h>
-#include <util/moneystr.h>
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <validation.h>
@@ -1890,10 +1889,8 @@ static const CRPCCommand commands[] =
     { "rawtransactions",     &createrawtransaction,       },
     { "rawtransactions",     &decoderawtransaction,       },
     { "rawtransactions",     &decodescript,               },
-    { "rawtransactions",     &sendrawtransaction,         },
     { "rawtransactions",     &combinerawtransaction,      },
     { "rawtransactions",     &signrawtransactionwithkey,  },
-    { "rawtransactions",     &testmempoolaccept,          },
     { "rawtransactions",     &decodepsbt,                 },
     { "rawtransactions",     &combinepsbt,                },
     { "rawtransactions",     &finalizepsbt,               },
