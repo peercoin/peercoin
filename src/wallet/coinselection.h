@@ -16,9 +16,7 @@ namespace wallet {
 static const CAmount MIN_FINAL_CHANGE = MIN_TXOUT_AMOUNT;
 
 /** A UTXO under consideration for use in funding a new transaction. */
-class COutput
-{
-public:
+struct COutput {
     /** The outpoint identifying this UTXO */
     COutPoint outpoint;
 
@@ -64,21 +62,22 @@ public:
     CAmount long_term_fee{0};
 
     COutput(const COutPoint& outpoint, const CTxOut& txout, int depth, int input_bytes, bool spendable, bool solvable, bool safe, int64_t time, bool from_me)
-        : outpoint(outpoint),
-        txout(txout),
-        depth(depth),
-        input_bytes(input_bytes),
-        spendable(spendable),
-        solvable(solvable),
-        safe(safe),
-        time(time),
-        from_me(from_me),
-        effective_value(txout.nValue)
+        : outpoint{outpoint},
+          txout{txout},
+          depth{depth},
+          input_bytes{input_bytes},
+          spendable{spendable},
+          solvable{solvable},
+          safe{safe},
+          time{time},
+          from_me{from_me},
+          effective_value{txout.nValue}
     {}
 
     std::string ToString() const;
 
-    bool operator<(const COutput& rhs) const {
+    bool operator<(const COutput& rhs) const
+    {
         return outpoint < rhs.outpoint;
     }
 };
