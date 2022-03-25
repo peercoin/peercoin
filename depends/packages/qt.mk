@@ -235,7 +235,6 @@ define $(package)_preprocess_cmds
   patch -p1 -i $($(package)_patch_dir)/fix_qt_pkgconfig.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_android_jni_static.patch && \
   patch -p1 -i $($(package)_patch_dir)/no-xlib.patch && \
-  patch -p1 -i $($(package)_patch_dir)/dont_use_avx_android_x86_64.patch && \
   patch -p1 -i $($(package)_patch_dir)/dont_hardcode_x86_64.patch && \
   patch -p1 -i $($(package)_patch_dir)/qtbase-moc-ignore-gcc-macro.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_montery_include.patch && \
