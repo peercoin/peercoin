@@ -21,7 +21,6 @@
 #include <util/ui_change_type.h>
 #include <validation.h>
 #include <validationinterface.h>
-#include <wallet/coinselection.h>
 #include <wallet/crypter.h>
 #include <wallet/scriptpubkeyman.h>
 #include <wallet/transaction.h>
@@ -102,7 +101,6 @@ static const bool DEFAULT_DISABLE_WALLET = false;
 static constexpr size_t DUMMY_NESTED_P2WPKH_INPUT_SIZE = 91;
 
 class CCoinControl;
-class COutput;
 class CWalletTx;
 class ReserveDestination;
 
