@@ -67,7 +67,7 @@ static void CoinSelection(benchmark::Bench& bench)
                                                     /* change_spend_size= */ 148,
                                                     /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
     bench.run([&] {
-        auto result = AttemptSelection(wallet, 1003 * COIN, filter_standard, available_coins, coin_selection_params);
+        auto result = AttemptSelection(wallet, 1003 * COIN, filter_standard, available_coins, coin_selection_params, /*allow_mixed_output_types=*/true);
         assert(result);
         assert(result->GetSelectedValue() == 1003 * COIN);
         assert(result->GetInputSet().size() == 2);
