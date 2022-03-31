@@ -47,11 +47,11 @@
     </message>
     <message>
         <source>Choose the address to send coins to</source>
-        <translation type="unfinished">Kedvezményezett címének kiválasztása</translation>
+        <translation type="unfinished">Válassza ki a küldési címet kimenő utalásokhoz</translation>
     </message>
     <message>
         <source>Choose the address to receive coins with</source>
-        <translation type="unfinished">Jóváírási cím kiválasztása</translation>
+        <translation type="unfinished">Válassza ki a fogadó címet beérkező utalásokhoz</translation>
     </message>
     <message>
         <source>C&amp;hoose</source>
@@ -75,11 +75,11 @@
     </message>
     <message>
         <source>&amp;Copy Address</source>
-        <translation type="unfinished">&amp;Cím másolása</translation>
+        <translation type="unfinished">Cím &amp;másolása</translation>
     </message>
     <message>
         <source>Copy &amp;Label</source>
-        <translation type="unfinished">Másolás és Címkézés</translation>
+        <translation type="unfinished">Másolás és &amp;címkézés</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
@@ -97,7 +97,7 @@
     <message>
         <source>There was an error trying to save the address list to %1. Please try again.</source>
         <extracomment>An error message. %1 is a stand-in argument for the name of the file we attempted to save to.</extracomment>
-        <translation type="unfinished">Hiba történt a címlista %1 mentésekor.  Kérem próbálja újra.</translation>
+        <translation type="unfinished">Hiba történt a címlista %1 mentésekor. Kérem próbálja újra.</translation>
     </message>
     <message>
         <source>Exporting Failed</source>
@@ -175,7 +175,7 @@
     </message>
     <message>
         <source>Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
-        <translation type="unfinished">Írja be a tárca új jelszavát. &lt;br/&gt;A jelszó összetétele a következő: &lt;b&gt;tíz vagy annál több véletlenszerű karakter&lt;/b&gt;, vagy &lt;b&gt;nyolc vagy annál több szó&lt;/b&gt;. </translation>
+        <translation type="unfinished">Írja be a tárca új jelszavát. &lt;br/&gt;Használjon &lt;b&gt;legalább tíz véletlenszerű karakterből&lt;/b&gt;, vagy &lt;b&gt;legalább nyolc szóból&lt;/b&gt; álló jelszót.</translation>
     </message>
     <message>
         <source>Enter the old passphrase and new passphrase for the wallet.</source>
@@ -732,7 +732,7 @@
     </message>
     <message>
         <source>Error: Keypool ran out, please call keypoolrefill first</source>
-        <translation type="unfinished">A címraktár kiürült, kérjük előbb adja ki a keypoolrefill parancsot.</translation>
+        <translation type="unfinished">A címraktár kiürült, előbb adja ki a keypoolrefill parancsot.</translation>
     </message>
     <message>
         <source>Error: Missing checksum</source>
@@ -768,7 +768,7 @@
     </message>
     <message>
         <source>Ignoring duplicate -wallet %s.</source>
-        <translation type="unfinished">A duplikált -wallet %s figyelmen kívül hagyva.</translation>
+        <translation type="unfinished">Az ismétlődő -wallet %s figyelmen kívül hagyva.</translation>
     </message>
     <message>
         <source>Importing…</source>
@@ -1115,7 +1115,7 @@
     </message>
     <message>
         <source>Modify configuration options for %1</source>
-        <translation type="unfinished">%1 beállítások módosítása</translation>
+        <translation type="unfinished">%1 beállításainak módosítása</translation>
     </message>
     <message>
         <source>Create a new wallet</source>
@@ -1160,7 +1160,7 @@
     </message>
     <message>
         <source>&amp;Options…</source>
-        <translation type="unfinished">&amp;Opciók…</translation>
+        <translation type="unfinished">&amp;Beállítások…</translation>
     </message>
     <message>
         <source>&amp;Encrypt Wallet…</source>
@@ -1184,7 +1184,7 @@
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation type="unfinished">Üzenetek aláírása a Bitcoin-címeivel, amivel bizonyíthatja hogy a cím az Öné</translation>
+        <translation type="unfinished">Üzenetek aláírása a Bitcoin-címeivel, amivel bizonyíthatja, hogy az Öné</translation>
     </message>
     <message>
         <source>&amp;Verify message…</source>
@@ -1445,15 +1445,15 @@
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;disabled&lt;/b&gt;</source>
-        <translation type="unfinished">HD kulcs generálás &lt;b&gt;tiltva&lt;/b&gt;</translation>
+        <translation type="unfinished">HD kulcs generálás &lt;b&gt;letiltva&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Private key &lt;b&gt;disabled&lt;/b&gt;</source>
-        <translation type="unfinished">Privát kulcs &lt;b&gt;inaktív&lt;/b&gt;</translation>
+        <translation type="unfinished">Privát kulcs &lt;b&gt;letiltva&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation type="unfinished">A tárca &lt;b&gt;titkosítva&lt;/b&gt; és jelenleg &lt;b&gt;nyitva&lt;/b&gt;.</translation>
+        <translation type="unfinished">A tárca &lt;b&gt;titkosítva&lt;/b&gt; és jelenleg &lt;b&gt;feloldva&lt;/b&gt;.</translation>
     </message>
     <message>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
@@ -1740,7 +1740,7 @@
     </message>
     <message>
         <source>Make a blank wallet. Blank wallets do not initially have private keys or scripts. Private keys and addresses can be imported, or an HD seed can be set, at a later time.</source>
-        <translation type="unfinished">Üres tárca készítése. Az üres tárcák kezdetben nem tartalmaznak privát kulcsokat vagy szkripteket. Később lehetséges a privát kulcsok vagy címek importálása avagy egy HD mag beállítása.</translation>
+        <translation type="unfinished">Üres tárca készítése. Az üres tárcák kezdetben nem tartalmaznak privát kulcsokat vagy szkripteket. Később lehetséges a privát kulcsok vagy címek importálása illetve egy HD mag beállítása.</translation>
     </message>
     <message>
         <source>Make Blank Wallet</source>
@@ -1808,7 +1808,7 @@
     </message>
     <message>
         <source>Could not unlock wallet.</source>
-        <translation type="unfinished">Nem sikerült a tárca felnyitása</translation>
+        <translation type="unfinished">Nem sikerült a tárca feloldása</translation>
     </message>
     <message>
         <source>New key generation failed.</source>
@@ -1823,7 +1823,7 @@
     </message>
     <message>
         <source>name</source>
-        <translation type="unfinished">Név</translation>
+        <translation type="unfinished">név</translation>
     </message>
     <message>
         <source>Directory already exists. Add %1 if you intend to create a new directory here.</source>
@@ -1873,7 +1873,7 @@
     </message>
     <message>
         <source>The wallet will also be stored in this directory.</source>
-        <translation type="unfinished">A tárcát is ebben a könyvtárban tároljuk.</translation>
+        <translation type="unfinished">A tárca is ebben a könyvtárban tárolódik.</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -2688,7 +2688,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <source>The network protocol this peer is connected through: IPv4, IPv6, Onion, I2P, or CJDNS.</source>
-        <translation type="unfinished">A hálózati protokoll amin keresztül ez a csomópont kapcsolódik: IPv4, IPv6, Onion, I2P vagy CJDNS.</translation>
+        <translation type="unfinished">A hálózati protokoll amin keresztül ez a partner kapcsolódik: IPv4, IPv6, Onion, I2P vagy CJDNS.</translation>
         <source>Services</source>
         <translation type="unfinished">Szolgáltatások</translation>
     </message>
@@ -2718,7 +2718,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <source>Elapsed time since a novel block passing initial validity checks was received from this peer.</source>
-        <translation type="unfinished">A csomóponttól érkező új blokkokra vonatkozó érvényességet igazoló ellenőrzések óta eltelt idő.</translation>
+        <translation type="unfinished">A partnertől érkező új blokkokra vonatkozó érvényességet igazoló ellenőrzések óta eltelt idő.</translation>
     </message>
     <message>
         <source>Last Block</source>
@@ -2727,7 +2727,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     <message>
         <source>Elapsed time since a novel transaction accepted into our mempool was received from this peer.</source>
         <extracomment>Tooltip text for the Last Transaction field in the peer details area.</extracomment>
-        <translation type="unfinished">Az eltelt idő, amióta egy új, a mempoolunkba elfogadott tranzakció érkezett ettől a társtulajdonostól.</translation>
+        <translation type="unfinished">Az eltelt idő, amióta egy új, a saját memóriahalomba elfogadott tranzakció érkezett ettől a partnertől.</translation>
     </message>
     <message>
         <source>Last Send</source>
@@ -3488,7 +3488,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
     </message>
     <message>
         <source>&amp;Sign Message</source>
-        <translation type="unfinished">Üzenet aláírása...</translation>
+        <translation type="unfinished">Üzenet &amp;Aláírása</translation>
     </message>
     <message>
         <source>You can sign messages/agreements with your addresses to prove you can receive bitcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
@@ -3520,11 +3520,11 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
     </message>
     <message>
         <source>Sign the message to prove you own this Bitcoin address</source>
-        <translation type="unfinished">Üzenet</translation>
+        <translation type="unfinished">Üzenet aláírása, ezzel bizonyítva, hogy Öné ez a Bitcoin cím</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
-        <translation type="unfinished">Üzenet &amp;aláírása</translation>
+        <translation type="unfinished">Üzenet &amp;Aláírása</translation>
     </message>
     <message>
         <source>Reset all sign message fields</source>
@@ -3552,7 +3552,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
     </message>
     <message>
         <source>Verify &amp;Message</source>
-        <translation type="unfinished">Üzenet ellenőrzése</translation>
+        <translation type="unfinished">Üzenet &amp;Ellenőrzése</translation>
     </message>
     <message>
         <source>Reset all verify message fields</source>
@@ -3568,7 +3568,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
     </message>
     <message>
         <source>Please check the address and try again.</source>
-        <translation type="unfinished">Kérem ellenőrizze a címet és próbálja meg újra.</translation>
+        <translation type="unfinished">Ellenőrizze a címet és próbálja meg újra.</translation>
     </message>
     <message>
         <source>The entered address does not refer to a key.</source>
@@ -3596,7 +3596,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
     </message>
     <message>
         <source>Please check the signature and try again.</source>
-        <translation type="unfinished">Kérem ellenőrizze az aláírást és próbálja újra.</translation>
+        <translation type="unfinished">Ellenőrizze az aláírást és próbálja újra.</translation>
     </message>
     <message>
         <source>The signature did not match the message digest.</source>
@@ -3818,7 +3818,7 @@ Megjegyzés: Mivel a díj bájtonként van kiszámítva, egy "100 satoshi kvB-nk
     </message>
     <message>
         <source>Conflicted</source>
-        <translation type="unfinished">Konfliktusos</translation>
+        <translation type="unfinished">Ellentmondásos</translation>
     </message>
     <message>
         <source>Immature (%1 confirmations, will be available after %2)</source>
