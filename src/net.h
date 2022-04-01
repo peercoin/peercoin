@@ -13,6 +13,7 @@
 #include <crypto/siphash.h>
 #include <hash.h>
 #include <i2p.h>
+#include <logging.h>
 #include <net_permissions.h>
 #include <netaddress.h>
 #include <netbase.h>
@@ -31,6 +32,7 @@
 #include <cstdint>
 #include <deque>
 #include <functional>
+#include <list>
 #include <map>
 #include <memory>
 #include <optional>
