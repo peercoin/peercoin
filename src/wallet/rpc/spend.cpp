@@ -107,7 +107,7 @@ static UniValue FinishTransaction(const std::shared_ptr<CWallet> pwallet, const 
         CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
         result.pushKV("txid", tx->GetHash().GetHex());
         if (add_to_wallet && !psbt_opt_in) {
-            pwallet->CommitTransaction(tx, {}, /*orderForm*/ {});
+            pwallet->CommitTransaction(tx, {}, /*orderForm=*/{});
         } else {
             result.pushKV("hex", hex);
         }
@@ -767,7 +767,7 @@ RPCHelpMan fundrawtransaction()
     CCoinControl coin_control;
     // Automatically select (additional) coins. Can be overridden by options.add_inputs.
     coin_control.m_add_inputs = true;
-    FundTransaction(*pwallet, tx, fee, change_position, request.params[1], coin_control, /* override_min_fee */ true);
+    FundTransaction(*pwallet, tx, fee, change_position, request.params[1], coin_control, /*override_min_fee=*/true);
 
     UniValue result(UniValue::VOBJ);
     result.pushKV("hex", EncodeHexTx(CTransaction(tx)));
@@ -990,7 +990,7 @@ RPCHelpMan send()
             // be overridden by options.add_inputs.
             coin_control.m_add_inputs = rawTx.vin.size() == 0;
             SetOptionsInputWeights(options["inputs"], options);
-            FundTransaction(*pwallet, rawTx, fee, change_position, options, coin_control, /* override_min_fee */ false);
+            FundTransaction(*pwallet, rawTx, fee, change_position, options, coin_control, /*override_min_fee=*/false);
 
             return FinishTransaction(pwallet, options, rawTx);
         }
