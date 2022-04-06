@@ -22,8 +22,10 @@
 #endif // ENABLE_WALLET
 
 #include <QApplication>
+#include <QDebug>
 #include <QObject>
 #include <QTest>
+
 #include <functional>
 
 #if defined(QT_STATICPLUGIN)
@@ -114,5 +116,10 @@ int main(int argc, char* argv[])
     }
 #endif
 
+    if (fInvalid) {
+        qWarning("\nThere were errors in some of the tests above.\n");
+    } else {
+        qDebug("\nAll tests passed.\n");
+    }
     return fInvalid;
 }
