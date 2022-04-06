@@ -1001,6 +1001,19 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
         return InitError(_("No proxy server specified. Use -proxy=<ip> or -proxy=<ip:port>."));
     }
 
+    if (args.GetBoolArg("-reindex-chainstate", false)) {
+        // indexes that must be deactivated to prevent index corruption, see #24630
+        if (args.GetBoolArg("-coinstatsindex", DEFAULT_COINSTATSINDEX)) {
+            return InitError(_("-reindex-chainstate option is not compatible with -coinstatsindex. Please temporarily disable coinstatsindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes."));
+        }
+        if (g_enabled_filter_types.count(BlockFilterType::BASIC)) {
+            return InitError(_("-reindex-chainstate option is not compatible with -blockfilterindex. Please temporarily disable blockfilterindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes."));
+        }
+        if (args.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
+            return InitError(_("-reindex-chainstate option is not compatible with -txindex. Please temporarily disable txindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes."));
+        }
+    }
+
 #if defined(USE_SYSCALL_SANDBOX)
     if (args.IsArgSet("-sandbox") && !args.IsArgNegated("-sandbox")) {
         const std::string sandbox_arg{args.GetArg("-sandbox", "")};
