@@ -2,6 +2,9 @@
 
 bench_schnorrsig
 valgrind_ctime_test
+ecdh_example
+ecdsa_example
+schnorr_example
 *.exe
 *.pdb
 src/*/*.exe
