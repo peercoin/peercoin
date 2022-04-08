@@ -168,6 +168,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "getnodeaddresses", 0, "count"},
     { "stop", 0, "wait" },
     // peercoin:
+    { "importcoinstake", 1, "timestamp" },
     { "reservebalance", 0, "reserve" },
     { "reservebalance", 1, "amount" },
     { "sendalert", 2, "minver"},
