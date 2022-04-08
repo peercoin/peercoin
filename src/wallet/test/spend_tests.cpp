@@ -27,7 +27,6 @@ BOOST_FIXTURE_TEST_CASE(SubtractFee, TestChain100Setup)
     auto check_tx = [&wallet](CAmount leftover_input_amount) {
         CRecipient recipient{GetScriptForRawPubKey({}), 50 * COIN - leftover_input_amount, true /* subtract fee */};
         constexpr int RANDOM_CHANGE_POSITION = -1;
-        bilingual_str error;
         CCoinControl coin_control;
         CAmount fee_calc;
         // We need to use a change type with high cost of change so that the leftover amount will be dropped to fee instead of added as a change output
