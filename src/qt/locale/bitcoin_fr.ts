@@ -245,7 +245,7 @@
     <name>BitcoinApplication</name>
     <message>
         <source>Runaway exception</source>
-        <translation type="unfinished">Exception fugitive</translation>
+        <translation type="unfinished">Exception excessive</translation>
     </message>
     <message>
         <source>A fatal error occurred. %1 can no longer continue safely and will quit.</source>
@@ -442,7 +442,7 @@
     </message>
     <message>
         <source>-maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
-        <translation type="unfinished">La valeur -maxtxfee est très élevée ! Des frais aussi élevés pourraient être payés en une seule transaction.</translation>
+        <translation type="unfinished">La valeur -maxtxfee est très élevée. Des frais aussi élevés pourraient être payés en une seule transaction.</translation>
     </message>
     <message>
         <source>Cannot downgrade wallet from version %i to version %i. Wallet version unchanged.</source>
@@ -482,7 +482,7 @@
     </message>
     <message>
         <source>Error: Legacy wallets only support the "legacy", "p2sh-segwit", and "bech32" address types</source>
-        <translation type="unfinished">Erreur : les porte-monnaie hérités ne prennent en charge que les types d’adresse « legacy », « p2sh-segwit », et « bech32 ».</translation>
+        <translation type="unfinished">Erreur : les porte-monnaie hérités ne prennent en charge que les types d’adresse « legacy », « p2sh-segwit », et « bech32 »</translation>
     </message>
     <message>
         <source>Error: Listening for incoming connections failed (listen returned error %s)</source>
@@ -606,7 +606,7 @@
     </message>
     <message>
         <source>%s is set very high!</source>
-        <translation type="unfinished">La valeur %s est très élevée !</translation>
+        <translation type="unfinished">La valeur %s est très élevée</translation>
     </message>
     <message>
         <source>-maxmempool must be at least %d MB</source>
@@ -637,12 +637,24 @@
         <translation type="unfinished">La mise à niveau -txindex lancée par une version précédente ne peut pas être achevée. Redémarrez la version précédente ou exécutez un -reindex complet.</translation>
     </message>
     <message>
+        <source>%s request to listen on port %u. This port is considered "bad" and thus it is unlikely that any Bitcoin Core peers connect to it. See doc/p2p-bad-ports.md for details and a full list.</source>
+        <translation type="unfinished">%s a demandé d’écouter sur le port %u. Ce port est considéré comme « mauvais » et il est par conséquent improbable que des pairs Bitcoin Core y soient connectés. Consulter doc/p2p-bad-ports.md pour plus de précisions et une liste complète.</translation>
+    </message>
+    <message>
         <source>Cannot provide specific connections and have addrman find outgoing connections at the same time.</source>
-        <translation type="unfinished">Il est impossible de fournir des connexions particulières et en même temps demander à addrman de trouver les connexions sortantes.</translation>
+        <translation type="unfinished">Il est impossible d’indiquer des connexions précises et en même temps de demander à addrman de trouver les connexions sortantes.</translation>
     </message>
     <message>
         <source>Error loading %s: External signer wallet being loaded without external signer support compiled</source>
         <translation type="unfinished">Erreur de chargement de %s : le porte-monnaie signataire externe est chargé sans que la prise en charge de signataires externes soit compilée</translation>
+    </message>
+    <message>
+        <source>Failed to rename invalid peers.dat file. Please move or delete it and try again.</source>
+        <translation type="unfinished">Échec de renommage du fichier peers.dat invalide. Veuillez le déplacer ou le supprimer, puis réessayer.</translation>
+    </message>
+    <message>
+        <source>Outbound connections restricted to Tor (-onlynet=onion) but the proxy for reaching the Tor network is not provided (no -proxy= and no -onion= given) or it is explicitly forbidden (-onion=0)</source>
+        <translation type="unfinished">Les connexions sortantes sont limitées à Tor (-onlynet=onion), mais le relais pour accéder à Tor n’est pas indiqué (aucun -proxy= et aucun no -onion= n’est indiqué), ou il est explicitement interdit (-onion=0)</translation>
     </message>
     <message>
         <source>Config setting for %s only applied on %s network when in [%s] section.</source>
@@ -650,7 +662,7 @@
     </message>
     <message>
         <source>Copyright (C) %i-%i</source>
-        <translation type="unfinished">Tous droits réservés (C) %i à %i</translation>
+        <translation type="unfinished">Tous droits réservés © %i à %i</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>
@@ -666,7 +678,7 @@
     </message>
     <message>
         <source>Disk space is too low!</source>
-        <translation type="unfinished">L’espace disque est trop faible !</translation>
+        <translation type="unfinished">L’espace disque est trop faible</translation>
     </message>
     <message>
         <source>Do you want to rebuild the block database now?</source>
@@ -678,7 +690,7 @@
     </message>
     <message>
         <source>Dump file %s does not exist.</source>
-        <translation type="unfinished">Le fichier de vidage %s n’existe pas</translation>
+        <translation type="unfinished">Le fichier de vidage %s n’existe pas.</translation>
     </message>
     <message>
         <source>Error creating %s</source>
@@ -690,7 +702,7 @@
     </message>
     <message>
         <source>Error initializing wallet database environment %s!</source>
-        <translation type="unfinished">Erreur d’initialisation de l’environnement de la base de données du porte-monnaie %s !</translation>
+        <translation type="unfinished">Erreur d’initialisation de l’environnement de la base de données du porte-monnaie %s </translation>
     </message>
     <message>
         <source>Error loading %s</source>
@@ -718,7 +730,7 @@
     </message>
     <message>
         <source>Error reading from database, shutting down.</source>
-        <translation type="unfinished">Erreur de lecture de la base de données, fermeture en cours.</translation>
+        <translation type="unfinished">Erreur de lecture de la base de données, fermeture en cours</translation>
     </message>
     <message>
         <source>Error reading next record from wallet database</source>
@@ -758,7 +770,7 @@
     </message>
     <message>
         <source>Error: No %s addresses available.</source>
-        <translation type="unfinished">Erreur : Aucune adresse %s n’est disponible</translation>
+        <translation type="unfinished">Erreur : Aucune adresse %s n’est disponible.</translation>
     </message>
     <message>
         <source>Error: Unable to parse version %u as a uint32_t</source>
@@ -770,7 +782,7 @@
     </message>
     <message>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation type="unfinished">Échec d'écoute sur n’importe quel port. Utiliser -listen=0 si vous voulez le faire.</translation>
+        <translation type="unfinished">Échec d'écoute sur tous les ports. Si cela est voulu, utiliser -listen=0.</translation>
     </message>
     <message>
         <source>Failed to rescan the wallet during initialization</source>
@@ -798,7 +810,7 @@
     </message>
     <message>
         <source>Initialization sanity check failed. %s is shutting down.</source>
-        <translation type="unfinished">L’initialisation du test de cohérence a échoué. %s est en cours de fermeture.</translation>
+        <translation type="unfinished">Échec d’initialisation du test de cohérence. %s est en cours de fermeture.</translation>
     </message>
     <message>
         <source>Input not found or already spent</source>
@@ -838,7 +850,7 @@
     </message>
     <message>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: '%s' (must be at least %s)</source>
-        <translation type="unfinished">Le montant est invalide pour -paytxfee=&lt;montant&gt; : « %s » (doit être au moins %s)</translation>
+        <translation type="unfinished">Le montant est invalide pour -paytxfee=&lt;amount&gt; : « %s » (doit être au moins %s)</translation>
     </message>
     <message>
         <source>Invalid netmask specified in -whitelist: '%s'</source>
@@ -846,7 +858,7 @@
     </message>
     <message>
         <source>Loading P2P addresses…</source>
-        <translation type="unfinished">Chargement des adresses P2P…</translation>
+        <translation type="unfinished">Chargement des adresses P2P…</translation>
     </message>
     <message>
         <source>Loading banlist…</source>
@@ -870,7 +882,7 @@
     </message>
     <message>
         <source>Need to specify a port with -whitebind: '%s'</source>
-        <translation type="unfinished">Un port doit être précisé avec -whitebind : « %s »</translation>
+        <translation type="unfinished">Un port doit être indiqué avec -whitebind : « %s »</translation>
     </message>
     <message>
         <source>No addresses available</source>
@@ -878,7 +890,7 @@
     </message>
     <message>
         <source>No proxy server specified. Use -proxy=&lt;ip&gt; or -proxy=&lt;ip:port&gt;.</source>
-        <translation type="unfinished">Aucun serveur mandataire n’est indiqué. Utilisez -proxy=&lt;ip&gt; ou -proxy=&lt;ip:port&gt;</translation>
+        <translation type="unfinished">Aucun serveur mandataire n’est indiqué. Utiliser -proxy=&lt;ip&gt; ou -proxy=&lt;ip:port&gt;</translation>
     </message>
     <message>
         <source>Not enough file descriptors available.</source>
@@ -886,7 +898,7 @@
     </message>
     <message>
         <source>Prune cannot be configured with a negative value.</source>
-        <translation type="unfinished">L’élagage ne peut pas être configuré avec une valeur négative.</translation>
+        <translation type="unfinished">L’élagage ne peut pas être configuré avec une valeur négative</translation>
     </message>
     <message>
         <source>Prune mode is incompatible with -coinstatsindex.</source>
@@ -894,7 +906,7 @@
     </message>
     <message>
         <source>Prune mode is incompatible with -txindex.</source>
-        <translation type="unfinished">Le mode élagage n’est pas compatible avec -txindex.</translation>
+        <translation type="unfinished">Le mode élagage n’est pas compatible avec -txindex</translation>
     </message>
     <message>
         <source>Pruning blockstore…</source>
@@ -926,11 +938,11 @@
     </message>
     <message>
         <source>SQLiteDatabase: Unexpected application id. Expected %u, got %u</source>
-        <translation type="unfinished">SQLiteDatabase : l’ID de l’application est inattendu. %u était attendu, %u été retourné</translation>
+        <translation type="unfinished">SQLiteDatabase : l’ID de l’application est inattendu. %u attendu, %u retourné</translation>
     </message>
     <message>
         <source>Section [%s] is not recognized.</source>
-        <translation type="unfinished">La section [%s] n’est pas reconnue.</translation>
+        <translation type="unfinished">La section [%s] n’est pas reconnue</translation>
     </message>
     <message>
         <source>Signing transaction failed</source>
@@ -950,7 +962,7 @@
     </message>
     <message>
         <source>Specified blocks directory "%s" does not exist.</source>
-        <translation type="unfinished">Le répertoire des blocs indiqué « %s » n’existe pas.</translation>
+        <translation type="unfinished">Le répertoire des blocs indiqué « %s » n’existe pas</translation>
     </message>
     <message>
         <source>Starting network threads…</source>
@@ -962,7 +974,7 @@
     </message>
     <message>
         <source>The specified config file %s does not exist</source>
-        <translation type="unfinished">Le fichier de configuration %s n’existe pas</translation>
+        <translation type="unfinished">Le fichier de configuration indiqué %s n’existe pas</translation>
     </message>
     <message>
         <source>The transaction amount is too small to pay the fee</source>
@@ -1018,7 +1030,7 @@
     </message>
     <message>
         <source>Unable to bind to %s on this computer. %s is probably already running.</source>
-        <translation type="unfinished">Impossible de se lier à %s sur cet ordinateur. %s fonctionne probablement déjà.</translation>
+        <translation type="unfinished">Impossible de se lier à %s sur cet ordinateur. %s fonctionne probablement déjà</translation>
     </message>
     <message>
         <source>Unable to create the PID file '%s': %s</source>
@@ -1046,15 +1058,15 @@
     </message>
     <message>
         <source>Unknown -blockfilterindex value %s.</source>
-        <translation type="unfinished">Valeur -blockfilterindex inconnue %s.</translation>
+        <translation type="unfinished">La valeur -blockfilterindex %s est inconnue</translation>
     </message>
     <message>
         <source>Unknown address type '%s'</source>
-        <translation type="unfinished">Type d’adresse inconnu « %s »</translation>
+        <translation type="unfinished">Le type d’adresse « %s » est inconnu</translation>
     </message>
     <message>
         <source>Unknown change type '%s'</source>
-        <translation type="unfinished">Le type de monnaie est inconnu « %s »</translation>
+        <translation type="unfinished">Le type de monnaie « %s » est inconnu</translation>
     </message>
     <message>
         <source>Unknown network specified in -onlynet: '%s'</source>
@@ -1066,7 +1078,7 @@
     </message>
     <message>
         <source>Unsupported logging category %s=%s.</source>
-        <translation type="unfinished">La catégorie de journalisation n’est pas prise en charge %s=%s.</translation>
+        <translation type="unfinished">La catégorie de journalisation %s=%s n’est pas prise en charge</translation>
     </message>
     <message>
         <source>Upgrading UTXO database</source>
@@ -1074,7 +1086,7 @@
     </message>
     <message>
         <source>User Agent comment (%s) contains unsafe characters.</source>
-        <translation type="unfinished">Le commentaire de l’agent utilisateur (%s) comporte des caractères dangereux.</translation>
+        <translation type="unfinished">Le commentaire de l’agent utilisateur (%s) comporte des caractères dangereux</translation>
     </message>
     <message>
         <source>Verifying blocks…</source>
@@ -1086,7 +1098,7 @@
     </message>
     <message>
         <source>Wallet needed to be rewritten: restart %s to complete</source>
-        <translation type="unfinished">Le porte-monnaie devait être réécrit : redémarrez %s pour terminer l’opération.</translation>
+        <translation type="unfinished">Le porte-monnaie devait être réécrit : redémarrer %s pour terminer l’opération.</translation>
     </message>
 </context>
 <context>
@@ -1214,15 +1226,15 @@
     </message>
     <message>
         <source>Close Wallet…</source>
-        <translation type="unfinished">Fermer le porte-monnaie...</translation>
+        <translation type="unfinished">Fermer le porte-monnaie…</translation>
     </message>
     <message>
         <source>Create Wallet…</source>
-        <translation type="unfinished">Créer un porte-monnaie...</translation>
+        <translation type="unfinished">Créer un porte-monnaie…</translation>
     </message>
     <message>
         <source>Close All Wallets…</source>
-        <translation type="unfinished">Fermer tous les porte-monnaie...</translation>
+        <translation type="unfinished">Fermer tous les porte-monnaie…</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -2777,7 +2789,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
     </message>
     <message>
         <source>Wants Tx Relay</source>
-        <translation type="unfinished">Veut Relais Tx {Souhaite relayer la transaction}</translation>
+        <translation type="unfinished">Veut relayer les transactions</translation>
     </message>
     <message>
         <source>High bandwidth BIP152 compact block relay: %1</source>
