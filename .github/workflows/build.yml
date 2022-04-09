@@ -198,7 +198,7 @@ jobs:
           .
   appimage:
     runs-on: ubuntu-latest
-    container: appimagecrafters/appimage-builder:0.9.2
+    container: appimagecrafters/appimage-builder:0.9.1
     needs: [binary]
     strategy:
       matrix:
