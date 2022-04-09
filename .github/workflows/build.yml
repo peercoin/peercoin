@@ -233,7 +233,7 @@ jobs:
         run: |
           apt-get -qq update
           apt-get install -qqy git wget ca-certificates
-          pip3 install --upgrade git+https://github.com/AppImageCrafters/appimage-builder.git
+          pip3 install --upgrade git+https://github.com/AppImageCrafters/appimage-builder@v0.9.2
 
       - name: Detect env
         id: detect
