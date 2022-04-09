@@ -32,6 +32,7 @@
 #include <script/standard.h>
 #include <uint256.h>
 #include <util/bip32.h>
+#include <util/check.h>
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <util/vector.h>
@@ -549,7 +550,7 @@ static RPCHelpMan decodescript()
                 // Should not be wrapped
                 return false;
             } // no default case, so the compiler can warn about missing cases
-            CHECK_NONFATAL(false);
+            NONFATAL_UNREACHABLE();
         }()};
         if (can_wrap_P2WSH) {
             UniValue sr(UniValue::VOBJ);
