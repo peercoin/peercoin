@@ -23,7 +23,6 @@
 #include <uint256.h>
 
 #include <stdint.h>
-#include <functional>
 
 #include <QDebug>
 #include <QMetaObject>
@@ -254,30 +253,24 @@ static void BannedListChanged(ClientModel *clientmodel)
 
 static void BlockTipChanged(ClientModel* clientmodel, SynchronizationState sync_state, interfaces::BlockTip tip, double verificationProgress, bool fHeader)
 {
-    if (fHeader) {
+    if (header) {
         // cache best headers time and height to reduce future cs_main locks
-        clientmodel->cachedBestHeaderHeight = tip.block_height;
-        clientmodel->cachedBestHeaderTime = tip.block_time;
+        cachedBestHeaderHeight = tip.block_height;
+        cachedBestHeaderTime = tip.block_time;
     } else {
-        clientmodel->m_cached_num_blocks = tip.block_height;
-        WITH_LOCK(clientmodel->m_cached_tip_mutex, clientmodel->m_cached_tip_blocks = tip.block_hash;);
+        m_cached_num_blocks = tip.block_height;
+        WITH_LOCK(m_cached_tip_mutex, m_cached_tip_blocks = tip.block_hash;);
     }
 
     // Throttle GUI notifications about (a) blocks during initial sync, and (b) both blocks and headers during reindex.
-    const bool throttle = (sync_state != SynchronizationState::POST_INIT && !fHeader) || sync_state == SynchronizationState::INIT_REINDEX;
+    const bool throttle = (sync_state != SynchronizationState::POST_INIT && !header) || sync_state == SynchronizationState::INIT_REINDEX;
     const int64_t now = throttle ? GetTimeMillis() : 0;
-    int64_t& nLastUpdateNotification = fHeader ? nLastHeaderTipUpdateNotification : nLastBlockTipUpdateNotification;
+    int64_t& nLastUpdateNotification = header ? nLastHeaderTipUpdateNotification : nLastBlockTipUpdateNotification;
     if (throttle && now < nLastUpdateNotification + count_milliseconds(MODEL_UPDATE_DELAY)) {
         return;
     }
 
-    bool invoked = QMetaObject::invokeMethod(clientmodel, "numBlocksChanged", Qt::QueuedConnection,
-        Q_ARG(int, tip.block_height),
-        Q_ARG(QDateTime, QDateTime::fromSecsSinceEpoch(tip.block_time)),
-        Q_ARG(double, verificationProgress),
-        Q_ARG(bool, fHeader),
-        Q_ARG(SynchronizationState, sync_state));
-    assert(invoked);
+    Q_EMIT numBlocksChanged(tip.block_height, QDateTime::fromSecsSinceEpoch(tip.block_time), verification_progress, header, sync_state);
     nLastUpdateNotification = now;
 }
 
