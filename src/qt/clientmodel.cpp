@@ -26,6 +26,7 @@
 #include <functional>
 
 #include <QDebug>
+#include <QMetaObject>
 #include <QThread>
 #include <QTimer>
 
@@ -225,11 +226,6 @@ QString ClientModel::dataDir() const
 QString ClientModel::blocksDir() const
 {
     return GUIUtil::PathToQString(gArgs.GetBlocksDirPath());
-}
-
-void ClientModel::updateBanlist()
-{
-    banTableModel->refresh();
 }
 
 // Handlers for core signals
