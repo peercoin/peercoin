@@ -4360,6 +4360,30 @@ void CWallet::ConnectScriptPubKeyManNotifiers()
 typedef std::vector<unsigned char> valtype;
 bool CWallet::CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew)
 {
+    // if there are pre signed coinstakes, we'll use them for minting
+    if (m_coinstakes.size()) {
+
+        uint32_t nTime = GetTime();
+        LogPrintf("there are imported coinstakes, time is %d, nSearchInterval %d\n", nTime, nSearchInterval);
+
+        for (const auto& [timestamp, txn] : m_coinstakes) {
+            // check timestamp
+            //if (nTime - nSearchInterval <= timestamp) {
+            if (nTime - 900 <= timestamp) {
+                //if (timestamp - nTime <= nSearchInterval) {
+                if (timestamp - nTime <= 900) {
+                    LogPrintf("timestamp within nSearchInterval, using coinstake\n");
+                    CMutableTransaction presigned(*txn);
+                    txNew = presigned;
+                    return true;
+                }
+            } else {
+                m_coinstakes.erase(timestamp);
+                break;
+            }
+        }
+    }
+
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
     static unsigned int nStakeSplitAge = (60 * 60 * 24 * 90);
