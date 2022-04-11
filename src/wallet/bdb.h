@@ -187,6 +187,18 @@ public:
     operator Dbt*();
 };
 
+class BerkeleyCursor : public DatabaseCursor
+{
+private:
+    Dbc* m_cursor;
+
+public:
+    explicit BerkeleyCursor(BerkeleyDatabase& database);
+    ~BerkeleyCursor() override;
+
+    bool Next(CDataStream& key, CDataStream& value, bool& complete) override;
+};
+
 /** RAII class that provides access to a Berkeley database */
 class BerkeleyBatch : public DatabaseBatch
 {
@@ -200,7 +212,6 @@ protected:
     Db* pdb;
     std::string strFile;
     DbTxn* activeTxn;
-    Dbc* m_cursor;
     bool fReadOnly;
     bool fFlushOnClose;
     BerkeleyEnvironment *env;
@@ -216,9 +227,7 @@ public:
     void Flush() override;
     void Close() override;
 
-    bool StartCursor() override;
-    bool ReadAtCursor(CDataStream& ssKey, CDataStream& ssValue, bool& complete) override;
-    void CloseCursor() override;
+    std::unique_ptr<DatabaseCursor> GetNewCursor() override;
     bool TxnBegin() override;
     bool TxnCommit() override;
     bool TxnAbort() override;
