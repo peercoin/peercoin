@@ -1530,12 +1530,10 @@ static RPCHelpMan getdeploymentinfo()
                 }
             }
 
-            const Consensus::Params& consensusParams = Params().GetConsensus();
-
             UniValue deploymentinfo(UniValue::VOBJ);
             deploymentinfo.pushKV("hash", blockindex->GetBlockHash().ToString());
             deploymentinfo.pushKV("height", blockindex->nHeight);
-            deploymentinfo.pushKV("deployments", DeploymentInfo(blockindex, consensusParams));
+            deploymentinfo.pushKV("deployments", DeploymentInfo(blockindex, chainman));
             return deploymentinfo;
         },
     };
