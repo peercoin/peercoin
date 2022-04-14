@@ -520,6 +520,7 @@ public:
     node::BlockManager& m_blockman;
 
     /** Chain parameters for this chainstate */
+    /* TODO: replace with m_chainman.GetParams() */
     const CChainParams& m_params;
 
     /** Chain parameters for this chainstate */
