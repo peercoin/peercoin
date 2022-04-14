@@ -5467,9 +5467,9 @@ ChainstateManager::~ChainstateManager()
 {
     LOCK(::cs_main);
 
-    // TODO: The version bits cache and warning cache should probably become
-    // non-globals
-    g_versionbitscache.Clear();
+    m_versionbitscache.Clear();
+
+    // TODO: The warning cache should probably become non-global
     for (auto& i : warningcache) {
         i.clear();
     }
