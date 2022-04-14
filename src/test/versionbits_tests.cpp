@@ -297,10 +297,10 @@ BOOST_AUTO_TEST_CASE(versionbits_sanity)
 }
 
 /** Check that ComputeBlockVersion will set the appropriate bit correctly */
-static void check_computeblockversion(const Consensus::Params& params, Consensus::DeploymentPos dep)
+static void check_computeblockversion(VersionBitsCache& versionbitscache, const Consensus::Params& params, Consensus::DeploymentPos dep)
 {
-    // This implicitly uses g_versionbitscache, so clear it every time
-    g_versionbitscache.Clear();
+    // Clear the cache everytime
+    versionbitscache.Clear();
 
     int64_t bit = params.vDeployments[dep].bit;
     int64_t nStartTime = params.vDeployments[dep].nStartTime;
@@ -460,7 +460,7 @@ BOOST_AUTO_TEST_CASE(versionbits_computeblockversion)
         ArgsManager args;
         args.ForceSetArg("-vbparams", "testdummy:1199145601:1230767999"); // January 1, 2008 - December 31, 2008
         const auto chainParams = CreateChainParams(args, CBaseChainParams::REGTEST);
-        check_computeblockversion(chainParams->GetConsensus(), Consensus::DEPLOYMENT_TESTDUMMY);
+        check_computeblockversion(g_versionbitscache, chainParams->GetConsensus(), Consensus::DEPLOYMENT_TESTDUMMY);
     }
 
     {
@@ -470,7 +470,7 @@ BOOST_AUTO_TEST_CASE(versionbits_computeblockversion)
         ArgsManager args;
         args.ForceSetArg("-vbparams", "testdummy:1199145601:1230767999:403200"); // January 1, 2008 - December 31, 2008, min act height 403200
         const auto chainParams = CreateChainParams(args, CBaseChainParams::REGTEST);
-        check_computeblockversion(chainParams->GetConsensus(), Consensus::DEPLOYMENT_TESTDUMMY);
+        check_computeblockversion(g_versionbitscache, chainParams->GetConsensus(), Consensus::DEPLOYMENT_TESTDUMMY);
     }
 }
 
