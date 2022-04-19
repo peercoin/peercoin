@@ -126,6 +126,12 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
         } else {
             CTxDestination destination = DecodeDestination(name_);
             if (!IsValidDestination(destination)) {
+                if(name_.rfind("pubkey:",0) == 0) {
+                    CScript scriptPubKey = CScript() << ToByteVector(ParseHex(name_.substr(7))) << OP_CHECKSIG;
+                    CTxOut out(AmountFromValue(outputs[name_]), scriptPubKey);
+                    rawTx.vout.push_back(out);
+                    continue;
+                }
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + name_);
             }
 
