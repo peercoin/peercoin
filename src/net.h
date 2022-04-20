@@ -250,7 +250,7 @@ struct LocalServiceInfo {
     uint16_t nPort;
 };
 
-extern Mutex g_maplocalhost_mutex;
+extern GlobalMutex g_maplocalhost_mutex;
 extern std::map<CNetAddr, LocalServiceInfo> mapLocalHost GUARDED_BY(g_maplocalhost_mutex);
 extern std::map<CNetAddr, int32_t> mapPoSTemperature;
 extern std::set<std::pair<COutPoint, unsigned int>> setStakeSeen;
