@@ -582,10 +582,16 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
             CBlock *pblock;
             std::unique_ptr<CBlockTemplate> pblocktemplate;
 
-            { 
+            {
                 LOCK2(cs_main, pwallet->cs_wallet);
-
-                pblocktemplate = BlockAssembler(*mempool, Params()).CreateNewBlock(scriptPubKey, pwallet.get(), &fPoSCancel);
+                try {
+                    pblocktemplate = BlockAssembler(*mempool, Params()).CreateNewBlock(scriptPubKey, pwallet.get(), &fPoSCancel);
+                }
+                catch (const std::runtime_error &e)
+                {
+                    LogPrintf("PeercoinMiner runtime error: %s\n", e.what());
+                    continue;
+                }
             }
 
             if (!pblocktemplate.get())
@@ -619,7 +625,14 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                     }
                 }
                 LogPrintf("CPUMiner : proof-of-stake block found %s\n", pblock->GetHash().ToString());
-                ProcessBlockFound(pblock, Params());
+                try {
+                    ProcessBlockFound(pblock, Params());
+                    }
+                catch (const std::runtime_error &e)
+                {
+                    LogPrintf("PeercoinMiner runtime error: %s\n", e.what());
+                    continue;
+                }
                 reservedest.KeepDestination();
                 // Rest for ~3 minutes after successful block to preserve close quick
                 if (!connman->interruptNet.sleep_for(std::chrono::seconds(60 + GetRand(4))))
@@ -634,8 +647,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
     catch (boost::thread_interrupted)
     {
         LogPrintf("PeercoinMiner terminated\n");
-    return;
-        // throw;
+        return;
     }
     catch (const std::runtime_error &e)
     {
