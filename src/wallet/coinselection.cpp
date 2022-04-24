@@ -345,18 +345,16 @@ void OutputGroup::Insert(const COutput& output, size_t ancestors, size_t descend
     const CAmount ev = output.txout.nValue - coin_fee;
 
     // Filter for positive only here before adding the coin
-    if (positive_only && ev <= 0) return;
+    if (positive_only && output.GetEffectiveValue() <= 0) return;
 
     m_outputs.push_back(output);
     COutput& coin = m_outputs.back();
 
-    coin.fee = coin_fee;
-    fee += coin.fee;
+    fee += coin.GetFee();
 
     coin.m_long_term_fee = coin.m_input_bytes < 0 ? 0 : GetMinFee(output.m_input_bytes, GetAdjustedTime());
 
-    coin.effective_value = ev;
-    effective_value += coin.effective_value;
+    effective_value += coin.GetEffectiveValue();
 
     m_from_me &= coin.from_me;
     m_value += coin.txout.nValue;
@@ -391,8 +389,8 @@ CAmount GetSelectionWaste(const std::set<COutput>& inputs, CAmount change_cost, 
     CAmount waste = 0;
     CAmount selected_effective_value = 0;
     for (const COutput& coin : inputs) {
-        waste += coin.fee - coin.long_term_fee;
-        selected_effective_value += use_effective_value ? coin.effective_value : coin.txout.nValue;
+        waste += coin.GetFee() - coin.long_term_fee;
+        selected_effective_value += use_effective_value ? coin.GetEffectiveValue() : coin.txout.nValue;
     }
 
     if (change_cost) {
