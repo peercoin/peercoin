@@ -1071,7 +1071,7 @@ static RPCHelpMan estimatesmartfee()
 };
 }
 
-void RegisterMiningRPCCommands(CRPCTable &t)
+void RegisterMiningRPCCommands(CRPCTable& t)
 {
 // clang-format off
 static const CRPCCommand commands[] =
@@ -1083,10 +1083,11 @@ static const CRPCCommand commands[] =
     { "mining",              &submitblock,             },
     { "mining",              &submitheader,            },
 
+        {"hidden", &generatetoaddress},
+        {"hidden", &generatetodescriptor},
+        {"hidden", &generateblock},
 
-    { "hidden",              &generatetoaddress,       },
-    { "hidden",              &generatetodescriptor,    },
-    { "hidden",              &generateblock,           },
+        {"util", &estimatesmartfee},
 
     { "util",                &estimatesmartfee,        },
     { "hidden",              &generate,                },

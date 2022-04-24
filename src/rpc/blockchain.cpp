@@ -2630,8 +2630,7 @@ UniValue CreateUTXOSnapshot(
     };
 }
 
-
-void RegisterBlockchainRPCCommands(CRPCTable &t)
+void RegisterBlockchainRPCCommands(CRPCTable& t)
 {
 // clang-format off
 static const CRPCCommand commands[] =

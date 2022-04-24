@@ -977,7 +977,7 @@ static const CRPCCommand commands[] =
     { "wallet",             &upgradewallet,                  },
     { "wallet",             &walletcreatefundedpsbt,         },
 #ifdef ENABLE_EXTERNAL_SIGNER
-    { "wallet",             &walletdisplayaddress,           },
+        {"wallet", &walletdisplayaddress},
 #endif // ENABLE_EXTERNAL_SIGNER
     { "wallet",             &walletlock,                     },
     { "wallet",             &walletpassphrase,               },
