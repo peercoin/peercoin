@@ -1608,16 +1608,6 @@
         <translation>&amp;Запустить %1 при входе в систему</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Check this box to follow the centrally issued checkpoints.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Enforce checkpoints</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location line="+9"/>
         <source>Size of &amp;database cache</source>
         <translation>Размер кеша &amp;базы данных</translation>

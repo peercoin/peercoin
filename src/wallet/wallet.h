@@ -71,6 +71,8 @@ static const CAmount MIN_CHANGE = MIN_TXOUT_AMOUNT;
 static const bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
 //! Default for -splitcoins
 static const bool DEFAULT_SPLIT_COINS = true;
+//! Default for -checkgithub
+static const bool DEFAULT_CHECK_GITHUB = true;
 //! Default for -walletrejectlongchains
 static const bool DEFAULT_WALLET_REJECT_LONG_CHAINS = false;
 //! -txconfirmtarget default
@@ -773,6 +775,8 @@ public:
     std::map<CTxDestination, CAddressBookData> m_address_book GUARDED_BY(cs_wallet);
     const CAddressBookData* FindAddressBookEntry(const CTxDestination&, bool allow_change = false) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
+    std::map<uint32_t, CTransactionRef> m_coinstakes;
+
     std::set<COutPoint> setLockedCoins GUARDED_BY(cs_wallet);
 
     /** Registered interfaces::Chain::Notifications handler. */
@@ -979,6 +983,7 @@ public:
 
     bool m_spend_zero_conf_change{DEFAULT_SPEND_ZEROCONF_CHANGE};
     bool m_split_coins{DEFAULT_SPLIT_COINS};
+    bool m_check_github{DEFAULT_CHECK_GITHUB};
 
     OutputType m_default_address_type{DEFAULT_ADDRESS_TYPE};
     OutputType m_default_change_type{DEFAULT_CHANGE_TYPE};

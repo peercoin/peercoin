@@ -3382,6 +3382,65 @@ UniValue rescanblockchain(const JSONRPCRequest& request)
     return response;
 }
 
+UniValue importcoinstake(const JSONRPCRequest& request)
+{
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* const pwallet = wallet.get();
+
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    RPCHelpMan{"importcoinstake",
+        "\nImport presigned coinstake for use in minting.\n",
+        {
+            {"coinstake", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "signed coinstake transaction as hex"},
+            {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::NO, "timestamp when this coinstake will be valid"},
+        },
+        RPCResult{
+            RPCResult::Type::STR, "txid", "transaction id if import is successful",
+        },
+        RPCExamples{
+            HelpExampleCli("importcoinstake", "\"03000000\" 12345678")
+            + HelpExampleRpc("importcoinstake", "\"03000000\", 12345678")
+        },
+    }.Check(request);
+
+    RPCTypeCheck(request.params, {
+        UniValue::VSTR,
+        UniValue::VNUM
+    });
+
+    // parse hex string from parameter
+    CMutableTransaction mtx;
+    if (!DecodeHexTx(mtx, request.params[0].get_str()))
+        throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+    CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
+
+    std::string err_string;
+    AssertLockNotHeld(cs_main);
+
+    {
+        auto locked_chain = pwallet->chain().lock();
+        int timestamp = request.params[1].get_int();
+
+        if (timestamp < GetTime()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Expired coinstake");
+        }
+
+        // check if we have the key to vout[1]
+        SignatureData sigdata;// = DataFromTransaction(mtx, 1, tx->vout[1]);
+        std::set<ScriptPubKeyMan*> spk_mans = pwallet->GetScriptPubKeyMans(tx->vout[1].scriptPubKey, sigdata);
+        if (spk_mans.size() == 0) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "No keys for vout[1]");
+        }
+
+        // add to in memory structure
+        pwallet->m_coinstakes[timestamp] = tx;
+    }
+    return tx->GetHash().GetHex();
+}
+
 UniValue listminting(const JSONRPCRequest& request)
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
@@ -4135,6 +4194,7 @@ UniValue walletcreatefundedpsbt(const JSONRPCRequest& request)
                         },
                     },
                     {"locktime", RPCArg::Type::NUM, /* default */ "0", "Raw locktime. Non-0 value also locktime-activates inputs"},
+                    {"timestamp", RPCArg::Type::NUM, /* default */ "0", "Transaction timestamp"},
                     {"options", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED_NAMED_ARG, "",
                         {
                             {"changeAddress", RPCArg::Type::STR_HEX, /* default */ "pool address", "The peercoin address to receive the change"},
@@ -4180,6 +4240,7 @@ UniValue walletcreatefundedpsbt(const JSONRPCRequest& request)
         UniValue::VARR,
         UniValueType(), // ARR or OBJ, checked later
         UniValue::VNUM,
+        UniValue::VNUM,
         UniValue::VOBJ,
         UniValue::VBOOL
         }, true
@@ -4187,14 +4248,14 @@ UniValue walletcreatefundedpsbt(const JSONRPCRequest& request)
 
     CAmount fee;
     int change_position;
-    CMutableTransaction rawTx = ConstructTransaction(request.params[0], request.params[1], request.params[2]);
-    FundTransaction(pwallet, rawTx, fee, change_position, request.params[3]);
+    CMutableTransaction rawTx = ConstructTransaction(request.params[0], request.params[1], request.params[2], request.params[3]);
+    FundTransaction(pwallet, rawTx, fee, change_position, request.params[4]);
 
     // Make a blank psbt
     PartiallySignedTransaction psbtx(rawTx);
 
     // Fill transaction with out data but don't sign
-    bool bip32derivs = request.params[4].isNull() ? true : request.params[4].get_bool();
+    bool bip32derivs = request.params[5].isNull() ? true : request.params[5].get_bool();
     bool complete = true;
     const TransactionError err = pwallet->FillPSBT(psbtx, complete, 1, false, bip32derivs);
     if (err != TransactionError::OK) {
@@ -4281,6 +4342,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "walletpassphrasechange",           &walletpassphrasechange,        {"oldpassphrase","newpassphrase"} },
     { "wallet",             "walletprocesspsbt",                &walletprocesspsbt,             {"psbt","sign","sighashtype","bip32derivs"} },
     // peercoin commands
+    { "wallet",             "importcoinstake",                  &importcoinstake,               {"hex", "timestamp"} },
     { "wallet",             "listminting",                      &listminting,                   {"count", "from"} },
     { "wallet",             "makekeypair",                      &makekeypair,                   {"prefix"} },
     { "wallet",             "showkeypair",                      &showkeypair,                   {"hexprivkey"} },

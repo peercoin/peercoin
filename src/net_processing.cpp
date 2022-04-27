@@ -1893,7 +1893,7 @@ void static ProcessOrphanTx(CConnman* connman, CTxMemPool& mempool, std::set<uin
         TxValidationState orphan_state;
 
         if (setMisbehaving.count(fromPeer)) continue;
-        if (AcceptToMemoryPool(mempool, orphan_state, porphanTx, &removed_txn, false /* bypass_limits */)) {
+        if (AcceptToMemoryPool(mempool, orphan_state, porphanTx, false /* bypass_limits */, false /* test_accept */)) {
             LogPrint(BCLog::MEMPOOL, "   accepted orphan tx %s\n", orphanHash.ToString());
             RelayTransaction(orphanHash, *connman);
             for (unsigned int i = 0; i < orphanTx.vout.size(); i++) {
@@ -2569,7 +2569,7 @@ bool ProcessMessage(CNode* pfrom, const std::string& msg_type, CDataStream& vRec
         std::list<CTransactionRef> lRemovedTxn;
 
         if (!AlreadyHave(inv, mempool) &&
-            AcceptToMemoryPool(mempool, state, ptx, &lRemovedTxn, false /* bypass_limits */)) {
+            AcceptToMemoryPool(mempool, state, ptx, false /* bypass_limits */, false /* test_accept */)) {
             mempool.check(&::ChainstateActive().CoinsTip());
             RelayTransaction(tx.GetHash(), *connman);
             for (unsigned int i = 0; i < tx.vout.size(); i++) {

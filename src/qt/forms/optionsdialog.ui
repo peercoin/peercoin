@@ -186,6 +186,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="checkGithub">
+            <property name="toolTip">
+             <string>Whether to check official github for wallet updates on the startup.</string>
+            </property>
+            <property name="text">
+             <string>&amp;Check github for updates on startup</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

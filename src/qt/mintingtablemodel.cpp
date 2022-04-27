@@ -287,7 +287,7 @@ static void NotifyTransactionChanged(MintingTableModel *ttm, const uint256 &hash
 MintingTableModel::MintingTableModel(WalletModel *parent) :
         QAbstractTableModel(parent),
         walletModel(parent),
-        mintingInterval(10),
+        mintingInterval(1440),
         priv(new MintingTablePriv(walletModel, this)),
         cachedNumBlocks(0)
 {

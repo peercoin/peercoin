@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 The Peercoin developers
+// Copyright (c) 2012-2022 The Peercoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #include <qt/mintingview.h>
@@ -68,7 +68,7 @@ MintingView::MintingView(QWidget *parent) :
     mintingCombo->addItem(tr("30 days"), Minting30days);
     mintingCombo->addItem(tr("90 days"), Minting90days);
     mintingCombo->setFixedWidth(120);
-
+    mintingCombo->setCurrentIndex(1);
 
     hlayout->insertStretch(0);
     hlayout->addWidget(mintingLabel);
