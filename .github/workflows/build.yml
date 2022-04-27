@@ -91,17 +91,9 @@ jobs:
             CMD ["sleep", "infinity"]
           EOF
 
-      - name: Cache common
+      - name: Cache dependencies
         uses: actions/cache@v2
-        id: gitian-common
-        env:
-          cache-name: gitian-common
-        with:
-          path: ${{ env.GITIAN_CACHE }}/common
-          key: ${{ env.cache-name }}-${{ hashFiles('depends/packages/*') }}
-
-      - name: Cache arch
-        uses: actions/cache@v2
+        id: gitian-deps
         env:
           cache-name: gitian-host
         with:
@@ -118,20 +110,12 @@ jobs:
           git add share/genbuild.sh
           git commit -m "Update DESC"
 
-      - name: Download common
-        if: steps.gitian-common.outputs.cache-hit != 'true'
-        run: |
-          cd ${GITIAN_DIR}
-          make -j $MAKEJOBS -C ${{ steps.detect.outputs.build-dir }}/depends download SOURCES_PATH=${GITIAN_CACHE}/common
-          cd -
-
       - name: Build binary
+        working-directory: ${{ env.GITIAN_DIR }}
         run: |
-          cd ${GITIAN_DIR}
           sed -i "s/^\ \ \(HOSTS=\"\).*/\ \ \1${{ matrix.host }}\"/g" ${{ steps.detect.outputs.descriptor }}
           ./bin/gbuild -j $MAKEJOBS --commit peercoin=$(git -C ${{ steps.detect.outputs.build-dir }} log --format="%H" -n 1) --url peercoin=${{ steps.detect.outputs.build-dir }} ${{ steps.detect.outputs.descriptor }}
           cp -r ${GITIAN_DIR}/build/out/* ${{ steps.detect.outputs.build-dir }}/
-          cd -
 
       - name: Get short SHA
         id: slug
@@ -249,7 +233,7 @@ jobs:
         run: |
           apt-get -qq update
           apt-get install -qqy git wget ca-certificates
-          pip3 install --upgrade git+https://github.com/AppImageCrafters/appimage-builder.git
+          pip3 install --upgrade git+https://github.com/AppImageCrafters/appimage-builder@v0.9.2
 
       - name: Detect env
         id: detect
@@ -313,6 +297,9 @@ jobs:
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
         run: sudo apt-get update && sudo apt-get install -y mktorrent gpg bash
 
+      - uses: actions/checkout@v2
+        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+
       - uses: actions/download-artifact@v2
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
 
@@ -335,6 +322,7 @@ jobs:
       - name: Create torrent
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
         run: |
+          rm -rf ${{ steps.detect.outputs.tag-name }}/*
           mkdir -p ${{ steps.detect.outputs.tag-name }}
           mv peercoin-*-**/peercoin-*.tar.gz \
             peercoin-*-**/peercoin-*.zip \
@@ -354,11 +342,37 @@ jobs:
             -a udp://exodus.desync.com:6969/announce \
           ${{ steps.detect.outputs.tag-name }}
 
+      - name: Check latest
+        id: detect-publish-latest
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && github.ref == 'refs/heads/develop' }}
+        run: |
+          PUBLISH=noop
+          git fetch origin +refs/tags/latest:refs/tags/latest
+          if ! git merge-base --is-ancestor refs/tags/latest HEAD; then
+            PUBLISH=op
+          fi
+          echo ::set-output name=publish::$PUBLISH
+
+      - name: Generate Changelog
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          git fetch --depth=1 origin +${{ github.ref }}:${{ github.ref }}
+          git tag -l --format='%(contents)' ${GITHUB_REF/refs\/tags\//} > ${{ github.workspace }}-CHANGELOG.txt
+
       - uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && steps.detect-publish-latest.outputs.publish == 'op' && github.ref == 'refs/heads/develop' }}
         with:
           repo_token: ${{ github.token }}
           automatic_release_tag: ${{ steps.detect.outputs.tag-name }}
           prerelease: true
           title: "${{ steps.detect.outputs.release-title }}"
+          files: ${{ steps.detect.outputs.tag-name }}/*
+
+      - uses: softprops/action-gh-release@6034af24fba4e5a8e975aaa6056554efe4c794d0
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
+        with:
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          token: ${{ github.token }}
+          prerelease: true
+          name: "${{ steps.detect.outputs.release-title }}"
           files: ${{ steps.detect.outputs.tag-name }}/*

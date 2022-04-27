@@ -17,8 +17,9 @@
 #include <tinyformat.h>
 #include <univalue.h>
 #include <util/strencodings.h>
+#include <util/system.h>
 
-CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniValue& outputs_in, const UniValue& locktime)
+CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniValue& outputs_in, const UniValue& locktime, const UniValue& timestamp)
 {
     if (inputs_in.isNull() || outputs_in.isNull())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, arguments 1 and 2 must be non-null");
@@ -28,6 +29,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
     UniValue outputs = outputs_is_obj ? outputs_in.get_obj() : outputs_in.get_array();
 
     CMutableTransaction rawTx;
+    rawTx.nVersion = gArgs.GetArg("-txversion", CTransaction::CURRENT_VERSION);
 
     if (!locktime.isNull()) {
         int64_t nLockTime = locktime.get_int64();
@@ -36,9 +38,17 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
         rawTx.nLockTime = nLockTime;
     }
 
+    if (!timestamp.isNull()) {
+        int64_t nTime = timestamp.get_int64();
+        if (nTime < 0 || nTime > LOCKTIME_MAX)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, timestamp out of range");
+        rawTx.nTime = nTime;
+    }
+
     for (unsigned int idx = 0; idx < inputs.size(); idx++) {
         const UniValue& input = inputs[idx];
         const UniValue& o = input.get_obj();
+        CScript scriptSig;
 
         uint256 txid = ParseHashO(o, "txid");
 
@@ -67,7 +77,15 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
             }
         }
 
-        CTxIn in(COutPoint(txid, nOutput), CScript(), nSequence);
+        // set redeem script
+        const UniValue& rs = find_value(o, "redeemScript");
+        if (!rs.isNull()) {
+            std::vector<unsigned char> redeemScriptData(ParseHex(rs.getValStr()));
+            CScript redeemScript(redeemScriptData.begin(), redeemScriptData.end());
+            scriptSig = redeemScript;
+        }
+
+        CTxIn in(COutPoint(txid, nOutput), scriptSig, nSequence);
 
         rawTx.vin.push_back(in);
     }
@@ -102,10 +120,19 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
 
             CTxOut out(0, CScript() << OP_RETURN << data);
             rawTx.vout.push_back(out);
+        } else if (name_ == "coinstake") {
+            rawTx.nVersion = 1;
+            rawTx.vout.push_back(CTxOut(0, CScript()));
         } else {
             CTxDestination destination = DecodeDestination(name_);
             if (!IsValidDestination(destination)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
+                if(name_.rfind("pubkey:",0) == 0) {
+                    CScript scriptPubKey = CScript() << ToByteVector(ParseHex(name_.substr(7))) << OP_CHECKSIG;
+                    CTxOut out(AmountFromValue(outputs[name_]), scriptPubKey);
+                    rawTx.vout.push_back(out);
+                    continue;
+                }
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + name_);
             }
 
             if (!destinations.insert(destination).second) {
