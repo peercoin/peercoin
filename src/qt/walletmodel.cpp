@@ -210,7 +210,9 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
         return DuplicateAddress;
     }
 
-    CAmount nBalance = m_wallet->getAvailableBalance(coinControl);
+    // If no coin was manually selected, use the cached balance
+    // Future: can merge this call with 'createTransaction'.
+    CAmount nBalance = getAvailableBalance(&coinControl);
 
     if(total > nBalance)
     {
