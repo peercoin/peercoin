@@ -21,7 +21,6 @@
 #include <script/descriptor.h>
 #include <univalue.h>
 #include <util/check.h>
-#include <util/message.h> // For MessageSign(), MessageVerify()
 #include <util/strencodings.h>
 #include <util/syscall_sandbox.h>
 #include <util/system.h>
@@ -798,8 +797,6 @@ void RegisterMiscRPCCommands(CRPCTable &t)
         {"util", &createmultisig},
         {"util", &deriveaddresses},
         {"util", &getdescriptorinfo},
-        {"util", &verifymessage},
-        {"util", &signmessagewithprivkey},
         {"util", &getindexinfo},
         {"hidden", &setmocktime},
         {"hidden", &mockscheduler},
