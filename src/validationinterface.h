@@ -176,7 +176,7 @@ protected:
     friend class ValidationInterfaceTest;
 };
 
-struct MainSignalsInstance;
+class MainSignalsInstance;
 class CMainSignals {
 private:
     std::unique_ptr<MainSignalsInstance> m_internals;
