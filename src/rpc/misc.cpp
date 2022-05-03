@@ -3,6 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <chainparams.h>
 #include <httpserver.h>
 #include <index/blockfilterindex.h>
 #include <index/coinstatsindex.h>
@@ -11,23 +12,17 @@
 #include <interfaces/echo.h>
 #include <interfaces/init.h>
 #include <interfaces/ipc.h>
-#include <key_io.h>
 #include <node/context.h>
-#include <outputtype.h>
 #include <rpc/server.h>
 #include <rpc/server_util.h>
 #include <rpc/util.h>
 #include <scheduler.h>
-#include <script/descriptor.h>
 #include <univalue.h>
 #include <util/check.h>
-#include <util/strencodings.h>
 #include <util/syscall_sandbox.h>
 #include <util/system.h>
 
-#include <optional>
 #include <stdint.h>
-#include <tuple>
 #ifdef HAVE_MALLOC_INFO
 #include <malloc.h>
 #endif
@@ -793,10 +788,6 @@ void RegisterMiscRPCCommands(CRPCTable &t)
     static const CRPCCommand commands[]{
         {"control", &getmemoryinfo},
         {"control", &logging},
-        {"util", &validateaddress},
-        {"util", &createmultisig},
-        {"util", &deriveaddresses},
-        {"util", &getdescriptorinfo},
         {"util", &getindexinfo},
         {"hidden", &setmocktime},
         {"hidden", &mockscheduler},
