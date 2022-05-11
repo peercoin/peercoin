@@ -128,9 +128,7 @@ WalletView::WalletView(WalletModel* wallet_model, const PlatformStyle* _platform
     this->decryptForMinting(true);
 }
 
-WalletView::~WalletView()
-{
-}
+WalletView::~WalletView() = default;
 
 void WalletView::setClientModel(ClientModel *_clientModel)
 {
