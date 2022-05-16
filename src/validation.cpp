@@ -47,12 +47,14 @@
 #include <util/moneystr.h>
 #include <util/strencodings.h>
 #include <util/system.h>
+#include <util/time.h>
 #include <util/trace.h>
 #include <util/translation.h>
 #include <validationinterface.h>
 #include <warnings.h>
 
 #include <algorithm>
+#include <chrono>
 #include <deque>
 #include <numeric>
 #include <optional>
@@ -4856,7 +4858,7 @@ bool LoadMempool(CTxMemPool& pool, CChainState& active_chainstate, FopenFn mocka
 
 bool DumpMempool(const CTxMemPool& pool, FopenFn mockable_fopen_function, bool skip_file_commit)
 {
-    int64_t start = GetTimeMicros();
+    auto start = SteadyClock::now();
 
     std::map<uint256, CAmount> mapDeltas;
     std::vector<TxMempoolInfo> vinfo;
@@ -4874,7 +4876,7 @@ bool DumpMempool(const CTxMemPool& pool, FopenFn mockable_fopen_function, bool s
         unbroadcast_txids = pool.GetUnbroadcastTxs();
     }
 
-    int64_t mid = GetTimeMicros();
+    auto mid = SteadyClock::now();
 
     try {
         FILE* filestr{mockable_fopen_function(gArgs.GetDataDirNet() / "mempool.dat.new", "wb")};
@@ -4906,8 +4908,11 @@ bool DumpMempool(const CTxMemPool& pool, FopenFn mockable_fopen_function, bool s
         if (!RenameOver(gArgs.GetDataDirNet() / "mempool.dat.new", gArgs.GetDataDirNet() / "mempool.dat")) {
             throw std::runtime_error("Rename failed");
         }
-        int64_t last = GetTimeMicros();
-        LogPrintf("Dumped mempool: %gs to copy, %gs to dump\n", (mid-start)*MICRO, (last-mid)*MICRO);
+        auto last = SteadyClock::now();
+
+        LogPrintf("Dumped mempool: %gs to copy, %gs to dump\n",
+                  Ticks<SecondsDouble>(mid - start),
+                  Ticks<SecondsDouble>(last - mid));
     } catch (const std::exception& e) {
         LogPrintf("Failed to dump mempool: %s. Continuing anyway.\n", e.what());
         return false;
