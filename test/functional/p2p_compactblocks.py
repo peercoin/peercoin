@@ -389,7 +389,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         # Try announcing a block with an inv or header, expect a compactblock
         # request
         for announce in ["inv", "header"]:
-            block = self.build_block_on_tip(node, segwit=True)
+            block = self.build_block_on_tip(node)
 
             if announce == "inv":
                 test_node.send_message(msg_inv([CInv(MSG_BLOCK, block.sha256)]))
