@@ -1887,6 +1887,8 @@ void CWallet::ReacceptWalletTransactions()
 
 bool CWallet::SubmitTxMemoryPoolAndRelay(CWalletTx& wtx, std::string& err_string, bool relay) const
 {
+    AssertLockHeld(cs_wallet);
+
     // Can't relay if wallet is not broadcasting
     if (!GetBroadcastTransactions()) return false;
     // Don't relay abandoned transactions
@@ -3068,6 +3070,7 @@ int CWallet::GetTxBlocksToMaturity(const CWalletTx& wtx) const
 {
     if (!(wtx.IsCoinBase() || wtx.IsCoinStake()))
         return 0;
+    }
     int chain_depth = GetTxDepthInMainChain(wtx);
     if (!wtx.IsCoinStake())
         assert(chain_depth >= 0); // coinbase tx should not be conflicted
@@ -3076,6 +3079,8 @@ int CWallet::GetTxBlocksToMaturity(const CWalletTx& wtx) const
 
 bool CWallet::IsTxImmatureCoinBase(const CWalletTx& wtx) const
 {
+    AssertLockHeld(cs_wallet);
+
     // note GetBlocksToMaturity is 0 for non-coinbase tx
     return GetTxBlocksToMaturity(wtx) > 0;
 }
