@@ -1694,6 +1694,16 @@ bool PeercoinContextualBlockChecks(const CBlock& block, BlockValidationState& st
         return false; // do not error here as we expect this during initial block download
     }
 
+    // peercoin: check for duplicity of stake
+    if (block.IsProofOfStake()) {
+        std::pair<COutPoint, unsigned int> proofOfStake = block.GetProofOfStake();
+        if (pindex->IsProofOfStake() && proofOfStake.first == pindex->prevoutStake) {
+            LogPrintf("WARNING: %s: duplicate proof-of-stake in block %s, invalidating tip\n", __func__, block.GetHash().ToString());
+            ::ChainstateActive().InvalidateBlock(state, Params(), pindex);
+            return error("ConnectBlock() : Duplicate coinstake found");
+        }
+    }
+
     // peercoin: compute stake entropy bit for stake modifier
     unsigned int nEntropyBit = GetStakeEntropyBit(block);
 
@@ -1720,14 +1730,13 @@ bool PeercoinContextualBlockChecks(const CBlock& block, BlockValidationState& st
     pindex->nFlags           = nFlagsBackup;
     pindex->nStakeModifier   = nStakeModifierBackup;
     pindex->hashProofOfStake = hashProofOfStakeBackup;
-  // compute nStakeModifierChecksum end
+    // compute nStakeModifierChecksum end
 
     if (!CheckStakeModifierCheckpoints(pindex->nHeight, nStakeModifierChecksum))
         return error("ConnectBlock() : Rejected by stake modifier checkpoint height=%d, modifier=0x%016llx", pindex->nHeight, nStakeModifier);
 
     if (fJustCheck)
         return true;
-
 
     // write everything to index
     if (block.IsProofOfStake())
@@ -4890,7 +4899,7 @@ bool CheckBlockSignature(const CBlock& block)
 
     if (Solver(txout.scriptPubKey, vSolutions) != TX_PUBKEY)
         return false;
-    
+
     const valtype& vchPubKey = vSolutions[0];
     CPubKey key(vchPubKey);
     if (block.vchBlockSig.empty())
