@@ -703,7 +703,7 @@ public:
     void CheckBlockIndex();
 
     /** Load the persisted mempool from disk */
-    void LoadMempool(const ArgsManager& args);
+    void LoadMempool(const ArgsManager& args, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen);
 
     /** Load the persisted mempool from disk */
     void LoadMempool(const ArgsManager& args);
