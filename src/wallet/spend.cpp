@@ -959,10 +959,6 @@ bool FundTransaction(CWallet& wallet, CMutableTransaction& tx, CAmount& nFeeRet,
 
     coinControl.fAllowOtherInputs = true;
 
-    for (const CTxIn& txin : tx.vin) {
-        coinControl.Select(txin.prevout);
-    }
-
     // Acquire the locks to prevent races to the new locked unspents between the
     // CreateTransaction call and LockCoin calls (when lockUnspents is true).
     LOCK(wallet.cs_wallet);
