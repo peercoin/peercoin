@@ -51,7 +51,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
     }
 
     if (!chainman.BlockIndex().empty() &&
-            !chainman.m_blockman.LookupBlockIndex(consensus_params.hashGenesisBlock)) {
+            !chainman.m_blockman.LookupBlockIndex(chainman.GetConsensus().hashGenesisBlock)) {
         return ChainstateLoadingError::ERROR_BAD_GENESIS_BLOCK;
     }
 
@@ -114,7 +114,6 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
 std::optional<ChainstateLoadVerifyError> VerifyLoadedChainstate(ChainstateManager& chainman,
                                                                 bool fReset,
                                                                 bool fReindexChainState,
-                                                                const Consensus::Params& consensus_params,
                                                                 int check_blocks,
                                                                 int check_level)
 {
@@ -132,7 +131,7 @@ std::optional<ChainstateLoadVerifyError> VerifyLoadedChainstate(ChainstateManage
             }
 
             if (!CVerifyDB().VerifyDB(
-                    *chainstate, consensus_params, chainstate->CoinsDB(),
+                    *chainstate, chainman.GetConsensus(), chainstate->CoinsDB(),
                     check_level,
                     check_blocks)) {
                 return ChainstateLoadVerifyError::ERROR_CORRUPTED_BLOCK_DB;

@@ -76,7 +76,6 @@ enum class ChainstateLoadVerifyError {
 std::optional<ChainstateLoadVerifyError> VerifyLoadedChainstate(ChainstateManager& chainman,
                                                                 bool fReset,
                                                                 bool fReindexChainState,
-                                                                const Consensus::Params& consensus_params,
                                                                 int check_blocks,
                                                                 int check_level);
 } // namespace node

@@ -216,7 +216,6 @@ TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const
         *Assert(m_node.chainman),
         fReindex.load(),
         m_args.GetBoolArg("-reindex-chainstate", false),
-        chainparams.GetConsensus(),
         m_args.GetIntArg("-checkblocks", DEFAULT_CHECKBLOCKS),
         m_args.GetIntArg("-checklevel", DEFAULT_CHECKLEVEL));
     assert(!maybe_verify_error.has_value());
