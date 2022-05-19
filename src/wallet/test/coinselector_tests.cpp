@@ -374,7 +374,7 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         expected_result.Clear();
         add_coin(9 * CENT, 2, expected_result);
         add_coin(1 * CENT, 2, expected_result);
-        coin_control.fAllowOtherInputs = true;
+        coin_control.m_allow_other_inputs = true;
         coin_control.Select(coins.at(1).outpoint); // pre select 9 coin
         const auto result13 = SelectCoins(*wallet, coins, 10 * CENT, coin_control, coin_selection_params_bnb);
         BOOST_CHECK(EquivalentResult(expected_result, *result13));
