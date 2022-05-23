@@ -37,6 +37,8 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const interface
 
     if (wtx.is_coinstake) // peercoin: coinstake transaction
     {
+        if (!nDebit)
+            nDebit = wtx.tx->GetValueOut() - nCredit;
         TransactionRecord sub(hash, nTime, TransactionRecord::StakeMint, "", -nDebit, wtx.tx->GetValueOut());
         CTxDestination address;
         const CTxOut& txout = wtx.tx->vout[1];
