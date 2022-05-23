@@ -3450,21 +3450,29 @@ UniValue listminting(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    if(request.fHelp || request.params.size() > 2)
-        throw std::runtime_error(
-                "listminting [count=-1] [from=0]\n"
-                "Return all mintable outputs and provide details for each of them.");
+    RPCHelpMan{"listminting",
+        "\nReturn all mintable outputs and provide details for each of them.\n",
+        {
+            {"count", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "maximum number of outputs to be returned"},
+        },
+        RPCResult{
+            RPCResult::Type::STR, "list", "list of outputs",
+        },
+        RPCExamples{
+            HelpExampleCli("listminting", "10")
+            + HelpExampleRpc("listminting", "10")
+        },
+    }.Check(request);
 
-    int64_t count = -1;
-    if(request.params.size() > 0)
+    RPCTypeCheck(request.params, {
+        UniValue::VNUM
+    });
+
+    int64_t count=-1;
+    if (!request.params[0].isNull())
         count = request.params[0].get_int();
 
-//    int64_t from = 0;
-//    if(request.params.size() > 1)
-//        from = request.params[1].get_int();
-
     UniValue ret(UniValue::VARR);
-//    LOCK(pwallet->cs_wallet);
     const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
     double difficulty = p->GetBlockDifficulty();
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
@@ -3523,6 +3531,19 @@ UniValue listminting(const JSONRPCRequest& request)
         }
     }
 
+    if (pwallet->m_coinstakes.size()) {
+        for (const auto& [timestamp, txn] : pwallet->m_coinstakes) {
+            UniValue obj(UniValue::VOBJ);
+            CTxDestination address;
+            ExtractDestination(txn->vout[1].scriptPubKey, address);
+            obj.pushKV("address", EncodeDestination(address));
+            obj.pushKV("amount",  ValueFromAmount(txn->vout[1].nValue));
+            obj.pushKV("status", "imported");
+            obj.pushKV("time", (uint64_t)txn->nTime);
+            obj.pushKV("due-in-seconds", (uint64_t)(txn->nTime - GetAdjustedTime()));
+            ret.push_back(obj);
+        }
+    }
     return ret;
 }
 
@@ -4343,7 +4364,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "walletprocesspsbt",                &walletprocesspsbt,             {"psbt","sign","sighashtype","bip32derivs"} },
     // peercoin commands
     { "wallet",             "importcoinstake",                  &importcoinstake,               {"hex", "timestamp"} },
-    { "wallet",             "listminting",                      &listminting,                   {"count", "from"} },
+    { "wallet",             "listminting",                      &listminting,                   {"count"} },
     { "wallet",             "makekeypair",                      &makekeypair,                   {"prefix"} },
     { "wallet",             "showkeypair",                      &showkeypair,                   {"hexprivkey"} },
     { "wallet",             "reservebalance",                   &reservebalance,                {"reserve", "amount"} },
