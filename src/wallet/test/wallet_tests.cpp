@@ -4,7 +4,6 @@
 
 #include <wallet/wallet.h>
 
-#include <any>
 #include <future>
 #include <memory>
 #include <stdint.h>
@@ -13,7 +12,6 @@
 #include <interfaces/chain.h>
 #include <key_io.h>
 #include <node/blockstorage.h>
-#include <node/context.h>
 #include <policy/policy.h>
 #include <rpc/server.h>
 #include <test/util/logging.h>
@@ -510,7 +508,7 @@ public:
         CAmount fee_calc_out;
         {
             constexpr int RANDOM_CHANGE_POSITION = -1;
-            std::optional<CreatedTransactionResult> txr = CreateTransaction(*wallet, {recipient}, RANDOM_CHANGE_POSITION, error, dummy, fee_calc_out);
+            std::optional<CreatedTransactionResult> txr = CreateTransaction(*wallet, {recipient}, RANDOM_CHANGE_POSITION, error, dummy);
             BOOST_CHECK(txr.has_value());
             tx = txr->tx;
         }

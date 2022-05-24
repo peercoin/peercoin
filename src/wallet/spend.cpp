@@ -920,7 +920,7 @@ std::optional<CreatedTransactionResult> CreateTransaction(
 
     LOCK(wallet.cs_wallet);
 
-    std::optional<CreatedTransactionResult> txr_ungrouped = CreateTransactionInternal(wallet, vecSend, change_pos, error, coin_control, fee_calc_out, sign);
+    std::optional<CreatedTransactionResult> txr_ungrouped = CreateTransactionInternal(wallet, vecSend, change_pos, error, coin_control, sign);
     TRACE4(coin_selection, normal_create_tx_internal, wallet.GetName().c_str(), txr_ungrouped.has_value(),
            txr_ungrouped.has_value() ? txr_ungrouped->fee : 0, txr_ungrouped.has_value() ? txr_ungrouped->change_pos : 0);
     if (!txr_ungrouped) return std::nullopt;
@@ -930,7 +930,7 @@ std::optional<CreatedTransactionResult> CreateTransaction(
         CCoinControl tmp_cc = coin_control;
         tmp_cc.m_avoid_partial_spends = true;
         bilingual_str error2; // fired and forgotten; if an error occurs, we discard the results
-        std::optional<CreatedTransactionResult> txr_grouped = CreateTransactionInternal(wallet, vecSend, change_pos, error2, tmp_cc, fee_calc_out, sign);
+        std::optional<CreatedTransactionResult> txr_grouped = CreateTransactionInternal(wallet, vecSend, change_pos, error2, tmp_cc, sign);
         // if fee of this alternative one is within the range of the max fee, we use this one
         const bool use_aps{txr_grouped.has_value() ? (txr_grouped->fee <= txr_ungrouped->fee + wallet.m_max_aps_fee) : false};
         TRACE5(coin_selection, aps_create_tx_internal, wallet.GetName().c_str(), use_aps, txr_grouped.has_value(),
