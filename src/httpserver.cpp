@@ -362,7 +362,7 @@ static void libevent_log_cb(int severity, const char *msg)
         level = BCLog::Level::Error;
         break;
     }
-    LogPrintLevel(level, BCLog::LIBEVENT, "%s\n", msg);
+    LogPrintLevel(BCLog::LIBEVENT, level, "%s\n", msg);
 }
 
 bool InitHTTPServer()
