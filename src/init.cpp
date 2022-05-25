@@ -299,7 +299,7 @@ void Shutdown(NodeContext& node)
     node.chain_clients.clear();
     UnregisterAllValidationInterfaces();
     GetMainSignals().UnregisterBackgroundSignalScheduler();
-    init::UnsetGlobals();
+    node.kernel.reset();
     node.mempool.reset();
     node.chainman.reset();
     node.scheduler.reset();

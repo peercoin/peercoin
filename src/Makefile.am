@@ -349,6 +349,7 @@ libbitcoin_node_a_SOURCES = \
   index/txindex.cpp \
   init.cpp \
   kernel/coinstats.cpp \
+  kernel/context.cpp \
   mapport.cpp \
   net.cpp \
   netgroup.cpp \

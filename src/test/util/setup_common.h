@@ -79,7 +79,7 @@ static inline bool InsecureRandBool() { return g_insecure_rand_ctx.randbool(); }
  * This just configures logging, data dir and chain parameters.
  */
 struct BasicTestingSetup {
-    node::NodeContext m_node;
+    node::NodeContext m_node; // keep as first member to be destructed last
 
     explicit BasicTestingSetup(const std::string& chainName = CBaseChainParams::MAIN, const std::vector<const char*>& extra_args = {});
     ~BasicTestingSetup();
