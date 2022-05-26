@@ -952,6 +952,15 @@ static void EraseLastKElements(
     elements.erase(std::remove_if(elements.end() - eraseSize, elements.end(), predicate), elements.end());
 }
 
+void ProtectNoBanConnections(std::vector<NodeEvictionCandidate>& eviction_candidates)
+{
+    eviction_candidates.erase(std::remove_if(eviction_candidates.begin(), eviction_candidates.end(),
+                                             [](NodeEvictionCandidate const& n) {
+                                                 return n.m_noban;
+                                             }),
+                              eviction_candidates.end());
+}
+
 void ProtectEvictionCandidatesByRatio(std::vector<NodeEvictionCandidate>& eviction_candidates)
 {
     // Protect the half of the remaining nodes which have been connected the longest.
@@ -1029,6 +1038,8 @@ void ProtectEvictionCandidatesByRatio(std::vector<NodeEvictionCandidate>& evicti
 {
     // Protect connections with certain characteristics
 
+    ProtectNoBanConnections(vEvictionCandidates);
+
     // Deterministically select 4 peers to protect by netgroup.
     // An attacker cannot predict which netgroups will be protected
     EraseLastKElements(vEvictionCandidates, CompareNetGroupKeyed, 4);
@@ -1100,8 +1111,6 @@ bool CConnman::AttemptToEvictConnection()
 
         LOCK(m_nodes_mutex);
         for (const CNode* node : m_nodes) {
-            if (node->HasPermission(NetPermissionFlags::NoBan))
-                continue;
             if (!node->IsInboundConn())
                 continue;
             if (node->fDisconnect)
@@ -1119,6 +1128,7 @@ bool CConnman::AttemptToEvictConnection()
                 Desig(prefer_evict) node->m_prefer_evict,
                 Desig(m_is_local) node->addr.IsLocal(),
                 Desig(m_network) node->ConnectedThroughNetwork(),
+                Desig(m_noban) node->HasPermission(NetPermissionFlags::NoBan),
             };
             vEvictionCandidates.push_back(candidate);
         }
