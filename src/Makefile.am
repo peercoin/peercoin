@@ -366,6 +366,7 @@ libbitcoin_node_a_SOURCES = \
   node/coin.cpp \
   node/connection_types.cpp \
   node/context.cpp \
+  node/eviction.cpp \
   node/interfaces.cpp \
   node/miner.cpp \
   node/minisketchwrapper.cpp \
