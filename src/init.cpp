@@ -9,6 +9,8 @@
 
 #include <init.h>
 
+#include <kernel/checks.h>
+
 #include <addrman.h>
 #include <banman.h>
 #include <blockfilter.h>
@@ -1059,7 +1061,7 @@ static bool LockDataDirectory(bool probeOnly)
     return true;
 }
 
-bool AppInitSanityChecks()
+bool AppInitSanityChecks(const kernel::Context& kernel)
 {
     // ********************************************************* Step 4: sanity checks
 
