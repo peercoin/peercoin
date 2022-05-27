@@ -137,7 +137,6 @@ BITCOIN_CORE_H = \
   compat/byteswap.h \
   compat/cpuid.h \
   compat/endian.h \
-  compat/sanity.h \
   compressor.h \
   consensus/consensus.h \
   consensus/tx_check.h \
@@ -617,15 +616,12 @@ libbitcoin_common_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 # util: shared between all executables.
-# This library *must* be included to make sure that the glibc
-# sanity checks are linked.
 libbitcoin_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_util_a_SOURCES = \
   support/lockedpool.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
-  compat/glibcxx_sanity.cpp \
   fs.cpp \
   interfaces/echo.cpp \
   interfaces/handler.cpp \
