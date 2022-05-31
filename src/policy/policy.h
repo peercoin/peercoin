@@ -6,14 +6,17 @@
 #ifndef BITCOIN_POLICY_POLICY_H
 #define BITCOIN_POLICY_POLICY_H
 
+#include <consensus/amount.h>
 #include <consensus/consensus.h>
 #include <script/interpreter.h>
 #include <script/standard.h>
 
+#include <cstdint>
 #include <string>
 
 class CCoinsViewCache;
-class CTxOut;
+class CFeeRate;
+class CScript;
 
 /** Default for -blockmaxweight, which controls the range of block weights the mining code will create **/
 static const unsigned int DEFAULT_BLOCK_MAX_WEIGHT = MAX_BLOCK_WEIGHT - 4000;
