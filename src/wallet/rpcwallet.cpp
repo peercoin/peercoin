@@ -3395,7 +3395,7 @@ UniValue importcoinstake(const JSONRPCRequest& request)
         "\nImport presigned coinstake for use in minting.\n",
         {
             {"coinstake", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "signed coinstake transaction as hex"},
-            {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::NO, "timestamp when this coinstake will be valid"},
+            {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "timestamp when this coinstake will be valid"},
         },
         RPCResult{
             RPCResult::Type::STR, "txid", "transaction id if import is successful",
@@ -3422,7 +3422,11 @@ UniValue importcoinstake(const JSONRPCRequest& request)
 
     {
         auto locked_chain = pwallet->chain().lock();
-        int timestamp = request.params[1].get_int();
+        int timestamp;
+        if (!request.params[1].isNull())
+            timestamp = request.params[1].get_int();
+        else
+            timestamp = tx->nTime;
 
         if (timestamp < GetTime()) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Expired coinstake");
