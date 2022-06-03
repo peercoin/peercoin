@@ -97,7 +97,7 @@ public:
     {
         READWRITEAS(CBlockHeader, obj);
         READWRITE(obj.vtx);
-        READWRITE(vchBlockSig);
+        READWRITE(obj.vchBlockSig);
     }
 
     void SetNull()

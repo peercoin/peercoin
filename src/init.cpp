@@ -1785,7 +1785,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node)
 
 #ifdef ENABLE_WALLET
     if (HasWallets() && GetWallets()[0] && gArgs.GetBoolArg("-stakegen", true))
-        MintStake(threadGroup, GetWallets()[0], node.connman.get(), node.mempool);
+        MintStake(threadGroup, GetWallets()[0], &node);
 #endif
 
     return true;

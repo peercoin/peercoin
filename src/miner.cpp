@@ -22,6 +22,7 @@
 #include <util/translation.h>
 #include <kernel.h>
 #include <net.h>
+#include <interfaces/chain.h>
 #include <node/context.h>
 #include <wallet/wallet.h>
 #include <wallet/coincontrol.h>
@@ -488,7 +489,7 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
 }
 
 
-static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainparams)
+static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainparams, NodeContext* m_node)
 {
     LogPrintf("%s\n", pblock->ToString());
     LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0]->vout[0].nValue));
@@ -502,14 +503,15 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
 
     // Process this block the same as if we had received it from another node
     std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
-    if (!ProcessNewBlock(Params(), shared_pblock, true, NULL))
+    if (!EnsureChainman(*m_node).ProcessNewBlock(Params(), shared_pblock, true, NULL))
         return error("ProcessNewBlock, block not accepted");
 
     return true;
 }
 
-void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* mempool)
+void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext* m_node)
 {
+    CConnman* connman = m_node->connman.get();
     LogPrintf("CPUMiner started for proof-of-stake\n");
     util::ThreadRename("peercoin-stake-minter");
 
@@ -528,7 +530,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
 
         std::vector<COutput> vCoins;
         CCoinControl coincontrol;
-        pwallet->AvailableCoins(*pwallet->chain().lock(), vCoins, false, &coincontrol);
+        pwallet->AvailableCoins(vCoins, false, &coincontrol);
         pos_timio = gArgs.GetArg("-staketimio", 500) + 30 * sqrt(vCoins.size());
         LogPrintf("Set proof-of-stake timeout: %ums for %u UTXOs\n", pos_timio, vCoins.size());
     }
@@ -596,7 +598,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
             {
                 LOCK2(cs_main, pwallet->cs_wallet);
                 try {
-                    pblocktemplate = BlockAssembler(*mempool, Params()).CreateNewBlock(scriptPubKey, pwallet.get(), &fPoSCancel);
+                    pblocktemplate = BlockAssembler(*m_node->mempool, Params()).CreateNewBlock(scriptPubKey, pwallet.get(), &fPoSCancel);
                 }
                 catch (const std::runtime_error &e)
                 {
@@ -637,7 +639,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
                 }
                 LogPrintf("CPUMiner : proof-of-stake block found %s\n", pblock->GetHash().ToString());
                 try {
-                    ProcessBlockFound(pblock, Params());
+                    ProcessBlockFound(pblock, Params(), m_node);
                     }
                 catch (const std::runtime_error &e)
                 {
@@ -668,12 +670,12 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* m
 }
 
 // peercoin: stake minter thread
-void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* mempool)
+void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, NodeContext* m_node)
 {
     LogPrintf("ThreadStakeMinter started\n");
     try
     {
-        PoSMiner(pwallet, connman, mempool);
+        PoSMiner(pwallet, m_node);
     }
     catch (std::exception& e) {
         PrintExceptionContinue(&e, "ThreadStakeMinter()");
@@ -684,8 +686,8 @@ void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, CConnman* connma
 }
 
 // peercoin: stake minter
-void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwallet, CConnman* connman, CTxMemPool* mempool)
+void MintStake(boost::thread_group& threadGroup, std::shared_ptr<CWallet> pwallet, NodeContext* m_node)
 {
     // peercoin: mint proof-of-stake blocks in the background
-    threadGroup.create_thread(boost::bind(&ThreadStakeMinter, pwallet, connman, mempool));
+    threadGroup.create_thread(boost::bind(&ThreadStakeMinter, pwallet, m_node));
 }
