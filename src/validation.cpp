@@ -2021,6 +2021,9 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
                             tx_state.GetRejectReason(), tx_state.GetDebugMessage());
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), state.ToString());
             }
+            nValueIn = 0;
+            for (unsigned int i = 0; i < tx.vin.size(); i++)
+                nValueIn += view.AccessCoin(tx.vin[i].prevout).out.nValue;
             nValueIn += view.GetValueIn(tx);
             nValueOut += tx.GetValueOut();
             if (!tx.IsCoinStake())
