@@ -2586,7 +2586,7 @@ static RPCHelpMan dumptxoutset()
     }
 
     FILE* file{fsbridge::fopen(temppath, "wb")};
-    CAutoFile afile{file, SER_DISK, CLIENT_VERSION};
+    AutoFile afile{file};
     if (afile.IsNull()) {
         throw JSONRPCError(
             RPC_INVALID_PARAMETER,
@@ -2607,7 +2607,7 @@ static RPCHelpMan dumptxoutset()
 UniValue CreateUTXOSnapshot(
     NodeContext& node,
     CChainState& chainstate,
-    CAutoFile& afile,
+    AutoFile& afile,
     const fs::path& path,
     const fs::path& temppath)
 {
