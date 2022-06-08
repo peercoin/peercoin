@@ -457,6 +457,24 @@ public:
     //! Efficiently find an ancestor of this block.
     CBlockIndex* GetAncestor(int height);
     const CBlockIndex* GetAncestor(int height) const;
+
+    CBlockIndex() = default;
+    ~CBlockIndex() = default;
+
+protected:
+    //! CBlockIndex should not allow public copy construction because equality
+    //! comparison via pointer is very common throughout the codebase, making
+    //! use of copy a footgun. Also, use of copies do not have the benefit
+    //! of simplifying lifetime considerations due to attributes like pprev and
+    //! pskip, which are at risk of becoming dangling pointers in a copied
+    //! instance.
+    //!
+    //! We declare these protected instead of simply deleting them so that
+    //! CDiskBlockIndex can reuse copy construction.
+    CBlockIndex(const CBlockIndex&) = default;
+    CBlockIndex& operator=(const CBlockIndex&) = delete;
+    CBlockIndex(CBlockIndex&&) = delete;
+    CBlockIndex& operator=(CBlockIndex&&) = delete;
 };
 
 arith_uint256 GetBlockTrust(const CBlockIndex& block);
