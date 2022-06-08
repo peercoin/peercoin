@@ -519,10 +519,16 @@ public:
     // peercoin: used to detect branch switches
     uint256 lastAcceptedHeader;
 
-    CNode(NodeId id, std::shared_ptr<Sock> sock, const CAddress& addrIn,
-          uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn,
-          const CAddress& addrBindIn, const std::string& addrNameIn,
-          ConnectionType conn_type_in, bool inbound_onion);
+    CNode(NodeId id,
+          std::shared_ptr<Sock> sock,
+          const CAddress& addrIn,
+          uint64_t nKeyedNetGroupIn,
+          uint64_t nLocalHostNonceIn,
+          const CAddress& addrBindIn,
+          const std::string& addrNameIn,
+          ConnectionType conn_type_in,
+          bool inbound_onion,
+          std::unique_ptr<i2p::sam::Session>&& i2p_sam_session = nullptr);
     CNode(const CNode&) = delete;
     CNode& operator=(const CNode&) = delete;
 
@@ -602,6 +608,18 @@ private:
 
     mapMsgTypeSize mapSendBytesPerMsgType GUARDED_BY(cs_vSend);
     mapMsgTypeSize mapRecvBytesPerMsgType GUARDED_BY(cs_vRecv);
+
+    /**
+     * If an I2P session is created per connection (for outbound transient I2P
+     * connections) then it is stored here so that it can be destroyed when the
+     * socket is closed. I2P sessions involve a data/transport socket (in `m_sock`)
+     * and a control socket (in `m_i2p_sam_session`). For transient sessions, once
+     * the data socket is closed, the control socket is not going to be used anymore
+     * and is just taking up resources. So better close it as soon as `m_sock` is
+     * closed.
+     * Otherwise this unique_ptr is empty.
+     */
+    std::unique_ptr<i2p::sam::Session> m_i2p_sam_session GUARDED_BY(m_sock_mutex);
 };
 
 /**
