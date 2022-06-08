@@ -1096,7 +1096,8 @@ private:
 
     /**
      * I2P SAM session.
-     * Used to accept incoming and make outgoing I2P connections.
+     * Used to accept incoming and make outgoing I2P connections from a persistent
+     * address.
      */
     std::unique_ptr<i2p::sam::Session> m_i2p_sam_session;
 
