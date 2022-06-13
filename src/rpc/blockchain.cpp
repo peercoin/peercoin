@@ -2319,12 +2319,6 @@ static RPCHelpMan scantxoutset()
                         "[scanobjects,...]"},
         },
         {
-            RPCResult{"when action=='abort'", RPCResult::Type::BOOL, "success", "True if scan will be aborted (not necessarily before this RPC returns), or false if there is no scan to abort"},
-            RPCResult{"when action=='status' and no scan is in progress - possibly already completed", RPCResult::Type::NONE, "", ""},
-            RPCResult{"when action=='status' and a scan is currently in progress", RPCResult::Type::OBJ, "", "",
-            {
-                {RPCResult::Type::NUM, "progress", "Approximate percent complete"},
-            }},
             RPCResult{"when action=='start'; only returns after scan completes", RPCResult::Type::OBJ, "", "", {
                 {RPCResult::Type::BOOL, "success", "Whether the scan was completed"},
                 {RPCResult::Type::NUM, "txouts", "The number of unspent transaction outputs scanned"},
@@ -2344,6 +2338,12 @@ static RPCHelpMan scantxoutset()
                 }},
                 {RPCResult::Type::STR_AMOUNT, "total_amount", "The total amount of all found unspent outputs in " + CURRENCY_UNIT},
             }},
+            RPCResult{"when action=='abort'", RPCResult::Type::BOOL, "success", "True if scan will be aborted (not necessarily before this RPC returns), or false if there is no scan to abort"},
+            RPCResult{"when action=='status' and a scan is currently in progress", RPCResult::Type::OBJ, "", "",
+            {
+                {RPCResult::Type::NUM, "progress", "Approximate percent complete"},
+            }},
+            RPCResult{"when action=='status' and no scan is in progress - possibly already completed", RPCResult::Type::NONE, "", ""},
         },
         RPCExamples{
             HelpExampleCli("scantxoutset", "start \'[\"" + EXAMPLE_DESCRIPTOR_RAW + "\"]\'") +
