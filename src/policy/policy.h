@@ -47,6 +47,12 @@ static const unsigned int MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 /** The maximum size in bytes of witness input stack items */
 static const unsigned int MAX_STANDARD_WITNESS_SIZE = 100000;
 /**
+ * An extra transaction can be added to a package, as long as it only has one
+ * ancestor and is no larger than this. Not really any reason to make this
+ * configurable as it doesn't materially change DoS parameters.
+ */
+static constexpr unsigned int EXTRA_DESCENDANT_TX_SIZE_LIMIT{10000};
+/**
  * Standard script verification flags that standard transactions will comply
  * with. However scripts violating these flags may still be present in valid
  * blocks and we must accept those blocks.
