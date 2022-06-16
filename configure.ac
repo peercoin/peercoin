@@ -35,6 +35,7 @@ BITCOIN_MP_NODE_NAME=peercoin-node
 BITCOIN_MP_GUI_NAME=peercoin-gui
 
 dnl Unless the user specified ARFLAGS, force it to be cr
+dnl This is also the default as-of libtool 2.4.7
 AC_ARG_VAR([ARFLAGS], [Flags for the archiver, defaults to <cr> if not set])
 if test "${ARFLAGS+set}" != "set"; then
   ARFLAGS="cr"
