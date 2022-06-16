@@ -1543,7 +1543,7 @@ RPCHelpMan getblockchaininfo()
 //    BIP9SoftForkDescPushBack(tip, softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     obj.pushKV("softforks", softforks);
 
-static RPCHelpMan getdeploymentinfo()
+RPCHelpMan getdeploymentinfo()
 {
     return RPCHelpMan{"getdeploymentinfo",
         "Returns an object containing various state info regarding deployments of consensus changes.",
