@@ -454,6 +454,8 @@ protected:
 
     bool m_is_loaded GUARDED_BY(cs){false};
 
+    CFeeRate GetMinFee(size_t sizelimit) const;
+
 public:
 
     static const int ROLLING_FEE_HALFLIFE = 60 * 60 * 12; // public only for testing
