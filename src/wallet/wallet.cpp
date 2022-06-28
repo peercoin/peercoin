@@ -2860,7 +2860,7 @@ std::shared_ptr<CWallet> CWallet::Create(WalletContext& context, const std::stri
     ArgsManager& args = *Assert(context.args);
     const std::string& walletFile = database->Filename();
 
-    int64_t nStart = GetTimeMillis();
+    const auto start{SteadyClock::now()};
     // TODO: Can't use std::make_shared because we need a custom deleter but
     // should be possible to use std::allocate_shared.
     const std::shared_ptr<CWallet> walletInstance(new CWallet(chain, name, args, std::move(database)), ReleaseWallet);
@@ -2977,7 +2977,7 @@ std::shared_ptr<CWallet> CWallet::Create(WalletContext& context, const std::stri
     walletInstance->m_check_github = args.GetBoolArg("-checkgithub", DEFAULT_CHECK_GITHUB);
     walletInstance->WalletLogPrintf("Wallet will%s check github for newer version on startup\n", walletInstance->m_check_github? "" : " not");
 
-    walletInstance->WalletLogPrintf("Wallet completed loading in %15dms\n", GetTimeMillis() - nStart);
+    walletInstance->WalletLogPrintf("Wallet completed loading in %15dms\n", Ticks<std::chrono::milliseconds>(SteadyClock::now() - start));
 
     // Try to top up keypool. No-op if the wallet is locked.
     walletInstance->TopUpKeyPool();
