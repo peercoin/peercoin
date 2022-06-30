@@ -60,7 +60,6 @@
 #include <txorphanage.h>
 #include <util/asmap.h>
 #include <util/check.h>
-#include <util/designator.h>
 #include <util/moneystr.h>
 #include <util/strencodings.h>
 #include <util/syscall_sandbox.h>
@@ -1398,8 +1397,8 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     assert(!node.chainman);
 
     CTxMemPool::Options mempool_opts{
-        Desig(estimator) node.fee_estimator.get(),
-        Desig(check_ratio) chainparams.DefaultConsistencyChecks() ? 1 : 0,
+        .estimator = node.fee_estimator.get(),
+        .check_ratio = chainparams.DefaultConsistencyChecks() ? 1 : 0,
     };
     ApplyArgsManOptions(args, mempool_opts);
     mempool_opts.check_ratio = std::clamp<int>(mempool_opts.check_ratio, 0, 1'000'000);
