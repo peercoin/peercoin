@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <optional>
 
 struct bilingual_str;
 class FillableSigningProvider;
