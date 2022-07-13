@@ -703,7 +703,7 @@ public:
     void CheckBlockIndex();
 
     /** Load the persisted mempool from disk */
-    void LoadMempool(const ArgsManager& args, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen);
+    void LoadMempool(const fs::path& load_path, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen);
 
     /** Load the persisted mempool from disk */
     void LoadMempool(const ArgsManager& args);
@@ -1136,7 +1136,7 @@ using FopenFn = std::function<FILE*(const fs::path&, const char*)>;
 bool DumpMempool(const CTxMemPool& pool, const fs::path& dump_path, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen, bool skip_file_commit = false);
 
 /** Load the mempool from disk. */
-bool LoadMempool(CTxMemPool& pool, CChainState& active_chainstate, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen);
+bool LoadMempool(CTxMemPool& pool, const fs::path& load_path, CChainState& active_chainstate, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen);
 
 // peercoin:
 CAmount GetProofOfWorkReward(unsigned int nBits, uint32_t nTime);
