@@ -11,7 +11,6 @@
 #include <flatfile.h>
 #include <primitives/block.h>
 #include <sync.h>
-#include <tinyformat.h>
 #include <uint256.h>
 
 #include <util/moneystr.h>
