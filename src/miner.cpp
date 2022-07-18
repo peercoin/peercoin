@@ -16,14 +16,18 @@
 #include <policy/policy.h>
 #include <pow.h>
 #include <primitives/transaction.h>
+#include <rpc/blockchain.h>
 #include <timedata.h>
+#include <rpc/blockchain.h>
 #include <util/moneystr.h>
+#include <util/ref.h>
 #include <util/system.h>
 #include <util/translation.h>
 #include <kernel.h>
 #include <net.h>
 #include <interfaces/chain.h>
 #include <node/context.h>
+#include <node/ui_interface.h>
 #include <wallet/wallet.h>
 #include <wallet/coincontrol.h>
 #include <warnings.h>
@@ -186,7 +190,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
 
     int nPackagesSelected = 0;
     int nDescendantsUpdated = 0;
-    addPackageTxs(nPackagesSelected, nDescendantsUpdated);
+    addPackageTxs(nPackagesSelected, nDescendantsUpdated, pblock->nTime);
 
     int64_t nTime1 = GetTimeMicros();
 
@@ -250,7 +254,7 @@ bool BlockAssembler::TestPackage(uint64_t packageSize, int64_t packageSigOpsCost
 // - transaction finality (locktime)
 // - premature witness (in case segwit transactions are added to mempool before
 //   segwit activation)
-bool BlockAssembler::TestPackageTransactions(const CTxMemPool::setEntries& package)
+bool BlockAssembler::TestPackageTransactions(const CTxMemPool::setEntries& package, uint32_t nTime)
 {
     for (CTxMemPool::txiter it : package) {
         if (!IsFinalTx(it->GetTx(), nHeight, nLockTimeCutoff))
@@ -259,7 +263,7 @@ bool BlockAssembler::TestPackageTransactions(const CTxMemPool::setEntries& packa
             return false;
 
         // peercoin: timestamp limit
-        if (it->GetTx().nTime > GetAdjustedTime() || (pblock->IsProofOfStake() && it->GetTx().nTime > pblock->vtx[1]->nTime))
+        if (it->GetTx().nTime > GetAdjustedTime() || (nTime && it->GetTx().nTime > nTime))
             return false;
     }
     return true;
@@ -347,7 +351,7 @@ void BlockAssembler::SortForBlock(const CTxMemPool::setEntries& package, std::ve
 // Each time through the loop, we compare the best transaction in
 // mapModifiedTxs with the next transaction in the mempool to decide what
 // transaction package to work on next.
-void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpdated)
+void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpdated, uint32_t nTime)
 {
     // mapModifiedTx will store sorted packages after they are modified
     // because some of their txs are already in the block
@@ -441,7 +445,7 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
         ancestors.insert(iter);
 
         // Test if all tx's are Final
-        if (!TestPackageTransactions(ancestors)) {
+        if (!TestPackageTransactions(ancestors,nTime)) {
             if (fUsingModified) {
                 mapModifiedTx.get<ancestor_score>().erase(modit);
                 failedTx.insert(iter);
@@ -503,7 +507,8 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
 
     // Process this block the same as if we had received it from another node
     std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
-    if (!EnsureChainman(*m_node).ProcessNewBlock(Params(), shared_pblock, true, NULL))
+    util::Ref context{m_node};
+    if (!EnsureChainman(context).ProcessNewBlock(Params(), shared_pblock, true, NULL))
         return error("ProcessNewBlock, block not accepted");
 
     return true;
@@ -517,7 +522,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext* m_node)
 
     unsigned int nExtraNonce = 0;
 
-    OutputType output_type = pwallet->m_default_change_type != OutputType::CHANGE_AUTO ? pwallet->m_default_change_type : pwallet->m_default_address_type;
+    OutputType output_type = pwallet->m_default_change_type ? *pwallet->m_default_change_type : pwallet->m_default_address_type;
     ReserveDestination reservedest(pwallet.get(), output_type);
     CTxDestination dest;
     // Compute timeout for pos as sqrt(numUTXO)

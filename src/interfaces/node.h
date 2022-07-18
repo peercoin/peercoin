@@ -10,7 +10,7 @@
 #include <net_types.h>  // For banmap_t
 #include <netaddress.h> // For Network
 #include <support/allocators/secure.h> // For SecureString
-#include <ui_interface.h> // For ChangeType
+#include <util/ui_change_type.h>
 #include <util/translation.h>
 
 #include <functional>

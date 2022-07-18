@@ -403,9 +403,9 @@ static RPCHelpMan syncwithvalidationinterfacequeue()
     };
 }
 
-static RPCHelpMan getdifficulty()
+static UniValue getdifficulty(const JSONRPCRequest& request)
 {
-    return RPCHelpMan{"getdifficulty",
+            RPCHelpMan{"getdifficulty",
                 "\nReturns the difficulty as a multiple of the minimum difficulty.\n",
                 {},
                 RPCResult{
@@ -414,15 +414,14 @@ static RPCHelpMan getdifficulty()
                     HelpExampleCli("getdifficulty", "")
             + HelpExampleRpc("getdifficulty", "")
                 },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
+            }.Check(request);
+
     LOCK(cs_main);
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("proof-of-work",        GetDifficulty(NULL));
     obj.pushKV("proof-of-stake",       GetDifficulty(GetLastBlockIndex(::ChainActive().Tip(), true)));
     obj.pushKV("search-interval",      (int)nLastCoinStakeSearchInterval);
     return obj;
-}
 }
 
 static std::vector<RPCResult> MempoolEntryDescription() { return {

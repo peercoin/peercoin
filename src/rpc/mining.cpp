@@ -274,13 +274,12 @@ static RPCHelpMan generatetodescriptor()
     ChainstateManager& chainman = EnsureChainman(request.context);
 
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return NullUniValue;
     const CWallet* const pwallet = wallet.get();
 
-    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
-        return NullUniValue;
-    }
-
     return generateBlocks(chainman, mempool, coinbase_script, num_blocks, max_tries, pwallet);
+},
+};
 }
 
 static RPCHelpMan generate()
@@ -320,11 +319,8 @@ static RPCHelpMan generatetoaddress()
     const int num_blocks{request.params[0].get_int()};
     const uint64_t max_tries{request.params[2].isNull() ? DEFAULT_MAX_TRIES : request.params[2].get_int()};
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return NullUniValue;
     const CWallet* const pwallet = wallet.get();
-    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
-        return NullUniValue;
-    }
-
 
     CTxDestination destination = DecodeDestination(request.params[1].get_str());
     if (!IsValidDestination(destination)) {
@@ -882,12 +878,6 @@ protected:
 
 static RPCHelpMan submitblock()
 {
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    const CWallet* const pwallet = wallet.get();
-    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
-        return NullUniValue;
-    }
-
     // We allow 2 arguments for compliance with BIP22. Argument 2 is ignored.
     return RPCHelpMan{"submitblock",
                 "\nAttempts to submit new block to network.\n"
@@ -933,6 +923,10 @@ static RPCHelpMan submitblock()
         LogPrintf("SubmitBlock: %s\n", state.ToString());
         throw JSONRPCError(-100, "Block failed CheckBlock() function.");
         }
+
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return NullUniValue;
+    const CWallet* const pwallet = wallet.get();
 
     // peercoin: sign block
     // rfc6: sign proof of stake blocks only after 0.8 fork
@@ -1050,6 +1044,8 @@ static RPCHelpMan estimatesmartfee()
     result.pushKV("feerate", 0.01);
     result.pushKV("blocks", ::ChainActive().Height());
     return result;
+},
+};
 }
 
 void RegisterMiningRPCCommands(CRPCTable &t)

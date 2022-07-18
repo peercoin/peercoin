@@ -1248,7 +1248,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     // Make mempool generally available in the node context. For example the connection manager, wallet, or RPC threads,
     // which are all started after this, may use it from the node context.
     assert(!node.mempool);
-    node.mempool = MakeUnique<CTxMemPool>(&::feeEstimator);
+    node.mempool = MakeUnique<CTxMemPool>();
     if (node.mempool) {
         int ratio = std::min<int>(std::max<int>(args.GetArg("-checkmempool", chainparams.DefaultConsistencyChecks() ? 1 : 0), 0), 1000000);
         if (ratio != 0) {
@@ -1810,7 +1810,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     }, DUMP_BANS_INTERVAL);
 
 #ifdef ENABLE_WALLET
-    if (HasWallets() && GetWallets()[0] && gArgs.GetBoolArg("-stakegen", true))
+    if (GetWallets()[0] && gArgs.GetBoolArg("-stakegen", true))
         MintStake(threadGroup, GetWallets()[0], &node);
 #endif
 

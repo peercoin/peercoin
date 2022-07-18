@@ -627,9 +627,13 @@ case $host in
          dnl Homebrew where each one is located, then adjust paths accordingly.
          dnl It's safe to add these paths even if the functionality is disabled by
          dnl the user (--without-wallet or --without-gui for example).
-
+         openssl_prefix=`$BREW --prefix openssl 2>/dev/null`
          bdb_prefix=$($BREW --prefix berkeley-db4 2>/dev/null)
          qt5_prefix=$($BREW --prefix qt5 2>/dev/null)
+         if test x$openssl_prefix != x; then
+           PKG_CONFIG_PATH="$openssl_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
+           export PKG_CONFIG_PATH
+         fi
          if test x$bdb_prefix != x && test "x$BDB_CFLAGS" = "x" && test "x$BDB_LIBS" = "x"; then
            dnl This must precede the call to BITCOIN_FIND_BDB48 below.
            BDB_CFLAGS="-I$bdb_prefix/include"
@@ -1270,6 +1274,9 @@ if test x$use_tests = xyes; then
 
   fi
 fi
+dnl libcrypto check
+PKG_CHECK_MODULES([SSL], [libssl],, [AC_MSG_ERROR(openssl not found.)])
+PKG_CHECK_MODULES([CRYPTO], [libcrypto],,[AC_MSG_ERROR(libcrypto not found.)])
 
 dnl libevent check
 
@@ -1545,6 +1552,10 @@ AC_DEFINE(CLIENT_VERSION_MINOR, _CLIENT_VERSION_MINOR, [Minor version])
 AC_DEFINE(CLIENT_VERSION_REVISION, _CLIENT_VERSION_REVISION, [Build revision])
 AC_DEFINE(CLIENT_VERSION_BUILD, _CLIENT_VERSION_BUILD, [Version Build])
 AC_DEFINE(CLIENT_VERSION_IS_RELEASE, _CLIENT_VERSION_IS_RELEASE, [Version is release])
+AC_DEFINE(PEERCOIN_VERSION_MAJOR, _PEERCOIN_VERSION_MAJOR, [Peercoin major version])
+AC_DEFINE(PEERCOIN_VERSION_MINOR, _PEERCOIN_VERSION_MINOR, [Peercoin minor version])
+AC_DEFINE(PEERCOIN_VERSION_REVISION, _PEERCOIN_VERSION_REVISION, [Peercoin build revision])
+AC_DEFINE(PEERCOIN_VERSION_BUILD, _PEERCOIN_VERSION_BUILD, [Peercoin version Build])
 AC_DEFINE(COPYRIGHT_YEAR, _COPYRIGHT_YEAR, [Copyright year])
 AC_DEFINE(COPYRIGHT_HOLDERS, "_COPYRIGHT_HOLDERS", [Copyright holder(s) before %s replacement])
 AC_DEFINE(COPYRIGHT_HOLDERS_SUBSTITUTION, "_COPYRIGHT_HOLDERS_SUBSTITUTION", [Replacement for %s in copyright holders string])
@@ -1555,6 +1566,10 @@ AC_SUBST(CLIENT_VERSION_MINOR, _CLIENT_VERSION_MINOR)
 AC_SUBST(CLIENT_VERSION_REVISION, _CLIENT_VERSION_REVISION)
 AC_SUBST(CLIENT_VERSION_BUILD, _CLIENT_VERSION_BUILD)
 AC_SUBST(CLIENT_VERSION_IS_RELEASE, _CLIENT_VERSION_IS_RELEASE)
+AC_SUBST(PEERCOIN_VERSION_MAJOR, _PEERCOIN_VERSION_MAJOR)
+AC_SUBST(PEERCOIN_VERSION_MINOR, _PEERCOIN_VERSION_MINOR)
+AC_SUBST(PEERCOIN_VERSION_REVISION, _PEERCOIN_VERSION_REVISION)
+AC_SUBST(PEERCOIN_VERSION_BUILD, _PEERCOIN_VERSION_BUILD)
 AC_SUBST(COPYRIGHT_YEAR, _COPYRIGHT_YEAR)
 AC_SUBST(COPYRIGHT_HOLDERS, "_COPYRIGHT_HOLDERS")
 AC_SUBST(COPYRIGHT_HOLDERS_SUBSTITUTION, "_COPYRIGHT_HOLDERS_SUBSTITUTION")

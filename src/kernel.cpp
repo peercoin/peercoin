@@ -186,9 +186,9 @@ static bool SelectBlockFromCandidates(
     *pindexSelected = (const CBlockIndex*) 0;
     for (const auto& item : vSortedByTimestamp)
     {
-        if (!::BlockIndex().count(item.second))
+        if (!pindexSelected.BlockIndex().count(item.second))
             return error("SelectBlockFromCandidates: failed to find block index for candidate block %s", item.second.ToString());
-        const CBlockIndex* pindex = ::BlockIndex()[item.second];
+        const CBlockIndex* pindex = pindexSelected.BlockIndex()[item.second];
         if (fSelected && pindex->GetBlockTime() > nSelectionIntervalStop)
             break;
         if (mapSelectedBlocks.count(pindex->GetBlockHash()) > 0)

@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <util/ui_change_type.h>
 
 class CBlockIndex;
 class uint256;

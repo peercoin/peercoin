@@ -157,6 +157,7 @@ struct COrphanTx {
 };
 RecursiveMutex g_cs_orphans;
 std::map<uint256, COrphanTx> mapOrphanTransactions GUARDED_BY(g_cs_orphans);
+std::map<uint256, std::map<uint256, COrphanTx>::iterator> g_orphans_by_wtxid GUARDED_BY(g_cs_orphans);
 
 void EraseOrphansFor(NodeId peer);
 
@@ -1903,15 +1904,15 @@ void PeerManager::ProcessHeadersMessage(CNode& pfrom, const std::vector<CBlockHe
         }
     }
 
-    int32_t& nPoSTemperature = mapPoSTemperature[pfrom->addr];
+    int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
     BlockValidationState state;
-    if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, pfrom->lastAcceptedHeader, headers, state, m_chainparams, &pindexLast)) {
+    if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, pfrom.lastAcceptedHeader, headers, state, m_chainparams, &pindexLast)) {
         if (state.IsInvalid()) {
             MaybePunishNodeForBlock(pfrom.GetId(), state, via_compact_block, "invalid header received");
             return;
         }
     }
-    pfrom->lastAcceptedHeader = headers.back().GetHash();
+    pfrom.lastAcceptedHeader = headers.back().GetHash();
 
     {
         LOCK(cs_main);
@@ -2342,9 +2343,9 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
     }
 
     if (msg_type == NetMsgType::VERSION) {
-        auto it = mapPoSTemperature.find(pfrom->addr);
+        auto it = mapPoSTemperature.find(pfrom.addr);
         if (it == mapPoSTemperature.end())
-            mapPoSTemperature[pfrom->addr] = MAX_CONSECUTIVE_POS_HEADERS/4;
+            mapPoSTemperature[pfrom.addr] = MAX_CONSECUTIVE_POS_HEADERS/4;
         // Each connection can only send one version message
         if (pfrom.nVersion != 0)
         {
@@ -2813,7 +2814,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 // peercoin: tell downloading node about the latest block if it's
                 // without risk being rejected due to stake connection check
                 if (hashStop != ::ChainActive().Tip()->GetBlockHash() && pindex->GetBlockTime() + Params().GetConsensus().nStakeMinAge > ::ChainActive().Tip()->GetBlockTime())
-                    pfrom->PushInventory(CInv(MSG_BLOCK, ::ChainActive().Tip()->GetBlockHash()));
+                    WITH_LOCK(pfrom.cs_inventory, pfrom.vInventoryBlockToSend.push_back(pindex->GetBlockHash()));
                 break;
             }
             WITH_LOCK(pfrom.cs_inventory, pfrom.vInventoryBlockToSend.push_back(pindex->GetBlockHash()));
@@ -3179,7 +3180,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         }
         }
 
-        int32_t& nPoSTemperature = mapPoSTemperature[pfrom->addr];
+        int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
         const CBlockIndex *pindex = nullptr;
         BlockValidationState state;
         if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, ::ChainActive().Tip()->GetBlockHash(), {cmpctblock.header}, state, m_chainparams, &pindex)) {
@@ -3192,9 +3193,8 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         if (nPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
             nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
             if (Params().NetworkIDString() != "test") {
-                LOCK(cs_main);
-                Misbehaving(pfrom->GetId(), 100, "too many consecutive pos headers");
-                return error("too many consecutive pos headers");
+                Misbehaving(pfrom.GetId(), 100, "too many consecutive pos headers");
+                return;
             }
         }
 
@@ -3483,31 +3483,31 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         }
         headers.resize(nCount);
         {
-        LOCK(cs_main);
-        int32_t& nPoSTemperature = mapPoSTemperature[pfrom->addr];
-        int nTmpPoSTemperature = nPoSTemperature;
-        for (unsigned int n = 0; n < nCount; n++) {
-            vRecv >> headers[n];
-            ReadCompactSize(vRecv); // ignore tx count; assume it is 0.
-            ReadCompactSize(vRecv); // needed for vchBlockSig.
+            LOCK(cs_main);
+            int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
+            int nTmpPoSTemperature = nPoSTemperature;
+            for (unsigned int n = 0; n < nCount; n++) {
+                vRecv >> headers[n];
+                ReadCompactSize(vRecv); // ignore tx count; assume it is 0.
+                ReadCompactSize(vRecv); // needed for vchBlockSig.
 
-            // peercoin: quick check to see if we should ban peers for PoS spam
-            // note: at this point we don't know if PoW headers are valid - we just assume they are
-            // so we need to update pfrom->nPoSTemperature once we actualy check them
-            bool fPoS = headers[n].nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE;
-            nTmpPoSTemperature += fPoS ? 1 : -POW_HEADER_COOLING;
-            // peer cannot cool himself by PoW headers from other branches
-            if (n == 0 && !fPoS && headers[n].hashPrevBlock != pfrom->lastAcceptedHeader)
-                nTmpPoSTemperature += POW_HEADER_COOLING;
-            nTmpPoSTemperature = std::max(nTmpPoSTemperature, 0);
-            if (nTmpPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
-                nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
-                if (Params().NetworkIDString() != "test") {
-                    Misbehaving(pfrom->GetId(), 100, "too many consecutive pos headers");
-                    return error("too many consecutive pos headers");
+                // peercoin: quick check to see if we should ban peers for PoS spam
+                // note: at this point we don't know if PoW headers are valid - we just assume they are
+                // so we need to update pfrom->nPoSTemperature once we actualy check them
+                bool fPoS = headers[n].nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE;
+                nTmpPoSTemperature += fPoS ? 1 : -POW_HEADER_COOLING;
+                // peer cannot cool himself by PoW headers from other branches
+                if (n == 0 && !fPoS && headers[n].hashPrevBlock != pfrom.lastAcceptedHeader)
+                    nTmpPoSTemperature += POW_HEADER_COOLING;
+                nTmpPoSTemperature = std::max(nTmpPoSTemperature, 0);
+                if (nTmpPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
+                    nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
+                    if (Params().NetworkIDString() != "test") {
+                        Misbehaving(pfrom.GetId(), 100, "too many consecutive pos headers");
+                        return;
+                    }
                 }
             }
-        }
         }
 
         return ProcessHeadersMessage(pfrom, headers, /*via_compact_block=*/false);
@@ -3535,7 +3535,8 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
 
             CBlockIndex* headerPrev = LookupBlockIndex(pblock2->hashPrevBlock);
             if (!headerPrev) {
-                return error("previous header not found");
+                LogPrint(BCLog::NET, "previous header not found");
+                return;
             }
 
             if (!fRequested) {
@@ -3544,7 +3545,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                     nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
                     if (Params().NetworkIDString() != "test") {
                         Misbehaving(pfrom.GetId(), 100, "too many consecutive pos headers");
-                        return error("too many consecutive pos headers");
+                        return;
                     }
                 }
 
@@ -3553,7 +3554,8 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
 
                 if (!headerPrev->IsValid(BLOCK_VALID_TRANSACTIONS)) {
                     MarkBlockAsReceived(hash2);
-                    return error("this block does not connect to any valid known blocks");
+                    LogPrint(BCLog::NET, "this block does not connect to any valid known blocks");
+                    return;
                 }
             }
             // peercoin: store in memory until we can connect it to some chain
@@ -4760,45 +4762,8 @@ bool PeerManager::SendMessages(CNode* pto)
             }
         }
 
-
         if (!vGetData.empty())
             m_connman.PushMessage(pto, msgMaker.Make(NetMsgType::GETDATA, vGetData));
-
-        //
-        // Message: feefilter
-        //
-        if (pto->m_tx_relay != nullptr && pto->GetCommonVersion() >= FEEFILTER_VERSION && gArgs.GetBoolArg("-feefilter", DEFAULT_FEEFILTER) &&
-            !pto->HasPermission(PF_FORCERELAY) // peers with the forcerelay permission should not filter txs to us
-            CAmount currentFilter = MIN_TX_FEE;
-            int64_t timeNow = GetTimeMicros();
-            static FeeFilterRounder g_filter_rounder{CFeeRate{DEFAULT_MIN_RELAY_TX_FEE}};
-            if (m_chainman.ActiveChainstate().IsInitialBlockDownload()) {
-                // Received tx-inv messages are discarded when the active
-                // chainstate is in IBD, so tell the peer to not send them.
-                currentFilter = MAX_MONEY;
-            } else {
-                static const CAmount MAX_FILTER{g_filter_rounder.round(MAX_MONEY)};
-                if (pto->m_tx_relay->lastSentFeeFilter == MAX_FILTER) {
-                    // Send the current filter if we sent MAX_FILTER previously
-                    // and made it out of IBD.
-                    pto->m_tx_relay->nextSendTimeFeeFilter = timeNow - 1;
-                }
-            }
-            if (timeNow > pto->m_tx_relay->nextSendTimeFeeFilter) {
-                CAmount filterToSend = MIN_TX_FEE;
-                if (filterToSend != pto->m_tx_relay->lastSentFeeFilter) {
-                    m_connman.PushMessage(pto, msgMaker.Make(NetMsgType::FEEFILTER, filterToSend));
-                    pto->m_tx_relay->lastSentFeeFilter = filterToSend;
-                }
-                pto->m_tx_relay->nextSendTimeFeeFilter = PoissonNextSend(timeNow, AVG_FEEFILTER_BROADCAST_INTERVAL);
-            }
-            // If the fee filter has changed substantially and it's still more than MAX_FEEFILTER_CHANGE_DELAY
-            // until scheduled broadcast, then move the broadcast to within MAX_FEEFILTER_CHANGE_DELAY.
-            else if (timeNow + MAX_FEEFILTER_CHANGE_DELAY * 1000000 < pto->m_tx_relay->nextSendTimeFeeFilter &&
-                     (currentFilter < 3 * pto->m_tx_relay->lastSentFeeFilter / 4 || currentFilter > 4 * pto->m_tx_relay->lastSentFeeFilter / 3)) {
-                pto->m_tx_relay->nextSendTimeFeeFilter = timeNow + GetRandInt(MAX_FEEFILTER_CHANGE_DELAY) * 1000000;
-            }
-        }
     } // release cs_main
     return true;
 }

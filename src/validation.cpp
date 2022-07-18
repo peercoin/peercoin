@@ -190,7 +190,6 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
 
 std::unique_ptr<CBlockTreeDB> pblocktree;
 
-// See definition for documentation
 bool CheckInputScripts(const CTransaction& tx, TxValidationState &state, const CCoinsViewCache &inputs, unsigned int flags, bool cacheSigStore, bool cacheFullScriptStore, PrecomputedTransactionData& txdata, std::vector<CScriptCheck> *pvChecks = nullptr);
 static FILE* OpenUndoFile(const FlatFilePos &pos, bool fReadOnly = false);
 static FlatFileSeq BlockFileSeq();
@@ -2019,7 +2018,6 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
             nValueIn = 0;
             for (unsigned int i = 0; i < tx.vin.size(); i++)
                 nValueIn += view.AccessCoin(tx.vin[i].prevout).out.nValue;
-            nValueIn += view.GetValueIn(tx);
             nValueOut += tx.GetValueOut();
             if (!tx.IsCoinStake())
                 nFees += txfee;
@@ -3482,7 +3480,7 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
             return true;
         }
 
-        if (!CheckBlockHeader(block, state, chainparams.GetConsensus(), !(block.nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE)))
+        if (!CheckBlockHeader(block, state, chainparams.GetConsensus(), !(block.nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE))) {
             LogPrint(BCLog::VALIDATION, "%s: Consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
             return false;
         }
@@ -4977,7 +4975,7 @@ bool SignBlock(CBlock& block, const CWallet& keystore)
     std::vector<valtype> vSolutions;
     const CTxOut& txout = block.IsProofOfStake()? block.vtx[1]->vout[1] : block.vtx[0]->vout[0];
 
-    if (Solver(txout.scriptPubKey, vSolutions) != TX_PUBKEY)
+    if (Solver(txout.scriptPubKey, vSolutions) != TxoutType::PUBKEY)
         return false;
 
     // Sign
@@ -4999,7 +4997,7 @@ bool CheckBlockSignature(const CBlock& block)
     std::vector<valtype> vSolutions;
     const CTxOut& txout = block.IsProofOfStake()? block.vtx[1]->vout[1] : block.vtx[0]->vout[0];
 
-    if (Solver(txout.scriptPubKey, vSolutions) != TX_PUBKEY)
+    if (Solver(txout.scriptPubKey, vSolutions) != TxoutType::PUBKEY)
         return false;
 
     const valtype& vchPubKey = vSolutions[0];
