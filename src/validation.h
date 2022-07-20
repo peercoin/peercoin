@@ -119,9 +119,6 @@ extern bool fAlerts;
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 extern int64_t nMaxTipAge;
 
-/** Block hash whose ancestors we will assume to have valid scripts without checking them. */
-extern uint256 hashAssumeValid;
-
 /** Minimum work we will assume exists on some valid chain. */
 extern arith_uint256 nMinimumChainWork;
 
@@ -934,13 +931,11 @@ private:
 public:
     using Options = kernel::ChainstateManagerOpts;
 
-    explicit ChainstateManager(Options options) : m_options{std::move(options)}
-    {
-        Assert(m_options.adjusted_time_callback);
-    }
+    explicit ChainstateManager(Options options);
 
     const CChainParams& GetParams() const { return m_options.chainparams; }
     const Consensus::Params& GetConsensus() const { return m_options.chainparams.GetConsensus(); }
+    const uint256& AssumedValidBlock() const { return *Assert(m_options.assumed_valid_block); }
 
     /**
      * Alias for ::cs_main.

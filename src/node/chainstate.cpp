@@ -42,8 +42,8 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
         return options.reindex || options.reindex_chainstate || chainstate->CoinsTip().GetBestBlock().IsNull();
     };
 
-    if (!hashAssumeValid.IsNull()) {
-        LogPrintf("Assuming ancestors of block %s have valid signatures.\n", hashAssumeValid.GetHex());
+    if (!chainman.AssumedValidBlock().IsNull()) {
+        LogPrintf("Assuming ancestors of block %s have valid signatures.\n", chainman.AssumedValidBlock().GetHex());
     } else {
         LogPrintf("Validating signatures for all blocks.\n");
     }
