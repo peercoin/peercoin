@@ -122,7 +122,7 @@ void MockTime(FuzzedDataProvider& fuzzed_data_provider, const CChainState& chain
     SetMockTime(time);
 }
 
-CTxMemPool MakeMempool(const NodeContext& node)
+CTxMemPool MakeMempool(FuzzedDataProvider& fuzzed_data_provider, const NodeContext& node)
 {
     // Take the default options for tests...
     CTxMemPool::Options mempool_opts{MemPoolOptionsForTest(node)};
@@ -130,6 +130,7 @@ CTxMemPool MakeMempool(const NodeContext& node)
     // ...override specific options for this specific fuzz suite
     mempool_opts.estimator = nullptr;
     mempool_opts.check_ratio = 1;
+    mempool_opts.require_standard = fuzzed_data_provider.ConsumeBool();
 
     // ...and construct a CTxMemPool from it
     return CTxMemPool{mempool_opts};
@@ -242,7 +243,6 @@ FUZZ_TARGET_INIT(tx_pool_standard, initialize_tx_pool)
         auto txr = std::make_shared<TransactionsDelta>(removed, added);
         RegisterSharedValidationInterface(txr);
         const bool bypass_limits = fuzzed_data_provider.ConsumeBool();
-        ::fRequireStandard = fuzzed_data_provider.ConsumeBool();
 
         // Make sure ProcessNewPackage on one transaction works.
         // The result is not guaranteed to be the same as what is returned by ATMP.
@@ -352,7 +352,6 @@ FUZZ_TARGET_INIT(tx_pool, initialize_tx_pool)
 
         const auto tx = MakeTransactionRef(mut_tx);
         const bool bypass_limits = fuzzed_data_provider.ConsumeBool();
-        ::fRequireStandard = fuzzed_data_provider.ConsumeBool();
         const auto res = WITH_LOCK(::cs_main, return AcceptToMemoryPool(chainstate, tx, GetTime(), bypass_limits, /*test_accept=*/false));
         const bool accepted = res.m_result_type == MempoolAcceptResult::ResultType::VALID;
         if (accepted) {
