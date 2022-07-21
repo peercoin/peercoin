@@ -570,6 +570,8 @@ public:
 
     const int64_t m_max_size_bytes;
     const std::chrono::seconds m_expiry;
+    const CFeeRate m_incremental_relay_feerate;
+    const CFeeRate m_min_relay_feerate;
     const bool m_require_standard;
     const bool m_full_rbf;
 
