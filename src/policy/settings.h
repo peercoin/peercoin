@@ -6,7 +6,6 @@
 #ifndef BITCOIN_POLICY_SETTINGS_H
 #define BITCOIN_POLICY_SETTINGS_H
 
-#include <policy/feerate.h>
 #include <policy/policy.h>
 
 class CTransaction;
