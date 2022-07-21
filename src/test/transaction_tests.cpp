@@ -40,6 +40,9 @@ typedef std::vector<unsigned char> valtype;
 // In script_tests.cpp
 UniValue read_json(const std::string& jsondata);
 
+static CFeeRate g_dust{DUST_RELAY_TX_FEE};
+static bool g_bare_multi{DEFAULT_PERMIT_BAREMULTISIG};
+
 static std::map<std::string, unsigned int> mapFlagNames = {
     {std::string("P2SH"), (unsigned int)SCRIPT_VERIFY_P2SH},
     {std::string("STRICTENC"), (unsigned int)SCRIPT_VERIFY_STRICTENC},
@@ -764,12 +767,12 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
 
     constexpr auto CheckIsStandard = [](const auto& t) {
         std::string reason;
-        BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
+        BOOST_CHECK(IsStandardTx(CTransaction{t}, g_bare_multi, g_dust, reason));
         BOOST_CHECK(reason.empty());
     };
     constexpr auto CheckIsNotStandard = [](const auto& t, const std::string& reason_in) {
         std::string reason;
-        BOOST_CHECK(!IsStandardTx(CTransaction(t), reason));
+        BOOST_CHECK(!IsStandardTx(CTransaction{t}, g_bare_multi, g_dust, reason));
         BOOST_CHECK_EQUAL(reason_in, reason);
     };
 
@@ -912,16 +915,16 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(t)), 400004);
     CheckIsNotStandard(t, "tx-size");
 
-    // Check bare multisig (standard if policy flag fIsBareMultisigStd is set)
-    fIsBareMultisigStd = true;
+    // Check bare multisig (standard if policy flag g_bare_multi is set)
+    g_bare_multi = true;
     t.vout[0].scriptPubKey = GetScriptForMultisig(1, {key.GetPubKey()}); // simple 1-of-1
     t.vin.resize(1);
     t.vin[0].scriptSig = CScript() << std::vector<unsigned char>(65, 0);
     CheckIsStandard(t);
 
-    fIsBareMultisigStd = false;
+    g_bare_multi = false;
     CheckIsNotStandard(t, "bare-multisig");
-    fIsBareMultisigStd = DEFAULT_PERMIT_BAREMULTISIG;
+    g_bare_multi = DEFAULT_PERMIT_BAREMULTISIG;
 
     // Check P2WPKH outputs dust threshold
     t.vout[0].scriptPubKey = CScript() << OP_0 << ParseHex("ffffffffffffffffffffffffffffffffffffffff");
