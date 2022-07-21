@@ -1054,6 +1054,16 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
     }
 #endif // USE_SYSCALL_SANDBOX
 
+    // Also report errors from parsing before daemonization
+    {
+        ChainstateManager::Options chainman_opts_dummy{
+            .chainparams = chainparams,
+        };
+        if (const auto error{ApplyArgsManOptions(args, chainman_opts_dummy)}) {
+            return InitError(*error);
+        }
+    }
+
     return true;
 }
 
@@ -1464,7 +1474,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         .chainparams = chainparams,
         .adjusted_time_callback = GetAdjustedTime,
     };
-    ApplyArgsManOptions(args, chainman_opts);
+    Assert(!ApplyArgsManOptions(args, chainman_opts)); // no error can happen, already checked in AppInitParameterInteraction
 
     // cache size calculations
     CacheSizes cache_sizes = CalculateCacheSizes(args, g_enabled_filter_types.size());

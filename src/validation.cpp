@@ -1620,6 +1620,7 @@ bool Chainstate::IsInitialBlockDownload() const
         return true;
     if (m_chain.Tip()->nChainTrust < nMinimumChainWork)
         return true;
+    }
     if (m_chain.Tip()->Time() < NodeClock::now() - m_chainman.m_options.max_tip_age) {
         return true;
     }
@@ -2191,7 +2192,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
                 //  it hard to hide the implication of the demand.  This also avoids having release candidates
                 //  that are hardly doing any signature verification at all in testing without having to
                 //  artificially set the default assumed verified block further back.
-                // The test against nMinimumChainWork prevents the skipping when denied access to any chain at
+                // The test against the minimum chain work prevents the skipping when denied access to any chain at
                 //  least as good as the expected chain.
                 fScriptChecks = (GetBlockProofEquivalentTime(*m_chainman.m_best_header, *pindex, *m_chainman.m_best_header, params.GetConsensus()) <= 60 * 60 * 24 * 7 * 2);
             }
@@ -5501,6 +5502,7 @@ void ChainstateManager::ResetChainstates()
  */
 static ChainstateManager::Options&& Flatten(ChainstateManager::Options&& opts)
 {
+    if (!opts.minimum_chain_work.has_value()) opts.minimum_chain_work = UintToArith256(opts.chainparams.GetConsensus().nMinimumChainWork);
     if (!opts.assumed_valid_block.has_value()) opts.assumed_valid_block = opts.chainparams.GetConsensus().defaultAssumeValid;
     Assert(opts.adjusted_time_callback);
     return std::move(opts);
