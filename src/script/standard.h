@@ -13,6 +13,7 @@
 #include <util/hash_type.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -41,11 +42,11 @@ static const unsigned int MAX_OP_RETURN_RELAY = 259;
 /**
  * A data carrying output is an unspendable output containing data. The script
  * type is designated as TxoutType::NULL_DATA.
+ *
+ * Maximum size of TxoutType::NULL_DATA scripts that this node considers standard.
+ * If nullopt, any size is nonstandard.
  */
-extern bool fAcceptDatacarrier;
-
-/** Maximum size of TxoutType::NULL_DATA scripts that this node considers standard. */
-extern unsigned nMaxDatacarrierBytes;
+extern std::optional<unsigned> g_max_datacarrier_bytes;
 
 /**
  * Mandatory script verification flags that all new blocks must comply with for
