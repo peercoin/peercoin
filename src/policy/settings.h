@@ -12,7 +12,6 @@ class CTransaction;
 
 // Policy settings which are configurable at runtime.
 extern unsigned int nBytesPerSigOp;
-extern bool fIsBareMultisigStd;
 
 static inline bool IsStandardTx(const CTransaction& tx, std::string& reason)
 {
