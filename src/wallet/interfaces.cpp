@@ -147,7 +147,7 @@ public:
     void abortRescan() override { m_wallet->AbortRescan(); }
     bool backupWallet(const std::string& filename) override { return m_wallet->BackupWallet(filename); }
     std::string getWalletName() override { return m_wallet->GetName(); }
-    BResult<CTxDestination> getNewDestination(const OutputType type, const std::string label) override
+    util::Result<CTxDestination> getNewDestination(const OutputType type, const std::string label) override
     {
         LOCK(m_wallet->cs_wallet);
         return m_wallet->GetNewDestination(type, label);
@@ -250,7 +250,7 @@ public:
         LOCK(m_wallet->cs_wallet);
         return m_wallet->ListLockedCoins(outputs);
     }
-    BResult<CTransactionRef> createTransaction(const std::vector<CRecipient>& recipients,
+    util::Result<CTransactionRef> createTransaction(const std::vector<CRecipient>& recipients,
         const CCoinControl& coin_control,
         bool sign,
         int& change_pos,
@@ -576,12 +576,12 @@ public:
         options.require_existing = true;
         return MakeWallet(m_context, LoadWallet(m_context, name, true /* load_on_start */, options, status, error, warnings));
     }
-    BResult<std::unique_ptr<Wallet>> restoreWallet(const fs::path& backup_file, const std::string& wallet_name, std::vector<bilingual_str>& warnings) override
+    util::Result<std::unique_ptr<Wallet>> restoreWallet(const fs::path& backup_file, const std::string& wallet_name, std::vector<bilingual_str>& warnings) override
     {
         DatabaseStatus status;
         bilingual_str error;
-        BResult<std::unique_ptr<Wallet>> wallet{MakeWallet(m_context, RestoreWallet(m_context, backup_file, wallet_name, /*load_on_start=*/true, status, error, warnings))};
-        if (!wallet) return error;
+        util::Result<std::unique_ptr<Wallet>> wallet{MakeWallet(m_context, RestoreWallet(m_context, backup_file, wallet_name, /*load_on_start=*/true, status, error, warnings))};
+        if (!wallet) return util::Error{error};
         return wallet;
     }
     std::string getWalletDir() override
