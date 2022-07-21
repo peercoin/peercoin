@@ -75,7 +75,7 @@ bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string
     unsigned int nDataOut = 0;
     TxoutType whichType;
     for (const CTxOut& txout : tx.vout) {
-        if (!::IsStandard(txout.scriptPubKey, g_max_datacarrier_bytes, whichType)) {
+        if (!::IsStandard(txout.scriptPubKey, max_datacarrier_bytes, whichType)) {
             reason = "scriptpubkey";
             return false;
         }
