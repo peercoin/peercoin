@@ -6,14 +6,16 @@
 #ifndef BITCOIN_PRIMITIVES_TRANSACTION_H
 #define BITCOIN_PRIMITIVES_TRANSACTION_H
 
-#include <stdint.h>
 #include <consensus/amount.h>
+#include <prevector.h>
 #include <script/script.h>
 #include <serialize.h>
 #include <uint256.h>
 
 #include <version.h>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 /**
  * A flag that is ORed into the protocol version to designate that a transaction
@@ -322,7 +324,7 @@ private:
 public:
     /** Convert a CMutableTransaction into a CTransaction. */
     explicit CTransaction(const CMutableTransaction& tx);
-    CTransaction(CMutableTransaction&& tx);
+    explicit CTransaction(CMutableTransaction&& tx);
 
     template <typename Stream>
     inline void Serialize(Stream& s) const {
@@ -394,7 +396,7 @@ struct CMutableTransaction
     uint32_t nTime;
     uint32_t nLockTime;
 
-    CMutableTransaction();
+    explicit CMutableTransaction();
     explicit CMutableTransaction(const CTransaction& tx);
 
     template <typename Stream>
