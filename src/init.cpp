@@ -924,7 +924,6 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
     init::SetLoggingLevel(args);
 
     fCheckBlockIndex = args.GetBoolArg("-checkblockindex", chainparams.DefaultConsistencyChecks());
-    fCheckpointsEnabled = args.GetBoolArg("-checkpoints", DEFAULT_CHECKPOINTS_ENABLED);
 
     if (args.IsArgSet("-minimumchainwork")) {
         const std::string minChainWorkStr = args.GetArg("-minimumchainwork", "");

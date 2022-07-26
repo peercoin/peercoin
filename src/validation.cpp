@@ -146,7 +146,6 @@ std::condition_variable g_best_block_cv;
 uint256 g_best_block;
 bool g_parallel_script_checks{false};
 bool fCheckBlockIndex = false;
-bool fCheckpointsEnabled = DEFAULT_CHECKPOINTS_ENABLED;
 
 arith_uint256 nMinimumChainWork;
 
@@ -3654,7 +3653,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "bad-diffbits", "incorrect proof of work/stake");
 
     // Check against checkpoints
-    if (fCheckpointsEnabled) {
+    if (chainman.m_options.checkpoints_enabled) {
         // Don't accept any forks from the main chain prior to last checkpoint.
         // GetLastCheckpoint finds the last checkpoint in MapCheckpoints that's in our
         // BlockIndex().
