@@ -30,7 +30,6 @@
 #include <interfaces/init.h>
 #include <interfaces/node.h>
 #include <mapport.h>
-#include <node/mempool_args.h>
 #include <net.h>
 #include <net_permissions.h>
 #include <net_processing.h>
