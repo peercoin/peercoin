@@ -180,7 +180,7 @@ BITCOIN_CORE_H = \
   logging.h \
   logging/timer.h \
   mapport.h \
-  mempool_args.h \
+  node/mempool_args.h \
   memusage.h \
   merkleblock.h \
   net.h \
@@ -361,7 +361,7 @@ libbitcoin_node_a_SOURCES = \
   kernel/context.cpp \
   kernel/mempool_persist.cpp \
   mapport.cpp \
-  mempool_args.cpp \
+  node/mempool_args.cpp \
   net.cpp \
   netgroup.cpp \
   net_processing.cpp \
