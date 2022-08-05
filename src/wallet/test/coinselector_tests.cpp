@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         expected_result.Clear();
         add_coin(10 * CENT, 2, expected_result);
         CCoinControl coin_control;
-        const auto result11 = SelectCoins(*wallet, available_coins, 10 * CENT, coin_control, coin_selection_params_bnb);
+        const auto result11 = SelectCoins(*wallet, available_coins, /*pre_set_inputs=*/{}, 10 * CENT, coin_control, coin_selection_params_bnb);
         BOOST_CHECK(EquivalentResult(expected_result, *result11));
         available_coins.Clear();
 
@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         expected_result.Clear();
         add_coin(9 * CENT, 2, expected_result);
         add_coin(1 * CENT, 2, expected_result);
-        const auto result12 = SelectCoins(*wallet, available_coins, 10 * CENT, coin_control, coin_selection_params_bnb);
+        const auto result12 = SelectCoins(*wallet, available_coins, /*pre_set_inputs=*/{}, 10 * CENT, coin_control, coin_selection_params_bnb);
         BOOST_CHECK(EquivalentResult(expected_result, *result12));
         available_coins.Clear();
 
@@ -373,8 +373,12 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         add_coin(9 * CENT, 2, expected_result);
         add_coin(1 * CENT, 2, expected_result);
         coin_control.m_allow_other_inputs = true;
-        coin_control.Select(available_coins.All().at(1).outpoint); // pre select 9 coin
-        const auto result13 = SelectCoins(*wallet, available_coins, 10 * CENT, coin_control, coin_selection_params_bnb);
+        COutput select_coin = available_coins.All().at(1); // pre select 9 coin
+        coin_control.Select(select_coin.outpoint);
+        PreSelectedInputs selected_input;
+        selected_input.Insert(select_coin, coin_selection_params_bnb.m_subtract_fee_outputs);
+        available_coins.coins[OutputType::BECH32].erase(++available_coins.coins[OutputType::BECH32].begin());
+        const auto result13 = SelectCoins(*wallet, available_coins, selected_input, 10 * CENT, coin_control, coin_selection_params_bnb);
         BOOST_CHECK(EquivalentResult(expected_result, *result13));
     }
 }
@@ -749,7 +753,7 @@ BOOST_AUTO_TEST_CASE(SelectCoins_test)
                                       /* change_spend_size= */ 148,
                                       /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
         CCoinControl cc;
-        const auto result = SelectCoins(*wallet, available_coins, target, cc, cs_params);
+        const auto result = SelectCoins(*wallet, available_coins, /*pre_set_inputs=*/{}, target, cc, cs_params);
         BOOST_CHECK(result);
         BOOST_CHECK_GE(result->GetSelectedValue(), target);
     }
@@ -931,7 +935,10 @@ BOOST_AUTO_TEST_CASE(SelectCoins_effective_value_test)
     cc.SetInputWeight(output.outpoint, 148);
     cc.SelectExternal(output.outpoint, output.txout);
 
-    const auto result = SelectCoins(*wallet, available_coins, target, cc, cs_params);
+    const auto preset_inputs = *Assert(FetchSelectedInputs(*wallet, cc, cs_params));
+    available_coins.coins[OutputType::BECH32].erase(available_coins.coins[OutputType::BECH32].begin());
+
+    const auto result = SelectCoins(*wallet, available_coins, preset_inputs, target, cc, cs_params);
     BOOST_CHECK(!result);
 }
 
