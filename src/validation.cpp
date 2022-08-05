@@ -3566,7 +3566,7 @@ std::vector<unsigned char> ChainstateManager::GenerateCoinbaseCommitment(CBlock&
  *  in ConnectBlock().
  *  Note that -reindex-chainstate skips the validation that happens here!
  */
-static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, BlockManager& blockman, const ChainstateManager& chainman, const CBlockIndex* pindexPrev, int64_t nAdjustedTime) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
+static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, BlockManager& blockman, const ChainstateManager& chainman, const CBlockIndex* pindexPrev, NodeClock::time_point now) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     AssertLockHeld(::cs_main);
     assert(pindexPrev != nullptr);
@@ -3596,6 +3596,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     // Check timestamp
     if (block.GetBlockTime() > nAdjustedTime + (IsProtocolV09(block.GetBlockTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9))
         return state.Invalid(BlockValidationResult::BLOCK_TIME_FUTURE, "time-too-new", "block timestamp too far in the future");
+    }
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
     // check for version 2, 3 and 4 upgrades
@@ -3996,7 +3997,7 @@ bool TestBlockValidity(BlockValidationState& state,
                        CChainState& chainstate,
                        const CBlock& block,
                        CBlockIndex* pindexPrev,
-                       const std::function<int64_t()>& adjusted_time_callback,
+                       const std::function<NodeClock::time_point()>& adjusted_time_callback,
                        bool fCheckPOW,
                        bool fCheckMerkleRoot)
 {
