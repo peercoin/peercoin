@@ -771,7 +771,6 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
             coin_selection_params.m_subtract_fee_outputs = true;
         }
     }
-    coin_selection_params.m_min_change_target = GenerateChangeTarget(std::floor(recipients_sum / vecSend.size()), rng_fast);
 
     // Create change script that will be used if we need change
     CScript scriptChange;
@@ -823,6 +822,8 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     // So cost of change = (change output size * effective feerate) + (size of spending change output * discard feerate)
     coin_selection_params.m_change_fee = GetMinFee(coin_selection_params.change_output_size, GetAdjustedTime());
     coin_selection_params.m_cost_of_change = GetMinFee(coin_selection_params.change_spend_size, GetAdjustedTime()) + coin_selection_params.m_change_fee;
+
+    coin_selection_params.m_min_change_target = GenerateChangeTarget(std::floor(recipients_sum / vecSend.size()), coin_selection_params.m_change_fee, rng_fast);
 
     // vouts to the payees
     if (!coin_selection_params.m_subtract_fee_outputs) {
