@@ -34,16 +34,6 @@ enum DeploymentPos : uint16_t {
 constexpr bool ValidDeployment(DeploymentPos dep) { return dep < MAX_VERSION_BITS_DEPLOYMENTS; }
 
 /**
-    /** If lock in occurs, delay activation until at least this block
-     *  height.  Note that activation will only occur on a retarget
-     *  boundary.
-     */
-    int min_activation_height{0};
-
-    /** Special value for nStartTime indicating that the deployment is never active.
-     *  This is useful for integrating the code changes for a new feature
-     *  prior to deploying it on some or all networks. */
-    static constexpr int64_t NEVER_ACTIVE = -2;
  * Parameters that influence chain consensus.
  */
 struct Params {

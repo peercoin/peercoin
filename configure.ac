@@ -1606,6 +1606,8 @@ elif test "$enable_multiprocess" = "auto"; then
   build_multiprocess=$libmultiprocess_found
 else
   build_multiprocess=no
+fi
+
 AM_CONDITIONAL([BUILD_MULTIPROCESS], [test "$build_multiprocess" = "yes"])
 AM_CONDITIONAL([BUILD_BITCOIN_NODE], [test "$build_multiprocess" = "yes"])
 AM_CONDITIONAL([BUILD_BITCOIN_GUI], [test "$build_multiprocess" = "yes"])

@@ -4,12 +4,8 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # Pattern rule to print variables, e.g. make print-top_srcdir
-print-%: FORCE
-	@echo '$*'='$($*)'
-noinst_HEADERS += src/modinv32.h
-noinst_HEADERS += src/modinv32_impl.h
-noinst_HEADERS += src/modinv64.h
-noinst_HEADERS += src/modinv64_impl.h
+print-%:
+	@echo $* = $($*)
 
 ACLOCAL_AMFLAGS = -I build-aux/m4
 SUBDIRS = src
@@ -45,13 +41,13 @@ OSX_DMG = $(OSX_VOLNAME).dmg
 OSX_TEMP_ISO = $(OSX_DMG:.dmg=).temp.iso
 OSX_BACKGROUND_IMAGE=$(top_srcdir)/contrib/macdeploy/background.tiff
 OSX_DEPLOY_SCRIPT=$(top_srcdir)/contrib/macdeploy/macdeployqtplus
-OSX_INSTALLER_ICONS=$(top_srcdir)/src/qt/res/icons/peercoin.icns
+OSX_INSTALLER_ICONS=$(top_srcdir)/src/qt/res/icons/bitcoin.icns
 OSX_PLIST=$(top_builddir)/share/qt/Info.plist #not installed
 
 DIST_CONTRIB = \
-	       $(top_srcdir)/test/sanitizer_suppressions/lsan \
-	       $(top_srcdir)/test/sanitizer_suppressions/tsan \
-	       $(top_srcdir)/test/sanitizer_suppressions/ubsan \
+           $(top_srcdir)/test/sanitizer_suppressions/lsan \
+           $(top_srcdir)/test/sanitizer_suppressions/tsan \
+           $(top_srcdir)/test/sanitizer_suppressions/ubsan \
 	       $(top_srcdir)/contrib/linearize/linearize-data.py \
 	       $(top_srcdir)/contrib/linearize/linearize-hashes.py
 
@@ -208,7 +204,7 @@ $(COV_TOOL_WRAPPER):
 	@echo 'exec $(COV_TOOL) "$$@"' > $(COV_TOOL_WRAPPER)
 	@chmod +x $(COV_TOOL_WRAPPER)
 
-baseline.info: $(COV_TOOL_WRAPPER)
+baseline.info:
 	$(LCOV) -c -i -d $(abs_builddir)/src -o $@
 
 baseline_filtered.info: baseline.info
@@ -278,7 +274,7 @@ EXTRA_DIST += \
     test/fuzz
 
 EXTRA_DIST += \
-    test/util/test_runner.py \
+    test/util/bitcoin-util-test.py \
     test/util/data/bitcoin-util-test.json \
     test/util/data/blanktxv1.hex \
     test/util/data/blanktxv1.json \
@@ -328,13 +324,14 @@ EXTRA_DIST += \
     test/util/data/txcreatescript4.json \
     test/util/data/txcreatescript5.hex \
     test/util/data/txcreatescript6.hex \
-    test/util/data/txcreatesignsegwit1.hex \
     test/util/data/txcreatesignv1.hex \
     test/util/data/txcreatesignv1.json \
     test/util/data/txcreatesignv2.hex \
     test/util/rpcauth-test.py
 
 CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
+
+.INTERMEDIATE: $(COVERAGE_INFO)
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-man
 
@@ -356,7 +353,7 @@ clean-docs:
 clean-local: clean-docs
 	rm -rf coverage_percent.txt test_bitcoin.coverage/ total.coverage/ fuzz.coverage/ test/tmp/ cache/ $(OSX_APP)
 	rm -rf test/functional/__pycache__ test/functional/test_framework/__pycache__ test/cache share/rpcauth/__pycache__
-	rm -rf osx_volname dist/
+	rm -rf osx_volname dist/ dpi36.background.tiff dpi72.background.tiff
 
 test-security-check:
 if TARGET_DARWIN
