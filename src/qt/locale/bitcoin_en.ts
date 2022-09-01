@@ -312,7 +312,7 @@
 <context>
     <name>BitcoinApplication</name>
     <message>
-        <location filename="../bitcoin.cpp" line="+286"/>
+        <location filename="../bitcoin.cpp" line="+288"/>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1631,7 +1631,7 @@
     <message>
         <location line="+7"/>
         <location line="+26"/>
-        <location filename="../modaloverlay.cpp" line="+152"/>
+        <location filename="../modaloverlay.cpp" line="+155"/>
         <source>Unknown…</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1672,13 +1672,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../modaloverlay.cpp" line="-118"/>
+        <location filename="../modaloverlay.cpp" line="-121"/>
         <source>%1 is currently syncing.  It will download headers and blocks from peers and validate them until reaching the tip of the block chain.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+124"/>
+        <location line="+127"/>
         <source>Unknown. Syncing Headers (%1, %2%)…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Unknown. Pre-syncing Headers (%1, %2%)…</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2269,7 +2274,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../overviewpage.cpp" line="+186"/>
+        <location filename="../overviewpage.cpp" line="+185"/>
         <source>Privacy mode activated for the Overview tab. To unmask the values, uncheck Settings-&gt;Mask values.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2720,7 +2725,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../modaloverlay.cpp" line="-35"/>
+        <location filename="../modaloverlay.cpp" line="-40"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5548,6 +5553,11 @@ Go to File &gt; Open Wallet to load a wallet.
     <message>
         <location line="+1"/>
         <source>Unable to create the PID file &apos;%s&apos;: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unable to find UTXO for external input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
