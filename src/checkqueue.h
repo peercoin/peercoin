@@ -215,7 +215,6 @@ public:
     {
         assert(m_worker_threads.empty());
     }
-
 };
 
 /**

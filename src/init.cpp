@@ -1169,7 +1169,6 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     LogPrintf("Script verification uses %d additional threads\n", script_threads);
     if (script_threads >= 1) {
-        g_parallel_script_checks = true;
         StartScriptCheckWorkerThreads(script_threads);
     }
 
