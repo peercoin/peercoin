@@ -51,7 +51,6 @@ The Peercoin repo's [root README](/README.md) contains relevant information on t
 
 - [Developer Notes](developer-notes.md)
 - [Productivity Notes](productivity.md)
-- [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
 - [Source Code Documentation (External Link)](none-yet)
 - [Translation Process](translation_process.md)
