@@ -18,6 +18,7 @@
 #include <consensus/amount.h>
 #include <deploymentstatus.h>
 #include <fs.h>
+#include <kernel/cs_main.h> // IWYU pragma: export
 #include <node/blockstorage.h>
 #include <policy/packages.h>
 #include <policy/policy.h>

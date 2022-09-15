@@ -37,7 +37,6 @@
 class CBlockIndex;
 class CChain;
 class Chainstate;
-extern RecursiveMutex cs_main;
 
 /** Fake height value used in Coin to signify they are only in the memory pool (since 0.8) */
 static const uint32_t MEMPOOL_HEIGHT = 0x7FFFFFFF;
