@@ -88,6 +88,8 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
     std::vector<size_t> best_selection;
     CAmount best_waste = MAX_MONEY;
 
+    bool is_feerate_high = utxo_pool.at(0).fee > utxo_pool.at(0).long_term_fee;
+
     // Depth First search loop for choosing the UTXOs
     for (size_t curr_try = 0, utxo_pool_index = 0; curr_try < TOTAL_TRIES; ++curr_try, ++utxo_pool_index) {
         // Conditions for starting a backtrack
