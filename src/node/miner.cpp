@@ -117,7 +117,7 @@ void BlockAssembler::resetBlock()
 // peercoin: if pwallet != NULL it will attempt to create coinstake
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node)
 {
-    int64_t time_start = GetTimeMicros();
+    const auto time_start{SteadyClock::now()};
 
     resetBlock();
 
@@ -233,9 +233,12 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     if (pwallet && !TestBlockValidity(state, chainparams, m_chainstate, *pblock, pindexPrev, false, false)) {
         throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, state.ToString()));
     }
-    int64_t time_2 = GetTimeMicros();
+    const auto time_2{SteadyClock::now()};
 
-    LogPrint(BCLog::BENCH, "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (time_1 - time_start), nPackagesSelected, nDescendantsUpdated, 0.001 * (time_2 - time_1), 0.001 * (time_2 - time_start));
+    LogPrint(BCLog::BENCH, "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n",
+             Ticks<MillisecondsDouble>(time_1 - time_start), nPackagesSelected, nDescendantsUpdated,
+             Ticks<MillisecondsDouble>(time_2 - time_1),
+             Ticks<MillisecondsDouble>(time_2 - time_start));
 
     return std::move(pblocktemplate);
 }
