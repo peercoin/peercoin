@@ -2868,7 +2868,7 @@ void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, Peer& peer,
 
     // If we don't have the last header, then this peer will have given us
     // something new (if these headers are valid).
-    bool received_new_header{last_received_header != nullptr};
+    bool received_new_header{last_received_header == nullptr};
 
     int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
     BlockValidationState state;
