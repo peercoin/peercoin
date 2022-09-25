@@ -49,4 +49,4 @@ static void AssembleBlock(benchmark::Bench& bench)
     });
 }
 
-BENCHMARK(AssembleBlock);
+BENCHMARK(AssembleBlock, benchmark::PriorityLevel::HIGH);
