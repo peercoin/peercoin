@@ -138,6 +138,8 @@ def create_coinbase(height, pubkey=None, timestamp=None, extra_output_script=Non
         coinbaseoutput.nValue += fees
     if pubkey is not None:
         coinbaseoutput.scriptPubKey = key_to_p2pk_script(pubkey)
+    elif script_pubkey is not None:
+        coinbaseoutput.scriptPubKey = script_pubkey
     else:
         coinbaseoutput.scriptPubKey = CScript([OP_TRUE])
     if (timestamp is not None):
