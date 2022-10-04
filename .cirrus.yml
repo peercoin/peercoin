@@ -115,7 +115,7 @@ task:
     IgnoreWarnIntDirInTempDetected: 'true'
     EXCLUDE_TESTS: 'feature_addrman.py,feature_bip68_sequence.py,feature_fee_estimation.py,mining_prioritisetransaction.py,p2p_getaddr_caching.py,p2p_invalid_locator.py,p2p_invalid_tx.py,rpc_misc.py,rpc_net.py,wallet_avoidreuse.py,wallet_descriptor.py,wallet_groups.py,wallet_keypool.py'
   merge_script:
-    - PowerShell -NoLogo -Command if ($env:CIRRUS_PR -ne $null) { git fetch $env:CIRRUS_REPO_CLONE_URL pull/$env:CIRRUS_PR/merge; git checkout FETCH_HEAD; }
+    - PowerShell -NoLogo -Command if ($env:CIRRUS_PR -ne $null) { git fetch $env:CIRRUS_REPO_CLONE_URL pull/$env:CIRRUS_PR/merge; git reset --hard FETCH_HEAD; }
   msvc_qt_built_cache:
     folder: "%QTBASEDIR%"
     reupload_on_changes: false
