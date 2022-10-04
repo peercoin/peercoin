@@ -131,6 +131,7 @@ BITCOIN_CORE_H = \
   clientversion.h \
   coins.h \
   common/bloom.h \
+  common/run_command.h \
   compat/assumptions.h \
   compat/byteswap.h \
   compat/compat.h \
@@ -275,7 +276,6 @@ BITCOIN_CORE_H = \
   util/overloaded.h \
   util/readwritefile.h \
   util/result.h \
-  util/run_command.h \
   util/serfloat.h \
   util/settings.h \
   util/sock.h \
@@ -612,6 +612,7 @@ libbitcoin_common_a_SOURCES = \
   chainparams.cpp \
   coins.cpp \
   common/bloom.cpp \
+  common/run_command.cpp \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
@@ -666,7 +667,6 @@ libbitcoin_util_a_SOURCES = \
   util/error.cpp \
   util/getuniquepath.cpp \
   util/hasher.cpp \
-  util/run_command.cpp \
   util/sock.cpp \
   util/syserror.cpp \
   util/system.cpp \
