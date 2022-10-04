@@ -593,21 +593,16 @@ std::optional<SelectionResult> SelectCoins(const CWallet& wallet, CoinsResult& a
 
     // coin control -> return all selected outputs (we want all selected to go into the transaction for sure)
     if (!coin_control.m_allow_other_inputs) {
+        // 'selection_target' is computed on `PreSelectedInputs::Insert` which decides whether to use the effective value
+        // or the raw output value based on the 'subtract_fee_outputs' flag.
+        if (selection_target > 0) return std::nullopt;
         SelectionResult result(nTargetValue, SelectionAlgorithm::MANUAL);
         result.AddInputs(pre_set_inputs.coins, coin_selection_params.m_subtract_fee_outputs);
-
-        if (!coin_selection_params.m_subtract_fee_outputs && result.GetSelectedEffectiveValue() < nTargetValue) {
-            return std::nullopt;
-        } else if (result.GetSelectedValue() < nTargetValue) {
-            return std::nullopt;
-        }
-
         result.ComputeAndSetWaste(coin_selection_params.min_viable_change, coin_selection_params.m_cost_of_change, coin_selection_params.m_change_fee);
         return result;
     }
 
-    // Decrease the selection target before start the automatic coin selection
-    CAmount selection_target = nTargetValue - pre_set_inputs.total_amount;
+    // Start wallet Coin Selection procedure
     auto op_selection_result = AutomaticCoinSelection(wallet, available_coins, selection_target, coin_control, coin_selection_params);
     if (!op_selection_result) return op_selection_result;
 
