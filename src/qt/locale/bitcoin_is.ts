@@ -1,69 +1,65 @@
-<TS version="2.1" language="is">
+<TS language="is" version="2.1">
 <context>
     <name>AddressBookPage</name>
     <message>
         <source>Right-click to edit address or label</source>
-        <translation type="unfinished">Smelltu á hægri músatakka til að velja veski eða merkingu</translation>
+        <translation>Smelltu á hægri músatakka til að breyta færslugildi eða merkingu</translation>
     </message>
     <message>
         <source>Create a new address</source>
-        <translation type="unfinished">Búa til nýtt veski</translation>
+        <translation>Búa til nýtt færslugildi</translation>
     </message>
     <message>
         <source>&amp;New</source>
-        <translation type="unfinished">&amp;Nýtt</translation>
+        <translation>&amp;Nýtt</translation>
     </message>
     <message>
         <source>Copy the currently selected address to the system clipboard</source>
-        <translation type="unfinished">Afrita valið veski í klemmuspjald</translation>
+        <translation>Afrita valið færslugildi í klemmuspjald</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
-        <translation type="unfinished">&amp;Afrita</translation>
+        <translation>&amp;Afrita</translation>
     </message>
     <message>
         <source>C&amp;lose</source>
-        <translation type="unfinished">&amp;Loka</translation>
+        <translation>&amp;Loka</translation>
     </message>
     <message>
         <source>Delete the currently selected address from the list</source>
-        <translation type="unfinished">Eyða völdu veski úr listanum</translation>
-    </message>
-    <message>
-        <source>Enter address or label to search</source>
-        <translation type="unfinished">Veldu veski eða merkingu fyrir leit</translation>
+        <translation>Eyða völdu færslugildi úr listanum</translation>
     </message>
     <message>
         <source>Export the data in the current tab to a file</source>
-        <translation type="unfinished">Flytja gögn í flipanum í skrá</translation>
+        <translation>Flytja gögn í flipanum í skrá</translation>
     </message>
     <message>
         <source>&amp;Export</source>
-        <translation type="unfinished">&amp;Flytja út</translation>
+        <translation>&amp;Flytja út</translation>
     </message>
     <message>
         <source>&amp;Delete</source>
-        <translation type="unfinished">&amp;Eyða</translation>
+        <translation>&amp;Eyða</translation>
     </message>
     <message>
         <source>Choose the address to send coins to</source>
-        <translation type="unfinished">Veldu veski sem greiða skal til</translation>
+        <translation>Veldu færslugildi sem greiða skal til</translation>
     </message>
     <message>
         <source>Choose the address to receive coins with</source>
-        <translation type="unfinished">Veldu veski til að taka við rafmynt</translation>
+        <translation>Veldu færslugildi sem á að taka við mynt</translation>
     </message>
     <message>
         <source>C&amp;hoose</source>
-        <translation type="unfinished">&amp;Veldu</translation>
+        <translation>&amp;Veldu</translation>
     </message>
     <message>
         <source>Sending addresses</source>
-        <translation type="unfinished">Veski sem senda frá sér</translation>
+        <translation>Færslugildi sem senda frá sér</translation>
     </message>
     <message>
         <source>Receiving addresses</source>
-        <translation type="unfinished">Veski sem þiggja til sín</translation>
+        <translation>Færslugildi sem þiggja til sín</translation>
     </message>
     <message>
         <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
@@ -71,249 +67,247 @@
     </message>
     <message>
         <source>&amp;Copy Address</source>
-        <translation type="unfinished">&amp;Afrita færslugildi</translation>
+        <translation>&amp;Afrita færslugildi</translation>
     </message>
     <message>
         <source>Copy &amp;Label</source>
-        <translation type="unfinished">Afrita og &amp;Merkja</translation>
+        <translation>Afrita og &amp;Merkja</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Breyta</translation>
+        <translation>&amp;Breyta</translation>
     </message>
     <message>
         <source>Export Address List</source>
-        <translation type="unfinished">Flytja út færslulista</translation>
+        <translation>Flytja út færslulista</translation>
     </message>
     <message>
-        <source>There was an error trying to save the address list to %1. Please try again.</source>
-        <extracomment>An error message. %1 is a stand-in argument for the name of the file we attempted to save to.</extracomment>
-        <translation type="unfinished">Ekki tókst að vista færslugildalistann á %1. Reyndu aftur.</translation>
+        <source>Comma separated file (*.csv)</source>
+        <translation>Gildi aðskilin með kommu (*.csv)</translation>
     </message>
     <message>
         <source>Exporting Failed</source>
-        <translation type="unfinished">Útflutningur tókst ekki</translation>
+        <translation>Útflutningur tókst ekki</translation>
+    </message>
+    <message>
+        <source>There was an error trying to save the address list to %1. Please try again.</source>
+        <translation>Ekki tókst að vista færslugildalistann á %1. Reyndu aftur.</translation>
     </message>
 </context>
 <context>
     <name>AddressTableModel</name>
     <message>
         <source>Label</source>
-        <translation type="unfinished">Merki</translation>
+        <translation>Merking</translation>
     </message>
     <message>
         <source>Address</source>
-        <translation type="unfinished">Færslugildi</translation>
+        <translation>Færslugildi</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(engin merking)</translation>
+        <translation>(engin merking)</translation>
     </message>
 </context>
 <context>
     <name>AskPassphraseDialog</name>
     <message>
         <source>Passphrase Dialog</source>
-        <translation type="unfinished">Lykilsetning</translation>
+        <translation>Lykilsetning</translation>
     </message>
     <message>
         <source>Enter passphrase</source>
-        <translation type="unfinished">Skráðu lykilsetningu</translation>
+        <translation>Skráðu lykilsetningu</translation>
     </message>
     <message>
         <source>New passphrase</source>
-        <translation type="unfinished">Ný lykilsetning</translation>
+        <translation>Ný lykilsetning</translation>
     </message>
     <message>
         <source>Repeat new passphrase</source>
-        <translation type="unfinished">Endurtaktu nýja lykilsetningu</translation>
+        <translation>Endurtaktu nýja lykilsetningu</translation>
     </message>
     <message>
         <source>Encrypt wallet</source>
-        <translation type="unfinished">Dulkóða veski</translation>
+        <translation>Dulkóða veski</translation>
     </message>
     <message>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation type="unfinished">Þessi aðgerð þarf að fá lykilsetninguna þína til að opna veskið.</translation>
+        <translation>Þessi aðgerð þarf að fá lykilsetninguna þína til að opna veskið.</translation>
     </message>
     <message>
         <source>Unlock wallet</source>
-        <translation type="unfinished">Opna veskið</translation>
+        <translation>Opna veskið</translation>
+    </message>
+    <message>
+        <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
+        <translation>Þessi aðgerð þarf lykilsetninguna þína til að dulráða veskið.</translation>
+    </message>
+    <message>
+        <source>Decrypt wallet</source>
+        <translation>Dulráða veskið</translation>
     </message>
     <message>
         <source>Change passphrase</source>
-        <translation type="unfinished">Breyta lykilsetningu</translation>
+        <translation>Breyta lykilsetningu</translation>
     </message>
     <message>
         <source>Confirm wallet encryption</source>
-        <translation type="unfinished">Staðfesta dulkóðun veskis</translation>
+        <translation>Staðfesta dulkóðun veskis</translation>
     </message>
     <message>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
-        <translation type="unfinished">Viðvörun: Ef þú dulkóðar veskið og týnir lykilsetningunn þá munt þú &lt;b&gt;TAPA ALLRI ÞINNI BITCOIN MYNT&lt;/b&gt;!</translation>
+        <translation>Viðvörun: Ef þú dulkóðar veskið og týnir lykilsetningunn þá munt þú &lt;b&gt;TAPA ALLRI ÞINNI BITCOIN MYNT&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
-        <translation type="unfinished">Ertu viss um að þú viljir dulkóða veskið þitt?</translation>
+        <translation>Ertu viss um að þú viljir dulkóða veskið þitt?</translation>
     </message>
     <message>
         <source>Wallet encrypted</source>
-        <translation type="unfinished">Veski dulkóðað</translation>
-    </message>
-    <message>
-        <source>Wallet to be encrypted</source>
-        <translation type="unfinished">Veski sem á að dulkóða</translation>
+        <translation>Veski dulkóðað</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation type="unfinished">MIKILVÆGT: Nýja dulkóðaða veskisskráin þarf að koma í staðinn fyrir öll fyrri afrit sem þú hefur gert af upprunalegu veskisskránni. Af öryggisástæðum munu öll fyrri afrit af ódulkóðaða veskinu verða óvirk um leið og þú byrjar að nota nýja, dulkóðaða veskið.</translation>
+        <translation>MIKILVÆGT: Nýja dulkóðaða veskisskráin þarf að koma í staðinn fyrir öll fyrri afrit sem þú hefur gert af upprunalegu veskisskránni. Af öryggisástæðum munu öll fyrri afrit af ódulkóðaða veskinu verða óvirk um leið og þú byrjar að nota nýja, dulkóðaða veskið.</translation>
     </message>
     <message>
         <source>Wallet encryption failed</source>
-        <translation type="unfinished">Dulkóðun veskis mistókst</translation>
+        <translation>Dulkóðun veskis mistókst</translation>
     </message>
     <message>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
-        <translation type="unfinished">Dulkóðun veskis mistóks vegna innri villu. Veskið þitt var ekki dulkóðað.</translation>
+        <translation>Dulkóðun veskis mistóks vegna innri villu. Veskið þitt var ekki dulkóðað.</translation>
     </message>
     <message>
         <source>The supplied passphrases do not match.</source>
-        <translation type="unfinished">Lykilsetningarnar eru ekki þær sömu.</translation>
+        <translation>Lykilsetningarnar eru ekki þær sömu.</translation>
     </message>
     <message>
         <source>Wallet unlock failed</source>
-        <translation type="unfinished">Ekki tókst að opna veskið</translation>
+        <translation>Ekki tókst að opna veskið</translation>
     </message>
     <message>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
-        <translation type="unfinished">Lykilsetningin sem notuð var til að dulráða veskið var ekki rétt.</translation>
+        <translation>Lykilsetningin sem notuð var til að dulráða veskið var ekki rétt.</translation>
+    </message>
+    <message>
+        <source>Wallet decryption failed</source>
+        <translation>Ekki tókst að dulráða veski</translation>
     </message>
     <message>
         <source>Wallet passphrase was successfully changed.</source>
-        <translation type="unfinished">Það tókst að breyta lykilsetningu veskis.</translation>
+        <translation>Það tókst að breyta lykilsetningu veskis.</translation>
     </message>
     <message>
         <source>Warning: The Caps Lock key is on!</source>
-        <translation type="unfinished">Viðvörun: Kveikt er á HÁSTÖFUM!</translation>
+        <translation>Viðvörun: Kveikt er á HÁSTÖFUM!</translation>
     </message>
 </context>
 <context>
     <name>BanTableModel</name>
     <message>
         <source>IP/Netmask</source>
-        <translation type="unfinished">IP/Netgríma</translation>
+        <translation>IP/Netgríma</translation>
     </message>
     <message>
         <source>Banned Until</source>
-        <translation type="unfinished">Bannað til</translation>
+        <translation>Bannað til</translation>
     </message>
 </context>
 <context>
-    <name>QObject</name>
-    <message>
-        <source>Amount</source>
-        <translation type="unfinished">Upphæð</translation>
-    </message>
-    <message numerus="yes">
-        <source>%n second(s)</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>%n minute(s)</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>%n hour(s)</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>%n day(s)</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>%n week(s)</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>%n year(s)</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
-    </message>
-    </context>
-<context>
-    <name>bitcoin-core</name>
-    <message>
-        <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation type="unfinished">Villa við lestur %s! Allir lyklar fóru inn á réttan hátt, en færslugögn eða færslugildi gætu verið röng eða horfin.</translation>
-    </message>
-    </context>
-<context>
     <name>BitcoinGUI</name>
     <message>
+        <source>Sign &amp;message...</source>
+        <translation>Undirrita &amp;skilaboð</translation>
+    </message>
+    <message>
+        <source>Synchronizing with network...</source>
+        <translation>Samstilli við netið...</translation>
+    </message>
+    <message>
         <source>&amp;Overview</source>
-        <translation type="unfinished">&amp;Yfirlit</translation>
+        <translation>&amp;Yfirlit</translation>
     </message>
     <message>
         <source>Show general overview of wallet</source>
-        <translation type="unfinished">Sýna almennt yfirlit af veski</translation>
+        <translation>Sýna almennt yfirlit af veski</translation>
     </message>
     <message>
         <source>&amp;Transactions</source>
-        <translation type="unfinished">&amp;Færslur</translation>
+        <translation>&amp;Færslur</translation>
     </message>
     <message>
         <source>Browse transaction history</source>
-        <translation type="unfinished">Skoða færslusögu</translation>
+        <translation>Skoða færslusögu</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation type="unfinished">&amp;Hætta</translation>
+        <translation>&amp;Hætta</translation>
     </message>
     <message>
         <source>Quit application</source>
-        <translation type="unfinished">Hætta í forriti</translation>
+        <translation>Hætta í forriti</translation>
     </message>
     <message>
         <source>&amp;About %1</source>
-        <translation type="unfinished">&amp;Um %1</translation>
+        <translation>&amp;Um %1</translation>
     </message>
     <message>
         <source>Show information about %1</source>
-        <translation type="unfinished">Sýna upplýsingar um %1</translation>
+        <translation>Sýna upplýsingar um %1</translation>
     </message>
     <message>
         <source>About &amp;Qt</source>
-        <translation type="unfinished">Um &amp;Qt</translation>
+        <translation>Um &amp;Qt</translation>
     </message>
     <message>
         <source>Show information about Qt</source>
-        <translation type="unfinished">Sýna upplýsingar um Qt</translation>
+        <translation>Sýna upplýsingar um Qt</translation>
+    </message>
+    <message>
+        <source>&amp;Options...</source>
+        <translation>&amp;Valkostir...</translation>
     </message>
     <message>
         <source>Modify configuration options for %1</source>
-        <translation type="unfinished">Breyta samstillingum fyrir %1</translation>
+        <translation>Breyta samstillingum fyrir %1</translation>
+    </message>
+    <message>
+        <source>&amp;Encrypt Wallet...</source>
+        <translation>&amp;Dulkóða veski...</translation>
+    </message>
+    <message>
+        <source>&amp;Backup Wallet...</source>
+        <translation>&amp;Öryggisafrit á veski...</translation>
+    </message>
+    <message>
+        <source>&amp;Change Passphrase...</source>
+        <translation>&amp;Breyta lykilsetningu</translation>
+    </message>
+    <message>
+        <source>Open &amp;URI...</source>
+        <translation>Opna &amp;URL...</translation>
+    </message>
+    <message>
+        <source>Click to disable network activity.</source>
+        <translation>Smelltu til að loka fyrir netumferð.</translation>
     </message>
     <message>
         <source>Network activity disabled.</source>
-        <extracomment>A substring of the tooltip.</extracomment>
-        <translation type="unfinished">Slökkt á netumferð.</translation>
+        <translation>Slökkt á netumferð.</translation>
+    </message>
+    <message>
+        <source>Click to enable network activity again.</source>
+        <translation>Smelltu til að hefja aftur netumferð.</translation>
+    </message>
+    <message>
+        <source>Syncing Headers (%1%)...</source>
+        <translation>Samstilli hausa (%1%)...</translation>
+    </message>
+    <message>
+        <source>Reindexing blocks on disk...</source>
+        <translation>Endurraða blokkum á drifi...</translation>
     </message>
     <message>
         <source>Send coins to a Peercoin address</source>
@@ -321,23 +315,35 @@
     </message>
     <message>
         <source>Backup wallet to another location</source>
-        <translation type="unfinished">Öryggisafrita veski á annan stað</translation>
+        <translation>Öryggisafrita veski á annan stað</translation>
     </message>
     <message>
         <source>Change the passphrase used for wallet encryption</source>
-        <translation type="unfinished">Breyta lykilsetningunni sem gildir um dulkóðun veskis</translation>
+        <translation>Breyta lykilsetningunni sem gildir um dulkóðun veskis</translation>
+    </message>
+    <message>
+        <source>&amp;Verify message...</source>
+        <translation>&amp;Yfirfara skilaboð...</translation>
     </message>
     <message>
         <source>&amp;Send</source>
-        <translation type="unfinished">&amp;Senda</translation>
+        <translation>&amp;Senda</translation>
     </message>
     <message>
         <source>&amp;Receive</source>
-        <translation type="unfinished">&amp;Taka við</translation>
+        <translation>&amp;Taka við</translation>
+    </message>
+    <message>
+        <source>&amp;Show / Hide</source>
+        <translation>&amp;Sýna / Fela</translation>
+    </message>
+    <message>
+        <source>Show or hide the main Window</source>
+        <translation>Sýna eða fela megin glugga</translation>
     </message>
     <message>
         <source>Encrypt the private keys that belong to your wallet</source>
-        <translation type="unfinished">Dulkóða einkalyklana sem tilheyra veskinu þínu</translation>
+        <translation>Dulkóða einkalyklana sem tilheyra veskinu þínu</translation>
     </message>
     <message>
         <source>Sign messages with your Peercoin addresses to prove you own them</source>
@@ -349,19 +355,19 @@
     </message>
     <message>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Skrá</translation>
+        <translation>&amp;Skrá</translation>
     </message>
     <message>
         <source>&amp;Settings</source>
-        <translation type="unfinished">&amp;Stillingar</translation>
+        <translation>&amp;Stillingar</translation>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Hjálp</translation>
+        <translation>&amp;Hjálp</translation>
     </message>
     <message>
         <source>Tabs toolbar</source>
-        <translation type="unfinished">Tólaborð flipa</translation>
+        <translation>Tólaborð flipa</translation>
     </message>
     <message>
         <source>Request payments (generates QR codes and peercoin: URIs)</source>
@@ -369,50 +375,51 @@
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
-        <translation type="unfinished">Sýna lista yfir færslugildi sem notuð hafa verið til sendingar og merkingar þeirra</translation>
+        <translation>Sýna lista yfir færslugildi sem notuð hafa verið til sendingar og merkingar þeirra</translation>
     </message>
     <message>
         <source>Show the list of used receiving addresses and labels</source>
-        <translation type="unfinished">Sýna færslugildi sem notuð hafa verið til að taka við mynt og merkingar þeirra</translation>
+        <translation>Sýna færslugildi sem notuð hafa verið til að taka við mynt og merkingar þeirra</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
-        <translation type="unfinished">&amp;Valkostir skipanalínu</translation>
+        <translation>&amp;Valkostir skipanalínu</translation>
     </message>
-    <message numerus="yes">
-        <source>Processed %n block(s) of transaction history.</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
+    <message>
+        <source>Indexing blocks on disk...</source>
+        <translation>Raða blokkum á drifi</translation>
+    </message>
+    <message>
+        <source>Processing blocks on disk...</source>
+        <translation>Vinn úr blokkum á drifi...</translation>
     </message>
     <message>
         <source>%1 behind</source>
-        <translation type="unfinished">%1 á eftir</translation>
+        <translation>%1 á eftir</translation>
     </message>
     <message>
         <source>Last received block was generated %1 ago.</source>
-        <translation type="unfinished">Síðasta viðtekna blokk var búin til fyrir %1 síðan.</translation>
+        <translation>Síðasta viðtekna blokk var búin til fyrir %1 síðan.</translation>
     </message>
     <message>
         <source>Transactions after this will not yet be visible.</source>
-        <translation type="unfinished">Færslur á eftir þessari munu ekki sjást.</translation>
+        <translation>Færslur á eftir þessari munu ekki sjást.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Villa</translation>
+        <translation>Villa</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished">Viðvörun</translation>
+        <translation>Viðvörun</translation>
     </message>
     <message>
         <source>Information</source>
-        <translation type="unfinished">Upplýsingar</translation>
+        <translation>Upplýsingar</translation>
     </message>
     <message>
         <source>Up to date</source>
-        <translation type="unfinished">Uppfært</translation>
+        <translation>Uppfært</translation>
     </message>
     <message>
         <source>Show the %1 help message to get a list with possible Peercoin command-line options</source>
@@ -420,69 +427,69 @@
     </message>
     <message>
         <source>%1 client</source>
-        <translation type="unfinished">%1 biðlarar</translation>
+        <translation>%1 biðlarar</translation>
     </message>
-    <message numerus="yes">
-        <source>%n active connection(s) to Bitcoin network.</source>
-        <extracomment>A substring of the tooltip.</extracomment>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
+    <message>
+        <source>Connecting to peers...</source>
+        <translation>Tengist jafningjum...</translation>
+    </message>
+    <message>
+        <source>Catching up...</source>
+        <translation>Færist nær...</translation>
     </message>
     <message>
         <source>Date: %1
 </source>
-        <translation type="unfinished">Dagsetning: %1
+        <translation>Dagsetning: %1
 </translation>
     </message>
     <message>
         <source>Amount: %1
 </source>
-        <translation type="unfinished">Upphæð: %1
+        <translation>Upphæð: %1
 </translation>
     </message>
     <message>
         <source>Type: %1
 </source>
-        <translation type="unfinished">Tegund: %1
+        <translation>Tegund: %1
 </translation>
     </message>
     <message>
         <source>Label: %1
 </source>
-        <translation type="unfinished">Merki: %1
+        <translation>Merki: %1
 </translation>
     </message>
     <message>
         <source>Address: %1
 </source>
-        <translation type="unfinished">Færslugildi: %1
+        <translation>Færslugildi: %1
 </translation>
     </message>
     <message>
         <source>Sent transaction</source>
-        <translation type="unfinished">Send færsla</translation>
+        <translation>Send færsla</translation>
     </message>
     <message>
         <source>Incoming transaction</source>
-        <translation type="unfinished">Móttökufærsla</translation>
+        <translation>Móttökufærsla</translation>
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;enabled&lt;/b&gt;</source>
-        <translation type="unfinished">HD lyklagerð er &lt;b&gt;virkjuð&lt;/b&gt;</translation>
+        <translation>HD lyklagerð er &lt;b&gt;virkjuð&lt;/b&gt;</translation>
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;disabled&lt;/b&gt;</source>
-        <translation type="unfinished">HD lyklagerð er &lt;b&gt;óvirk&lt;/b&gt;</translation>
+        <translation>HD lyklagerð er &lt;b&gt;óvirk&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation type="unfinished">Veskið er &lt;b&gt;dulkóðað&lt;/b&gt; og núna &lt;b&gt;ólæst&lt;/b&gt;</translation>
+        <translation>Veskið er &lt;b&gt;dulkóðað&lt;/b&gt; og núna &lt;b&gt;ólæst&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation type="unfinished">Veskið er &lt;b&gt;dulkóðað&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</translation>
+        <translation>Veskið er &lt;b&gt;dulkóðað&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</translation>
     </message>
     <message>
         <source>A fatal error occurred. Peercoin can no longer continue safely and will quit.</source>
@@ -493,109 +500,116 @@
     <name>CoinControlDialog</name>
     <message>
         <source>Coin Selection</source>
-        <translation type="unfinished">Myntval</translation>
+        <translation>Myntval</translation>
     </message>
     <message>
         <source>Quantity:</source>
-        <translation type="unfinished">Magn:</translation>
+        <translation>Magn:</translation>
     </message>
     <message>
         <source>Bytes:</source>
-        <translation type="unfinished">Bæti:</translation>
+        <translation>Bæti:</translation>
     </message>
     <message>
         <source>Amount:</source>
-        <translation type="unfinished">Upphæð:</translation>
+        <translation>Upphæð:</translation>
     </message>
     <message>
         <source>Fee:</source>
-        <translation type="unfinished">Gjald:</translation>
+        <translation>Gjald:</translation>
     </message>
     <message>
         <source>Dust:</source>
-        <translation type="unfinished">Ryk:</translation>
+        <translation>Ryk:</translation>
     </message>
     <message>
         <source>After Fee:</source>
-        <translation type="unfinished">Eftirgjald:</translation>
+        <translation>Eftirgjald:</translation>
     </message>
     <message>
         <source>Change:</source>
-        <translation type="unfinished">Skiptimynt:</translation>
+        <translation>Skiptimynt:</translation>
     </message>
     <message>
         <source>(un)select all</source>
-        <translation type="unfinished">(af)velja allt</translation>
+        <translation>(af)velja allt</translation>
     </message>
     <message>
         <source>Tree mode</source>
-        <translation type="unfinished">Hrísluhamur</translation>
+        <translation>Hrísluhamur</translation>
     </message>
     <message>
         <source>List mode</source>
-        <translation type="unfinished">Listahamur</translation>
+        <translation>Listahamur</translation>
     </message>
     <message>
         <source>Amount</source>
-        <translation type="unfinished">Upphæð</translation>
+        <translation>Upphæð</translation>
     </message>
     <message>
         <source>Received with label</source>
-        <translation type="unfinished">Móttekið með merkingu</translation>
+        <translation>Móttekið með merkingu</translation>
     </message>
     <message>
         <source>Received with address</source>
-        <translation type="unfinished">Móttekið með færslugildi</translation>
+        <translation>Móttekið með færslugildi</translation>
+    </message>
+    <message>
+        <source>Copy address</source>
+        <translation>Afrita færslugildi</translation>
+    </message>
+    <message>
+        <source>Copy label</source>
+        <translation>Afrita merki</translation>
     </message>
     <message>
         <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
-        <translation type="unfinished">Þetta merki verður rautt ef einhver viðtakandi tekur við upphæð sem er lægri en núgildandi þröskuldur.</translation>
+        <translation>Þetta merki verður rautt ef einhver viðtakandi tekur við upphæð sem er lægri en núgildandi þröskuldur.</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(engin merking)</translation>
+        <translation>(ekkert merki)</translation>
     </message>
     </context>
 <context>
+    <name>CreateWalletActivity</name>
+    </context>
+<context>
     <name>CreateWalletDialog</name>
-    <message>
-        <source>Wallet</source>
-        <translation type="unfinished">Veski</translation>
-    </message>
     </context>
 <context>
     <name>EditAddressDialog</name>
     <message>
         <source>Edit Address</source>
-        <translation type="unfinished">Breyta færslugildi</translation>
+        <translation>Breyta færslugildi</translation>
     </message>
     <message>
         <source>&amp;Label</source>
-        <translation type="unfinished">&amp;Merki</translation>
+        <translation>&amp;Merki</translation>
     </message>
     <message>
         <source>The label associated with this address list entry</source>
-        <translation type="unfinished">Merking tengd þessu færslugildi</translation>
+        <translation>Merking tengd þessu færslugildi</translation>
     </message>
     <message>
         <source>The address associated with this address list entry. This can only be modified for sending addresses.</source>
-        <translation type="unfinished">Færslugildið sem tengt er þessari færslu. Þessu má einungis breyta þegar sent er.</translation>
+        <translation>Færslugildið sem tengt er þessari færslu. Þessu má einungis breyta þegar sent er.</translation>
     </message>
     <message>
         <source>&amp;Address</source>
-        <translation type="unfinished">Nýtt móttökufærslugildi</translation>
+        <translation>Nýtt móttökufærslugildi</translation>
     </message>
     <message>
         <source>New sending address</source>
-        <translation type="unfinished">Nýtt sendingarfærslugildi</translation>
+        <translation>Nýtt sendingarfærslugildi</translation>
     </message>
     <message>
         <source>Edit receiving address</source>
-        <translation type="unfinished">Breyta móttökufærslugildi</translation>
+        <translation>Breyta móttökufærslugildi</translation>
     </message>
     <message>
         <source>Edit sending address</source>
-        <translation type="unfinished">Breyta sendingarfærslugildi</translation>
+        <translation>Breyta sendingarfærslugildi</translation>
     </message>
     <message>
         <source>The entered address "%1" is not a valid Peercoin address.</source>
@@ -603,89 +617,110 @@
     </message>
     </context>
 <context>
+    <name>FreespaceChecker</name>
+    </context>
+<context>
+    <name>HelpMessageDialog</name>
+    </context>
+<context>
     <name>Intro</name>
-    <message numerus="yes">
+    <message>
         <source>Peercoin</source>
         <translation>Peercoin</translation>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Villa</translation>
+        <translation>Villa</translation>
     </message>
     </context>
 <context>
     <name>ModalOverlay</name>
     <message>
         <source>Number of blocks left</source>
-        <translation type="unfinished">Fjöldi blokka sem eftir eru</translation>
+        <translation>Fjöldi blokka sem eftir eru</translation>
     </message>
     <message>
         <source>Last block time</source>
-        <translation type="unfinished">Tími síðustu blokkar</translation>
+        <translation>Tími síðustu blokkar</translation>
     </message>
+    </context>
+<context>
+    <name>OpenURIDialog</name>
+    </context>
+<context>
+    <name>OpenWalletActivity</name>
     </context>
 <context>
     <name>OptionsDialog</name>
     <message>
         <source>IP address of the proxy (e.g. IPv4: 127.0.0.1 / IPv6: ::1)</source>
-        <translation type="unfinished">IP tala staðgengils (t.d. IPv4: 127.0.0.1 / IPv6: ::1)</translation>
+        <translation>IP tala staðgengils (t.d. IPv4: 127.0.0.1 / IPv6: ::1)</translation>
+    </message>
+    <message>
+        <source>Third party URLs (e.g. a block explorer) that appear in the transactions tab as context menu items. %s in the URL is replaced by transaction hash. Multiple URLs are separated by vertical bar |.</source>
+        <translation>URL frá þriðja aðila (t.d. blokkarskoðari) sem birtast í færsluflipanum sem samhengisatriði. %s í URL-inu skipt út fyrir færslutvíkross. Mörg URL eru aðskilin með lóðréttu striki |.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Villa</translation>
+        <translation>Villa</translation>
     </message>
     <message>
         <source>The supplied proxy address is invalid.</source>
-        <translation type="unfinished">Uppgefið færslugildi staðgengils er ógilt.</translation>
+        <translation>Uppgefið færslugildi staðgengils er ógilt.</translation>
     </message>
 </context>
 <context>
     <name>OverviewPage</name>
     <message>
         <source>Mined balance that has not yet matured</source>
-        <translation type="unfinished">Námuunnin innistæða sem hefur enn ekki komið fram</translation>
+        <translation>Námuunnin innistæða sem hefur enn ekki komið fram</translation>
     </message>
     <message>
         <source>Your current balance in watch-only addresses</source>
-        <translation type="unfinished">Innistæða færslugilda sem eru einungis til skoðunar</translation>
+        <translation>Innistæða færslugilda sem eru einungis til skoðunar</translation>
     </message>
     <message>
         <source>Unconfirmed transactions to watch-only addresses</source>
-        <translation type="unfinished">Óstaðfestar færslur til færslugilda sem eru einungis til skoðunar</translation>
+        <translation>Óstaðfestar færslur til færslugilda sem eru einungis til skoðunar</translation>
     </message>
     <message>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
-        <translation type="unfinished">Námuunnin innistæða á færslugildum sem eru einungis til skoðunar og hafa ekki komið fram</translation>
+        <translation>Námuunnin innistæða á færslugildum sem eru einungis til skoðunar og hafa ekki komið fram</translation>
     </message>
     <message>
         <source>Current total balance in watch-only addresses</source>
-        <translation type="unfinished">Innistæða á færslugildum sem eru einungis til skoðunar</translation>
+        <translation>Innistæða á færslugildum sem eru einungis til skoðunar</translation>
     </message>
 </context>
 <context>
-    <name>PeerTableModel</name>
+    <name>PaymentServer</name>
     <message>
-        <source>Address</source>
-        <extracomment>Title of Peers Table column which contains the IP/Onion/I2P address of the connected peer.</extracomment>
-        <translation type="unfinished">Færslugildi</translation>
+        <source>Invalid payment address %1</source>
+        <translation>Ógilt færslugildi til greiðslu %1</translation>
+    </message>
+    </context>
+<context>
+    <name>PeerTableModel</name>
+    </context>
+<context>
+    <name>QObject</name>
+    <message>
+        <source>Amount</source>
+        <translation>Upphæð</translation>
     </message>
     </context>
 <context>
     <name>QRImageWidget</name>
     <message>
         <source>Resulting URI too long, try to reduce the text for label / message.</source>
-        <translation type="unfinished">URI varð of langt, reyndu að minnka texta í merki / skilaboðum.</translation>
+        <translation>URI varð of langt, reyndu að minnka texta í merki / skilaboðum.</translation>
     </message>
     </context>
 <context>
     <name>RPCConsole</name>
     <message>
         <source>Block chain</source>
-        <translation type="unfinished">Blokkarkeðja</translation>
+        <translation>Blokkarkeðja</translation>
     </message>
     <message>
         <source>Current number of blocks</source>
@@ -693,26 +728,30 @@
     </message>
     <message>
         <source>Starting Block</source>
-        <translation type="unfinished">Upphafsblokk</translation>
+        <translation>Upphafsblokk</translation>
     </message>
     <message>
         <source>Synced Blocks</source>
-        <translation type="unfinished">Samhæfðar blokkir</translation>
+        <translation>Samhæfðar blokkir</translation>
     </message>
     <message>
         <source>Last block time</source>
-        <translation type="unfinished">Tími síðustu blokkar</translation>
+        <translation>Tími síðustu blokkar</translation>
     </message>
     </context>
 <context>
     <name>ReceiveCoinsDialog</name>
     <message>
         <source>&amp;Label:</source>
-        <translation type="unfinished">&amp;Merki:</translation>
+        <translation>&amp;Merki:</translation>
     </message>
     <message>
         <source>An optional label to associate with the new receiving address.</source>
-        <translation type="unfinished">Valfrjálst merki sem tengist nýju móttökufærslutölunni.</translation>
+        <translation>Valfrjálst merki sem tengist nýju móttökufærslutölunni.</translation>
+    </message>
+    <message>
+        <source>Copy label</source>
+        <translation>Afrita merki</translation>
     </message>
     </context>
 <context>
@@ -738,127 +777,160 @@
     <name>RecentRequestsTableModel</name>
     <message>
         <source>Label</source>
-        <translation type="unfinished">Merki</translation>
+        <translation>Merki</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(engin merking)</translation>
+        <translation>(ekkert merki)</translation>
     </message>
     </context>
 <context>
     <name>SendCoinsDialog</name>
     <message>
         <source>Quantity:</source>
-        <translation type="unfinished">Magn:</translation>
+        <translation>Magn:</translation>
     </message>
     <message>
         <source>Bytes:</source>
-        <translation type="unfinished">Bæti:</translation>
+        <translation>Bæti:</translation>
     </message>
     <message>
         <source>Amount:</source>
-        <translation type="unfinished">Upphæð:</translation>
+        <translation>Upphæð:</translation>
     </message>
     <message>
         <source>Fee:</source>
-        <translation type="unfinished">Gjald:</translation>
+        <translation>Gjald:</translation>
     </message>
     <message>
         <source>After Fee:</source>
-        <translation type="unfinished">Eftirgjald:</translation>
+        <translation>Eftirgjald:</translation>
     </message>
     <message>
         <source>Change:</source>
-        <translation type="unfinished">Skiptimynt:</translation>
+        <translation>Skiptimynt:</translation>
+    </message>
+    <message>
+        <source>(Smart fee not initialized yet. This usually takes a few blocks...)</source>
+        <translation>(Smart gjald er ekki gangsett ennþá. Þetta tekur venjulega nokkrar blokkir...)</translation>
     </message>
     <message>
         <source>Dust:</source>
-        <translation type="unfinished">Ryk:</translation>
-    </message>
-    <message numerus="yes">
-        <source>Estimated to begin confirmation within %n block(s).</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
+        <translation>Ryk:</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(engin merking)</translation>
+        <translation>(ekkert merki)</translation>
     </message>
 </context>
 <context>
     <name>SendCoinsEntry</name>
     <message>
         <source>&amp;Label:</source>
-        <translation type="unfinished">&amp;Merki:</translation>
+        <translation>&amp;Merki:</translation>
     </message>
     </context>
 <context>
+    <name>ShutdownWindow</name>
+    </context>
+<context>
+    <name>SignVerifyMessageDialog</name>
+    </context>
+<context>
+    <name>TrafficGraphWidget</name>
+    </context>
+<context>
     <name>TransactionDesc</name>
-    <message numerus="yes">
-        <source>matures in %n more block(s)</source>
-        <translation type="unfinished">
-            <numerusform />
-            <numerusform />
-        </translation>
-    </message>
     <message>
         <source>Generated coins must mature %1 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to "not accepted" and it won't be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation type="unfinished">Fullgerð mynt verður að nýta %1 blokkir. Þegar þú bjóst til þessa blokk, þá var jafnóðum tilkynnt á netinu að hún eigi að bætast við blokkakeðjuna. Ef hún kemst ekki í keðjuna þá mun staða hennar breytast í "ósamþykkt" og ekki verður hægt að nota hana. Þetta gerist annað slagið ef annar hnútpunktur klárar blokk nokkrum sekúndum á undan þinni.</translation>
+        <translation>Fullgerð mynt verður að nýta %1 blokkir. Þegar þú bjóst til þessa blokk, þá var jafnóðum tilkynnt á netinu að hún eigi að bætast við blokkakeðjuna. Ef hún kemst ekki í keðjuna þá mun staða hennar breytast í "ósamþykkt" og ekki verður hægt að nota hana. Þetta gerist annað slagið ef annar hnútpunktur klárar blokk nokkrum sekúndum á undan þinni.</translation>
     </message>
     <message>
         <source>Amount</source>
-        <translation type="unfinished">Upphæð</translation>
+        <translation>Upphæð</translation>
     </message>
+    </context>
+<context>
+    <name>TransactionDescDialog</name>
     </context>
 <context>
     <name>TransactionTableModel</name>
     <message>
         <source>Label</source>
-        <translation type="unfinished">Merki</translation>
+        <translation>Merki</translation>
     </message>
     <message>
         <source>Mined</source>
-        <translation type="unfinished">Námuunnið</translation>
+        <translation>Námuunnið</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(engin merking)</translation>
+        <translation>(ekkert merki)</translation>
     </message>
     </context>
 <context>
     <name>TransactionView</name>
     <message>
         <source>Mined</source>
-        <translation type="unfinished">Námuunnið</translation>
+        <translation>Námuunnið</translation>
+    </message>
+    <message>
+        <source>Copy address</source>
+        <translation>Afrita færslugildi</translation>
+    </message>
+    <message>
+        <source>Copy label</source>
+        <translation>Afrita merki</translation>
+    </message>
+    <message>
+        <source>Comma separated file (*.csv)</source>
+        <translation>Gildi aðskilin með kommu (*.csv)</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished">Merki</translation>
+        <translation>Merki</translation>
     </message>
     <message>
         <source>Address</source>
-        <translation type="unfinished">Færslugildi</translation>
+        <translation>Vistfang</translation>
     </message>
     <message>
         <source>Exporting Failed</source>
-        <translation type="unfinished">Útflutningur tókst ekki</translation>
+        <translation>Útflutningur tókst ekki</translation>
     </message>
     </context>
 <context>
+    <name>UnitDisplayStatusBarControl</name>
+    </context>
+<context>
+    <name>WalletController</name>
+    </context>
+<context>
     <name>WalletFrame</name>
-    </message>
+    </context>
+<context>
+    <name>WalletModel</name>
     </context>
 <context>
     <name>WalletView</name>
     <message>
         <source>&amp;Export</source>
-        <translation type="unfinished">&amp;Flytja út</translation>
+        <translation>&amp;Flytja út</translation>
     </message>
     <message>
         <source>Export the data in the current tab to a file</source>
-        <translation type="unfinished">Flytja gögn í flipanum í skrá</translation>
+        <translation>Flytja gögn í flipanum í skrá</translation>
+    </message>
+    </context>
+<context>
+    <name>bitcoin-core</name>
+    <message>
+        <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
+        <translation>Villa við lestur %s! Allir lyklar fóru inn á réttan hátt, en færslugögn eða færslugildi gætu verið röng eða horfin.</translation>
+    </message>
+    <message>
+        <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
+        <translation>Viðvörun: Netið er ekki í fullu samræmi! Einhver námuvinnsla virðist í ólagi.</translation>
     </message>
     </context>
 </TS>
