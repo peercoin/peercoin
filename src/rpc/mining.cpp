@@ -11,7 +11,6 @@
 #include <consensus/validation.h>
 #include <core_io.h>
 #include <deploymentinfo.h>
-#include <deploymentstatus.h>
 #include <key_io.h>
 #include <net.h>
 #include <node/context.h>
@@ -36,7 +35,8 @@
 #include <validationinterface.h>
 #include <warnings.h>
 
-#include <wallet/rpcwallet.h>
+#include <wallet/rpc/util.h>
+#include <wallet/rpc/wallet.h>
 #include <wallet/wallet.h>
 
 #include <kernel.h>
@@ -50,6 +50,8 @@ using node::IncrementExtraNonce;
 using node::NodeContext;
 using node::RegenerateCommitments;
 using node::UpdateTime;
+
+using wallet::GetWalletForJSONRPCRequest;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,
@@ -121,18 +123,28 @@ static RPCHelpMan getnetworkhashps()
 }
 
 // peercoin: get network Gh/s estimate
-UniValue getnetworkghps(const JSONRPCRequest& request)
+static RPCHelpMan getnetworkghps()
 {
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            "getnetworkghps\n"
-            "Returns a recent Ghash/second network mining estimate.");
+    return RPCHelpMan{"getnetworkghps",
+                "\nReturns a recent Ghash/second network mining estimate.\n",
+                {
+                },
+                RPCResult{
+                    RPCResult::Type::NUM, "", "Ghashes per second estimated"},
+                RPCExamples{
+                    HelpExampleCli("getnetworkghps", "")
+            + HelpExampleRpc("getnetworkghps", "")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    ChainstateManager& chainman = EnsureAnyChainman(request.context);
+    LOCK(cs_main);
 
     int64_t nTargetSpacingWorkMin = 30;
     int64_t nTargetSpacingWork = nTargetSpacingWorkMin;
     int64_t nInterval = 72;
-    CBlockIndex* pindex = ::ChainActive().Genesis();
-    CBlockIndex* pindexPrevWork = ::ChainActive().Genesis();
+    CBlockIndex* pindex = chainman.ActiveChain().Genesis();
+    CBlockIndex* pindexPrevWork = chainman.ActiveChain().Genesis();
     while (pindex)
     {
         // Exponential moving average of recent proof-of-work block spacing
@@ -143,10 +155,12 @@ UniValue getnetworkghps(const JSONRPCRequest& request)
             nTargetSpacingWork = std::max(nTargetSpacingWork, nTargetSpacingWorkMin);
             pindexPrevWork = pindex;
         }
-        pindex = ::ChainActive().Next(pindex);
+        pindex = chainman.ActiveChain().Next(pindex);
     }
-    double dNetworkGhps = GetDifficulty(pindex) * 4.294967296 / nTargetSpacingWork;
+    double dNetworkGhps = GetDifficulty(pindex, chainman.ActiveChain().Tip()) * 4.294967296 / nTargetSpacingWork;
     return dNetworkGhps;
+},
+    };
 }
 
 static bool GenerateBlock(ChainstateManager& chainman, CBlock& block, uint64_t& max_tries, unsigned int& extra_nonce, uint256& block_hash)
@@ -205,15 +219,14 @@ static UniValue generateBlocks(ChainstateManager& chainman, const CTxMemPool& me
         }
 
         if (!block_hash.IsNull()) {
+            ++nHeight;
+            blockHashes.push_back(block_hash.GetHex());
+        }
 
         // peercoin: sign block
         // rfc6: we sign proof of work blocks only before 0.8 fork
         if (!IsBTC16BIPsEnabled(pblock->GetBlockTime()) && !SignBlock(*pblock, *pwallet))
             throw JSONRPCError(-100, "Unable to sign block, wallet locked?");
-
-            ++nHeight;
-            blockHashes.push_back(block_hash.GetHex());
-        }
     }
     return blockHashes;
 }
@@ -489,9 +502,9 @@ static RPCHelpMan getmininginfo()
     obj.pushKV("blocks",           active_chain.Height());
     if (BlockAssembler::m_last_block_weight) obj.pushKV("currentblockweight", *BlockAssembler::m_last_block_weight);
     if (BlockAssembler::m_last_block_num_txs) obj.pushKV("currentblocktx", *BlockAssembler::m_last_block_num_txs);
-    obj.pushKV("difficulty",       (double)GetDifficulty(active_chain.Tip()));
+    obj.pushKV("difficulty",       (double)GetDifficulty(active_chain.Tip(), active_chain.Tip()));
     obj.pushKV("networkhashps",    getnetworkhashps().HandleRequest(request));
-    obj.pushKV("networkghps",      getnetworkghps(request));
+    obj.pushKV("networkghps",      getnetworkghps().HandleRequest(request));
     obj.pushKV("pooledtx",         (uint64_t)mempool.size());
     obj.pushKV("chain",            Params().NetworkIDString());
     obj.pushKV("warnings",         GetWarnings(false).original);
@@ -788,7 +801,7 @@ static RPCHelpMan getblocktemplate()
     pblock->nNonce = 0;
 
     // NOTE: If at some point we support pre-segwit miners post-segwit-activation, this needs to take segwit support into consideration
-    const bool fPreSegWit = !IsBTC16BIPsEnabled(::ChainActive().Tip()->nTime);
+    const bool fPreSegWit = !IsBTC16BIPsEnabled(active_chain.Tip()->nTime);
 
     UniValue aCaps(UniValue::VARR); aCaps.push_back("proposal");
 
@@ -1060,7 +1073,7 @@ static RPCHelpMan estimatesmartfee()
             "                   higher feerate and is more likely to be sufficient for the desired\n"
             "                   target, but is not as responsive to short term drops in the\n"
             "                   prevailing fee market. Must be one of (case insensitive):\n"
-             "\"" + FeeModes("\"\n\"") + "\""},
+             "\""},
                 },
                 RPCResult{
                     RPCResult::Type::OBJ, "", "",
@@ -1085,11 +1098,11 @@ static RPCHelpMan estimatesmartfee()
     RPCTypeCheck(request.params, {UniValue::VNUM, UniValue::VSTR});
     RPCTypeCheckArgument(request.params[0], UniValue::VNUM);
 
-    const NodeContext& node = EnsureAnyNodeContext(request.context);
+    ChainstateManager& chainman = EnsureAnyChainman(request.context);
 
     UniValue result(UniValue::VOBJ);
     result.pushKV("feerate", 0.01);
-    result.pushKV("blocks", EnsureAnyChainman(node).ActiveChain().Height());
+    result.pushKV("blocks", chainman.ActiveChain().Height());
     return result;
 },
 };

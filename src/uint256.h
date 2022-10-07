@@ -22,6 +22,11 @@ protected:
     static constexpr int WIDTH = BITS / 8;
     uint8_t m_data[WIDTH];
 public:
+    const uint32_t *GetDataPtr() const
+    {
+        return (const uint32_t *)m_data;
+    }
+
     /* construct 0 value by default */
     constexpr base_blob() : m_data() {}
 

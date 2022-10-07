@@ -6,7 +6,6 @@
 #include <banman.h>
 #include <chain.h>
 #include <chainparams.h>
-#include <deploymentstatus.h>
 #include <external_signer.h>
 #include <init.h>
 #include <interfaces/chain.h>
@@ -24,7 +23,6 @@
 #include <node/transaction.h>
 #include <node/ui_interface.h>
 #include <policy/policy.h>
-#include <policy/rbf.h>
 #include <policy/settings.h>
 #include <primitives/block.h>
 #include <primitives/transaction.h>
@@ -79,8 +77,8 @@ private:
 class NodeImpl : public Node
 {
 private:
-    ChainstateManager& chainman() { return *Assert(m_context->chainman); }
 public:
+    ChainstateManager& chainman() { return *Assert(m_context->chainman); }
     explicit NodeImpl(NodeContext& context) { setContext(&context); }
     void initLogging() override { InitLogging(*Assert(m_context->args)); }
     void initParameterInteraction() override { InitParameterInteraction(*Assert(m_context->args)); }
@@ -273,9 +271,9 @@ public:
         LOCK(::cs_main);
         return chainman().ActiveChainstate().CoinsTip().GetCoin(output, coin);
     }
-    TransactionError broadcastTransaction(CTransactionRef tx, CAmount max_tx_fee, std::string& err_string) override
+    TransactionError broadcastTransaction(CTransactionRef tx, std::string& err_string) override
     {
-        return BroadcastTransaction(*m_context, std::move(tx), err_string, max_tx_fee, /*relay=*/ true, /*wait_callback=*/ false);
+        return BroadcastTransaction(*m_context, std::move(tx), err_string,  /*relay=*/ true, /*wait_callback=*/ false);
     }
     WalletLoader& walletLoader() override
     {
@@ -565,12 +563,14 @@ public:
         }
         return false;
     }
+/*
     RBFTransactionState isRBFOptIn(const CTransaction& tx) override
     {
         if (!m_node.mempool) return IsRBFOptInEmptyMempool(tx);
         LOCK(m_node.mempool->cs);
         return IsRBFOptIn(tx, *m_node.mempool);
     }
+*/
     bool isInMempool(const uint256& txid) override
     {
         if (!m_node.mempool) return false;
@@ -585,11 +585,10 @@ public:
         return it && (*it)->GetCountWithDescendants() > 1;
     }
     bool broadcastTransaction(const CTransactionRef& tx,
-        const CAmount& max_tx_fee,
         bool relay,
         std::string& err_string) override
     {
-        const TransactionError err = BroadcastTransaction(m_node, tx, err_string, max_tx_fee, relay, /*wait_callback*/ false);
+        const TransactionError err = BroadcastTransaction(m_node, tx, err_string, relay, /*wait_callback*/ false);
         // Chain clients only care about failures to accept the tx to the mempool. Disregard non-mempool related failures.
         // Note: this will need to be updated if BroadcastTransactions() is updated to return other non-mempool failures
         // that Chain clients do not need to know about.
@@ -622,6 +621,7 @@ public:
             entry, ancestors, limit_ancestor_count, limit_ancestor_size,
             limit_descendant_count, limit_descendant_size, unused_error_string);
     }
+/*
     CFeeRate estimateSmartFee(int num_blocks, bool conservative, FeeCalculation* calc) override
     {
         if (!m_node.fee_estimator) return {};
@@ -645,6 +645,7 @@ public:
         LOCK(cs_main);
         return node::fHavePruned;
     }
+*/
     bool isReadyToBroadcast() override { return !node::fImporting && !node::fReindex && !isInitialBlockDownload(); }
     bool isInitialBlockDownload() override {
         return chainman().ActiveChainstate().IsInitialBlockDownload();

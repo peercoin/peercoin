@@ -14,7 +14,6 @@
 #include <test/util/script.h>
 #include <util/check.h>
 #include <validation.h>
-#include <versionbits.h>
 
 using node::BlockAssembler;
 using node::NodeContext;
@@ -35,21 +34,23 @@ std::vector<std::shared_ptr<CBlock>> CreateBlockChain(size_t total_height, const
     for (size_t height{0}; height < total_height; ++height) {
         CBlock& block{*(ret.at(height) = std::make_shared<CBlock>())};
 
+        block.nVersion = 3;
+        block.hashPrevBlock = (height >= 1 ? *ret.at(height - 1) : params.GenesisBlock()).GetHash();
+
+        block.nTime = ++time;
+        block.nBits = params.GenesisBlock().nBits;
+        block.nNonce = 0;
+
         CMutableTransaction coinbase_tx;
         coinbase_tx.vin.resize(1);
         coinbase_tx.vin[0].prevout.SetNull();
         coinbase_tx.vout.resize(1);
         coinbase_tx.vout[0].scriptPubKey = P2WSH_OP_TRUE;
-        coinbase_tx.vout[0].nValue = GetBlockSubsidy(height + 1, params.GetConsensus());
+        coinbase_tx.vout[0].nValue =  GetProofOfWorkReward(block.nBits, block.nTime);//GetBlockSubsidy(height + 1, params.GetConsensus());
         coinbase_tx.vin[0].scriptSig = CScript() << (height + 1) << OP_0;
         block.vtx = {MakeTransactionRef(std::move(coinbase_tx))};
 
-        block.nVersion = VERSIONBITS_LAST_OLD_BLOCK_VERSION;
-        block.hashPrevBlock = (height >= 1 ? *ret.at(height - 1) : params.GenesisBlock()).GetHash();
         block.hashMerkleRoot = BlockMerkleRoot(block);
-        block.nTime = ++time;
-        block.nBits = params.GenesisBlock().nBits;
-        block.nNonce = 0;
 
         while (!CheckProofOfWork(block.GetHash(), block.nBits, params.GetConsensus())) {
             ++block.nNonce;

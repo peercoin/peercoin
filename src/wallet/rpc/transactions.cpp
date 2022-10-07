@@ -4,7 +4,6 @@
 
 #include <core_io.h>
 #include <key_io.h>
-#include <policy/rbf.h>
 #include <rpc/util.h>
 #include <util/vector.h>
 #include <wallet/receive.h>
@@ -40,17 +39,6 @@ static void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, UniValue
     entry.pushKV("walletconflicts", conflicts);
     entry.pushKV("time", wtx.GetTxTime());
     entry.pushKV("timereceived", int64_t{wtx.nTimeReceived});
-
-    // Add opt-in RBF status
-    std::string rbfStatus = "no";
-    if (confirms <= 0) {
-        RBFTransactionState rbfState = chain.isRBFOptIn(*wtx.tx);
-        if (rbfState == RBFTransactionState::UNKNOWN)
-            rbfStatus = "unknown";
-        else if (rbfState == RBFTransactionState::REPLACEABLE_BIP125)
-            rbfStatus = "yes";
-    }
-    entry.pushKV("bip125-replaceable", rbfStatus);
 
     for (const std::pair<const std::string, std::string>& item : wtx.mapValue)
         entry.pushKV(item.first, item.second);
@@ -330,11 +318,11 @@ static void MaybePushAddress(UniValue & entry, const CTxDestination &dest)
     }
 }
 
-static void PushCoinStakeCategory(UniValue & entry, const CWalletTx &wtx)
+static void PushCoinStakeCategory(UniValue & entry, const CWalletTx &wtx, const CWallet& wallet)
 {
-    if (wtx.GetDepthInMainChain() < 1)
+    if (wallet.GetTxDepthInMainChain(wtx) < 1)
         entry.pushKV("category", "stake-orphan");
-    else if (wtx.GetBlocksToMaturity() > 0)
+    else if (wallet.GetTxBlocksToMaturity(wtx) > 0)
         entry.pushKV("category", "stake");
     else
         entry.pushKV("category", "stake-mint");
@@ -372,7 +360,7 @@ static void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, int nM
             }
             MaybePushAddress(entry, s.destination);
             if (wtx.IsCoinStake())
-                PushCoinStakeCategory(entry, wtx);
+                PushCoinStakeCategory(entry, wtx, wallet);
             else
                 entry.pushKV("category", "send");
             entry.pushKV("amount", ValueFromAmount(-s.amount));
@@ -417,7 +405,7 @@ static void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, int nM
             }
             else if (wtx.IsCoinStake())
             {
-                PushCoinStakeCategory(entry, wtx);
+                PushCoinStakeCategory(entry, wtx, wallet);
             }
             else
             {

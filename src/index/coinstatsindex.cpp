@@ -112,8 +112,8 @@ CoinStatsIndex::CoinStatsIndex(size_t n_cache_size, bool f_memory, bool f_wipe)
 bool CoinStatsIndex::WriteBlock(const CBlock& block, const CBlockIndex* pindex)
 {
     CBlockUndo block_undo;
-    const CAmount block_subsidy{GetBlockSubsidy(pindex->nHeight, Params().GetConsensus())};
-    m_total_subsidy += block_subsidy;
+    //const CAmount block_subsidy{GetBlockSubsidy(pindex->nHeight, Params().GetConsensus())};
+    //m_total_subsidy += block_subsidy;
 
     // Ignore genesis block
     if (pindex->nHeight > 0) {
@@ -147,14 +147,14 @@ bool CoinStatsIndex::WriteBlock(const CBlock& block, const CBlockIndex* pindex)
 
             // Skip duplicate txid coinbase transactions (BIP30).
             if (is_bip30_block && tx->IsCoinBase()) {
-                m_total_unspendable_amount += block_subsidy;
-                m_total_unspendables_bip30 += block_subsidy;
+                //m_total_unspendable_amount += block_subsidy;
+                //m_total_unspendables_bip30 += block_subsidy;
                 continue;
             }
 
             for (uint32_t j = 0; j < tx->vout.size(); ++j) {
                 const CTxOut& out{tx->vout[j]};
-                Coin coin{out, pindex->nHeight, tx->IsCoinBase()};
+                Coin coin{out, pindex->nHeight, tx->IsCoinBase(), tx->IsCoinStake(), (int)tx->nTime};
                 COutPoint outpoint{tx->GetHash(), j};
 
                 // Skip unspendable coins
@@ -197,17 +197,17 @@ bool CoinStatsIndex::WriteBlock(const CBlock& block, const CBlockIndex* pindex)
         }
     } else {
         // genesis block
-        m_total_unspendable_amount += block_subsidy;
-        m_total_unspendables_genesis_block += block_subsidy;
+        //m_total_unspendable_amount += block_subsidy;
+        //m_total_unspendables_genesis_block += block_subsidy;
     }
 
     // If spent prevouts + block subsidy are still a higher amount than
     // new outputs + coinbase + current unspendable amount this means
     // the miner did not claim the full block reward. Unclaimed block
     // rewards are also unspendable.
-    const CAmount unclaimed_rewards{(m_total_prevout_spent_amount + m_total_subsidy) - (m_total_new_outputs_ex_coinbase_amount + m_total_coinbase_amount + m_total_unspendable_amount)};
-    m_total_unspendable_amount += unclaimed_rewards;
-    m_total_unspendables_unclaimed_rewards += unclaimed_rewards;
+    //const CAmount unclaimed_rewards{(m_total_prevout_spent_amount + m_total_subsidy) - (m_total_new_outputs_ex_coinbase_amount + m_total_coinbase_amount + m_total_unspendable_amount)};
+    //m_total_unspendable_amount += unclaimed_rewards;
+    //m_total_unspendables_unclaimed_rewards += unclaimed_rewards;
 
     std::pair<uint256, DBVal> value;
     value.first = pindex->GetBlockHash();
@@ -215,14 +215,14 @@ bool CoinStatsIndex::WriteBlock(const CBlock& block, const CBlockIndex* pindex)
     value.second.bogo_size = m_bogo_size;
     value.second.total_amount = m_total_amount;
     value.second.total_subsidy = m_total_subsidy;
-    value.second.total_unspendable_amount = m_total_unspendable_amount;
+    //value.second.total_unspendable_amount = m_total_unspendable_amount;
     value.second.total_prevout_spent_amount = m_total_prevout_spent_amount;
     value.second.total_new_outputs_ex_coinbase_amount = m_total_new_outputs_ex_coinbase_amount;
     value.second.total_coinbase_amount = m_total_coinbase_amount;
-    value.second.total_unspendables_genesis_block = m_total_unspendables_genesis_block;
-    value.second.total_unspendables_bip30 = m_total_unspendables_bip30;
+    //value.second.total_unspendables_genesis_block = m_total_unspendables_genesis_block;
+    //value.second.total_unspendables_bip30 = m_total_unspendables_bip30;
     value.second.total_unspendables_scripts = m_total_unspendables_scripts;
-    value.second.total_unspendables_unclaimed_rewards = m_total_unspendables_unclaimed_rewards;
+    //value.second.total_unspendables_unclaimed_rewards = m_total_unspendables_unclaimed_rewards;
 
     uint256 out;
     m_muhash.Finalize(out);
@@ -374,15 +374,15 @@ bool CoinStatsIndex::Init()
         m_transaction_output_count = entry.transaction_output_count;
         m_bogo_size = entry.bogo_size;
         m_total_amount = entry.total_amount;
-        m_total_subsidy = entry.total_subsidy;
-        m_total_unspendable_amount = entry.total_unspendable_amount;
+        //m_total_subsidy = entry.total_subsidy;
+        //m_total_unspendable_amount = entry.total_unspendable_amount;
         m_total_prevout_spent_amount = entry.total_prevout_spent_amount;
         m_total_new_outputs_ex_coinbase_amount = entry.total_new_outputs_ex_coinbase_amount;
         m_total_coinbase_amount = entry.total_coinbase_amount;
-        m_total_unspendables_genesis_block = entry.total_unspendables_genesis_block;
-        m_total_unspendables_bip30 = entry.total_unspendables_bip30;
+        //m_total_unspendables_genesis_block = entry.total_unspendables_genesis_block;
+        //m_total_unspendables_bip30 = entry.total_unspendables_bip30;
         m_total_unspendables_scripts = entry.total_unspendables_scripts;
-        m_total_unspendables_unclaimed_rewards = entry.total_unspendables_unclaimed_rewards;
+        //m_total_unspendables_unclaimed_rewards = entry.total_unspendables_unclaimed_rewards;
     }
 
     return true;
@@ -394,8 +394,8 @@ bool CoinStatsIndex::ReverseBlock(const CBlock& block, const CBlockIndex* pindex
     CBlockUndo block_undo;
     std::pair<uint256, DBVal> read_out;
 
-    const CAmount block_subsidy{GetBlockSubsidy(pindex->nHeight, Params().GetConsensus())};
-    m_total_subsidy -= block_subsidy;
+    //const CAmount block_subsidy{GetBlockSubsidy(pindex->nHeight, Params().GetConsensus())};
+    //m_total_subsidy -= block_subsidy;
 
     // Ignore genesis block
     if (pindex->nHeight > 0) {
@@ -426,7 +426,7 @@ bool CoinStatsIndex::ReverseBlock(const CBlock& block, const CBlockIndex* pindex
         for (uint32_t j = 0; j < tx->vout.size(); ++j) {
             const CTxOut& out{tx->vout[j]};
             COutPoint outpoint{tx->GetHash(), j};
-            Coin coin{out, pindex->nHeight, tx->IsCoinBase()};
+            Coin coin{out, pindex->nHeight, tx->IsCoinBase(), tx->IsCoinStake(), (int)tx->nTime};
 
             // Skip unspendable coins
             if (coin.out.scriptPubKey.IsUnspendable()) {

@@ -9,6 +9,7 @@
 #include <config/bitcoin-config.h>
 #endif
 
+#include <chain.h>
 #include <key.h>
 #include <script/standard.h>
 
@@ -158,6 +159,7 @@ public:
     void refresh(bool pk_hash_only = false);
 
     uint256 getLastBlockProcessed() const;
+    CBlockIndex* getTip() const;
 
 private:
     std::unique_ptr<interfaces::Wallet> m_wallet;

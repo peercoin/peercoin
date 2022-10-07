@@ -254,7 +254,7 @@ void BitcoinGUI::onResult(QNetworkReply *reply) {
                 char versionInfo[200];
                 snprintf(versionInfo, 200, "This client is not the most recent version available, please update to release %s from github or disable this check in settings.", obj["tag_name"].toString().toUtf8().constData());
                 std::string strVersionInfo = versionInfo;
-                SetMiscWarning(strVersionInfo);
+                SetMiscWarning(Untranslated(strVersionInfo));
             }
         }
     }
@@ -1439,12 +1439,12 @@ void BitcoinGUI::setEncryptionStatus(int status)
     case WalletModel::Unlocked:
         labelWalletEncryptionIcon->show();
         labelWalletEncryptionIcon->setThemedPixmap(QStringLiteral(":/icons/lock_open"), STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE);
-        labelWalletEncryptionIcon->setToolTip(fWalletUnlockMintOnly? tr("Wallet is <b>encrypted</b> and currently <b>unlocked for block minting only</b>") : tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
+        labelWalletEncryptionIcon->setToolTip(wallet::fWalletUnlockMintOnly? tr("Wallet is <b>encrypted</b> and currently <b>unlocked for block minting only</b>") : tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
         encryptWalletAction->setEnabled(false);
-        decryptForMintingAction->setEnabled(fWalletUnlockMintOnly);
-        decryptForMintingAction->setChecked(fWalletUnlockMintOnly);
+        decryptForMintingAction->setEnabled(wallet::fWalletUnlockMintOnly);
+        decryptForMintingAction->setChecked(wallet::fWalletUnlockMintOnly);
         break;
     case WalletModel::Locked:
         labelWalletEncryptionIcon->show();

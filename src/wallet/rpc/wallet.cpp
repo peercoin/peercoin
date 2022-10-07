@@ -20,7 +20,7 @@
 #include <univalue.h>
 
 #include <kernelrecord.h>
-#include <miner.h>
+#include <node/miner.h>
 #include <boost/lexical_cast.hpp>
 
 
@@ -456,30 +456,27 @@ static RPCHelpMan unloadwallet()
     };
 }
 
-
-UniValue importcoinstake(const JSONRPCRequest& request)
+static RPCHelpMan importcoinstake()
+{
+    return RPCHelpMan{"importcoinstake",
+                "Import presigned coinstake for use in minting.\n",
+                {
+                    {"coinstake", RPCArg::Type::STR_HEX, RPCArg::DefaultHint{"signed coinstake"}, "signed coinstake transaction as hex."},
+                    {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::OMITTED_NAMED_ARG, "timestamp when this coinstake will be valid."},
+                },
+                RPCResult{RPCResult::Type::OBJ, "", "", {
+                    {RPCResult::Type::STR, "txid", "transaction id if import is successful."},
+                }},
+                RPCExamples{
+                    HelpExampleCli("importcoinstake", "03000000")
+            + HelpExampleRpc("importcoinstake", "03000000")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
 
-    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
-        return NullUniValue;
-    }
-
-    RPCHelpMan{"importcoinstake",
-        "\nImport presigned coinstake for use in minting.\n",
-        {
-            {"coinstake", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "signed coinstake transaction as hex"},
-            {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "timestamp when this coinstake will be valid"},
-        },
-        RPCResult{
-            RPCResult::Type::STR, "txid", "transaction id if import is successful",
-        },
-        RPCExamples{
-            HelpExampleCli("importcoinstake", "\"03000000\" 12345678")
-            + HelpExampleRpc("importcoinstake", "\"03000000\", 12345678")
-        },
-    }.Check(request);
+    EnsureWalletIsUnlocked(*pwallet);
 
     RPCTypeCheck(request.params, {
         UniValue::VSTR,
@@ -496,7 +493,6 @@ UniValue importcoinstake(const JSONRPCRequest& request)
     AssertLockNotHeld(cs_main);
 
     {
-        auto locked_chain = pwallet->chain().lock();
         int timestamp;
         if (!request.params[1].isNull())
             timestamp = request.params[1].get_int();
@@ -508,8 +504,7 @@ UniValue importcoinstake(const JSONRPCRequest& request)
         }
 
         // check if we have the key to vout[1]
-        SignatureData sigdata;// = DataFromTransaction(mtx, 1, tx->vout[1]);
-        std::set<ScriptPubKeyMan*> spk_mans = pwallet->GetScriptPubKeyMans(tx->vout[1].scriptPubKey, sigdata);
+        std::set<ScriptPubKeyMan*> spk_mans = pwallet->GetScriptPubKeyMans(tx->vout[1].scriptPubKey);
         if (spk_mans.size() == 0) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "No keys for vout[1]");
         }
@@ -518,30 +513,31 @@ UniValue importcoinstake(const JSONRPCRequest& request)
         pwallet->m_coinstakes[timestamp] = tx;
     }
     return tx->GetHash().GetHex();
+},
+    };
 }
 
-UniValue listminting(const JSONRPCRequest& request)
+
+static RPCHelpMan listminting()
+{
+    return RPCHelpMan{"listminting",
+                "Return all mintable outputs and provide details for each of them.\n",
+                {
+                    {"count", RPCArg::Type::NUM, RPCArg::Optional::OMITTED_NAMED_ARG, "maximum number of outputs to be returned."},
+                },
+                RPCResult{RPCResult::Type::OBJ, "", "", {
+                    {RPCResult::Type::STR, "list", "list of outputs."},
+                }},
+                RPCExamples{
+                    HelpExampleCli("listminting", "10")
+            + HelpExampleRpc("listminting", "10")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    const CWallet* const pwallet = wallet.get();
+    CWallet* const pwallet = wallet.get();
 
-    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
-        return NullUniValue;
-    }
-
-    RPCHelpMan{"listminting",
-        "\nReturn all mintable outputs and provide details for each of them.\n",
-        {
-            {"count", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "maximum number of outputs to be returned"},
-        },
-        RPCResult{
-            RPCResult::Type::STR, "list", "list of outputs",
-        },
-        RPCExamples{
-            HelpExampleCli("listminting", "10")
-            + HelpExampleRpc("listminting", "10")
-        },
-    }.Check(request);
+    EnsureWalletIsUnlocked(*pwallet);
 
     RPCTypeCheck(request.params, {
         UniValue::VNUM
@@ -552,11 +548,12 @@ UniValue listminting(const JSONRPCRequest& request)
         count = request.params[0].get_int();
 
     UniValue ret(UniValue::VARR);
-    const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
+    const CBlockIndex *p;// ppctodo *p = GetLastBlockIndex(wallet->chain().Tip(), true);
     double difficulty = p->GetBlockDifficulty();
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
 
-    std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(wallet);
+    WalletContext& context = EnsureWalletContext(request.context);
+    std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(context,wallet);
     const auto& vwtx = iwallet->getWalletTxs();
     for(const auto& wtx : vwtx) {
         std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(*iwallet, wtx);
@@ -624,18 +621,36 @@ UniValue listminting(const JSONRPCRequest& request)
         }
     }
     return ret;
+},
+    };
 }
 
-// peercoin: reserve balance from being staked for network protection
-UniValue reservebalance(const JSONRPCRequest& request)
+static RPCHelpMan reservebalance()
 {
-    if (request.fHelp || request.params.size() > 2)
-        throw std::runtime_error(
-            "reservebalance [<reserve> [amount]]\n"
-            "<reserve> is true or false to turn balance reserve on or off.\n"
-            "<amount> is a real and rounded to cent.\n"
-            "Set reserve amount not participating in network protection.\n"
-            "If no parameters provided current setting is printed.\n");
+    return RPCHelpMan{"reservebalance",
+                "Set reserve amount not participating in network protection.\n",
+                {
+                    {"reserve", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED_NAMED_ARG, "turn balance reserve on or off."},
+                    {"amount", RPCArg::Type::NUM, RPCArg::Optional::OMITTED_NAMED_ARG, "amount of peercoin to be reserved."},
+                },
+                RPCResult{RPCResult::Type::OBJ, "", "", {
+                    {RPCResult::Type::STR, "reserve", "status of reserve."},
+                }},
+                RPCExamples{
+                    HelpExampleCli("reservebalance", "true 10")
+            + HelpExampleRpc("reservebalance", "true 10")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* const pwallet = wallet.get();
+
+    EnsureWalletIsUnlocked(*pwallet);
+
+    RPCTypeCheck(request.params, {
+        UniValue::VBOOL,
+        UniValue::VNUM
+    });
 
     if (request.params.size() > 0)
     {
@@ -659,13 +674,16 @@ UniValue reservebalance(const JSONRPCRequest& request)
     }
 
     UniValue result(UniValue::VOBJ);
-    CAmount nReserveBalance = 0;
-    if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
+    std::optional<CAmount> nReserveBalance = ParseMoney(gArgs.GetArg("-reservebalance", ""));
+    if (gArgs.IsArgSet("-reservebalance") && !nReserveBalance)
         throw std::runtime_error("invalid reserve balance amount\n");
     result.pushKV("reserve", (nReserveBalance > 0));
-    result.pushKV("amount", ValueFromAmount(nReserveBalance));
+    result.pushKV("amount", nReserveBalance.value());
     return result;
+},
+    };
 }
+
 static RPCHelpMan sethdseed()
 {
     return RPCHelpMan{"sethdseed",
@@ -878,7 +896,6 @@ static const CRPCCommand commands[] =
     { "wallet",             &abortrescan,                    },
     { "wallet",             &addmultisigaddress,             },
     { "wallet",             &backupwallet,                   },
-    { "wallet",             &psbtbumpfee,                    },
     { "wallet",             &createwallet,                   },
     { "wallet",             &restorewallet,                  },
     { "wallet",             &dumpprivkey,                    },
@@ -922,7 +939,6 @@ static const CRPCCommand commands[] =
     { "wallet",             &sendtoaddress,                  },
     { "wallet",             &sethdseed,                      },
     { "wallet",             &setlabel,                       },
-    { "wallet",             &settxfee,                       },
     { "wallet",             &setwalletflag,                  },
     { "wallet",             &signmessage,                    },
     { "wallet",             &signrawtransactionwithwallet,   },

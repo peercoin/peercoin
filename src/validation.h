@@ -42,7 +42,11 @@
 class CChainState;
 class CBlockTreeDB;
 class CChainParams;
+namespace wallet {
 class CWallet;
+} // namespace wallet
+//class CWallet;
+using wallet::CWallet;
 class CTxMemPool;
 class ChainstateManager;
 class CKeyStore;

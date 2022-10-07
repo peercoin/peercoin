@@ -38,7 +38,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
     UniValue outputs = outputs_is_obj ? outputs_in.get_obj() : outputs_in.get_array();
 
     CMutableTransaction rawTx;
-    rawTx.nVersion = gArgs.GetArg("-txversion", CTransaction::CURRENT_VERSION);
+    rawTx.nVersion = std::stoi(gArgs.GetArg("-txversion", std::to_string(CTransaction::CURRENT_VERSION)));
 
     if (!locktime.isNull()) {
         int64_t nLockTime = locktime.get_int64();

@@ -14,7 +14,6 @@
 #include <wallet/wallet.h>
 #include <validation.h>
 #include <chainparams.h>
-#include <ui_interface.h>
 
 #include <QColor>
 #include <QTimer>
@@ -454,7 +453,7 @@ QString MintingTableModel::lookupAddress(const std::string &address, bool toolti
 
 double MintingTableModel::getDayToMint(KernelRecord *wtx) const
 {
-    const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
+    const CBlockIndex *p = GetLastBlockIndex(walletModel->getTip(), true);
     double difficulty = p->GetBlockDifficulty();
 
     double prob = wtx->getProbToMintWithinNMinutes(difficulty, mintingInterval);

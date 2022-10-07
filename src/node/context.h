@@ -13,7 +13,6 @@
 class ArgsManager;
 class BanMan;
 class AddrMan;
-class CBlockPolicyEstimator;
 class CConnman;
 class CScheduler;
 class CTxMemPool;
@@ -43,7 +42,6 @@ struct NodeContext {
     std::unique_ptr<AddrMan> addrman;
     std::unique_ptr<CConnman> connman;
     std::unique_ptr<CTxMemPool> mempool;
-    std::unique_ptr<CBlockPolicyEstimator> fee_estimator;
     std::unique_ptr<PeerManager> peerman;
     std::unique_ptr<ChainstateManager> chainman;
     std::unique_ptr<BanMan> banman;

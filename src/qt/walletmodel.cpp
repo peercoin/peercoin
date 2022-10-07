@@ -156,7 +156,7 @@ bool WalletModel::validateAddress(const QString &address)
 
 WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransaction &transaction, const CCoinControl& coinControl)
 {
-    if (fWalletUnlockMintOnly)
+    if (wallet::fWalletUnlockMintOnly)
         return MintOnlyMode;
 
     CAmount total = 0;
@@ -343,7 +343,7 @@ bool WalletModel::setWalletLocked(bool locked, const SecureString &passPhrase, i
         if (!m_wallet->unlock(passPhrase))
             return false;
 
-        fWalletUnlockMintOnly = fMintOnly;
+        wallet::fWalletUnlockMintOnly = fMintOnly;
 
         if (nSeconds > 0 && nSeconds < std::numeric_limits<int>::max())  // seconds
             m_wallet->relockWalletAfterDuration(nSeconds);
@@ -449,9 +449,9 @@ void WalletModel::unsubscribeFromCoreSignals()
 WalletModel::UnlockContext WalletModel::requestUnlock()
 {
     bool was_locked = getEncryptionStatus() == Locked;
-    bool was_minting = fWalletUnlockMintOnly;
+    bool was_minting = wallet::fWalletUnlockMintOnly;
 
-    if ((!was_locked) && fWalletUnlockMintOnly)
+    if ((!was_locked) && wallet::fWalletUnlockMintOnly)
     {
         setWalletLocked(true);
         was_locked = getEncryptionStatus() == Locked;
@@ -464,7 +464,7 @@ WalletModel::UnlockContext WalletModel::requestUnlock()
     // If wallet is still locked, unlock was failed or cancelled, mark context as invalid
     bool valid = getEncryptionStatus() != Locked;
 
-    return UnlockContext(this, valid, was_locked && !fWalletUnlockMintOnly, was_minting);
+    return UnlockContext(this, valid, was_locked && !wallet::fWalletUnlockMintOnly, was_minting);
 }
 
 WalletModel::UnlockContext::UnlockContext(WalletModel *_wallet, bool _valid, bool _relock, bool _minter):
@@ -482,7 +482,7 @@ WalletModel::UnlockContext::~UnlockContext()
         wallet->setWalletLocked(true);
     }
 
-    fWalletUnlockMintOnly = minter;
+    wallet::fWalletUnlockMintOnly = minter;
 }
 
 void WalletModel::UnlockContext::CopyFrom(UnlockContext&& rhs)
@@ -497,13 +497,12 @@ bool WalletModel::isWalletEnabled()
    return !gArgs.GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET);
 
 }
-
+/*
 bool WalletModel::privateKeysDisabled() const
 {
     return m_wallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
 }
-
-bool WalletModel::canGetAddresses() const
+*/
 bool WalletModel::displayAddress(std::string sAddress)
 {
     CTxDestination dest = DecodeDestination(sAddress);
@@ -514,10 +513,6 @@ bool WalletModel::displayAddress(std::string sAddress)
         QMessageBox::critical(nullptr, tr("Can't display address"), e.what());
     }
     return res;
-}
-
-{
-    return m_wallet->canGetAddresses();
 }
 
 QString WalletModel::getWalletName() const
@@ -544,4 +539,9 @@ void WalletModel::refresh(bool pk_hash_only)
 uint256 WalletModel::getLastBlockProcessed() const
 {
     return m_client_model ? m_client_model->getBestBlockHash() : uint256{};
+}
+
+CBlockIndex* WalletModel::getTip() const
+{
+    return m_node.chainman().ActiveChain().Tip();
 }

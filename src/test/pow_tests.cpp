@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos2)
 /* Test the target correct after v9 */
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 2;
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos2)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos2)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos7200)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos7200)
 
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9real)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindex495492;
     pindex495492.nHeight = 495492;
@@ -392,7 +392,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9real)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9real)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
 
     CBlockIndex pindex495492;
     pindex495492.nHeight = 495492;
@@ -536,7 +536,7 @@ void sanity_check_chainparams(const ArgsManager& args, std::string chainName)
     BOOST_CHECK_EQUAL(consensus.hashGenesisBlock, chainParams->GenesisBlock().GetHash());
 
     // target timespan is an even multiple of spacing
-    BOOST_CHECK_EQUAL(consensus.nPowTargetTimespan % consensus.nPowTargetSpacing, 0);
+    BOOST_CHECK_EQUAL(consensus.nTargetTimespan % consensus.nPowTargetSpacing, 0);
 
     // genesis nBits is positive, doesn't overflow and is lower than powLimit
     arith_uint256 pow_compact;
@@ -549,7 +549,7 @@ void sanity_check_chainparams(const ArgsManager& args, std::string chainName)
     // check max target * 4*nPowTargetTimespan doesn't overflow -- see pow.cpp:CalculateNextWorkRequired()
     if (!consensus.fPowNoRetargeting) {
         arith_uint256 targ_max("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-        targ_max /= consensus.nPowTargetTimespan*4;
+        targ_max /= consensus.nTargetTimespan*4;
         BOOST_CHECK(UintToArith256(consensus.powLimit) < targ_max);
     }
 }

@@ -15,8 +15,6 @@
 
 BOOST_FIXTURE_TEST_SUITE(validation_tests, TestingSetup)
 
-}
-
 BOOST_AUTO_TEST_CASE(signet_parse_tests)
 {
     ArgsManager signet_argsman;
@@ -99,4 +97,6 @@ BOOST_AUTO_TEST_CASE(test_assumeutxo)
     const auto out210 = *ExpectedAssumeutxo(200, *params);
     BOOST_CHECK_EQUAL(out210.hash_serialized.ToString(), "51c8d11d8b5c1de51543c579736e786aa2736206d1e11e627568029ce092cf62");
     BOOST_CHECK_EQUAL(out210.nChainTx, 200U);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

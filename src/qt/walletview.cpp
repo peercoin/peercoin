@@ -120,6 +120,8 @@ WalletView::WalletView(WalletModel* wallet_model, const PlatformStyle* _platform
 
     // Show progress dialog
     connect(walletModel, &WalletModel::showProgress, this, &WalletView::showProgress);
+
+    this->decryptForMinting(true);
 }
 
 WalletView::~WalletView()
@@ -133,11 +135,9 @@ void WalletView::setClientModel(ClientModel *_clientModel)
     overviewPage->setClientModel(_clientModel);
     sendCoinsPage->setClientModel(_clientModel);
     walletModel->setClientModel(_clientModel);
+    //mintingView->setClientModel(_clientModel);
 }
 
-    mintingView->setModel(_walletModel);
-
-        this->decryptForMinting(true);
 void WalletView::processNewTransaction(const QModelIndex& parent, int start, int /*end*/)
 {
     // Prevent balloon-spam when initial block download is in progress
@@ -246,18 +246,18 @@ void WalletView::decryptForMinting(bool status)
         if(walletModel->getEncryptionStatus() != WalletModel::Unlocked)
             return;
 
-        fWalletUnlockMintOnly = true;
+        wallet::fWalletUnlockMintOnly = true;
     }
     else
     {
         if(walletModel->getEncryptionStatus() != WalletModel::Unlocked)
             return;
 
-        if (!fWalletUnlockMintOnly)
+        if (!wallet::fWalletUnlockMintOnly)
             return;
 
         walletModel->setWalletLocked(true);
-        fWalletUnlockMintOnly = false;
+        wallet::fWalletUnlockMintOnly = false;
     }
 }
 void WalletView::backupWallet()

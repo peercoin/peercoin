@@ -165,8 +165,7 @@ inline std::vector<OutputGroup>& GroupCoins(const std::vector<COutput>& coins)
 inline std::vector<OutputGroup>& KnapsackGroupOutputs(const std::vector<COutput>& coins, CWallet& wallet, const CoinEligibilityFilter& filter)
 {
     CoinSelectionParams coin_selection_params(/* change_output_size= */ 0,
-                                              /* change_spend_size= */ 0, /* effective_feerate= */ CFeeRate(0),
-                                              /* long_term_feerate= */ CFeeRate(0), /* discard_feerate= */ CFeeRate(0),
+                                              /* change_spend_size= */ 0,
                                               /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
     static std::vector<OutputGroup> static_groups;
     static_groups = GroupOutputs(wallet, coins, coin_selection_params, filter, /*positive_only=*/false);

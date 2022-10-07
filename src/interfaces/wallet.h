@@ -24,7 +24,6 @@
 #include <utility>
 #include <vector>
 
-class CFeeRate;
 class CKey;
 enum class FeeReason;
 enum class OutputType;
@@ -236,9 +235,6 @@ public:
     // Return whether the wallet is blank.
     virtual bool canGetAddresses() = 0;
 
-    // check if a certain wallet flag is set.
-    virtual bool IsWalletFlagSet(uint64_t flag) = 0;
-
     // Return whether private keys enabled.
     virtual bool privateKeysDisabled() = 0;
 
@@ -293,7 +289,7 @@ public:
     virtual wallet::CWallet* wallet() { return nullptr; }
     // peercoin
     virtual void relockWalletAfterDuration(int nDuration) = 0;
-    virtual std::shared_ptr<CWallet> getWallet() = 0;
+    virtual std::shared_ptr<wallet::CWallet> getWallet() = 0;
 };
 
 //! Wallet chain client that in addition to having chain client methods for

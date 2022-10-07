@@ -41,7 +41,6 @@
 #include <Qt>
 
 using wallet::CCoinControl;
-using wallet::DEFAULT_PAY_TX_FEE;
 
 static constexpr std::array confTargets{2, 4, 6, 12, 24, 48, 144, 504, 1008};
 int getConfTargetForIndex(int index) {
@@ -840,9 +839,11 @@ void SendCoinsDialog::updateCoinControlState()
 }
 
 void SendCoinsDialog::updateNumberOfBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool headers, SynchronizationState sync_state) {
+/*
     if (sync_state == SynchronizationState::POST_INIT) {
         updateSmartFeeLabel();
     }
+*/
 }
 /*
 void SendCoinsDialog::updateSmartFeeLabel()

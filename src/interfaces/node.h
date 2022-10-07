@@ -6,6 +6,7 @@
 #define BITCOIN_INTERFACES_NODE_H
 
 #include <consensus/amount.h>
+#include <node/chainstate.h>
 #include <net.h>        // For NodeId
 #include <net_types.h>  // For banmap_t
 #include <netaddress.h> // For Network
@@ -69,6 +70,8 @@ class Node
 {
 public:
     virtual ~Node() {}
+
+    virtual ChainstateManager& chainman() = 0;
 
     //! Init logging.
     virtual void initLogging() = 0;
@@ -186,7 +189,7 @@ public:
     virtual bool getUnspentOutput(const COutPoint& output, Coin& coin) = 0;
 
     //! Broadcast transaction.
-    virtual TransactionError broadcastTransaction(CTransactionRef tx, CAmount max_tx_fee, std::string& err_string) = 0;
+    virtual TransactionError broadcastTransaction(CTransactionRef tx, std::string& err_string) = 0;
 
     //! Get wallet loader.
     virtual WalletLoader& walletLoader() = 0;

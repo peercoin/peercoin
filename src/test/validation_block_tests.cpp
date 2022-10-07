@@ -102,7 +102,8 @@ std::shared_ptr<CBlock> MinerTestingSetup::FinalizeBlock(std::shared_ptr<CBlock>
     // submit block header, so that miner can get the block height from the
     // global state and the node has the topology of the chain
     BlockValidationState ignored;
-    BOOST_CHECK(Assert(m_node.chainman)->ProcessNewBlockHeaders({pblock->GetBlockHeader()}, ignored, Params()));
+    int32_t& nPoSTemperature = mapPoSTemperature[CNetAddr()];
+    BOOST_CHECK(Assert(m_node.chainman)->ProcessNewBlockHeaders(nPoSTemperature, m_node.chainman->ActiveChain().Tip()->GetBlockHash(), {pblock->GetBlockHeader()}, ignored, Params()));
 
     return pblock;
 }
@@ -158,8 +159,6 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
     }
 
     bool ignored;
-    int32_t& nPoSTemperature = mapPoSTemperature[CNetAddr()];
-    BOOST_CHECK(Assert(m_node.chainman)->ProcessNewBlockHeaders(nPoSTemperature, m_node.chainman->ActiveChain().Tip()->GetBlockHash(), headers, state, Params()));
     // Connect the genesis block and drain any outstanding events
     BOOST_CHECK(Assert(m_node.chainman)->ProcessNewBlock(Params(), std::make_shared<CBlock>(Params().GenesisBlock()), true, &ignored));
     SyncWithValidationInterfaceQueue();

@@ -14,7 +14,6 @@
 #include <consensus/validation.h>
 #include <core_io.h>
 #include <deploymentinfo.h>
-#include <deploymentstatus.h>
 #include <fs.h>
 #include <hash.h>
 #include <index/blockfilterindex.h>
@@ -26,7 +25,6 @@
 #include <node/coinstats.h>
 #include <node/context.h>
 #include <node/utxo_snapshot.h>
-#include <policy/fees.h>
 #include <policy/policy.h>
 #include <primitives/transaction.h>
 #include <rpc/server.h>
@@ -43,14 +41,13 @@
 #include <util/translation.h>
 #include <validation.h>
 #include <validationinterface.h>
-#include <versionbits.h>
 #include <warnings.h>
 
 #include <stdint.h>
 
 #include <univalue.h>
 
-#include <miner.h>
+#include <node/miner.h>
 #include <kernel.h>
 #include <validation.h>
 #include <condition_variable>
@@ -79,14 +76,16 @@ static CUpdatedBlock latestblock GUARDED_BY(cs_blockchange);
 
 /* Calculate the difficulty for a given block index.
  */
-double GetDifficulty(const CBlockIndex* blockindex)
+double GetDifficulty(const CBlockIndex* blockindex, const CBlockIndex* tip)
 {
+    LOCK(cs_main);
+
     // minimum difficulty = 1.0.
     if (blockindex == nullptr) {
-        if (::ChainActive().Tip() == nullptr)
+        if (tip == nullptr)
             return 1.0;
         else
-            blockindex = GetLastBlockIndex(::ChainActive().Tip(), false);
+            blockindex = GetLastBlockIndex(tip, false);
     }
 
     int nShift = (blockindex->nBits >> 24) & 0xff;
@@ -161,7 +160,7 @@ UniValue blockheaderToJSON(const CBlockIndex* tip, const CBlockIndex* blockindex
     result.pushKV("mediantime", (int64_t)blockindex->GetMedianTimePast());
     result.pushKV("nonce", (uint64_t)blockindex->nNonce);
     result.pushKV("bits", strprintf("%08x", blockindex->nBits));
-    result.pushKV("difficulty", GetDifficulty(blockindex));
+    result.pushKV("difficulty", GetDifficulty(blockindex, tip));
     result.pushKV("chainwork", blockindex->nChainTrust.GetHex());
     result.pushKV("nTx", (uint64_t)blockindex->nTx);
 
@@ -412,26 +411,32 @@ static RPCHelpMan syncwithvalidationinterfacequeue()
     };
 }
 
-static UniValue getdifficulty(const JSONRPCRequest& request)
+static RPCHelpMan getdifficulty()
 {
-            RPCHelpMan{"getdifficulty",
+    return RPCHelpMan{"getdifficulty",
                 "\nReturns the difficulty as a multiple of the minimum difficulty.\n",
                 {},
                 RPCResult{
-                    RPCResult::Type::NUM, "", "the difficulty as a multiple of the minimum difficulty."},
+                    RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::NUM, "proof-of-work", "the difficulty as a multiple of the minimum difficulty of proof of work blocks"},
+                            {RPCResult::Type::NUM, "proof-of-stake", "the difficulty as a multiple of the minimum difficulty of proof of stake blocks"},
+                        }},
                 RPCExamples{
                     HelpExampleCli("getdifficulty", "")
             + HelpExampleRpc("getdifficulty", "")
                 },
-            }.Check(request);
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     ChainstateManager& chainman = EnsureAnyChainman(request.context);
     LOCK(cs_main);
     UniValue obj(UniValue::VOBJ);
-    obj.pushKV("proof-of-work",        GetDifficulty(NULL));
-    obj.pushKV("proof-of-stake",       GetDifficulty(GetLastBlockIndex(chainman.ActiveChain().Tip(), true)));
+    obj.pushKV("proof-of-work",        GetDifficulty(NULL, chainman.ActiveChain().Tip()));
+    obj.pushKV("proof-of-stake",       GetDifficulty(GetLastBlockIndex(chainman.ActiveChain().Tip(), true), chainman.ActiveChain().Tip()));
     obj.pushKV("search-interval",      (int)nLastCoinStakeSearchInterval);
     return obj;
+},
+    };
 }
 
 static std::vector<RPCResult> MempoolEntryDescription() { return {
@@ -440,7 +445,7 @@ static std::vector<RPCResult> MempoolEntryDescription() { return {
     RPCResult{RPCResult::Type::STR_AMOUNT, "fee", /*optional=*/true,
               "transaction fee, denominated in " + CURRENCY_UNIT + " (DEPRECATED, returned only if config option -deprecatedrpc=fees is passed)"},
     RPCResult{RPCResult::Type::STR_AMOUNT, "modifiedfee", /*optional=*/true,
-              "transaction fee with fee deltas used for mining priority, denominated in " + CURRENCY_UNIT +
+              "transaction fee with fee deltas used for mining priority, denominated in " + CURRENCY_ATOM +
                   " (DEPRECATED, returned only if config option -deprecatedrpc=fees is passed)"},
     RPCResult{RPCResult::Type::NUM_TIME, "time", "local time transaction entered pool in seconds since 1 Jan 1970 GMT"},
     RPCResult{RPCResult::Type::NUM, "height", "block height when transaction entered pool"},
@@ -1394,7 +1399,6 @@ static UniValue SoftForkDesc(const std::string &name, int version, const CBlockI
 namespace {
 /* TODO: when -deprecatedrpc=softforks is removed, drop these */
 UniValue DeploymentInfo(const CBlockIndex* tip, const Consensus::Params& consensusParams);
-extern const std::vector<RPCResult> RPCHelpForDeployment;
 }
 
 // used by rest.cpp:rest_chaininfo, so cannot be static
@@ -1418,12 +1422,6 @@ RPCHelpMan getblockchaininfo()
                         {RPCResult::Type::BOOL, "initialblockdownload", "(debug information) estimate of whether this node is in Initial Block Download mode"},
                         {RPCResult::Type::STR_HEX, "chainwork", "total amount of work in active chain, in hexadecimal"},
                         {RPCResult::Type::NUM, "size_on_disk", "the estimated size of the block and undo files on disk"},
-                        {RPCResult::Type::OBJ_DYN, "softforks", "(DEPRECATED, returned only if config option -deprecatedrpc=softforks is passed) status of softforks",
-                        {
-                            {RPCResult::Type::OBJ, "xxxx", "name of the softfork",
-                                RPCHelpForDeployment
-                            },
-                        }},
                         {RPCResult::Type::STR, "warnings", "any network and blockchain warnings"},
                     }},
                 RPCExamples{
@@ -1445,7 +1443,7 @@ RPCHelpMan getblockchaininfo()
     obj.pushKV("blocks",                height);
     obj.pushKV("headers",               pindexBestHeader ? pindexBestHeader->nHeight : -1);
     obj.pushKV("bestblockhash",         tip->GetBlockHash().GetHex());
-    obj.pushKV("difficulty",            (double)GetDifficulty(tip));
+    obj.pushKV("difficulty",            (double)GetDifficulty(tip, tip));
     obj.pushKV("time",                  (int64_t)tip->nTime);
     obj.pushKV("mediantime",            (int64_t)tip->GetMedianTimePast());
     obj.pushKV("verificationprogress",  GuessVerificationProgress(Params().TxData(), tip));
@@ -1466,14 +1464,6 @@ RPCHelpMan getblockchaininfo()
 },
     };
 }
-
-    {RPCResult::Type::NUM, "height", /*optional=*/true, "height of the first block which the rules are or will be enforced (only for \"buried\" type, or \"bip9\" type with \"active\" status)"},
-    {RPCResult::Type::BOOL, "active", "true if the rules are enforced for the mempool and the next block"},
-        {RPCResult::Type::STR, "status", "status of deployment at specified block (one of \"defined\", \"started\", \"locked_in\", \"active\", \"failed\")"},
-        {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
-        {RPCResult::Type::STR, "status_next", "status of deployment at the next block"},
-        {RPCResult::Type::STR, "signalling", "indicates blocks that signalled with a # and blocks that did not with a -"},
-
 
 /** Comparison function for sorting the getchaintips heads.  */
 struct CompareBlocksByHeight
@@ -2617,7 +2607,6 @@ static const CRPCCommand commands[] =
     { "blockchain",         &getblockheader,                     },
     { "blockchain",         &getchaintips,                       },
     { "blockchain",         &getdifficulty,                      },
-    { "blockchain",         &getdeploymentinfo,                  },
     { "blockchain",         &getmempoolancestors,                },
     { "blockchain",         &getmempooldescendants,              },
     { "blockchain",         &getmempoolentry,                    },
@@ -2627,7 +2616,6 @@ static const CRPCCommand commands[] =
     { "blockchain",         &gettxoutsetinfo,                    },
     { "blockchain",         &savemempool,                        },
     { "blockchain",         &verifychain,                        },
-
     { "blockchain",         &preciousblock,                      },
     { "blockchain",         &scantxoutset,                       },
     { "blockchain",         &getblockfilter,                     },

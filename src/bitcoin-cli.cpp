@@ -9,7 +9,7 @@
 
 #include <chainparamsbase.h>
 #include <clientversion.h>
-#include <policy/feerate.h>
+#include <consensus/amount.h>
 #include <rpc/client.h>
 #include <rpc/mining.h>
 #include <rpc/protocol.h>

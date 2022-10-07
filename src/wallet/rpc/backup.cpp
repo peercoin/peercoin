@@ -283,8 +283,9 @@ RPCHelpMan importaddress()
     }
 
     return NullUniValue;
+},
+    };
 }
-
 
 
 RPCHelpMan importpubkey()

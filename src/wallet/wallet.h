@@ -216,7 +216,6 @@ struct CRecipient
     bool fSubtractFeeFromAmount;
 };
 
-    bool IsCoinStake() const { return tx->IsCoinStake(); }
 class WalletRescanReserver; //forward declarations for ScanForWalletTransactions/RescanFromTime
 /**
  * A CWallet maintains a set of transactions and balances, and provides the ability to create new transactions.
@@ -534,7 +533,6 @@ public:
     void transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRemovalReason reason, uint64_t mempool_sequence) override;
     void ReacceptWalletTransactions() EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     void ResendWalletTransactions();
-        CAmount m_mine_stake{0};             //!< Staked, non-spendable until maturity
 
     OutputType TransactionChangeType(const std::optional<OutputType>& change_type, const std::vector<CRecipient>& vecSend) const;
 
@@ -577,7 +575,7 @@ public:
      * @param[in] orderForm BIP 70 / BIP 21 order form details to be set on the transaction.
      */
     void CommitTransaction(CTransactionRef tx, mapValue_t mapValue, std::vector<std::pair<std::string, std::string>> orderForm);
-    bool CreateCoinStake(const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction &txNew);
+    bool CreateCoinStake(ChainstateManager& chainman, const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction &txNew);
 
     /** Pass this transaction to node for mempool insertion and relay to peers if flag set to true */
     bool SubmitTxMemoryPoolAndRelay(CWalletTx& wtx, std::string& err_string, bool relay) const;
@@ -600,16 +598,6 @@ public:
     bool m_spend_zero_conf_change{DEFAULT_SPEND_ZEROCONF_CHANGE};
     bool m_split_coins{DEFAULT_SPLIT_COINS};
     bool m_check_github{DEFAULT_CHECK_GITHUB};
-
-
-     /** If the cost to spend a change output at this feerate is greater than the value of the
-      * output itself, just drop it to fees. */
-
-    /** When the actual feerate is less than the consolidate feerate, we will tend to make transactions which
-     * consolidate inputs. When the actual feerate is greater than the consolidate feerate, we will tend to make
-     * transactions which have the lowest fees.
-     */
-    CFeeRate m_consolidate_feerate{DEFAULT_CONSOLIDATE_FEERATE};
 
     /** The maximum fee amount we're willing to pay to prioritize partial spend avoidance. */
     CAmount m_max_aps_fee{DEFAULT_MAX_AVOIDPARTIALSPEND_FEE}; //!< note: this is absolute fee, not fee rate

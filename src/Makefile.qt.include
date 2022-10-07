@@ -256,42 +256,6 @@ QT_RES_ICONS = \
   qt/res/images/splash.png \
   qt/res/images/splash_testnet.png \
   qt/res/images/transparent-background.png \
-  qt/res/movies/spinner-000.png \
-  qt/res/movies/spinner-001.png \
-  qt/res/movies/spinner-002.png \
-  qt/res/movies/spinner-003.png \
-  qt/res/movies/spinner-004.png \
-  qt/res/movies/spinner-005.png \
-  qt/res/movies/spinner-006.png \
-  qt/res/movies/spinner-007.png \
-  qt/res/movies/spinner-008.png \
-  qt/res/movies/spinner-009.png \
-  qt/res/movies/spinner-010.png \
-  qt/res/movies/spinner-011.png \
-  qt/res/movies/spinner-012.png \
-  qt/res/movies/spinner-013.png \
-  qt/res/movies/spinner-014.png \
-  qt/res/movies/spinner-015.png \
-  qt/res/movies/spinner-016.png \
-  qt/res/movies/spinner-017.png \
-  qt/res/movies/spinner-018.png \
-  qt/res/movies/spinner-019.png \
-  qt/res/movies/spinner-020.png \
-  qt/res/movies/spinner-021.png \
-  qt/res/movies/spinner-022.png \
-  qt/res/movies/spinner-023.png \
-  qt/res/movies/spinner-024.png \
-  qt/res/movies/spinner-025.png \
-  qt/res/movies/spinner-026.png \
-  qt/res/movies/spinner-027.png \
-  qt/res/movies/spinner-028.png \
-  qt/res/movies/spinner-029.png \
-  qt/res/movies/spinner-030.png \
-  qt/res/movies/spinner-031.png \
-  qt/res/movies/spinner-032.png \
-  qt/res/movies/spinner-033.png \
-  qt/res/movies/spinner-034.png \
-  qt/res/movies/spinner-035.png \
   qt/res/themes/default.qss \
   qt/res/fonts/NotoSans-Regular.ttf
 

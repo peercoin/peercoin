@@ -47,8 +47,8 @@ bilingual_str GetWarnings(bool verbose)
     if (strMintWarning != "")
     {
         nPriority = 0;
-        warnings_concise = strMintWarning;
-        warnings_verbose += (warnings_verbose.empty() ? "" : warning_separator) + _(strMintWarning.c_str()).translated;
+        warnings_concise = Untranslated(strMintWarning);
+        warnings_verbose.emplace_back(warnings_concise);
     }
 
     // Misc warnings like out of disk space and clock is wrong

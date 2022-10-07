@@ -21,6 +21,10 @@ bool CWalletTx::InMempool() const
 
 int64_t CWalletTx::GetTxTime() const
 {
+    // peercoin: we still have the timestamp, so use it to avoid confusion
+    if (tx->nTime)
+        return tx->nTime;
+
     int64_t n = nTimeSmart;
     return n ? n : nTimeReceived;
 }

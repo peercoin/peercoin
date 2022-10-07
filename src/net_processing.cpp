@@ -13,7 +13,6 @@
 #include <chainparams.h>
 #include <consensus/amount.h>
 #include <consensus/validation.h>
-#include <deploymentstatus.h>
 #include <hash.h>
 #include <index/blockfilterindex.h>
 #include <merkleblock.h>
@@ -416,7 +415,7 @@ private:
     void RelayAddress(NodeId originator, const CAddress& addr, bool fReachable);
 
     /** Send `feefilter` message. */
-    void MaybeSendFeefilter(CNode& node, std::chrono::microseconds current_time) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+//    void MaybeSendFeefilter(CNode& node, std::chrono::microseconds current_time) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
     const CChainParams& m_chainparams;
     CConnman& m_connman;
@@ -1012,8 +1011,8 @@ void PeerManagerImpl::ProcessBlockAvailability(NodeId nodeid) {
 
     if (!state->hashLastUnknownBlock.IsNull()) {
         const CBlockIndex* pindex = m_chainman.m_blockman.LookupBlockIndex(state->hashLastUnknownBlock);
-        if (pindex && pindex->nChainWork > 0) {
-            if (state->pindexBestKnownBlock == nullptr || pindex->nChainWork >= state->pindexBestKnownBlock->nChainWork) {
+        if (pindex && pindex->nChainTrust > 0) {
+            if (state->pindexBestKnownBlock == nullptr || pindex->nChainTrust >= state->pindexBestKnownBlock->nChainTrust) {
                 state->pindexBestKnownBlock = pindex;
             }
             state->hashLastUnknownBlock.SetNull();
@@ -1028,9 +1027,9 @@ void PeerManagerImpl::UpdateBlockAvailability(NodeId nodeid, const uint256 &hash
     ProcessBlockAvailability(nodeid);
 
     const CBlockIndex* pindex = m_chainman.m_blockman.LookupBlockIndex(hash);
-    if (pindex && pindex->nChainWork > 0) {
+    if (pindex && pindex->nChainTrust > 0) {
         // An actually better block was announced.
-        if (state->pindexBestKnownBlock == nullptr || pindex->nChainWork >= state->pindexBestKnownBlock->nChainWork) {
+        if (state->pindexBestKnownBlock == nullptr || pindex->nChainTrust >= state->pindexBestKnownBlock->nChainTrust) {
             state->pindexBestKnownBlock = pindex;
         }
     } else {
@@ -1098,7 +1097,7 @@ void PeerManagerImpl::FindNextBlocksToDownload(NodeId nodeid, unsigned int count
                 // We consider the chain that this peer is on invalid.
                 return;
             }
-            if (!State(nodeid)->fHaveWitness && DeploymentActiveAt(*pindex, consensusParams, Consensus::DEPLOYMENT_SEGWIT)) {
+            if (!State(nodeid)->fHaveWitness && IsBTC16BIPsEnabled(pindex->nTime)) {
                 // We wouldn't download this block or its descendants from this peer.
                 return;
             }
@@ -1602,7 +1601,7 @@ void PeerManagerImpl::NewPoWValidBlock(const CBlockIndex *pindex, const std::sha
         return;
     nHighestFastAnnounce = pindex->nHeight;
 
-    bool fWitnessEnabled = DeploymentActiveAt(*pindex, m_chainparams.GetConsensus(), Consensus::DEPLOYMENT_SEGWIT);
+    bool fWitnessEnabled = IsBTC16BIPsEnabled(pindex->nTime);
     uint256 hashBlock(pblock->GetHash());
 
     {
@@ -2222,7 +2221,7 @@ void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, const Peer& peer,
             while (pindexWalk && !m_chainman.ActiveChain().Contains(pindexWalk) && vToFetch.size() <= MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
                 if (!(pindexWalk->nStatus & BLOCK_HAVE_DATA) &&
                         !IsBlockRequested(pindexWalk->GetBlockHash()) &&
-                        (!DeploymentActiveAt(*pindexWalk, m_chainparams.GetConsensus(), Consensus::DEPLOYMENT_SEGWIT) || State(pfrom.GetId())->fHaveWitness)) {
+                        (!IsBTC16BIPsEnabled(pindexWalk->nTime) || State(pfrom.GetId())->fHaveWitness)) {
                     // We don't have this block, and it's not yet in flight.
                     vToFetch.push_back(pindexWalk);
                 }
@@ -2294,7 +2293,7 @@ void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, const Peer& peer,
         // thus always subject to eviction under the bad/lagging chain logic.
         // See ChainSyncTimeoutState.
         if (!pfrom.fDisconnect && pfrom.IsFullOutboundConn() && nodestate->pindexBestKnownBlock != nullptr) {
-            if (m_outbound_peers_with_protect_from_disconnect < MAX_OUTBOUND_PEERS_TO_PROTECT_FROM_DISCONNECT && nodestate->pindexBestKnownBlock->nChainWork >= m_chainman.ActiveChain().Tip()->nChainWork && !nodestate->m_chain_sync.m_protect) {
+            if (m_outbound_peers_with_protect_from_disconnect < MAX_OUTBOUND_PEERS_TO_PROTECT_FROM_DISCONNECT && nodestate->pindexBestKnownBlock->nChainTrust >= m_chainman.ActiveChain().Tip()->nChainTrust && !nodestate->m_chain_sync.m_protect) {
                 LogPrint(BCLog::NET, "Protecting outbound peer=%d from eviction\n", pfrom.GetId());
                 nodestate->m_chain_sync.m_protect = true;
                 ++m_outbound_peers_with_protect_from_disconnect;
@@ -3151,8 +3150,8 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                 LogPrint(BCLog::NET, "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
                 // peercoin: tell downloading node about the latest block if it's
                 // without risk being rejected due to stake connection check
-                if (hashStop != ::ChainActive().Tip()->GetBlockHash() && pindex->GetBlockTime() + Params().GetConsensus().nStakeMinAge > ::ChainActive().Tip()->GetBlockTime())
-                    WITH_LOCK(pfrom.cs_inventory, pfrom.vInventoryBlockToSend.push_back(pindex->GetBlockHash()));
+                if (hashStop != m_chainman.ActiveChain().Tip()->GetBlockHash() && pindex->GetBlockTime() + Params().GetConsensus().nStakeMinAge > m_chainman.ActiveChain().Tip()->GetBlockTime())
+                    WITH_LOCK(peer->m_block_inv_mutex, peer->m_blocks_for_inv_relay.push_back(pindex->GetBlockHash()));
                 break;
             }
             WITH_LOCK(peer->m_block_inv_mutex, peer->m_blocks_for_inv_relay.push_back(pindex->GetBlockHash()));
@@ -3531,7 +3530,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
         const CBlockIndex *pindex = nullptr;
         BlockValidationState state;
-        if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, ::ChainActive().Tip()->GetBlockHash(), {cmpctblock.header}, state, m_chainparams, &pindex)) {
+        if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, m_chainman.ActiveChain().Tip()->GetBlockHash(), {cmpctblock.header}, state, m_chainparams, &pindex)) {
             if (state.IsInvalid()) {
                 MaybePunishNodeForBlock(pfrom.GetId(), state, /*via_compact_block*/ true, "invalid header via cmpctblock");
                 return;
@@ -3599,7 +3598,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
             return;
         }
 
-        if (DeploymentActiveAt(*pindex, m_chainparams.GetConsensus(), Consensus::DEPLOYMENT_SEGWIT) && !nodestate->fSupportsDesiredCmpctVersion) {
+        if (IsBTC16BIPsEnabled(pindex->nTime) && !nodestate->fSupportsDesiredCmpctVersion) {
             // Don't bother trying to process compact blocks from v1 peers
             // after segwit activates.
             return;
@@ -3859,7 +3858,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         std::shared_ptr<CBlock> pblock2 = std::make_shared<CBlock>();
         vRecv >> *pblock2;
-        int64_t nTimeNow = GetSystemTimeInSeconds();
+        int64_t nTimeNow = GetTimeSeconds();
 
         LogPrint(BCLog::NET, "received block %s peer=%d\n", pblock2->GetHash().ToString(), pfrom.GetId());
 
@@ -3868,7 +3867,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
             LOCK(cs_main);
             bool fRequested = mapBlocksInFlight.count(hash2);
 
-            CBlockIndex* headerPrev = LookupBlockIndex(pblock2->hashPrevBlock);
+            CBlockIndex* headerPrev = m_chainman.m_blockman.LookupBlockIndex(pblock2->hashPrevBlock);
             if (!headerPrev) {
                 LogPrint(BCLog::NET, "previous header not found");
                 return;
@@ -3884,11 +3883,11 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                     }
                 }
 
-                if (pblock2->IsProofOfStake() && !::ChainstateActive().IsInitialBlockDownload())
+                if (pblock2->IsProofOfStake() && !m_chainman.ActiveChainstate().IsInitialBlockDownload())
                     nPoSTemperature += 1;
 
                 if (!headerPrev->IsValid(BLOCK_VALID_TRANSACTIONS)) {
-                    MarkBlockAsReceived(hash2);
+                    RemoveBlockRequest(hash2);
                     LogPrint(BCLog::NET, "this block does not connect to any valid known blocks");
                     return;
                 }
@@ -3900,7 +3899,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         static CBlockIndex* pindexLastAccepted = nullptr;
         if (pindexLastAccepted == nullptr)
-            pindexLastAccepted = ::ChainActive().Tip();
+            pindexLastAccepted = m_chainman.ActiveChain().Tip();
         bool fContinue = true;
 
         // peercoin: accept as many blocks as we possibly can from mapBlocksWait
@@ -3912,66 +3911,58 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
             std::shared_ptr<CBlock> pblock;
 
             {
-            LOCK(cs_main);
-            // Always process the block if we requested it, since we may
-            // need it even when it's not a candidate for a new best tip.
-            forceProcessing = IsBlockRequested(hash);
-            RemoveBlockRequest(hash);
-            // peercoin: try to select next block in a constant time
-            std::map<CBlockIndex*, WaitElement>::iterator it = mapBlocksWait.find(pindexLastAccepted);
-            if (it != mapBlocksWait.end() && pindexLastAccepted != nullptr) {
-                pindexPrev = it->first;
-                pblock = it->second.pblock;
-                mapBlocksWait.erase(pindexPrev);
-                fContinue = true;
-                fSelected = true;
-            } else
-            // otherwise: try to scan for it
-            for (auto& pair : mapBlocksWait) {
-                pindexPrev = pair.first;
-                pblock = pair.second.pblock;
-                const uint256 hash(pblock->GetHash());
-                // remove blocks that were not connected in 60 seconds
-                if (nTimeNow > pair.second.time + 60) {
+                LOCK(cs_main);
+                // peercoin: try to select next block in a constant time
+                std::map<CBlockIndex*, WaitElement>::iterator it = mapBlocksWait.find(pindexLastAccepted);
+                if (it != mapBlocksWait.end() && pindexLastAccepted != nullptr) {
+                    pindexPrev = it->first;
+                    pblock = it->second.pblock;
                     mapBlocksWait.erase(pindexPrev);
                     fContinue = true;
-                    MarkBlockAsReceived(hash);
-                    break;
-                }
-                if (!pindexPrev->IsValid(BLOCK_VALID_TRANSACTIONS)) {
-                    if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
-                        mapBlocksWait.erase(pindexPrev);  // prev block was rejected
+                    fSelected = true;
+                } else
+                // otherwise: try to scan for it
+                for (auto& pair : mapBlocksWait) {
+                    pindexPrev = pair.first;
+                    pblock = pair.second.pblock;
+                    const uint256 hash(pblock->GetHash());
+                    // remove blocks that were not connected in 60 seconds
+                    if (nTimeNow > pair.second.time + 60) {
+                        mapBlocksWait.erase(pindexPrev);
                         fContinue = true;
-                        MarkBlockAsReceived(hash);
+                        RemoveBlockRequest(hash);
                         break;
                     }
-                    continue;   // prev block was not (yet) accepted on disk, skip to next one
+                    if (!pindexPrev->IsValid(BLOCK_VALID_TRANSACTIONS)) {
+                        if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
+                            mapBlocksWait.erase(pindexPrev);  // prev block was rejected
+                            fContinue = true;
+                            RemoveBlockRequest(hash);
+                            break;
+                        }
+                        continue;   // prev block was not (yet) accepted on disk, skip to next one
+                    }
+
+                    mapBlocksWait.erase(pindexPrev);
+                    fContinue = true;
+                    fSelected = true;
+                    break;
                 }
+                if (!fSelected)
+                    continue;
 
-                mapBlocksWait.erase(pindexPrev);
-                fContinue = true;
-                fSelected = true;
-                break;
-            }
-            if (!fSelected)
-                continue;
-
-            const uint256 hash(pblock->GetHash());
-
-            // mapBlockSource is only used for punishing peers and setting
-            // which peers send us compact blocks, so the race between here and
-            // cs_main in ProcessNewBlock is fine.
-            mapBlockSource.emplace(hash, std::make_pair(pfrom.GetId(), true));
+                const uint256 hash(pblock->GetHash());
+                // Always process the block if we requested it, since we may
+                // need it even when it's not a candidate for a new best tip.
+                forceProcessing = IsBlockRequested(hash);
+                RemoveBlockRequest(hash);
+                // mapBlockSource is only used for punishing peers and setting
+                // which peers send us compact blocks, so the race between here and
+                // cs_main in ProcessNewBlock is fine.
+                mapBlockSource.emplace(hash, std::make_pair(pfrom.GetId(), true));
             }
 
-            bool fPoSDuplicate = false;
-            ProcessNewBlock(m_chainparams, pblock, forceProcessing, &fNewBlock, &pindexLastAccepted, &fPoSDuplicate);
-            if (fPoSDuplicate)
-            {
-                LOCK(cs_main);
-                int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
-                nPoSTemperature += 100;
-            }
+            ProcessBlock(pfrom, pblock, forceProcessing);
         }
         return;
     }
@@ -4644,6 +4635,7 @@ void PeerManagerImpl::MaybeSendAddr(CNode& node, Peer& peer, std::chrono::micros
     }
 }
 
+/*
 void PeerManagerImpl::MaybeSendFeefilter(CNode& pto, std::chrono::microseconds current_time)
 {
     AssertLockHeld(cs_main);
@@ -4686,6 +4678,7 @@ void PeerManagerImpl::MaybeSendFeefilter(CNode& pto, std::chrono::microseconds c
         pto.m_tx_relay->m_next_send_feefilter = current_time + GetRandomDuration<std::chrono::microseconds>(MAX_FEEFILTER_CHANGE_DELAY);
     }
 }
+*/
 
 namespace {
 class CompareInvMempoolOrder

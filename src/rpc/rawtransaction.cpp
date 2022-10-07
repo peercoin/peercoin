@@ -46,7 +46,6 @@
 
 using node::AnalyzePSBT;
 using node::BroadcastTransaction;
-using node::DEFAULT_MAX_RAW_TX_FEE_RATE;
 using node::FindCoins;
 using node::GetTransaction;
 using node::NodeContext;
@@ -1012,20 +1011,13 @@ static RPCHelpMan testmempoolaccept()
             const CAmount fee = tx_result.m_base_fees.value();
             // Check that fee does not exceed maximum fee
             const int64_t virtual_size = tx_result.m_vsize.value();
-            const CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
-            if (max_raw_tx_fee && fee > max_raw_tx_fee) {
-                result_inner.pushKV("allowed", false);
-                result_inner.pushKV("reject-reason", "max-fee-exceeded");
-                exit_early = true;
-            } else {
-                // Only return the fee and vsize if the transaction would pass ATMP.
-                // These can be used to calculate the feerate.
-                result_inner.pushKV("allowed", true);
-                result_inner.pushKV("vsize", virtual_size);
-                UniValue fees(UniValue::VOBJ);
-                fees.pushKV("base", ValueFromAmount(fee));
-                result_inner.pushKV("fees", fees);
-            }
+            // Only return the fee and vsize if the transaction would pass ATMP.
+            // These can be used to calculate the feerate.
+            result_inner.pushKV("allowed", true);
+            result_inner.pushKV("vsize", virtual_size);
+            UniValue fees(UniValue::VOBJ);
+            fees.pushKV("base", ValueFromAmount(fee));
+            result_inner.pushKV("fees", fees);
         } else {
             result_inner.pushKV("allowed", false);
             const TxValidationState state = tx_result.m_state;

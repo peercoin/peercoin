@@ -129,12 +129,12 @@ void OptionsModel::Init(bool resetSettings)
     }
     m_sub_fee_from_amount = settings.value("SubFeeFromAmount", false).toBool();
     if (!settings.contains("bSplitCoins"))
-        settings.setValue("bSplitCoins", DEFAULT_SPLIT_COINS);
-    if (!m_node.softSetBoolArg("-splitcoins", settings.value("bSplitCoins").toBool()))
+        settings.setValue("bSplitCoins", wallet::DEFAULT_SPLIT_COINS);
+    if (!gArgs.SoftSetBoolArg("-splitcoins", settings.value("bSplitCoins").toBool()))
         addOverriddenOption("-splitcoins");
     if (!settings.contains("bCheckGithub"))
-        settings.setValue("bCheckGithub", DEFAULT_CHECK_GITHUB);
-    if (!m_node.softSetBoolArg("-checkgithub", settings.value("bCheckGithub").toBool()))
+        settings.setValue("bCheckGithub", wallet::DEFAULT_CHECK_GITHUB);
+    if (!gArgs.SoftSetBoolArg("-checkgithub", settings.value("bCheckGithub").toBool()))
         addOverriddenOption("-checkgithub");
 #endif
 

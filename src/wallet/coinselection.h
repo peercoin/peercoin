@@ -6,7 +6,6 @@
 #define BITCOIN_WALLET_COINSELECTION_H
 
 #include <consensus/amount.h>
-#include <policy/feerate.h>
 #include <primitives/transaction.h>
 #include <random.h>
 
@@ -81,13 +80,6 @@ struct CoinSelectionParams
     CAmount m_change_fee{0};
     /** Cost of creating the change output + cost of spending the change output in the future. */
     CAmount m_cost_of_change{0};
-    /** The targeted feerate of the transaction being built. */
-    CFeeRate m_effective_feerate;
-    /** The feerate estimate used to estimate an upper bound on what should be sufficient to spend
-     * the change output sometime in the future. */
-    CFeeRate m_long_term_feerate;
-    /** If the cost to spend a change output at the discard feerate exceeds its value, drop it to fees. */
-    CFeeRate m_discard_feerate;
     /** Size of the transaction before coin selection, consisting of the header and recipient
      * output(s), excluding the inputs and change output(s). */
     size_t tx_noinputs_size = 0;
@@ -98,13 +90,10 @@ struct CoinSelectionParams
      * reuse. Dust outputs are not eligible to be added to output groups and thus not considered. */
     bool m_avoid_partial_spends = false;
 
-    CoinSelectionParams(size_t change_output_size, size_t change_spend_size, CFeeRate effective_feerate,
-                        CFeeRate long_term_feerate, CFeeRate discard_feerate, size_t tx_noinputs_size, bool avoid_partial) :
+    CoinSelectionParams(size_t change_output_size, size_t change_spend_size,
+                        size_t tx_noinputs_size, bool avoid_partial) :
         change_output_size(change_output_size),
         change_spend_size(change_spend_size),
-        m_effective_feerate(effective_feerate),
-        m_long_term_feerate(long_term_feerate),
-        m_discard_feerate(discard_feerate),
         tx_noinputs_size(tx_noinputs_size),
         m_avoid_partial_spends(avoid_partial)
     {}
@@ -155,22 +144,12 @@ struct OutputGroup
     CAmount effective_value{0};
     /** The fee to spend these UTXOs at the effective feerate. */
     CAmount fee{0};
-    /** The target feerate of the transaction we're trying to build. */
-    CFeeRate m_effective_feerate{0};
-    /** The fee to spend these UTXOs at the long term feerate. */
-    CAmount long_term_fee{0};
-    /** The feerate for spending a created change output eventually (i.e. not urgently, and thus at
-     * a lower feerate). Calculated using long term fee estimate. This is used to decide whether
-     * it could be economical to create a change output. */
-    CFeeRate m_long_term_feerate{0};
     /** Indicate that we are subtracting the fee from outputs.
      * When true, the value that is used for coin selection is the UTXO's real value rather than effective value */
     bool m_subtract_fee_outputs{false};
 
     OutputGroup() {}
     OutputGroup(const CoinSelectionParams& params) :
-        m_effective_feerate(params.m_effective_feerate),
-        m_long_term_feerate(params.m_long_term_feerate),
         m_subtract_fee_outputs(params.m_subtract_fee_outputs)
     {}
 

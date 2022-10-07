@@ -5,7 +5,8 @@
 #include <wallet/coinselection.h>
 
 #include <consensus/amount.h>
-#include <policy/feerate.h>
+#include <consensus/tx_verify.h>
+#include <timedata.h>
 #include <util/check.h>
 #include <util/system.h>
 #include <util/moneystr.h>
@@ -94,7 +95,7 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
         bool backtrack = false;
         if (curr_value + curr_available_value < selection_target ||                // Cannot possibly reach target with the amount remaining in the curr_available_value.
             curr_value > selection_target + cost_of_change ||    // Selected value is out of range, go back and try other branch
-            (curr_waste > best_waste && (utxo_pool.at(0).fee - utxo_pool.at(0).long_term_fee) > 0)) { // Don't select things which we know will be more wasteful if the waste is increasing
+            (curr_waste > best_waste)) { // Don't select things which we know will be more wasteful if the waste is increasing
             backtrack = true;
         } else if (curr_value >= selection_target) {       // Selected value is within range
             curr_waste += (curr_value - selection_target); // This is the excess value which is added to the waste for the below comparison
@@ -130,7 +131,7 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
             curr_selection.back() = false;
             OutputGroup& utxo = utxo_pool.at(curr_selection.size() - 1);
             curr_value -= utxo.GetSelectionAmount();
-            curr_waste -= utxo.fee - utxo.long_term_fee;
+            curr_waste -= utxo.fee;
         } else { // Moving forwards, continuing down this branch
             OutputGroup& utxo = utxo_pool.at(curr_selection.size());
 
@@ -147,7 +148,7 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
                 // Inclusion branch first (Largest First Exploration)
                 curr_selection.push_back(true);
                 curr_value += utxo.GetSelectionAmount();
-                curr_waste += utxo.fee - utxo.long_term_fee;
+                curr_waste += utxo.fee;
             }
         }
     }
@@ -315,7 +316,7 @@ std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, 
 
 void OutputGroup::Insert(const CInputCoin& output, int depth, bool from_me, size_t ancestors, size_t descendants, bool positive_only) {
     // Compute the effective value first
-    const CAmount coin_fee = output.m_input_bytes < 0 ? 0 : m_effective_feerate.GetFee(output.m_input_bytes);
+    const CAmount coin_fee = output.m_input_bytes < 0 ? 0 : GetMinFee(output.m_input_bytes, GetAdjustedTime());
     const CAmount ev = output.txout.nValue - coin_fee;
 
     // Filter for positive only here before adding the coin
@@ -327,8 +328,7 @@ void OutputGroup::Insert(const CInputCoin& output, int depth, bool from_me, size
     coin.m_fee = coin_fee;
     fee += coin.m_fee;
 
-    coin.m_long_term_fee = coin.m_input_bytes < 0 ? 0 : m_long_term_feerate.GetFee(coin.m_input_bytes);
-    long_term_fee += coin.m_long_term_fee;
+    coin.m_long_term_fee = coin.m_input_bytes < 0 ? 0 : GetMinFee(output.m_input_bytes, GetAdjustedTime());
 
     coin.effective_value = ev;
     effective_value += coin.effective_value;

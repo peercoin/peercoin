@@ -7,13 +7,13 @@
 #include <interfaces/chain.h>
 #include <policy/policy.h>
 #include <script/signingprovider.h>
+#include <timedata.h>
 #include <util/check.h>
 #include <util/fees.h>
 #include <util/moneystr.h>
 #include <util/rbf.h>
 #include <util/translation.h>
 #include <wallet/coincontrol.h>
-#include <wallet/fees.h>
 #include <wallet/receive.h>
 #include <wallet/spend.h>
 #include <wallet/transaction.h>
@@ -467,7 +467,7 @@ std::optional<SelectionResult> SelectCoins(const CWallet& wallet, const std::vec
         if (coin.m_input_bytes == -1) {
             return std::nullopt; // Not solvable, can't estimate size for fee
         }
-        coin.effective_value = coin.txout.nValue - coin_selection_params.m_effective_feerate.GetFee(coin.m_input_bytes);
+        coin.effective_value = coin.txout.nValue - GetMinFee(coin.m_input_bytes, GetAdjustedTime());
         if (coin_selection_params.m_subtract_fee_outputs) {
             value_to_select -= coin.txout.nValue;
         } else {
@@ -636,7 +636,7 @@ static bool CreateTransactionInternal(
         int& nChangePosInOut,
         bilingual_str& error,
         const CCoinControl& coin_control,
-        FeeCalculation& fee_calc_out,
+        CAmount& fee_calc_out,
         bool sign) EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)
 {
     AssertLockHeld(wallet.cs_wallet);
@@ -646,9 +646,6 @@ static bool CreateTransactionInternal(
 
     CoinSelectionParams coin_selection_params; // Parameters for coin selection, init with dummy
     coin_selection_params.m_avoid_partial_spends = coin_control.m_avoid_partial_spends;
-
-    // Set the long term feerate estimate to the wallet's consolidate feerate
-    coin_selection_params.m_long_term_feerate = wallet.m_consolidate_feerate;
 
     CAmount recipients_sum = 0;
     const OutputType change_type = wallet.TransactionChangeType(coin_control.m_change_type ? *coin_control.m_change_type : wallet.m_default_change_type, vecSend);
@@ -691,7 +688,7 @@ static bool CreateTransactionInternal(
         CHECK_NONFATAL(IsValidDestination(dest) != scriptChange.empty());
     }
     CTxOut change_prototype_txout(0, scriptChange);
-    coin_selection_params.change_output_size = GetSerializeSize(change_prototype_txout);
+    coin_selection_params.change_output_size = GetSerializeSize(change_prototype_txout, PROTOCOL_VERSION);
 
     // Get size of spending the change output
     int change_spend_size = CalculateMaximumSignedInputSize(change_prototype_txout, &wallet);
@@ -703,31 +700,13 @@ static bool CreateTransactionInternal(
         coin_selection_params.change_spend_size = (size_t)change_spend_size;
     }
 
-    // Set discard feerate
-    coin_selection_params.m_discard_feerate = GetDiscardRate(wallet);
-
-    // Get the fee rate to use effective values in coin selection
-    FeeCalculation feeCalc;
-    coin_selection_params.m_effective_feerate = GetMinimumFeeRate(wallet, coin_control, &feeCalc);
-    // Do not, ever, assume that it's fine to change the fee rate if the user has explicitly
-    // provided one
-    if (coin_control.m_feerate && coin_selection_params.m_effective_feerate > *coin_control.m_feerate) {
-        error = strprintf(_("Fee rate (%s) is lower than the minimum fee rate setting (%s)"), coin_control.m_feerate->ToString(FeeEstimateMode::SAT_VB), coin_selection_params.m_effective_feerate.ToString(FeeEstimateMode::SAT_VB));
-        return false;
-    }
-    if (feeCalc.reason == FeeReason::FALLBACK && !wallet.m_allow_fallback_fee) {
-        // eventually allow a fallback fee
-        error = _("Fee estimation failed. Fallbackfee is disabled. Wait a few blocks or enable -fallbackfee.");
-        return false;
-    }
-
     // Calculate the cost of change
     // Cost of change is the cost of creating the change output + cost of spending the change output in the future.
     // For creating the change output now, we use the effective feerate.
     // For spending the change output in the future, we use the discard feerate for now.
     // So cost of change = (change output size * effective feerate) + (size of spending change output * discard feerate)
-    coin_selection_params.m_change_fee = coin_selection_params.m_effective_feerate.GetFee(coin_selection_params.change_output_size);
-    coin_selection_params.m_cost_of_change = coin_selection_params.m_discard_feerate.GetFee(coin_selection_params.change_spend_size) + coin_selection_params.m_change_fee;
+    coin_selection_params.m_change_fee = GetMinFee(coin_selection_params.change_output_size, GetAdjustedTime());
+    coin_selection_params.m_cost_of_change = GetMinFee(coin_selection_params.change_spend_size, GetAdjustedTime()) + coin_selection_params.m_change_fee;
 
     // vouts to the payees
     if (!coin_selection_params.m_subtract_fee_outputs) {
@@ -742,7 +721,7 @@ static bool CreateTransactionInternal(
             coin_selection_params.tx_noinputs_size += ::GetSerializeSize(txout, PROTOCOL_VERSION);
         }
 
-        if (IsDust(txout, wallet.chain().relayDustFee()))
+        if (recipient.nAmount < MIN_TXOUT_AMOUNT)
         {
             error = _("Transaction amount too small");
             return false;
@@ -751,7 +730,7 @@ static bool CreateTransactionInternal(
     }
 
     // Include the fees for things that aren't inputs, excluding the change output
-    const CAmount not_input_fees = coin_selection_params.m_effective_feerate.GetFee(coin_selection_params.tx_noinputs_size);
+    const CAmount not_input_fees = GetMinFee(coin_selection_params.tx_noinputs_size, GetAdjustedTime());
     CAmount selection_target = recipients_sum + not_input_fees;
 
     // Get available coins
@@ -796,7 +775,7 @@ static bool CreateTransactionInternal(
     // to avoid conflicting with other possible uses of nSequence,
     // and in the spirit of "smallest possible change from prior
     // behavior."
-    const uint32_t nSequence{coin_control.m_signal_bip125_rbf.value_or(wallet.m_signal_rbf) ? MAX_BIP125_RBF_SEQUENCE : CTxIn::MAX_SEQUENCE_NONFINAL};
+    const uint32_t nSequence{CTxIn::MAX_SEQUENCE_NONFINAL};
     for (const auto& coin : selected_coins) {
         txNew.vin.push_back(CTxIn(coin.outpoint, CScript(), nSequence));
     }
@@ -808,7 +787,7 @@ static bool CreateTransactionInternal(
         error = _("Missing solving data for estimating transaction size");
         return false;
     }
-    nFeeRet = coin_selection_params.m_effective_feerate.GetFee(nBytes);
+    nFeeRet = GetMinFee(nBytes, GetAdjustedTime());
 
     // Subtract fee from the change output if not subtracting it from recipient outputs
     CAmount fee_needed = nFeeRet;
@@ -820,7 +799,7 @@ static bool CreateTransactionInternal(
     // 1. The change output would be dust
     // 2. The change is within the (almost) exact match window, i.e. it is less than or equal to the cost of the change output (cost_of_change)
     CAmount change_amount = change_position->nValue;
-    if (IsDust(*change_position, coin_selection_params.m_discard_feerate) || change_amount <= coin_selection_params.m_cost_of_change)
+    if ((change_amount < MIN_TXOUT_AMOUNT) || change_amount <= coin_selection_params.m_cost_of_change)
     {
         nChangePosInOut = -1;
         change_amount = 0;
@@ -829,7 +808,7 @@ static bool CreateTransactionInternal(
         // Because we have dropped this change, the tx size and required fee will be different, so let's recalculate those
         tx_sizes = CalculateMaximumSignedTxSize(CTransaction(txNew), &wallet, &coin_control);
         nBytes = tx_sizes.vsize;
-        fee_needed = coin_selection_params.m_effective_feerate.GetFee(nBytes);
+        fee_needed = GetMinFee(nBytes, GetAdjustedTime());
     }
 
     // The only time that fee_needed should be less than the amount available for fees (in change_and_fee - change_amount) is when
@@ -864,7 +843,7 @@ static bool CreateTransactionInternal(
                 }
 
                 // Error if this output is reduced to be below dust
-                if (IsDust(txout, wallet.chain().relayDustFee())) {
+                if (txout.nValue < MIN_TXOUT_AMOUNT) {
                     if (txout.nValue < 0) {
                         error = _("The transaction amount is too small to pay the fee");
                     } else {
@@ -899,11 +878,6 @@ static bool CreateTransactionInternal(
         return false;
     }
 
-    if (nFeeRet > wallet.m_default_max_tx_fee) {
-        error = TransactionErrorString(TransactionError::MAX_FEE_EXCEEDED);
-        return false;
-    }
-
     if (gArgs.GetBoolArg("-walletrejectlongchains", DEFAULT_WALLET_REJECT_LONG_CHAINS)) {
         // Lastly, ensure this tx will pass the mempool's chain limits
         if (!wallet.chain().checkChainLimits(tx)) {
@@ -915,16 +889,8 @@ static bool CreateTransactionInternal(
     // Before we return success, we assume any change key will be used to prevent
     // accidental re-use.
     reservedest.KeepDestination();
-    fee_calc_out = feeCalc;
 
-    wallet.WalletLogPrintf("Fee Calculation: Fee:%d Bytes:%u Tgt:%d (requested %d) Reason:\"%s\" Decay %.5f: Estimation: (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out) Fail: (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out)\n",
-              nFeeRet, nBytes, feeCalc.returnedTarget, feeCalc.desiredTarget, StringForFeeReason(feeCalc.reason), feeCalc.est.decay,
-              feeCalc.est.pass.start, feeCalc.est.pass.end,
-              (feeCalc.est.pass.totalConfirmed + feeCalc.est.pass.inMempool + feeCalc.est.pass.leftMempool) > 0.0 ? 100 * feeCalc.est.pass.withinTarget / (feeCalc.est.pass.totalConfirmed + feeCalc.est.pass.inMempool + feeCalc.est.pass.leftMempool) : 0.0,
-              feeCalc.est.pass.withinTarget, feeCalc.est.pass.totalConfirmed, feeCalc.est.pass.inMempool, feeCalc.est.pass.leftMempool,
-              feeCalc.est.fail.start, feeCalc.est.fail.end,
-              (feeCalc.est.fail.totalConfirmed + feeCalc.est.fail.inMempool + feeCalc.est.fail.leftMempool) > 0.0 ? 100 * feeCalc.est.fail.withinTarget / (feeCalc.est.fail.totalConfirmed + feeCalc.est.fail.inMempool + feeCalc.est.fail.leftMempool) : 0.0,
-              feeCalc.est.fail.withinTarget, feeCalc.est.fail.totalConfirmed, feeCalc.est.fail.inMempool, feeCalc.est.fail.leftMempool);
+    wallet.WalletLogPrintf("Fee Calculation: Fee:%d Bytes:%u Needed:%d\n", nFeeRet, nBytes, fee_needed);
     return true;
 }
 
@@ -936,7 +902,7 @@ bool CreateTransaction(
         int& nChangePosInOut,
         bilingual_str& error,
         const CCoinControl& coin_control,
-        FeeCalculation& fee_calc_out,
+        CAmount& fee_calc_out,
         bool sign)
 {
     if (vecSend.empty()) {
@@ -998,7 +964,7 @@ bool FundTransaction(CWallet& wallet, CMutableTransaction& tx, CAmount& nFeeRet,
     LOCK(wallet.cs_wallet);
 
     CTransactionRef tx_new;
-    FeeCalculation fee_calc_out;
+    CAmount fee_calc_out;
     if (!CreateTransaction(wallet, vecSend, tx_new, nFeeRet, nChangePosInOut, error, coinControl, fee_calc_out, false)) {
         return false;
     }

@@ -7,7 +7,11 @@
 #include <uint256.h>
 #include <interfaces/wallet.h>
 
+namespace wallet {
 class CWallet;
+} // namespace wallet
+//class CWallet;
+using wallet::CWallet;
 class CWalletTx;
 
 class KernelRecord

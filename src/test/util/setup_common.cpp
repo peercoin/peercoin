@@ -19,7 +19,6 @@
 #include <noui.h>
 #include <node/blockstorage.h>
 #include <node/chainstate.h>
-#include <policy/fees.h>
 #include <pow.h>
 #include <rpc/blockchain.h>
 #include <rpc/register.h>
@@ -156,8 +155,7 @@ ChainTestingSetup::ChainTestingSetup(const std::string& chainName, const std::ve
     m_node.scheduler->m_service_thread = std::thread(util::TraceThread, "scheduler", [&] { m_node.scheduler->serviceQueue(); });
     GetMainSignals().RegisterBackgroundSignalScheduler(*m_node.scheduler);
 
-    m_node.fee_estimator = std::make_unique<CBlockPolicyEstimator>();
-    m_node.mempool = std::make_unique<CTxMemPool>(m_node.fee_estimator.get(), 1);
+    m_node.mempool = std::make_unique<CTxMemPool>(1);
 
     m_cache_sizes = CalculateCacheSizes(m_args);
 
