@@ -67,10 +67,9 @@ FUZZ_TARGET_INIT(transaction, initialize_transaction)
         Assert(res == state_with_dupe_check.IsValid());
     }
 
-    const CFeeRate dust_relay_fee{DUST_RELAY_TX_FEE};
     std::string reason;
-    const bool is_standard_with_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ true, dust_relay_fee, reason);
-    const bool is_standard_without_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ false, dust_relay_fee, reason);
+    const bool is_standard_with_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ true, reason);
+    const bool is_standard_without_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ false, reason);
     if (is_standard_without_permit_bare_multisig) {
         assert(is_standard_with_permit_bare_multisig);
     }
@@ -94,7 +93,6 @@ FUZZ_TARGET_INIT(transaction, initialize_transaction)
     (void)IsFinalTx(tx, /* nBlockHeight= */ 1024, /* nBlockTime= */ 1024);
     (void)IsStandardTx(tx, reason);
     (void)RecursiveDynamicUsage(tx);
-    (void)SignalsOptInRBF(tx);
 
     CCoinsView coins_view;
     const CCoinsViewCache coins_view_cache(&coins_view);

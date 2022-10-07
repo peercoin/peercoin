@@ -209,7 +209,7 @@ if ENABLE_FUZZ_BINARY
 test_fuzz_fuzz_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 test_fuzz_fuzz_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 test_fuzz_fuzz_LDADD = $(FUZZ_SUITE_LD_COMMON)
-test_fuzz_fuzz_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS) $(RUNTIME_LDFLAGS)
+test_fuzz_fuzz_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS) $(RUNTIME_LDFLAGS) $(CRYPTO_LIBS)
 test_fuzz_fuzz_SOURCES = \
  $(FUZZ_WALLET_SRC) \
  test/fuzz/addition_overflow.cpp \
@@ -243,8 +243,6 @@ test_fuzz_fuzz_SOURCES = \
  test/fuzz/descriptor_parse.cpp \
  test/fuzz/deserialize.cpp \
  test/fuzz/eval_script.cpp \
- test/fuzz/fee_rate.cpp \
- test/fuzz/fees.cpp \
  test/fuzz/flatfile.cpp \
  test/fuzz/float.cpp \
  test/fuzz/golomb_rice.cpp \
@@ -273,9 +271,6 @@ test_fuzz_fuzz_SOURCES = \
  test/fuzz/parse_numbers.cpp \
  test/fuzz/parse_script.cpp \
  test/fuzz/parse_univalue.cpp \
- test/fuzz/policy_estimator.cpp \
- test/fuzz/policy_estimator_io.cpp \
- test/fuzz/pow.cpp \
  test/fuzz/prevector.cpp \
  test/fuzz/primitives_transaction.cpp \
  test/fuzz/process_message.cpp \
@@ -283,7 +278,6 @@ test_fuzz_fuzz_SOURCES = \
  test/fuzz/protocol.cpp \
  test/fuzz/psbt.cpp \
  test/fuzz/random.cpp \
- test/fuzz/rbf.cpp \
  test/fuzz/rolling_bloom_filter.cpp \
  test/fuzz/rpc.cpp \
  test/fuzz/script.cpp \
@@ -315,8 +309,7 @@ test_fuzz_fuzz_SOURCES = \
  test/fuzz/tx_pool.cpp \
  test/fuzz/txrequest.cpp \
  test/fuzz/utxo_snapshot.cpp \
- test/fuzz/validation_load_mempool.cpp \
- test/fuzz/versionbits.cpp
+ test/fuzz/validation_load_mempool.cpp 
 endif # ENABLE_FUZZ_BINARY
 
 nodist_test_test_bitcoin_SOURCES = $(GENERATED_TEST_FILES)

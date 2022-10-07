@@ -26,8 +26,6 @@ struct MockedTxPool : public CTxMemPool {
     void RollingFeeUpdate() EXCLUSIVE_LOCKS_REQUIRED(!cs)
     {
         LOCK(cs);
-        lastRollingFeeUpdate = GetTime();
-        blockSinceLastRollingFeeBump = true;
     }
 };
 
@@ -96,7 +94,6 @@ void Finish(FuzzedDataProvider& fuzzed_data_provider, MockedTxPool& tx_pool, CCh
     {
         BlockAssembler::Options options;
         options.nBlockMaxWeight = fuzzed_data_provider.ConsumeIntegralInRange(0U, MAX_BLOCK_WEIGHT);
-        options.blockMinFeeRate = CFeeRate{ConsumeMoney(fuzzed_data_provider, /*max=*/COIN)};
         auto assembler = BlockAssembler{chainstate, *static_cast<CTxMemPool*>(&tx_pool), chainstate.m_params, options};
         auto block_template = assembler.CreateNewBlock(CScript{} << OP_TRUE);
         Assert(block_template->block.vtx.size() >= 1);
@@ -142,7 +139,7 @@ FUZZ_TARGET_INIT(tx_pool_standard, initialize_tx_pool)
     // The sum of the values of all spendable outpoints
     constexpr CAmount SUPPLY_TOTAL{COINBASE_MATURITY * 50 * COIN};
 
-    CTxMemPool tx_pool_{/*estimator=*/nullptr, /*check_ratio=*/1};
+    CTxMemPool tx_pool_{/*check_ratio=*/1};
     MockedTxPool& tx_pool = *static_cast<MockedTxPool*>(&tx_pool_);
 
     chainstate.SetMempool(&tx_pool);
@@ -316,7 +313,7 @@ FUZZ_TARGET_INIT(tx_pool, initialize_tx_pool)
         txids.push_back(ConsumeUInt256(fuzzed_data_provider));
     }
 
-    CTxMemPool tx_pool_{/*estimator=*/nullptr, /*check_ratio=*/1};
+    CTxMemPool tx_pool_{/*check_ratio=*/1};
     MockedTxPool& tx_pool = *static_cast<MockedTxPool*>(&tx_pool_);
 
     LIMITED_WHILE(fuzzed_data_provider.ConsumeBool(), 300)
