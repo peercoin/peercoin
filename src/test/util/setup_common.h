@@ -8,20 +8,22 @@
 #include <chainparamsbase.h>
 #include <fs.h>
 #include <key.h>
-#include <util/system.h>
 #include <node/caches.h>
 #include <node/context.h>
+#include <primitives/transaction.h>
 #include <pubkey.h>
 #include <random.h>
 #include <stdexcept>
-#include <txmempool.h>
 #include <util/check.h>
 #include <util/string.h>
+#include <util/system.h>
 #include <util/vector.h>
 
 #include <functional>
 #include <type_traits>
 #include <vector>
+
+class Chainstate;
 
 /** This is connected to the logger. Can be used to redirect logs to any other log */
 extern const std::function<void(const std::string&)> G_TEST_LOG_FUN;
@@ -87,9 +89,6 @@ struct BasicTestingSetup {
     const fs::path m_path_root;
     ArgsManager m_args;
 };
-
-
-CTxMemPool::Options MemPoolOptionsForTest(const node::NodeContext& node);
 
 /** Testing setup that performs all steps up until right before
  * ChainstateManager gets initialized. Meant for testing ChainstateManager

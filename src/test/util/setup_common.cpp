@@ -29,6 +29,7 @@
 #include <shutdown.h>
 #include <streams.h>
 #include <test/util/net.h>
+#include <test/util/txmempool.h>
 #include <timedata.h>
 #include <txdb.h>
 #include <txmempool.h>
@@ -165,19 +166,6 @@ BasicTestingSetup::~BasicTestingSetup()
     LogInstance().DisconnectTestLogger();
     fs::remove_all(m_path_root);
     gArgs.ClearArgs();
-}
-
-CTxMemPool::Options MemPoolOptionsForTest(const NodeContext& node)
-{
-    CTxMemPool::Options mempool_opts{
-        .estimator = node.fee_estimator.get(),
-        // Default to always checking mempool regardless of
-        // chainparams.DefaultConsistencyChecks for tests
-        .check_ratio = 1,
-    };
-    const auto err{ApplyArgsManOptions(*node.args, ::Params(), mempool_opts)};
-    Assert(!err);
-    return mempool_opts;
 }
 
 ChainTestingSetup::ChainTestingSetup(const std::string& chainName, const std::vector<const char*>& extra_args)
@@ -444,17 +432,6 @@ std::vector<CTransactionRef> TestChain100Setup::PopulateMempool(FastRandomContex
         --num_transactions;
     }
     return mempool_transactions;
-}
-
-CTxMemPoolEntry TestMemPoolEntryHelper::FromTx(const CMutableTransaction& tx) const
-{
-    return FromTx(MakeTransactionRef(tx));
-}
-
-CTxMemPoolEntry TestMemPoolEntryHelper::FromTx(const CTransactionRef& tx) const
-{
-    return CTxMemPoolEntry(tx, nFee, nTime, nHeight,
-                           spendsCoinbase, sigOpCost, lp);
 }
 
 /**
