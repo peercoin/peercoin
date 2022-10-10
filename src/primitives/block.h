@@ -39,7 +39,13 @@ public:
         SetNull();
     }
 
-    SERIALIZE_METHODS(CBlockHeader, obj) { READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot, obj.nTime, obj.nBits, obj.nNonce, obj.nFlags); }
+    SERIALIZE_METHODS(CBlockHeader, obj)
+    {
+        READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot, obj.nTime, obj.nBits, obj.nNonce);
+        // peercoin: do not serialize nFlags when computing hash
+        if (!(s.GetType() & SER_GETHASH) && s.GetType() & SER_POSMARKER)
+            READWRITE(obj.nFlags);
+    }
 
     void SetNull()
     {
