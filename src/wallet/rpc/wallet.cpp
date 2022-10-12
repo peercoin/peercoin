@@ -4,9 +4,10 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <core_io.h>
-#include <interfaces/wallet.h>
+//#include <interfaces/wallet.h>
 #include <key_io.h>
 #include <rpc/server.h>
+#include <rpc/server_util.h>
 #include <rpc/util.h>
 #include <timedata.h>
 #include <util/translation.h>
@@ -23,6 +24,7 @@
 #include <node/miner.h>
 #include <boost/lexical_cast.hpp>
 
+using wallet::WalletContext;
 
 namespace wallet {
 /** Checks if a CKey is in the given CWallet compressed or otherwise*/
@@ -525,15 +527,35 @@ static RPCHelpMan listminting()
                 {
                     {"count", RPCArg::Type::NUM, RPCArg::Optional::OMITTED_NAMED_ARG, "maximum number of outputs to be returned."},
                 },
-                RPCResult{RPCResult::Type::OBJ, "", "", {
-                    {RPCResult::Type::STR, "list", "list of outputs."},
-                }},
+                RPCResult{
+                    RPCResult::Type::ARR, "", "",
+                    {
+                        {RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR, "address", "Address of the output"},
+                            {RPCResult::Type::STR, "input-txid", "Transaction id"},
+                            {RPCResult::Type::NUM, "time", "Time of transaction"},
+                            {RPCResult::Type::NUM, "amount", "Amount of transaction output"},
+                            {RPCResult::Type::STR, "status", "Status of transaction output"},
+                            {RPCResult::Type::NUM, "age-in-day", "Age of transaction in days"},
+                            {RPCResult::Type::NUM, "coin-day-weight", "Weight of transaction output"},
+                            {RPCResult::Type::NUM, "proof-of-stake-difficulty", "Current proof of stake difficulty"},
+                            {RPCResult::Type::NUM, "minting-probability-10min", "Probability of minting in next 10 minutes"},
+                            {RPCResult::Type::NUM, "minting-probability-24h", "Probability of minting in next 24 hours"},
+                            {RPCResult::Type::NUM, "minting-probability-30d", "Probability of minting in next 30 days"},
+                            {RPCResult::Type::NUM, "minting-probability-90d", "Probability of minting in next 90 days"},
+                            {RPCResult::Type::NUM, "search-interval-in-sec", "Interval between last minting attempts"},
+                            {RPCResult::Type::NUM, "attempts", "Number of seconds since maturity"},
+                        }},
+                    }
+                },
                 RPCExamples{
                     HelpExampleCli("listminting", "10")
             + HelpExampleRpc("listminting", "10")
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
+    WalletContext& context = EnsureWalletContext(request.context);
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
 
@@ -548,11 +570,11 @@ static RPCHelpMan listminting()
         count = request.params[0].get_int();
 
     UniValue ret(UniValue::VARR);
-    const CBlockIndex *p;// ppctodo *p = GetLastBlockIndex(wallet->chain().Tip(), true);
+
+    const CBlockIndex *p = GetLastBlockIndex(context.chain->chainman().ActiveChain().Tip(), true);
     double difficulty = p->GetBlockDifficulty();
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
 
-    WalletContext& context = EnsureWalletContext(request.context);
     std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(context,wallet);
     const auto& vwtx = iwallet->getWalletTxs();
     for(const auto& wtx : vwtx) {

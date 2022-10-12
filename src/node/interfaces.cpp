@@ -449,8 +449,8 @@ public:
 class ChainImpl : public Chain
 {
 private:
-    ChainstateManager& chainman() { return *Assert(m_node.chainman); }
 public:
+    ChainstateManager& chainman() { return *Assert(m_node.chainman); }
     explicit ChainImpl(NodeContext& node) : m_node(node) {}
     std::optional<int> getHeight() override
     {

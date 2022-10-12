@@ -7,6 +7,7 @@
 #define BITCOIN_WALLET_WALLETDB_H
 
 #include <script/sign.h>
+#include <wallet/context.h>
 #include <wallet/db.h>
 #include <wallet/walletutil.h>
 #include <key.h>
@@ -25,7 +26,7 @@ class CKeyPool;
 class CMasterKey;
 class CWallet;
 class CWalletTx;
-struct WalletContext;
+//struct WalletContext;
 
 /**
  * Overview of wallet database classes:
