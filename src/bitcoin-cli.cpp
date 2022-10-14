@@ -19,7 +19,6 @@
 #include <util/strencodings.h>
 #include <util/system.h>
 #include <util/translation.h>
-#include <util/url.h>
 
 #include <algorithm>
 #include <chrono>
