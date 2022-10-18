@@ -110,6 +110,7 @@ using node::fHavePruned;
 using node::fPruneMode;
 using node::fReindex;
 using node::nPruneTarget;
+using interfaces::WalletLoader;
 
 static const bool DEFAULT_PROXYRANDOMIZE = true;
 static const bool DEFAULT_REST_ENABLE = false;
@@ -129,6 +130,8 @@ static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
  * The PID file facilities.
  */
 static const char* BITCOIN_PID_FILENAME = "peercoind.pid";
+
+static std::shared_ptr<CWallet> walletTmp;
 
 static fs::path GetPidFile(const ArgsManager& args)
 {
@@ -1743,9 +1746,13 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     StartupNotify(args);
 #endif
 #ifdef ENABLE_WALLET
-// ppctodo: move to right init
-//    if (node.walletLoader().getWallets().size() && gArgs.GetBoolArg("-stakegen", true))
-//        MintStake(threadGroup, node.walletLoader().getWallets()[0], &node);
+{
+// ppctodo: deal with multiple wallets
+    if (node.wallet_loader->getWallets().size() && gArgs.GetBoolArg("-stakegen", true)) {
+        walletTmp = std::shared_ptr<CWallet>(node.wallet_loader->getWallets()[0]->wallet());
+        MintStake(walletTmp, node);
+        }
+}
 #endif
 
     return true;

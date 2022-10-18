@@ -3226,10 +3226,15 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     std::vector<COutput> vAvailableCoins;
     CCoinControl temp;
     CoinSelectionParams coin_selection_params;
+    coin_selection_params.m_subtract_fee_outputs = true;
+
     bool bnb_used;
     AvailableCoins(*pwallet, vAvailableCoins, &temp);
 
-    std::optional<SelectionResult> result = SelectCoins(*pwallet, vAvailableCoins, nBalance - nReserveBalance.value(), temp, coin_selection_params);
+    CAmount nAllowedBalance = nBalance;
+    if (nReserveBalance) nAllowedBalance -= nReserveBalance.value();
+
+    std::optional<SelectionResult> result = SelectCoins(*pwallet, vAvailableCoins, nAllowedBalance, temp, coin_selection_params);
 
     if (!result)
         return false;
@@ -3316,7 +3321,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         if (fKernelFound)
             break; // if kernel is found stop searching
     }
-    if (nCredit == 0 || nCredit > nBalance - nReserveBalance.value())
+    if (nCredit == 0 || nCredit > nAllowedBalance)
         return false;
     for (const auto& pcoin : result->GetInputSet())
     {

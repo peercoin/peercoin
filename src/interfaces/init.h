@@ -6,6 +6,9 @@
 #define BITCOIN_INTERFACES_INIT_H
 
 #include <memory>
+#include <interfaces/wallet.h>
+
+using interfaces::WalletLoader;
 
 namespace node {
 struct NodeContext;
@@ -16,7 +19,7 @@ class Chain;
 class Echo;
 class Ipc;
 class Node;
-class WalletLoader;
+//class WalletLoader;
 
 //! Initial interface created when a process is first started, and used to give
 //! and get access to other interfaces (Node, Chain, Wallet, etc).
