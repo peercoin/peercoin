@@ -78,7 +78,7 @@ class NodeImpl : public Node
 {
 private:
 public:
-    ChainstateManager& chainman() { return *Assert(m_context->chainman); }
+    ChainstateManager& chainman() override { return *Assert(m_context->chainman); }
     explicit NodeImpl(NodeContext& context) { setContext(&context); }
     void initLogging() override { InitLogging(*Assert(m_context->args)); }
     void initParameterInteraction() override { InitParameterInteraction(*Assert(m_context->args)); }
@@ -450,7 +450,7 @@ class ChainImpl : public Chain
 {
 private:
 public:
-    ChainstateManager& chainman() { return *Assert(m_node.chainman); }
+    ChainstateManager& chainman() override { return *Assert(m_node.chainman); }
     explicit ChainImpl(NodeContext& node) : m_node(node) {}
     std::optional<int> getHeight() override
     {

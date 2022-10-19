@@ -31,7 +31,6 @@ void SetfLargeWorkInvalidChainFound(bool flag)
 
 bilingual_str GetWarnings(bool verbose)
 {
-    int nPriority = 0;
     bilingual_str warnings_concise;
     std::vector<bilingual_str> warnings_verbose;
 
@@ -46,21 +45,17 @@ bilingual_str GetWarnings(bool verbose)
     // peercoin: wallet lock warning for minting
     if (strMintWarning != "")
     {
-        nPriority = 0;
         warnings_concise = Untranslated(strMintWarning);
         warnings_verbose.emplace_back(warnings_concise);
     }
 
     // Misc warnings like out of disk space and clock is wrong
     if (!g_misc_warnings.empty()) {
-        nPriority = 1000;
         warnings_concise = g_misc_warnings;
         warnings_verbose.emplace_back(warnings_concise);
     }
 
     if (fLargeWorkInvalidChainFound) {
-        nPriority = 2000;
-        nPriority = 2000;
         warnings_concise = _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
         warnings_verbose.emplace_back(warnings_concise);
     }

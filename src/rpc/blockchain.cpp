@@ -1396,11 +1396,6 @@ static UniValue SoftForkDesc(const std::string &name, int version, const CBlockI
     return rv;
 }
 
-namespace {
-/* TODO: when -deprecatedrpc=softforks is removed, drop these */
-UniValue DeploymentInfo(const CBlockIndex* tip, const Consensus::Params& consensusParams);
-}
-
 // used by rest.cpp:rest_chaininfo, so cannot be static
 RPCHelpMan getblockchaininfo()
 {
@@ -1430,9 +1425,8 @@ RPCHelpMan getblockchaininfo()
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-    const ArgsManager& args{EnsureAnyArgsman(request.context)};
-    ChainstateManager& chainman = EnsureAnyChainman(request.context);
     LOCK(cs_main);
+    ChainstateManager& chainman = EnsureAnyChainman(request.context);
     CChainState& active_chainstate = chainman.ActiveChainstate();
 
     const CBlockIndex* tip = active_chainstate.m_chain.Tip();
