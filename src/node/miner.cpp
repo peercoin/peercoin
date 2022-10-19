@@ -698,7 +698,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
 }
 
 // peercoin: stake minter thread
-void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, NodeContext* m_node)
+void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
 {
     LogPrintf("ThreadStakeMinter started\n");
     try
