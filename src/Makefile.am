@@ -734,7 +734,8 @@ peercoin_wallet_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1) \
   $(BDB_LIBS) \
-  $(SQLITE_LIBS)
+  $(SQLITE_LIBS) \
+  $(CRYPTO_LIBS)
 
 if TARGET_WINDOWS
 peercoin_wallet_SOURCES += bitcoin-wallet-res.rc
