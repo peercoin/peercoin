@@ -2306,12 +2306,11 @@ bool CChainState::FlushStateToDisk(
                 return AbortNode(state, "Failed to write to coin database");
             nLastFlush = nNow;
             full_flush_completed = true;
-            TRACE5(utxocache, flush,
+            TRACE4(utxocache, flush,
                    (int64_t)(GetTimeMicros() - nNow.count()), // in microseconds (µs)
                    (u_int32_t)mode,
                    (u_int64_t)coins_count,
-                   (u_int64_t)coins_mem_usage,
-                   (bool)fFlushForPrune);
+                   (u_int64_t)coins_mem_usage);
         }
     }
     if (full_flush_completed) {
