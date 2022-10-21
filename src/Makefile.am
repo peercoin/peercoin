@@ -727,8 +727,8 @@ peercoin_wallet_LDFLAGS = $(bitcoin_bin_ldflags)
 peercoin_wallet_LDADD = \
   $(LIBBITCOIN_WALLET_TOOL) \
   $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_NODE) \
+  $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_UTIL) \
   $(LIBUNIVALUE) \
