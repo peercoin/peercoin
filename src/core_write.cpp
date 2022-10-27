@@ -253,8 +253,10 @@ void TxToUniv(const CTransaction& tx, const uint256& hashBlock, UniValue& entry,
 
     if (have_undo) {
         const CAmount fee = amt_total_in - amt_total_out;
-        CHECK_NONFATAL(MoneyRange(fee));
-        entry.pushKV("fee", ValueFromAmount(fee));
+        if (fee > 0)
+            entry.pushKV("fee", ValueFromAmount(fee));
+        else
+            entry.pushKV("reward", ValueFromAmount(-fee));
     }
 
     if (!hashBlock.IsNull())
