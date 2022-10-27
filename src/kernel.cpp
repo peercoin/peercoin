@@ -42,11 +42,12 @@ const uint32_t nBTC16BIPsTestSwitchTime       = 1554811200; // Tue 09 Apr 12:00:
 // Protocol switch time for v0.9 kernel protocol
 const unsigned int nProtocolV09SwitchTime     = 1591617600; // Mon  8 Jun 12:00:00 UTC 2020
 const unsigned int nProtocolV09TestSwitchTime = 1581940800; // Mon 17 Feb 12:00:00 UTC 2020
-
 // Protocol switch time for v10 kernel protocol
 const unsigned int nProtocolV10SwitchTime     = 1635768000; // Mon  1 Nov 12:00:00 UTC 2021
 const unsigned int nProtocolV10TestSwitchTime = 1625140800; // Thu  1 Jul 12:00:00 UTC 2021
-
+// Protocol switch time for v12 kernel protocol
+const unsigned int nProtocolV12SwitchTime     = 1678104000; // Mon  6 Mar 12:00:00 UTC 2023
+const unsigned int nProtocolV12TestSwitchTime = 1669636800; // Mon 28 Nov 12:00:00 UTC 2022
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
@@ -141,6 +142,12 @@ bool IsProtocolV09(unsigned int nTime)
 bool IsProtocolV10(unsigned int nTime)
 {
   return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV10TestSwitchTime : nProtocolV10SwitchTime));
+}
+
+// Whether a given timestamp is subject to new v10 protocol
+bool IsProtocolV12(unsigned int nTime)
+{
+  return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime));
 }
 
 // Get the last stake modifier and its generation time from a given block

@@ -38,6 +38,8 @@ bool IsBTC16BIPsEnabled(uint32_t nTimeTx);
 bool IsProtocolV09(unsigned int nTimeTx);
 // Whether a given timestamp is subject to new v10 protocol
 bool IsProtocolV10(unsigned int nTimeTx);
+// Whether a given timestamp is subject to new v12 protocol
+bool IsProtocolV12(unsigned int nTimeTx);
 
 // Compute the hash modifier for proof-of-stake
 bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStakeModifier, bool& fGeneratedStakeModifier, CChainState& chainstate);

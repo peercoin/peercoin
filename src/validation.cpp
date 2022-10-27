@@ -1770,13 +1770,11 @@ static unsigned int GetBlockScriptFlags(const CBlockIndex* pindex, const Consens
         flags |= SCRIPT_VERIFY_CHECKSEQUENCEVERIFY | SCRIPT_VERIFY_NULLDUMMY;
     }
 
-/*
-    // ppctodo activate taproot
     // Enforce Taproot (BIP340-BIP342)
-    if (DeploymentActiveAt(*pindex, consensusparams, Consensus::DEPLOYMENT_TAPROOT)) {
+    if (pindex->pprev && IsProtocolV12(pindex->pprev->nTime)) {
         flags |= SCRIPT_VERIFY_TAPROOT;
     }
-*/
+
     return flags;
 }
 
