@@ -836,12 +836,16 @@ bool MemPoolAccept::PolicyScriptChecks(const ATMPArgs& args, Workspace& ws)
     const CTransaction& tx = *ws.m_ptx;
     TxValidationState& state = ws.m_state;
 
-    constexpr unsigned int scriptVerifyFlags = STANDARD_SCRIPT_VERIFY_FLAGS;
+    unsigned int scriptVerifyFlags = STANDARD_SCRIPT_VERIFY_FLAGS;
 
     // peercoin: if transaction is after version 0.8 fork, verify SCRIPT_VERIFY_LOW_S
     // ppcTODO move back to policy.h after 0.8 is active
     //if (IsBTC16BIPsEnabled(tx.nTime))
     //    scriptVerifyFlags &= SCRIPT_VERIFY_LOW_S;
+
+    // peercoin allow taproot after fork
+    if (IsProtocolV12(tx.nTime))
+        scriptVerifyFlags &= SCRIPT_VERIFY_TAPROOT;
 
     // Check input scripts and signatures.
     // This is done last to help prevent CPU exhaustion denial-of-service attacks.
