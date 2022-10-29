@@ -92,8 +92,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = 1628640000; // August 11th, 2021
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 709632; // Approximately November 12th, 2021
 */
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000002a0fac8b39f476"); // 350000
-        consensus.defaultAssumeValid = uint256S("0xa3a0ffa0dbca75923ad6a53d3878d62f8b35c363282df3f13ded9e4fda921e63");  // 380000
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000516e58fb3669ea"); // 650000
+        consensus.defaultAssumeValid = uint256S("0x3125be5493e80431952593cce42b160019671108103735509238830939e1c9a3");  // 650000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -106,7 +106,7 @@ public:
         pchMessageStart[3] = 0xe5;
         nDefaultPort = 9901;
         nPruneAfterHeight = 100000;
-        m_assumed_blockchain_size = 1;
+        m_assumed_blockchain_size = 2;
         m_assumed_chain_state_size = 0;
 
         genesis = CreateGenesisBlock(1345083810, 1345084287, 2179302059u, 0x1d00ffff, 1, 0);
@@ -164,12 +164,12 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 967c14abf21214639aeff0a270c4543cd3b80fe53178384ac5aa3c277662f1d0 (height 589659).
-            1635782211, // * UNIX timestamp of last known number of transactions
-            1992832,    // * total number of transactions between genesis and that timestamp
+            // Data as of block 3125be5493e80431952593cce42b160019671108103735509238830939e1c9a3 (height 650000).
+            1666903503, // * UNIX timestamp of last known number of transactions
+            2145533,    // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the ChainStateFlushed debug.log lines)
-            0.006862798 // * estimated number of transactions per second after that timestamp
-                        // 1992832/(1635782211-1345400356) = 0.006862798
+            0.006673443 // * estimated number of transactions per second after that timestamp
+                        //   2145533/(1666903503-1345400356) = 0.006673443
         };
     }
 };
