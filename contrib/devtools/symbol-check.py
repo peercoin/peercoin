@@ -135,12 +135,14 @@ MACHO_ALLOWED_LIBRARIES = {
 'CoreText', # interface for laying out text and handling fonts.
 'CoreVideo', # video processing
 'Foundation', # base layer functionality for apps/frameworks
+'GSS',
 'ImageIO', # read and write image file formats.
 'IOKit', # user-space access to hardware devices and drivers.
 'IOSurface', # cross process image/drawing buffers
 'libobjc.A.dylib', # Objective-C runtime library
 'Metal', # 3D graphics
 'Security', # access control and authentication
+'SystemConfiguration',
 'QuartzCore', # animation
 }
 
