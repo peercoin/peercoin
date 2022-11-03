@@ -28,6 +28,11 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
 
+    // rfc20
+    int64_t nHypotheticalSpacing = pindexLast->GetBlockTime() - pindexPrev->GetBlockTime();
+    if (!fProofOfStake && IsProtocolV12(pindexLast->GetBlockTime()) && (nHypotheticalSpacing > nActualSpacing))
+        nActualSpacing = nHypotheticalSpacing;
+
     // peercoin: target change every block
     // peercoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
