@@ -12,6 +12,7 @@
 #include <core_io.h>
 #include <deploymentinfo.h>
 #include <key_io.h>
+#include <interfaces/wallet.h>
 #include <net.h>
 #include <node/context.h>
 #include <node/miner.h>
@@ -50,6 +51,7 @@ using node::IncrementExtraNonce;
 using node::NodeContext;
 using node::RegenerateCommitments;
 using node::UpdateTime;
+using interfaces::WalletLoader;
 
 using wallet::GetWalletForJSONRPCRequest;
 
@@ -194,7 +196,7 @@ static bool GenerateBlock(ChainstateManager& chainman, CBlock& block, uint64_t& 
     return true;
 }
 
-static UniValue generateBlocks(ChainstateManager& chainman, const CTxMemPool& mempool, const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries, const CWallet * const pwallet)
+static UniValue generateBlocks(ChainstateManager& chainman, const CTxMemPool& mempool, const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries, NodeContext* m_node)
 {
     int nHeightEnd = 0;
     int nHeight = 0;
@@ -208,7 +210,7 @@ static UniValue generateBlocks(ChainstateManager& chainman, const CTxMemPool& me
     UniValue blockHashes(UniValue::VARR);
     while (nHeight < nHeightEnd && !ShutdownRequested())
     {
-        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(chainman.ActiveChainstate(), mempool, Params()).CreateNewBlock(coinbase_script));
+        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(chainman.ActiveChainstate(), mempool, Params()).CreateNewBlock(coinbase_script,nullptr,nullptr,m_node));
         if (!pblocktemplate.get())
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Couldn't create new block");
         CBlock *pblock = &pblocktemplate->block;
@@ -222,11 +224,6 @@ static UniValue generateBlocks(ChainstateManager& chainman, const CTxMemPool& me
             ++nHeight;
             blockHashes.push_back(block_hash.GetHex());
         }
-
-        // peercoin: sign block
-        // rfc6: we sign proof of work blocks only before 0.8 fork
-        if (!IsBTC16BIPsEnabled(pblock->GetBlockTime()) && !SignBlock(*pblock, *pwallet))
-            throw JSONRPCError(-100, "Unable to sign block, wallet locked?");
     }
     return blockHashes;
 }
@@ -298,11 +295,7 @@ static RPCHelpMan generatetodescriptor()
     const CTxMemPool& mempool = EnsureMemPool(node);
     ChainstateManager& chainman = EnsureChainman(node);
 
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    if (!wallet) return NullUniValue;
-    const CWallet* const pwallet = wallet.get();
-
-    return generateBlocks(chainman, mempool, coinbase_script, num_blocks, max_tries, pwallet);
+    return generateBlocks(chainman, mempool, coinbase_script, num_blocks, max_tries, &node);
 },
 };
 }
@@ -338,10 +331,6 @@ static RPCHelpMan generatetoaddress()
 {
     const int num_blocks{request.params[0].get_int()};
     const uint64_t max_tries{request.params[2].isNull() ? DEFAULT_MAX_TRIES : request.params[2].get_int()};
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    if (!wallet) return NullUniValue;
-    const CWallet* const pwallet = wallet.get();
-
     CTxDestination destination = DecodeDestination(request.params[1].get_str());
     if (!IsValidDestination(destination)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
@@ -353,7 +342,7 @@ static RPCHelpMan generatetoaddress()
 
     CScript coinbase_script = GetScriptForDestination(destination);
 
-    return generateBlocks(chainman, mempool, coinbase_script, num_blocks, max_tries, pwallet);
+    return generateBlocks(chainman, mempool, coinbase_script, num_blocks, max_tries, &node);
 },
     };
 }
@@ -1000,10 +989,7 @@ static RPCHelpMan submitblock()
     }
 
     bool new_block;
-    
-
-
-auto sc = std::make_shared<submitblock_StateCatcher>(block.GetHash());
+    auto sc = std::make_shared<submitblock_StateCatcher>(block.GetHash());
     RegisterSharedValidationInterface(sc);
     bool accepted = chainman.ProcessNewBlock(Params(), blockptr, /*force_processing=*/true, /*new_block=*/&new_block);
     UnregisterSharedValidationInterface(sc);

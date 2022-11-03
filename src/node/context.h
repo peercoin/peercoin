@@ -10,6 +10,10 @@
 #include <memory>
 #include <vector>
 
+#include <interfaces/init.h>
+#include <interfaces/chain.h>
+#include <interfaces/wallet.h>
+
 class ArgsManager;
 class BanMan;
 class AddrMan;
@@ -18,12 +22,11 @@ class CScheduler;
 class CTxMemPool;
 class ChainstateManager;
 class PeerManager;
-namespace interfaces {
-class Chain;
-class ChainClient;
-class Init;
-class WalletLoader;
-} // namespace interfaces
+
+using interfaces::Chain;
+using interfaces::ChainClient;
+using interfaces::Init;
+using interfaces::WalletLoader;
 
 namespace node {
 //! NodeContext struct containing references to chain state and connection
