@@ -138,6 +138,8 @@ script: |
       # Workaround for https://bugs.launchpad.net/ubuntu/+source/gcc-8-cross-ports/+bug/1853740
       # TODO: remove this when no longer needed
       HOST_LDFLAGS="${HOST_LDFLAGS_BASE} -Wl,-z,noexecstack"
+    elif [ "${i}" = "arm-linux-gnueabihf" ] || [ "${i}" = "aarch64-linux-gnu" ]; then
+      HOST_LDFLAGS="${HOST_LDFLAGS_BASE} -lpthread"
     else
       HOST_LDFLAGS="${HOST_LDFLAGS_BASE}"
     fi
