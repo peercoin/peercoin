@@ -21,7 +21,10 @@ RPCHelpMan walletpassphrase()
                     {"timeout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The time to keep the decryption key in seconds; capped at 100000000 (~3 years)."},
                     {"mintonly", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED, "Unlock for minting only"},
                 },
-                RPCResult{RPCResult::Type::NONE, "", ""},
+                RPCResult{RPCResult::Type::OBJ, "", "",
+                {
+                    {RPCResult::Type::BOOL, "unlocked_minting_only", "Whether wallet is unlocked for minting only."}
+                }},
                 RPCExamples{
             "\nUnlock the wallet for 60 seconds\n"
             + HelpExampleCli("walletpassphrase", "\"my pass phrase\" 60, false") +
