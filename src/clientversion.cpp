@@ -18,7 +18,7 @@
  */
 const std::string CLIENT_NAME("Satoshi");
 
-#define CLIENT_VERSION_SUFFIX " Tardigrade"
+#define CLIENT_VERSION_SUFFIX " Coccinellidae"
 
 #ifdef HAVE_BUILD_INFO
 #include <obj/build.h>
@@ -55,7 +55,7 @@ static std::string FormatVersion(int nVersion)
 
 std::string FormatFullVersion()
 {
-    static const std::string CLIENT_BUILD(BUILD_DESC BUILD_SUFFIX);
+    static const std::string CLIENT_BUILD(BUILD_DESC CLIENT_VERSION_SUFFIX);
     return CLIENT_BUILD;
 }
 
@@ -77,7 +77,7 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
     }
     ss << "/";
     ss << "Peercoin:" << FormatVersion(PEERCOIN_VERSION);
-    //ss << "(" << FormatFullVersion() << ")/";
+    ss << "(" << FormatFullVersion() << ")/";
     return ss.str();
 }
 
