@@ -22,6 +22,7 @@
 #include <index/txindex.h>
 #include <logging.h>
 #include <logging/timer.h>
+#include <net.h>
 #include <node/blockstorage.h>
 #include <node/coinstats.h>
 #include <node/ui_interface.h>
@@ -1809,6 +1810,9 @@ bool PeercoinContextualBlockChecks(const CBlock& block, BlockValidationState& st
             LogPrintf("WARNING: %s: duplicate proof-of-stake in block %s, invalidating tip\n", __func__, block.GetHash().ToString());
             chainstate.InvalidateBlock(state, pindex);
             return error("ConnectBlock() : Duplicate coinstake found");
+        } else if (setStakeSeen.count(proofOfStake)) {
+            LogPrintf("WARNING: %s: duplicate proof-of-stake in block %s\n", __func__, block.GetHash().ToString());
+            return error("ConnectBlock() : Duplicate coinstake found");
         }
     }
 
@@ -1852,6 +1856,7 @@ bool PeercoinContextualBlockChecks(const CBlock& block, BlockValidationState& st
         pindex->prevoutStake = block.vtx[1]->vin[0].prevout;
         pindex->nStakeTime = block.vtx[1]->nTime;
         pindex->hashProofOfStake = hashProofOfStake;
+        setStakeSeen.insert(std::make_pair(pindex->prevoutStake, pindex->nTime));
     }
     if (!pindex->SetStakeEntropyBit(nEntropyBit))
         return error("ConnectBlock() : SetStakeEntropyBit() failed");

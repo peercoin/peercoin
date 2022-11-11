@@ -120,6 +120,8 @@ std::string strSubVersion;
 
 // peercoin: temperature to measure how many PoS headers have been sent by this client
 std::map<CNetAddr, int32_t> mapPoSTemperature;
+std::set<std::pair<COutPoint, unsigned int>> setStakeSeen;
+
 void CConnman::AddAddrFetch(const std::string& strDest)
 {
     LOCK(m_addr_fetches_mutex);

@@ -322,7 +322,7 @@ public:
         block.nTime = nTime;
         block.nBits = nBits;
         block.nNonce = nNonce;
-        block.nFlags         = nFlags;
+        block.nFlags = nFlags;
         return block;
     }
 

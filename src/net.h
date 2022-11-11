@@ -247,6 +247,7 @@ struct LocalServiceInfo {
 extern Mutex g_maplocalhost_mutex;
 extern std::map<CNetAddr, LocalServiceInfo> mapLocalHost GUARDED_BY(g_maplocalhost_mutex);
 extern std::map<CNetAddr, int32_t> mapPoSTemperature;
+extern std::set<std::pair<COutPoint, unsigned int>> setStakeSeen;
 
 extern const std::string NET_MESSAGE_COMMAND_OTHER;
 typedef std::map<std::string, uint64_t> mapMsgCmdSize; //command, total bytes
