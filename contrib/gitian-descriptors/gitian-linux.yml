@@ -24,6 +24,7 @@ packages:
 - "pkg-config"
 - "python3"
 - "python3-pip"
+- "pigz"
 # Cross compilation HOSTS:
 #  - arm-linux-gnueabihf
 - "binutils-arm-linux-gnueabihf"
@@ -49,7 +50,7 @@ script: |
 
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-linux-gnu arm-linux-gnueabihf aarch64-linux-gnu powerpc64-linux-gnu powerpc64le-linux-gnu riscv64-linux-gnu"
-  CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests --disable-fuzz-binary"
+  CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-tests --disable-gui-tests --disable-fuzz-binary --with-gui"
   FAKETIME_HOST_PROGS="gcc g++"
   FAKETIME_PROGS="date ar ranlib nm"
   HOST_CFLAGS="-O2 -g"
@@ -162,8 +163,8 @@ script: |
     find ${DISTNAME}/bin -type f -executable -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
     find ${DISTNAME}/lib -type f -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
     cp ../README.md ${DISTNAME}/
-    find ${DISTNAME} -not -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
-    find ${DISTNAME} -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}-debug.tar.gz
+    find ${DISTNAME} -not -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | pigz -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
+    find ${DISTNAME} -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | pigz -9n > ${OUTDIR}/${DISTNAME}-${i}-debug.tar.gz
     cd ../../
     rm -rf distsrc-${i}
   done

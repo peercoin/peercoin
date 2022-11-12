@@ -65,15 +65,21 @@ jobs:
 
       - name: Detect suite
         id: detect
+        shell: bash
         run: |
           DESCRIPTOR=$PWD/contrib/gitian-descriptors/gitian-${{ matrix.os }}.yml
           NAME=$(yq e '.name' ${DESCRIPTOR})
+          COMMIT_OR_TAG=$(git log --format="%H" -n 1)
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            COMMIT_OR_TAG=$(echo ${GITHUB_REF/refs\/tags\//})
+          fi
           echo "descriptor=${DESCRIPTOR}" >> $GITHUB_OUTPUT
           echo "name=${NAME}" >> $GITHUB_OUTPUT
           echo "version=$(echo ${NAME} | grep -Eo [0-9.]+)" >> $GITHUB_OUTPUT 
           echo "suite=$(yq e '.suites[0]' ${DESCRIPTOR})" >> $GITHUB_OUTPUT
           echo "architecture=$(yq e '.architectures[0]' ${DESCRIPTOR})" >> $GITHUB_OUTPUT
           echo "build-dir=${PWD}" >> $GITHUB_OUTPUT
+          echo "commit-or-tag=${COMMIT_OR_TAG}" >> $GITHUB_OUTPUT
 
       - name: Build gitian base image
         run: |
@@ -96,21 +102,11 @@ jobs:
           path: ${{ env.GITIAN_CACHE }}/${{ steps.detect.outputs.name }}/${{ matrix.host }}
           key: ${{ matrix.name }}-${{ env.cache-name }}-${{ hashFiles('depends/packages/*') }}
 
-      - name: Change release description if tag
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: bash
-        run: |
-          sed -i "s|^\(DESC=\"\).*|\1$(echo ${GITHUB_REF/refs\/tags\//})\"|" share/genbuild.sh
-          git config user.name temp
-          git config user.email temp@temp.com
-          git add share/genbuild.sh
-          git commit -m "Update DESC"
-
       - name: Build binary
         working-directory: ${{ env.GITIAN_DIR }}
         run: |
           sed -i "s/^\ \ \(HOSTS=\"\).*/\ \ \1${{ matrix.host }}\"/g" ${{ steps.detect.outputs.descriptor }}
-          ./bin/gbuild -j $MAKEJOBS --commit peercoin=$(git -C ${{ steps.detect.outputs.build-dir }} log --format="%H" -n 1) --url peercoin=${{ steps.detect.outputs.build-dir }} ${{ steps.detect.outputs.descriptor }}
+          ./bin/gbuild -j $MAKEJOBS --fetch-tags --commit peercoin=${{ steps.detect.outputs.commit-or-tag }} --url peercoin=${{ steps.detect.outputs.build-dir }} ${{ steps.detect.outputs.descriptor }}
           cp -r ${GITIAN_DIR}/build/out/* ${{ steps.detect.outputs.build-dir }}/
 
       - name: Get short SHA
@@ -279,9 +275,9 @@ jobs:
         run: |
           TAG_NAME=noop
           RELEASE_TITLE=noop
-          if [[ $GITHUB_REF == refs/heads/develop ]]; then
+          if [[ $GITHUB_REF == refs/heads/develop || $GITHUB_REF == refs/heads/release-* ]]; then
             TAG_NAME=latest
-            RELEASE_TITLE="Development Build"
+            RELEASE_TITLE="Development Build: ${GITHUB_REF/refs\/heads\//}"
           fi
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             TAG_NAME=${GITHUB_REF/refs\/tags\//}

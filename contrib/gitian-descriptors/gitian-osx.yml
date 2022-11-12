@@ -28,6 +28,7 @@ packages:
 - "fonts-tuffy"
 - "xorriso"
 - "libtinfo5"
+- "pigz"
 remotes:
 - "url": "https://github.com/peercoin/peercoin.git"
   "dir": "peercoin"
@@ -38,7 +39,7 @@ script: |
 
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-apple-darwin18"
-  CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests --disable-fuzz-binary XORRISOFS=${WRAP_DIR}/xorrisofs DMG=${WRAP_DIR}/dmg"
+  CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-tests --disable-gui-tests --disable-fuzz-binary --with-gui XORRISOFS=${WRAP_DIR}/xorrisofs DMG=${WRAP_DIR}/dmg"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="ar ranlib date dmg xorrisofs"
 
@@ -139,7 +140,7 @@ script: |
     cp ${BASEPREFIX}/${i}/native/bin/dmg unsigned-app-${i}
     mv dist unsigned-app-${i}
     pushd unsigned-app-${i}
-    find . | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-osx-unsigned.tar.gz
+    find . | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | pigz -9n > ${OUTDIR}/${DISTNAME}-osx-unsigned.tar.gz
     popd
 
     make deploy OSX_DMG="${OUTDIR}/${DISTNAME}-osx-unsigned.dmg"
@@ -148,7 +149,7 @@ script: |
     find . -name "lib*.la" -delete
     find . -name "lib*.a" -delete
     rm -rf ${DISTNAME}/lib/pkgconfig
-    find ${DISTNAME} | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
+    find ${DISTNAME} | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | pigz -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
     cd ../../
   done
 
