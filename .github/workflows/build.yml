@@ -60,8 +60,6 @@ jobs:
         run: wget -N https://bitcoincore.org/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz -O ${GITIAN_DIR}/inputs/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz
 
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Detect suite
         id: detect
@@ -70,8 +68,10 @@ jobs:
           DESCRIPTOR=$PWD/contrib/gitian-descriptors/gitian-${{ matrix.os }}.yml
           NAME=$(yq e '.name' ${DESCRIPTOR})
           COMMIT_OR_TAG=$(git log --format="%H" -n 1)
+          FETCH_TAGS=""
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             COMMIT_OR_TAG=$(echo ${GITHUB_REF/refs\/tags\//})
+            FETCH_TAGS="--fetch-tags"
           fi
           echo "descriptor=${DESCRIPTOR}" >> $GITHUB_OUTPUT
           echo "name=${NAME}" >> $GITHUB_OUTPUT
@@ -80,6 +80,7 @@ jobs:
           echo "architecture=$(yq e '.architectures[0]' ${DESCRIPTOR})" >> $GITHUB_OUTPUT
           echo "build-dir=${PWD}" >> $GITHUB_OUTPUT
           echo "commit-or-tag=${COMMIT_OR_TAG}" >> $GITHUB_OUTPUT
+          echo "fetch-tags=${FETCH_TAGS}" >> $GITHUB_OUTPUT
 
       - name: Build gitian base image
         run: |
@@ -106,7 +107,7 @@ jobs:
         working-directory: ${{ env.GITIAN_DIR }}
         run: |
           sed -i "s/^\ \ \(HOSTS=\"\).*/\ \ \1${{ matrix.host }}\"/g" ${{ steps.detect.outputs.descriptor }}
-          ./bin/gbuild -j $MAKEJOBS --fetch-tags --commit peercoin=${{ steps.detect.outputs.commit-or-tag }} --url peercoin=${{ steps.detect.outputs.build-dir }} ${{ steps.detect.outputs.descriptor }}
+          ./bin/gbuild -j $MAKEJOBS ${{ steps.detect.outputs.fetch-tags }} --commit peercoin=${{ steps.detect.outputs.commit-or-tag }} --url peercoin=${{ github.server_url }}/${{ github.repository }} ${{ steps.detect.outputs.descriptor }}
           cp -r ${GITIAN_DIR}/build/out/* ${{ steps.detect.outputs.build-dir }}/
 
       - name: Get short SHA
@@ -267,7 +268,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs: [binary, appimage]
-    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-') }}
     steps:
       - name: Detect env
         id: detect
@@ -343,7 +344,7 @@ jobs:
 
       - name: Check latest
         id: detect-publish-latest
-        if: ${{ steps.detect.outputs.tag-name != 'noop' && github.ref == 'refs/heads/develop' }}
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-')) }}
         run: |
           PUBLISH=noop
           git fetch origin +refs/tags/latest:refs/tags/latest
@@ -359,7 +360,7 @@ jobs:
           git tag -l --format='%(contents)' ${GITHUB_REF/refs\/tags\//} > ${{ github.workspace }}-CHANGELOG.txt
 
       - uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-        if: ${{ steps.detect.outputs.tag-name != 'noop' && steps.detect-publish-latest.outputs.publish == 'op' && github.ref == 'refs/heads/develop' }}
+        if: ${{ steps.detect.outputs.tag-name != 'noop' && steps.detect-publish-latest.outputs.publish == 'op' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-')) }}
         with:
           repo_token: ${{ github.token }}
           automatic_release_tag: ${{ steps.detect.outputs.tag-name }}
