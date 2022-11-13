@@ -254,13 +254,13 @@ jobs:
           tar xzf peercoin-${{ steps.detect.outputs.sha8 }}-${{ matrix.name }}-linux/peercoin-*-${{ matrix.host }}.tar.gz -C AppDir --strip-components=1
           find AppDir/bin ! -name 'peercoin-qt' -type f -exec rm -f {} +
           VERSION=${{ steps.detect.outputs.tag-name }} SOURCES_REPO=${{ matrix.sources_repo }} APT_ARCH=${{ matrix.apt_arch }} BUILD_ARCH=${{ matrix.name }} appimage-builder --skip-tests
-          mv *.AppImage* ${{ steps.detect.outputs.build-dir }}/
+          mv *.AppImage ${{ steps.detect.outputs.build-dir }}/
 
       - uses: actions/upload-artifact@v3
         with:
           name: peercoin-appimage-${{ steps.detect.outputs.tag-name }}-${{ matrix.name }}
           path: |
-            *.AppImage*
+            *.AppImage
           retention-days: 5
   release:
     runs-on: ubuntu-20.04
