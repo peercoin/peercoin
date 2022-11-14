@@ -289,7 +289,7 @@ public:
      * Add a coin. Set possible_overwrite to true if an unspent version may
      * already exist in the cache.
      */
-    void AddCoin(const COutPoint& outpoint, Coin&& coin, bool possible_overwrite, uint32_t nTime = 0);
+    void AddCoin(const COutPoint& outpoint, Coin&& coin, bool possible_overwrite, bool skipZeroValue = false);
 
     /**
      * Emplace a coin into cacheCoins without performing any checks, marking
@@ -350,7 +350,7 @@ private:
 //! an overwrite.
 // TODO: pass in a boolean to limit these possible overwrites to known
 // (pre-BIP34) cases.
-void AddCoins(CCoinsViewCache& cache, const CTransaction& tx, int nHeight, bool check = false, uint32_t nTime = 0);
+void AddCoins(CCoinsViewCache& cache, const CTransaction& tx, int nHeight, bool check = false, bool skipZeroValue = false);
 
 //! Utility function to find any unspent output with a given txid.
 //! This function can be quite expensive because in the event of a transaction
