@@ -800,7 +800,7 @@ void CTxMemPool::check(const CCoinsViewCache& active_coins_tip, int64_t spendhei
         assert(!tx.IsCoinBase());
         assert(Consensus::CheckTxInputs(tx, dummy_state, mempoolDuplicate, spendheight, txfee, Params().GetConsensus(), tx.nTime ? tx.nTime : GetAdjustedTime()));
         for (const auto& input: tx.vin) mempoolDuplicate.SpendCoin(input.prevout);
-        AddCoins(mempoolDuplicate, tx, std::numeric_limits<int>::max());
+        AddCoins(mempoolDuplicate, tx, std::numeric_limits<int>::max(), false, tx.nTime ? tx.nTime : GetAdjustedTime());
     }
     for (auto it = mapNextTx.cbegin(); it != mapNextTx.cend(); it++) {
         uint256 hash = it->second->GetHash();

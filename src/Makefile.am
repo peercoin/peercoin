@@ -557,6 +557,7 @@ libbitcoin_common_a_SOURCES = \
   deploymentinfo.cpp \
   external_signer.cpp \
   init/common.cpp \
+  kernel.cpp \
   key.cpp \
   key_io.cpp \
   merkleblock.cpp \

@@ -8,6 +8,7 @@
 #include <node/psbt.h>
 #include <policy/policy.h>
 #include <policy/settings.h>
+#include <timedata.h>
 #include <tinyformat.h>
 
 #include <numeric>
@@ -131,7 +132,7 @@ PSBTAnalysis AnalyzePSBT(PartiallySignedTransaction psbtx)
                 mtx.vin[i].scriptSig = input.final_script_sig;
                 mtx.vin[i].scriptWitness = input.final_script_witness;
                 newcoin.nHeight = 1;
-                view.AddCoin(psbtx.tx->vin[i].prevout, std::move(newcoin), true);
+                view.AddCoin(psbtx.tx->vin[i].prevout, std::move(newcoin), true, mtx.nTime ? mtx.nTime : GetAdjustedTime());
             }
         }
 
