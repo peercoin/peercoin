@@ -413,7 +413,6 @@ libbitcoin_node_a_SOURCES = \
   torcontrol.cpp \
   txdb.cpp \
   txmempool.cpp \
-  txmempool_entry.cpp \
   txorphanage.cpp \
   txrequest.cpp \
   validation.cpp \
