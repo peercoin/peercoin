@@ -24,6 +24,7 @@
 #include <primitives/transaction.h>
 #include <random.h>
 #include <sync.h>
+#include <txmempool_entry.h>
 #include <util/epochguard.h>
 #include <util/hasher.h>
 
@@ -39,18 +40,6 @@ extern RecursiveMutex cs_main;
 
 /** Fake height value used in Coin to signify they are only in the memory pool (since 0.8) */
 static const uint32_t MEMPOOL_HEIGHT = 0x7FFFFFFF;
-
-struct LockPoints {
-    // Will be set to the blockchain height and median time past
-    // values that would be necessary to satisfy all relative locktime
-    // constraints (BIP68) of this tx given our view of block chain history
-    int height{0};
-    int64_t time{0};
-    // As long as the current chain descends from the highest height block
-    // containing one of the inputs used in the calculation, then the cached
-    // values are still valid even after a reorg.
-    CBlockIndex* maxInputBlock{nullptr};
-};
 
 /**
  * Test whether the LockPoints height and time are still valid on the current chain

@@ -257,6 +257,7 @@ BITCOIN_CORE_H = \
   torcontrol.h \
   txdb.h \
   txmempool.h \
+  txmempool_entry.h \
   txorphanage.h \
   txrequest.h \
   undo.h \
@@ -412,6 +413,7 @@ libbitcoin_node_a_SOURCES = \
   torcontrol.cpp \
   txdb.cpp \
   txmempool.cpp \
+  txmempool_entry.cpp \
   txorphanage.cpp \
   txrequest.cpp \
   validation.cpp \
