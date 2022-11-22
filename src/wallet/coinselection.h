@@ -107,6 +107,8 @@ public:
         assert(effective_value.has_value());
         return effective_value.value();
     }
+
+    bool HasEffectiveValue() const { return effective_value.has_value(); }
 };
 
 /** Parameters for one iteration of Coin Selection. */
