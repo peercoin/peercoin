@@ -72,9 +72,9 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QRect rectIcon(QPoint(40,30), requiredSize);
     pixPaint.drawPixmap(rectIcon, icon);
 
-    QRect rectAvatar(QPoint(75,105), QSize(718/2,523/2));
+    QRect rectAvatar(QPoint(15,125), QSize(853/2,598/2));
 
-    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/tardigrade"));
+    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/ladybug"));
 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));

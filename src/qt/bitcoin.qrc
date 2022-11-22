@@ -55,7 +55,7 @@
     <qresource prefix="/images">
         <file alias="logo">res/images/logo.png</file>
         <file alias="logomask">res/images/logomask.png</file>
-        <file alias="tardigrade">res/images/tardigrade.png</file>
+        <file alias="ladybug">res/images/ladybug.png</file>
         <file alias="transparent">res/images/transparent-background.png</file>
     </qresource>
     <qresource prefix="/animation">
