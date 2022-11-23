@@ -3101,7 +3101,7 @@ void CChainState::ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pi
     pindexNew->nDataPos = pos.nPos;
     pindexNew->nUndoPos = 0;
     pindexNew->nStatus |= BLOCK_HAVE_DATA;
-    if (IsBTC16BIPsEnabled(pindexNew->nTime)) {
+    if (pindexNew->pprev && IsBTC16BIPsEnabled(pindexNew->pprev->nTime)) {
         pindexNew->nStatus |= BLOCK_OPT_WITNESS;
     }
     pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
@@ -4010,7 +4010,7 @@ bool CChainState::NeedsRedownload() const
     // At and above m_params.SegwitHeight, segwit consensus rules must be validated
     CBlockIndex* block{m_chain.Tip()};
 
-    while (block != nullptr && IsBTC16BIPsEnabled(block->nTime)) {
+    while (block != nullptr && block->pprev && IsBTC16BIPsEnabled(block->pprev->nTime)) {
         if (!(block->nStatus & BLOCK_OPT_WITNESS)) {
             // block is insufficiently validated for a segwit client
             return true;
