@@ -468,6 +468,7 @@ static RPCHelpMan importcoinstake()
                 },
                 RPCResult{RPCResult::Type::OBJ, "", "", {
                     {RPCResult::Type::STR, "txid", "transaction id if import is successful."},
+                    {RPCResult::Type::NUM, "nTime", "timestamp when coinstake is due to mint."},
                 }},
                 RPCExamples{
                     HelpExampleCli("importcoinstake", "03000000")
@@ -512,7 +513,10 @@ static RPCHelpMan importcoinstake()
         // add to in memory structure
         pwallet->m_coinstakes[timestamp] = tx;
     }
-    return tx->GetHash().GetHex();
+    UniValue result(UniValue::VOBJ);
+    result.pushKV("txid", tx->GetHash().GetHex());
+    result.pushKV("nTime", int(tx->nTime));
+    return result;
 },
     };
 }
