@@ -478,8 +478,6 @@ static RPCHelpMan importcoinstake()
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
 
-    EnsureWalletIsUnlocked(*pwallet);
-
     RPCTypeCheck(request.params, {
         UniValue::VSTR,
         UniValue::VNUM
@@ -558,8 +556,6 @@ static RPCHelpMan listminting()
     WalletContext& context = EnsureWalletContext(request.context);
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
-
-    EnsureWalletIsUnlocked(*pwallet);
 
     RPCTypeCheck(request.params, {
         UniValue::VNUM
