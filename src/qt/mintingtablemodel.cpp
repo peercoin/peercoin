@@ -296,7 +296,7 @@ MintingTableModel::MintingTableModel(WalletModel *parent) :
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateAge()));
-    timer->start(MODEL_UPDATE_DELAY);
+    timer->start(MODEL_UPDATE_DELAY*1000);
 
     connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
     m_handler_transaction_changed = walletModel->wallet().handleTransactionChanged(std::bind(NotifyTransactionChanged, this, std::placeholders::_1, std::placeholders::_2));

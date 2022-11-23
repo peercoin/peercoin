@@ -11,7 +11,7 @@
 using namespace std::chrono_literals;
 
 /* A delay between model updates */
-static constexpr auto MODEL_UPDATE_DELAY{250ms};
+static constexpr auto MODEL_UPDATE_DELAY{1000ms};
 
 /* A delay between shutdown pollings */
 static constexpr auto SHUTDOWN_POLLING_DELAY{200ms};
