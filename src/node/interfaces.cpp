@@ -15,13 +15,14 @@
 #include <interfaces/handler.h>
 #include <interfaces/node.h>
 #include <interfaces/wallet.h>
+#include <kernel/chain.h>
+#include <kernel/mempool_entry.h>
 #include <mapport.h>
 #include <net.h>
 #include <net_processing.h>
 #include <netaddress.h>
 #include <netbase.h>
 #include <node/blockstorage.h>
-#include <kernel/chain.h>
 #include <node/coin.h>
 #include <node/context.h>
 #include <node/transaction.h>
@@ -36,7 +37,6 @@
 #include <support/allocators/secure.h>
 #include <sync.h>
 #include <txmempool.h>
-#include <txmempool_entry.h>
 #include <uint256.h>
 #include <univalue.h>
 #include <util/check.h>

@@ -24,7 +24,6 @@
 #include <primitives/transaction.h>
 #include <random.h>
 #include <sync.h>
-#include <txmempool_entry.h>
 #include <util/epochguard.h>
 #include <util/hasher.h>
 
