@@ -196,7 +196,7 @@ public:
     explicit BerkeleyCursor(BerkeleyDatabase& database);
     ~BerkeleyCursor() override;
 
-    bool Next(CDataStream& key, CDataStream& value, bool& complete) override;
+    Status Next(CDataStream& key, CDataStream& value) override;
 };
 
 /** RAII class that provides access to a Berkeley database */
