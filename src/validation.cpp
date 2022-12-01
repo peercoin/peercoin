@@ -1697,6 +1697,8 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         // exactly.
         for (size_t o = 0; o < tx.vout.size(); o++) {
             if (!tx.vout[o].scriptPubKey.IsUnspendable()) {
+                if (IsProtocolV12(block.nTime) && !tx.vout[o].nValue)
+                    continue;
                 COutPoint out(hash, o);
                 Coin coin;
                 bool is_spent = view.SpendCoin(out, &coin);
