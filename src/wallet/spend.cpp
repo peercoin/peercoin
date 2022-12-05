@@ -8,6 +8,7 @@
 #include <interfaces/chain.h>
 #include <numeric>
 #include <policy/policy.h>
+#include <primitives/transaction.h>
 #include <script/signingprovider.h>
 #include <timedata.h>
 #include <util/check.h>
@@ -995,7 +996,10 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     if (nChangePosInOut != -1 && fee_needed < current_fee) {
         auto& change = txNew.vout.at(nChangePosInOut);
         change.nValue += current_fee - fee_needed;
-        current_fee = fee_needed;
+        current_fee = result->GetSelectedValue() - CalculateOutputValue(txNew);
+        if (fee_needed != current_fee) {
+            return util::Error{Untranslated(STR_INTERNAL_BUG("Change adjustment: Fee needed != fee paid"))};
+        }
     }
 
     // Reduce output values for subtractFeeFromAmount
@@ -1031,7 +1035,16 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
             }
             ++i;
         }
-        current_fee = fee_needed;
+        current_fee = result->GetSelectedValue() - CalculateOutputValue(txNew);
+        if (fee_needed != current_fee) {
+            return util::Error{Untranslated(STR_INTERNAL_BUG("SFFO: Fee needed != fee paid"))};
+        }
+    }
+
+    // fee_needed should now always be less than or equal to the current fees that we pay.
+    // If it is not, it is a bug.
+    if (fee_needed > current_fee) {
+        return util::Error{Untranslated(STR_INTERNAL_BUG("Fee needed > fee paid"))};
     }
 
     // Give up if change keypool ran out and change is required
