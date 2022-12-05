@@ -795,7 +795,6 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     AssertLockHeld(wallet.cs_wallet);
 
     // out variables, to be packed into returned result structure
-    CAmount nFeeRet;
     int nChangePosInOut = change_pos;
 
     FastRandomContext rng_fast;
@@ -988,20 +987,20 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
 
     // The only time that fee_needed should be less than the amount available for fees (in change_and_fee - change_amount) is when
     // we are subtracting the fee from the outputs. If this occurs at any other time, it is a bug.
-    if (!coin_selection_params.m_subtract_fee_outputs && fee_needed > nFeeRet) {
+    if (!coin_selection_params.m_subtract_fee_outputs && fee_needed > current_fee) {
         return util::Error{Untranslated(STR_INTERNAL_BUG("Fee needed > fee paid"))};
     }
 
     // If there is a change output and we overpay the fees then increase the change to match the fee needed
-    if (nChangePosInOut != -1 && fee_needed < nFeeRet) {
+    if (nChangePosInOut != -1 && fee_needed < current_fee) {
         auto& change = txNew.vout.at(nChangePosInOut);
-        change.nValue += nFeeRet - fee_needed;
-        nFeeRet = fee_needed;
+        change.nValue += current_fee - fee_needed;
+        current_fee = fee_needed;
     }
 
     // Reduce output values for subtractFeeFromAmount
     if (coin_selection_params.m_subtract_fee_outputs) {
-        CAmount to_reduce = fee_needed - nFeeRet;
+        CAmount to_reduce = fee_needed - current_fee;
         int i = 0;
         bool fFirst = true;
         for (const auto& recipient : vecSend)
@@ -1032,7 +1031,7 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
             }
             ++i;
         }
-        nFeeRet = fee_needed;
+        current_fee = fee_needed;
     }
 
     // Give up if change keypool ran out and change is required
