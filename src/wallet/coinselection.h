@@ -8,6 +8,8 @@
 #include <consensus/amount.h>
 #include <primitives/transaction.h>
 #include <random.h>
+#include <util/system.h>
+#include <util/check.h>
 
 #include <optional>
 
@@ -272,6 +274,17 @@ private:
     std::optional<CAmount> m_waste;
     /** Total weight of the selected inputs */
     int m_weight{0};
+
+    template<typename T>
+    void InsertInputs(const T& inputs)
+    {
+        // Store sum of combined input sets to check that the results have no shared UTXOs
+        const size_t expected_count = m_selected_inputs.size() + inputs.size();
+        util::insert(m_selected_inputs, inputs);
+        if (m_selected_inputs.size() != expected_count) {
+            throw std::runtime_error(STR_INTERNAL_BUG("Shared UTXOs among selection results"));
+        }
+    }
 
 public:
     explicit SelectionResult(const CAmount target, SelectionAlgorithm algo)
