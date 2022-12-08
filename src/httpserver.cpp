@@ -204,7 +204,8 @@ std::string RequestMethodString(HTTPRequest::RequestMethod m)
         break;
     default:
         return "unknown";
-    }
+    } // no default case, so the compiler can warn about missing cases
+    assert(false);
 }
 
 /** HTTP request callback */
