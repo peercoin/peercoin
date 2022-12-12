@@ -414,7 +414,6 @@ static RPCHelpMan setmocktime()
     // ensure all call sites of GetTime() are accessing this safely.
     LOCK(cs_main);
 
-    RPCTypeCheck(request.params, {UniValue::VNUM});
     const int64_t time{request.params[0].getInt<int64_t>()};
     if (time < 0) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Mocktime cannot be negative: %s.", time));
@@ -468,8 +467,6 @@ static RPCHelpMan mockscheduler()
         throw std::runtime_error("mockscheduler is for regression testing (-regtest mode) only");
     }
 
-    // check params are valid values
-    RPCTypeCheck(request.params, {UniValue::VNUM});
     int64_t delta_seconds = request.params[0].getInt<int64_t>();
     if (delta_seconds <= 0 || delta_seconds > 3600) {
         throw std::runtime_error("delta_time must be between 1 and 3600 seconds (1 hr)");

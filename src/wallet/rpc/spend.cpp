@@ -268,7 +268,11 @@ RPCHelpMan sendmany()
                 "\nSend multiple times. Amounts are double-precision floating point numbers." +
         HELP_REQUIRING_PASSPHRASE,
                 {
-                    {"dummy", RPCArg::Type::STR, RPCArg::Optional::NO, "Must be set to \"\" for backwards compatibility.", RPCArgOptions{.oneline_description="\"\""}},
+                    {"dummy", RPCArg::Type::STR, RPCArg::Optional::NO, "Must be set to \"\" for backwards compatibility.",
+                     RPCArgOptions{
+                         .skip_type_check = true,
+                         .oneline_description = "\"\"",
+                     }},
                     {"amounts", RPCArg::Type::OBJ_USER_KEYS, RPCArg::Optional::NO, "The addresses and amounts",
                         {
                             {"address", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The peercoin address is the key, the numeric amount (can be string) in " + CURRENCY_UNIT + " is the value"},
@@ -712,7 +716,10 @@ RPCHelpMan fundrawtransaction()
                              },
                         },
                         FundTxDoc()),
-                        RPCArgOptions{.oneline_description="options"}},
+                        RPCArgOptions{
+                            .skip_type_check = true,
+                            .oneline_description = "options",
+                        }},
                     {"iswitness", RPCArg::Type::BOOL, RPCArg::DefaultHint{"depends on heuristic tests"}, "Whether the transaction hex is a serialized witness transaction.\n"
                         "If iswitness is not present, heuristic tests will be used in decoding.\n"
                         "If true, only witness deserialization will be tried.\n"
@@ -743,8 +750,6 @@ RPCHelpMan fundrawtransaction()
 {
     std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
     if (!pwallet) return UniValue::VNULL;
-
-    RPCTypeCheck(request.params, {UniValue::VSTR, UniValueType(), UniValue::VBOOL});
 
     // parse hex string from parameter
     CMutableTransaction tx;
@@ -834,8 +839,6 @@ RPCHelpMan signrawtransactionwithwallet()
     const std::shared_ptr<const CWallet> pwallet = GetWalletForJSONRPCRequest(request);
     if (!pwallet) return UniValue::VNULL;
 
-    RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VARR, UniValue::VSTR}, true);
-
     CMutableTransaction mtx;
     if (!DecodeHexTx(mtx, request.params[0].get_str())) {
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed. Make sure the tx has at least one input.");
@@ -889,7 +892,7 @@ RPCHelpMan send()
                         },
                     },
                 },
-            },
+                RPCArgOptions{.skip_type_check = true}},
             {"conf_target", RPCArg::Type::NUM, RPCArg::DefaultHint{"wallet -txconfirmtarget"}, "Confirmation target in blocks"},
             {"fee_rate", RPCArg::Type::AMOUNT, RPCArg::DefaultHint{"not set, fall back to wallet fee estimation"}, "Specify a fee rate in " + CURRENCY_ATOM + "/vB."},
             {"options", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED_NAMED_ARG, "",
@@ -959,15 +962,6 @@ RPCHelpMan send()
         },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
         {
-            RPCTypeCheck(request.params, {
-                UniValueType(), // outputs (ARR or OBJ, checked later)
-                UniValue::VNUM, // conf_target
-                UniValue::VSTR, // estimate_mode
-                UniValueType(), // fee_rate, will be checked by AmountFromValue() in SetFeeEstimateMode()
-                UniValue::VOBJ, // options
-                }, true
-            );
-
             std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
             if (!pwallet) return UniValue::VNULL;
 
@@ -1069,15 +1063,6 @@ RPCHelpMan sendall()
         },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
         {
-            RPCTypeCheck(request.params, {
-                UniValue::VARR, // recipients
-                UniValue::VNUM, // conf_target
-                UniValue::VSTR, // estimate_mode
-                UniValueType(), // fee_rate, will be checked by AmountFromValue() in SetFeeEstimateMode()
-                UniValue::VOBJ, // options
-                }, true
-            );
-
             std::shared_ptr<CWallet> const pwallet{GetWalletForJSONRPCRequest(request)};
             if (!pwallet) return UniValue::VNULL;
             // Make sure the results are valid at least up to the most recent block
@@ -1292,8 +1277,6 @@ RPCHelpMan walletprocesspsbt()
     // the user could have gotten from another RPC command prior to now
     wallet.BlockUntilSyncedToCurrentChain();
 
-    RPCTypeCheck(request.params, {UniValue::VSTR});
-
     // Unserialize the transaction
     PartiallySignedTransaction psbtx;
     std::string error;
@@ -1368,7 +1351,7 @@ RPCHelpMan walletcreatefundedpsbt()
                                 },
                             },
                         },
-                    },
+                     RPCArgOptions{.skip_type_check = true}},
                     {"locktime", RPCArg::Type::NUM, RPCArg::Default{0}, "Raw locktime. Non-0 value also locktime-activates inputs"},
                     {"timestamp", RPCArg::Type::NUM, RPCArg::Default{0}, "Transaction timestamp"},
                     {"options", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED_NAMED_ARG, "",
