@@ -386,7 +386,6 @@ void CTxMemPoolEntry::UpdateAncestorState(int64_t modifySize, CAmount modifyFee,
 CTxMemPool::CTxMemPool(int check_ratio)
     : m_check_ratio(check_ratio)
 {
-    _clear(); //lock free clear
 }
 
 bool CTxMemPool::isSpent(const COutPoint& outpoint) const
