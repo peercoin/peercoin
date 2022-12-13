@@ -138,6 +138,9 @@ private:
     // Configuration parameters for the block size
     unsigned int nBlockMaxWeight;
 
+    // Whether to call TestBlockValidity() at the end of CreateNewBlock().
+    const bool test_block_validity;
+
     // Information on the current status of the block
     uint64_t nBlockWeight;
     uint64_t nBlockTx;
