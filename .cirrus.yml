@@ -252,6 +252,7 @@ task:
     FILE_ENV: "./ci/test/00_setup_env_native_msan.sh"
     MAKEJOBS: "-j4"  # Avoid excessive memory use due to MSan
 
+# Memory sanitizers
 task:
   name: '[ASan + LSan + UBSan + integer, no depends, USDT] [jammy]'
   << : *GLOBAL_TASK_TEMPLATE
