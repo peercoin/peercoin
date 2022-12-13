@@ -7,6 +7,7 @@
 
 #include <index/base.h>
 #include <index/disktxpos.h>
+#include <primitives/block.h>
 
 /**
  * TxIndex is used to look up transactions included in the blockchain by hash.
@@ -44,6 +45,7 @@ public:
     bool FindTx(const uint256& tx_hash, uint256& block_hash, CTransactionRef& tx) const;
 
     bool FindTxPosition(const uint256& txid, CDiskTxPos& pos) const;
+    std::map<uint256,std::pair<CBlockHeader,CTransactionRef>> cachedTxs;
 };
 
 /// The global transaction index, used in GetTransaction. May be null.

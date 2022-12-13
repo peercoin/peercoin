@@ -4648,37 +4648,43 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
             return false;  // Transaction timestamp violation
 
         CDiskTxPos postx;
+        CBlockHeader header;
         CTransactionRef txPrev;
-        if (g_txindex->FindTxPosition(prevout.hash, postx))
-        {
-            CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
-            CBlockHeader header;
-            try {
-                file >> header;
-                fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
-                file >> txPrev;
-            } catch (std::exception &e) {
-                return error("%s() : deserialize or I/O error in GetCoinAge()", __PRETTY_FUNCTION__);
-            }
-            if (txPrev->GetHash() != prevout.hash)
-                return error("%s() : txid mismatch in GetCoinAge()", __PRETTY_FUNCTION__);
-
-            if (header.GetBlockTime() + Params().GetConsensus().nStakeMinAge > nTimeTx)
-                continue; // only count coins meeting min age requirement
-
-            int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
-            int nEffectiveAge = nTimeTx-(txPrev->nTime ? txPrev->nTime : header.GetBlockTime());
-
-            if (!isTrueCoinAge || IsProtocolV09(nTimeTx))
-                nEffectiveAge = std::min(nEffectiveAge, 365 * 24 * 60 * 60);
-
-            bnCentSecond += arith_uint256(nValueIn) * nEffectiveAge / CENT;
-
-            if (gArgs.GetBoolArg("-printcoinage", false))
-                LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, nEffectiveAge, bnCentSecond.ToString());
+        auto it = g_txindex->cachedTxs.find(prevout.hash);
+        if (it != g_txindex->cachedTxs.end()) {
+            header = it->second.first;
+            txPrev = it->second.second;
+        } else {
+            if (g_txindex->FindTxPosition(prevout.hash, postx)) {
+                CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
+                try {
+                    file >> header;
+                    fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
+                    file >> txPrev;
+                } catch (std::exception &e) {
+                    return error("%s() : deserialize or I/O error in GetCoinAge()", __PRETTY_FUNCTION__);
+                }
+            } else
+                return error("%s() : tx missing in tx index in GetCoinAge()", __PRETTY_FUNCTION__);
+            g_txindex->cachedTxs[prevout.hash] = std::pair(header,txPrev);
         }
-        else
-            return error("%s() : tx missing in tx index in GetCoinAge()", __PRETTY_FUNCTION__);
+
+        if (txPrev->GetHash() != prevout.hash)
+            return error("%s() : txid mismatch in GetCoinAge()", __PRETTY_FUNCTION__);
+
+        if (header.GetBlockTime() + Params().GetConsensus().nStakeMinAge > nTimeTx)
+            continue; // only count coins meeting min age requirement
+
+        int64_t nValueIn = txPrev->vout[txin.prevout.n].nValue;
+        int nEffectiveAge = nTimeTx-(txPrev->nTime ? txPrev->nTime : header.GetBlockTime());
+
+        if (!isTrueCoinAge || IsProtocolV09(nTimeTx))
+            nEffectiveAge = std::min(nEffectiveAge, 365 * 24 * 60 * 60);
+
+        bnCentSecond += arith_uint256(nValueIn) * nEffectiveAge / CENT;
+
+        if (gArgs.GetBoolArg("-printcoinage", false))
+            LogPrintf("coin age nValueIn=%-12lld nTimeDiff=%d bnCentSecond=%s\n", nValueIn, nEffectiveAge, bnCentSecond.ToString());
     }
 
     arith_uint256 bnCoinDay = bnCentSecond * CENT / COIN / (24 * 60 * 60);

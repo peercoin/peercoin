@@ -608,7 +608,11 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
     // Read txPrev and header of its block
     CBlockHeader header;
     CTransactionRef txPrev;
-    {
+    auto it = g_txindex->cachedTxs.find(txin.prevout.hash);
+    if (it != g_txindex->cachedTxs.end()) {
+        header = it->second.first;
+        txPrev = it->second.second;
+    } else {
         CAutoFile file(node::OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
         try {
             file >> header;
@@ -617,9 +621,11 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
         } catch (std::exception &e) {
             return error("%s() : deserialize or I/O error in CheckProofOfStake()", __PRETTY_FUNCTION__);
         }
-        if (txPrev->GetHash() != txin.prevout.hash)
-            return error("%s() : txid mismatch in CheckProofOfStake()", __PRETTY_FUNCTION__);
+        //g_txindex->cachedTxs[txin.prevout.hash] = std::pair(header,txPrev);
     }
+
+    if (txPrev->GetHash() != txin.prevout.hash)
+        return error("%s() : txid mismatch in CheckProofOfStake()", __PRETTY_FUNCTION__);
 
     // Verify signature
     {

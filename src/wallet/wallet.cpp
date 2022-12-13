@@ -3248,16 +3248,23 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         if (!g_txindex->FindTxPosition(pcoin.outpoint.hash, postx))
             continue;
 
-        // Read block header
-        CAutoFile file(node::OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
         CBlockHeader header;
         CTransactionRef tx;
-        try {
-            file >> header;
-            fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
-            file >> tx;
-        } catch (std::exception &e) {
-            return error("%s() : deserialize or I/O error in CreateCoinStake()", __PRETTY_FUNCTION__);
+        auto it = g_txindex->cachedTxs.find(pcoin.outpoint.hash);
+        if (it != g_txindex->cachedTxs.end()) {
+            header = it->second.first;
+            tx = it->second.second;
+        } else {
+            try {
+                    // Read block header
+                    CAutoFile file(node::OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
+                    file >> header;
+                    fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
+                    file >> tx;
+                    g_txindex->cachedTxs[pcoin.outpoint.hash]=std::pair(header,tx);
+                } catch (std::exception &e) {
+                    return error("%s() : deserialize or I/O error in CreateCoinStake()", __PRETTY_FUNCTION__);
+                }
         }
 
         static int nMaxStakeSearchInterval = 60;
