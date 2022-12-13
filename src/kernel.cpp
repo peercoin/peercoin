@@ -145,9 +145,16 @@ bool IsProtocolV10(unsigned int nTime)
 }
 
 // Whether a given timestamp is subject to new v10 protocol
-bool IsProtocolV12(unsigned int nTime)
+bool IsProtocolV12(const CBlockIndex* pindexPrev)
 {
-  return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime));
+  if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime))
+      return false;
+
+  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(4, pindexPrev, 900, 1000)) ||
+      (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(4, pindexPrev, 90, 100)))
+    return true;
+
+  return false;
 }
 
 // Get the last stake modifier and its generation time from a given block

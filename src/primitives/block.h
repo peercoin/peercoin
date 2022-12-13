@@ -32,7 +32,7 @@ public:
     uint32_t nFlags;
     // peercoin: Used in CheckProofOfStake().
     static const int32_t NORMAL_SERIALIZE_SIZE=80;
-    static const int32_t CURRENT_VERSION=3;
+    static const int32_t CURRENT_VERSION=4;
 
     CBlockHeader()
     {
