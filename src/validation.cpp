@@ -3845,6 +3845,12 @@ bool CVerifyDB::VerifyDB(
         if (pindex->nHeight <= chainstate.m_chain.Height() - nCheckDepth) {
             break;
         }
+        if (is_snapshot_cs && !(pindex->nStatus & BLOCK_HAVE_DATA)) {
+            // If running under an assumeutxo snapshot, only go
+            // back as far as we have data.
+            LogPrintf("VerifyDB(): block verification stopping at height %d (no data)\n", pindex->nHeight);
+            break;
+        }
         CBlock block;
         // check level 0: read from disk
         if (!ReadBlockFromDisk(block, pindex, consensus_params)) {
