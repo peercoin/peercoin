@@ -219,7 +219,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
         return AmountExceedsBalance;
     }
 
-    {
+    try {
         CAmount nFeeRequired = 0;
         int nChangePosRet = -1;
 
