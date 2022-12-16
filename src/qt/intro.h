@@ -64,9 +64,9 @@ private Q_SLOTS:
 
 private:
     Ui::Intro *ui;
-    QThread *thread;
+    QThread* thread{nullptr};
     QMutex mutex;
-    bool signalled;
+    bool signalled{false};
     QString pathToCheck;
     const int64_t m_blockchain_size_gb;
     //! Total required space (in GB).
