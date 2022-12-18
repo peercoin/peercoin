@@ -19,16 +19,6 @@ class Node;
 extern const char *DEFAULT_GUI_PROXY_HOST;
 static constexpr uint16_t DEFAULT_GUI_PROXY_PORT = 9050;
 
-/**
- * Convert configured prune target MiB to displayed GB. Round up to avoid underestimating max disk usage.
- */
-static inline int PruneMiBtoGB(int64_t mib) { return (mib * 1024 * 1024 + GB_BYTES - 1) / GB_BYTES; }
-
-/**
- * Convert displayed prune target GB to configured MiB. Round down so roundtrip GB -> MiB -> GB conversion is stable.
- */
-static inline int64_t PruneGBtoMiB(int gb) { return gb * GB_BYTES / 1024 / 1024; }
-
 /** Interface from Qt to configuration data structure for Bitcoin client.
    To Qt, the options are presented as a list with the different options
    laid out vertically.
@@ -63,8 +53,6 @@ public:
         SubFeeFromAmount,       // bool
         CheckpointEnforce,      // bool
         ThreadsScriptVerif,     // int
-        Prune,                  // bool
-        PruneSize,              // int
         DatabaseCache,          // int
         ExternalSignerPath,     // QString
         SpendZeroConfChange,    // bool
@@ -96,10 +84,6 @@ public:
     bool getSubFeeFromAmount() const { return m_sub_fee_from_amount; }
     bool getEnablePSBTControls() const { return m_enable_psbt_controls; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
-
-    /* Explicit setters */
-    void SetPruneEnabled(bool prune, bool force = false);
-    void SetPruneTargetGB(int prune_target_gb, bool force = false);
 
     /* Restart flag helper */
     void setRestartRequired(bool fRequired);

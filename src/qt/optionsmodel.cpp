@@ -282,31 +282,6 @@ static const QString GetDefaultProxyAddress()
     return QString("%1:%2").arg(DEFAULT_GUI_PROXY_HOST).arg(DEFAULT_GUI_PROXY_PORT);
 }
 
-void OptionsModel::SetPruneEnabled(bool prune, bool force)
-{
-    QSettings settings;
-    settings.setValue("bPrune", prune);
-    const int64_t prune_target_mib = PruneGBtoMiB(settings.value("nPruneSize").toInt());
-    std::string prune_val = prune ? ToString(prune_target_mib) : "0";
-    if (force) {
-        gArgs.ForceSetArg("-prune", prune_val);
-        return;
-    }
-    if (!gArgs.SoftSetArg("-prune", prune_val)) {
-        addOverriddenOption("-prune");
-    }
-}
-
-void OptionsModel::SetPruneTargetGB(int prune_target_gb, bool force)
-{
-    const bool prune = prune_target_gb > 0;
-    if (prune) {
-        QSettings settings;
-        settings.setValue("nPruneSize", prune_target_gb);
-    }
-    SetPruneEnabled(prune, force);
-}
-
 // read QSettings values and return them
 QVariant OptionsModel::data(const QModelIndex & index, int role) const
 {
@@ -376,10 +351,6 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return fCoinControlFeatures;
         case EnablePSBTControls:
             return settings.value("enable_psbt_controls");
-        case Prune:
-            return settings.value("bPrune");
-        case PruneSize:
-            return settings.value("nPruneSize");
         case DatabaseCache:
             return settings.value("nDatabaseCache");
         case ThreadsScriptVerif:
@@ -538,18 +509,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
         case EnablePSBTControls:
             m_enable_psbt_controls = value.toBool();
             settings.setValue("enable_psbt_controls", m_enable_psbt_controls);
-            break;
-        case Prune:
-            if (settings.value("bPrune") != value) {
-                settings.setValue("bPrune", value);
-                setRestartRequired(true);
-            }
-            break;
-        case PruneSize:
-            if (settings.value("nPruneSize") != value) {
-                settings.setValue("nPruneSize", value);
-                setRestartRequired(true);
-            }
             break;
         case DatabaseCache:
             if (settings.value("nDatabaseCache") != value) {
