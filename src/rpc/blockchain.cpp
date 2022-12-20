@@ -1389,6 +1389,9 @@ static UniValue SoftForkMajorityDesc(int version, const CBlockIndex* pindex, con
         case 4:
             activated = IsProtocolV06(pindex);
             break;
+        case 12:
+            activated = IsProtocolV12(pindex);
+            break;
     }
     rv.pushKV("status", activated);
     return rv;
@@ -1399,7 +1402,7 @@ static UniValue SoftForkDesc(const std::string &name, int version, const CBlockI
     UniValue rv(UniValue::VOBJ);
     rv.pushKV("id", name);
     rv.pushKV("version", version);
-    rv.pushKV("reject", SoftForkMajorityDesc(version, pindex, consensusParams));
+    rv.pushKV("active", SoftForkMajorityDesc(version, pindex, consensusParams));
     return rv;
 }
 
@@ -1456,6 +1459,7 @@ RPCHelpMan getblockchaininfo()
     softforks.push_back(SoftForkDesc("bip34", 2, tip, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("bip66", 3, tip, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("bip65", 4, tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("v12", 12, tip, Params().GetConsensus()));
 
 //    BIP9SoftForkDescPushBack(tip, softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     obj.pushKV("softforks", softforks);
