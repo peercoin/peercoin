@@ -75,7 +75,7 @@ jobs:
           fi
           echo "descriptor=${DESCRIPTOR}" >> $GITHUB_OUTPUT
           echo "name=${NAME}" >> $GITHUB_OUTPUT
-          echo "version=$(echo ${NAME} | grep -Eo [0-9.]+)" >> $GITHUB_OUTPUT 
+          echo "version=$(echo ${NAME} | grep -Eo [0-9.]+)" >> $GITHUB_OUTPUT
           echo "suite=$(yq e '.suites[0]' ${DESCRIPTOR})" >> $GITHUB_OUTPUT
           echo "architecture=$(yq e '.architectures[0]' ${DESCRIPTOR})" >> $GITHUB_OUTPUT
           echo "build-dir=${PWD}" >> $GITHUB_OUTPUT
@@ -240,7 +240,7 @@ jobs:
       - name: Set up environment
         working-directory: appimage
         run: |
-          pip3 install --upgrade git+https://github.com/AppImageCrafters/appimage-builder@v1.1.0
+          pip3 install --upgrade pyOpenSSL git+https://github.com/serghov/appimage-builder@776cb2531f619404abe9c3e8536fa3ba8d321dc3
 
       - name: Detect env
         id: detect
@@ -298,7 +298,7 @@ jobs:
           fi
           echo "tag-name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "release-title=${RELEASE_TITLE}" >> $GITHUB_OUTPUT
-          echo "sha8=$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_OUTPUT 
+          echo "sha8=$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_OUTPUT
 
       - name: Set up environment
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
