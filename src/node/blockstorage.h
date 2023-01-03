@@ -8,6 +8,7 @@
 #include <attributes.h>
 #include <chain.h>
 #include <fs.h>
+#include <kernel/blockmanager_opts.h>
 #include <kernel/cs_main.h>
 #include <protocol.h>
 #include <sync.h>
@@ -123,7 +124,13 @@ private:
      */
     std::unordered_map<std::string, PruneLockInfo> m_prune_locks GUARDED_BY(::cs_main);
 
+    const kernel::BlockManagerOpts m_opts;
+
 public:
+    using Options = kernel::BlockManagerOpts;
+
+    explicit BlockManager(Options opts) : m_opts{std::move(opts)} {};
+
     BlockMap m_block_index GUARDED_BY(cs_main);
 
     std::vector<CBlockIndex*> GetAllBlockIndices() EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
@@ -166,7 +173,7 @@ public:
     [[nodiscard]] bool IsPruneMode() const { return fPruneMode; }
 
     /** Attempt to stay below this number of bytes of block files. */
-    [[nodiscard]] uint64_t GetPruneTarget() const { return nPruneTarget; }
+    [[nodiscard]] uint64_t GetPruneTarget() const { return m_opts.prune_target; }
 
     [[nodiscard]] bool LoadingBlocks() const
     {
