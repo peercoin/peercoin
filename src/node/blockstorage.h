@@ -110,6 +110,8 @@ private:
      */
     bool m_check_for_pruning = false;
 
+    const bool m_prune_mode;
+
     /** Dirty block index entries. */
     std::set<CBlockIndex*> m_dirty_blockindex;
 
@@ -129,7 +131,9 @@ private:
 public:
     using Options = kernel::BlockManagerOpts;
 
-    explicit BlockManager(Options opts) : m_opts{std::move(opts)} {};
+    explicit BlockManager(Options opts)
+        : m_prune_mode{opts.prune_target > 0},
+          m_opts{std::move(opts)} {};
 
     BlockMap m_block_index GUARDED_BY(cs_main);
 
@@ -170,7 +174,7 @@ public:
     FlatFilePos SaveBlockToDisk(const CBlock& block, int nHeight, CChain& active_chain, const CChainParams& chainparams, const FlatFilePos* dbp);
 
     /** Whether running in -prune mode. */
-    [[nodiscard]] bool IsPruneMode() const { return fPruneMode; }
+    [[nodiscard]] bool IsPruneMode() const { return m_prune_mode; }
 
     /** Attempt to stay below this number of bytes of block files. */
     [[nodiscard]] uint64_t GetPruneTarget() const { return m_opts.prune_target; }
