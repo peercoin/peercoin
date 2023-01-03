@@ -525,7 +525,7 @@ BOOST_AUTO_TEST_CASE(ccoins_serialization)
     BOOST_CHECK_EQUAL(cc3.out.scriptPubKey.size(), 0U);
 
     // scriptPubKey that ends beyond the end of the stream
-    CDataStream ss4(ParseHex("000007"), SER_DISK, CLIENT_VERSION);
+    DataStream ss4{ParseHex("000007")};
     try {
         Coin cc4;
         ss4 >> cc4;
@@ -534,11 +534,11 @@ BOOST_AUTO_TEST_CASE(ccoins_serialization)
     }
 
     // Very large scriptPubKey (3*10^9 bytes) past the end of the stream
-    CDataStream tmp(SER_DISK, CLIENT_VERSION);
+    DataStream tmp{};
     uint64_t x = 3000000000ULL;
     tmp << VARINT(x);
     BOOST_CHECK_EQUAL(HexStr(tmp), "8a95c0bb00");
-    CDataStream ss5(ParseHex("00008a95c0bb00"), SER_DISK, CLIENT_VERSION);
+    DataStream ss5{ParseHex("00008a95c0bb00")};
     try {
         Coin cc5;
         ss5 >> cc5;

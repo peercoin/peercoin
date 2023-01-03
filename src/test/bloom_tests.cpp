@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize)
     filter.insert(ParseHex("b9300670b4c5366e95b2699e8b18bc75e5f729c5"));
     BOOST_CHECK_MESSAGE(filter.contains(ParseHex("b9300670b4c5366e95b2699e8b18bc75e5f729c5")), "Bloom filter doesn't contain just-inserted object (3)!");
 
-    CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
+    DataStream stream{};
     stream << filter;
 
     std::vector<uint8_t> expected = ParseHex("03614e9b050000000000000001");
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize_with_tweak)
     filter.insert(ParseHex("b9300670b4c5366e95b2699e8b18bc75e5f729c5"));
     BOOST_CHECK_MESSAGE(filter.contains(ParseHex("b9300670b4c5366e95b2699e8b18bc75e5f729c5")), "Bloom filter doesn't contain just-inserted object (3)!");
 
-    CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
+    DataStream stream{};
     stream << filter;
 
     std::vector<uint8_t> expected = ParseHex("03ce4299050000000100008001");
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     uint160 hash = pubkey.GetID();
     filter.insert(hash);
 
-    CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
+    DataStream stream{};
     stream << filter;
 
     std::vector<unsigned char> expected = ParseHex("038fc16b080000000000000001");
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_3_and_serialize)
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 
-    CDataStream merkleStream(SER_NETWORK, PROTOCOL_VERSION);
+    DataStream merkleStream{};
     merkleStream << merkleBlock;
 
     std::vector<uint8_t> expected = ParseHex("01000000c6ea48b2ceb01563ff317b7eb6b7d9c35120b16ed65119c41c1fb20000000000c89d8542ad87d6d5eac869b9c19abd4b826552ef09e45cfb5d010dbe4e192ff03a8e315008c0001c01d9ba490100000001c89d8542ad87d6d5eac869b9c19abd4b826552ef09e45cfb5d010dbe4e192ff00101");
