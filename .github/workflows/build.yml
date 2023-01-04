@@ -240,7 +240,7 @@ jobs:
       - name: Set up environment
         working-directory: appimage
         run: |
-          pip3 install --upgrade pyOpenSSL git+https://github.com/serghov/appimage-builder@776cb2531f619404abe9c3e8536fa3ba8d321dc3
+          pip3 install --upgrade pyOpenSSL git+https://github.com/AppImageCrafters/appimage-builder@3396839c9e3419f4bd726cb129e54e6da4212e48
 
       - name: Detect env
         id: detect
