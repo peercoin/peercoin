@@ -1,5 +1,7 @@
 packages:=boost openssl libevent
 
+libevent_packages = libevent
+
 qrencode_linux_packages = qrencode
 qrencode_android_packages = qrencode
 qrencode_darwin_packages = qrencode
