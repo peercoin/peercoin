@@ -91,7 +91,7 @@ BlockAssembler::BlockAssembler(Chainstate& chainstate, const CTxMemPool* mempool
     nBlockMaxWeight = std::max<size_t>(4000, std::min<size_t>(MAX_BLOCK_WEIGHT - 4000, options.nBlockMaxWeight));
 }
 
-void ApplyArgsManOptions(const ArgsManager& gArgs, BlockAssembler::Options& options)
+void ApplyArgsManOptions(const ArgsManager& args, BlockAssembler::Options& options)
 {
     // Block resource limits
     // If -blockmaxweight is not given, limit to DEFAULT_BLOCK_MAX_WEIGHT
