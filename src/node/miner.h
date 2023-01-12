@@ -6,6 +6,7 @@
 #ifndef BITCOIN_NODE_MINER_H
 #define BITCOIN_NODE_MINER_H
 
+#include <policy/policy.h>
 #include <primitives/block.h>
 #include <txmempool.h>
 #include <node/context.h>
@@ -173,6 +174,8 @@ public:
     inline static std::optional<int64_t> m_last_block_weight{};
 
 private:
+    const Options m_options;
+
     // utility functions
     /** Clear the block's state and prepare for assembling a new block */
     void resetBlock();
