@@ -229,11 +229,11 @@ void TestingSetup::LoadVerifyActivateChainstate()
                                            /*coins_db_in_memory=*/true);
     assert(!maybe_load_error.has_value());
 
-    std::tie(status, error) = VerifyLoadedChainstate(*Assert(m_node.chainman), options);
+    std::tie(status, error) = VerifyLoadedChainstate(chainman, options);
     assert(status == node::ChainstateLoadStatus::SUCCESS);
 
     BlockValidationState state;
-    if (!m_node.chainman->ActiveChainstate().ActivateBestChain(state)) {
+    if (!chainman.ActiveChainstate().ActivateBestChain(state)) {
         throw std::runtime_error(strprintf("ActivateBestChain failed. (%s)", state.ToString()));
     }
 }

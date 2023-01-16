@@ -80,7 +80,6 @@ using node::BlockManager;
 using node::BlockMap;
 using node::CBlockIndexHeightOnlyComparator;
 using node::CBlockIndexWorkComparator;
-using node::fPruneMode;
 using node::fReindex;
 using node::ReadBlockFromDisk;
 using node::SnapshotMetadata;
