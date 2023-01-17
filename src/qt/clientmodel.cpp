@@ -160,13 +160,8 @@ void ClientModel::updateAlert(const QString &hash, int status)
 
 enum BlockSource ClientModel::getBlockSource() const
 {
-    if (m_node.getReindex())
-        return BlockSource::REINDEX;
-    else if (m_node.getImporting())
-        return BlockSource::DISK;
-    else if (getNumConnections() > 0)
-        return BlockSource::NETWORK;
-
+    if (m_node.isLoadingBlocks()) return BlockSource::DISK;
+    if (getNumConnections() > 0) return BlockSource::NETWORK;
     return BlockSource::NONE;
 }
 
