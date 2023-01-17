@@ -8,7 +8,7 @@ These are the dependencies currently used by Peercoin. You can find instructions
 | [Automake](https://www.gnu.org/software/automake/) | [1.13](https://github.com/bitcoin/bitcoin/pull/18290) |
 | [Clang](https://clang.llvm.org) | [8.0](https://github.com/bitcoin/bitcoin/pull/24164) |
 | [GCC](https://gcc.gnu.org) | [8.1](https://github.com/bitcoin/bitcoin/pull/23060) |
-| [Python](https://www.python.org) (tests) | [3.6](https://github.com/bitcoin/bitcoin/pull/19504) |
+| [Python](https://www.python.org) (tests) | [3.7](https://github.com/bitcoin/bitcoin/pull/26226) |
 | [systemtap](https://sourceware.org/systemtap/) ([tracing](tracing.md))| N/A |
 
 ## Required
