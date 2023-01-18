@@ -34,6 +34,7 @@
 #include <util/error.h>
 #include <util/moneystr.h>
 #include <util/string.h>
+#include <util/system.h>
 #include <util/translation.h>
 #include <validation.h>
 #include <bignum.h>
