@@ -49,11 +49,11 @@ Pull requests should always be made to this branch (except for critical fixes), 
 The develop branch is therefore unstable and not guaranteed to work on any system.
 
 ### master (only updated by group members)
-The master branch get's updates from tested states of the develop branch.
+The master branch gets updates from tested states of the develop branch.
 Therefore, the master branch should contain functional but experimental code.
 
 ### release-* (the official releases)
-The release branch is identified by it's major and minor version number e.g. `release-0.6`.
+The release branch is identified by its major and minor version number e.g. `release-0.6`.
 The official release tags are always made on a release branch.
 Release branches will typically branch from or merge tested code from the master branch to freeze the code for release.
 Only critical patches can be applied through pull requests directly on this branch, all non critical features should follow the standard path through develop -> master -> release-*
