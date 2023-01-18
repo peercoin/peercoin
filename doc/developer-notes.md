@@ -1289,7 +1289,7 @@ types like [`interfaces::Handler`](../src/interfaces/handler.h)
 various interface methods.
 
 Interface classes are written in a particular style so node, wallet, and GUI
-code doesn't need to run in the same process, and so the class declarations
+code don't need to run in the same process, and so the class declarations
 work more easily with tools and libraries supporting interprocess
 communication:
 
