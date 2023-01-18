@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Bitcoin Core developers
+// Copyright (c) 2011-2020 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,6 +7,8 @@
 
 #include <QWidget>
 #include <QQueue>
+
+#include <chrono>
 
 class ClientModel;
 
@@ -22,14 +24,14 @@ class TrafficGraphWidget : public QWidget
 public:
     explicit TrafficGraphWidget(QWidget *parent = nullptr);
     void setClientModel(ClientModel *model);
-    int getGraphRangeMins() const;
+    std::chrono::minutes getGraphRange() const;
 
 protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *) override;
 
 public Q_SLOTS:
     void updateRates();
-    void setGraphRangeMins(int mins);
+    void setGraphRange(std::chrono::minutes new_range);
     void clear();
 
 private:
@@ -37,7 +39,7 @@ private:
 
     QTimer *timer;
     float fMax;
-    int nMins;
+    std::chrono::minutes m_range{0};
     QQueue<float> vSamplesIn;
     QQueue<float> vSamplesOut;
     quint64 nLastBytesIn;

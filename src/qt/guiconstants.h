@@ -5,10 +5,16 @@
 #ifndef BITCOIN_QT_GUICONSTANTS_H
 #define BITCOIN_QT_GUICONSTANTS_H
 
+#include <chrono>
 #include <cstdint>
 
-/* Milliseconds between model updates */
-static const int MODEL_UPDATE_DELAY = 250;
+using namespace std::chrono_literals;
+
+/* A delay between model updates */
+static constexpr auto MODEL_UPDATE_DELAY{1000ms};
+
+/* A delay between shutdown pollings */
+static constexpr auto SHUTDOWN_POLLING_DELAY{200ms};
 
 /* AskPassphraseDialog -- Maximum passphrase length */
 static const int MAX_PASSPHRASE_SIZE = 1024;
@@ -31,8 +37,6 @@ static const bool DEFAULT_SPLASHSCREEN = true;
 #define COLOR_POSITIVE QColor(60, 176, 84)
 /* Transaction list -- bare address (without label) */
 #define COLOR_BAREADDRESS QColor(121, 121, 121)
-/* Transaction list -- TX status decoration - open until date */
-#define COLOR_TX_STATUS_OPENUNTILDATE QColor(64, 64, 255)
 /* Transaction list -- TX status decoration - danger, tx needs attention */
 #define COLOR_TX_STATUS_DANGER QColor(200, 100, 100)
 /* Transaction list -- TX status decoration - default color */
@@ -51,6 +55,7 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 #define QAPP_APP_NAME_DEFAULT "Peercoin-Qt"
 #define QAPP_APP_NAME_TESTNET "Peercoin-Qt-testnet"
 #define QAPP_APP_NAME_REGTEST "Peercoin-Qt-regtest"
+#define QAPP_APP_NAME_SIGNET "Peercoin-Qt-signet"
 
 /* Colors for minting tab for each coin age group */
 #define COLOR_MINT_YOUNG QColor(255, 224, 226)
@@ -59,8 +64,5 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 
 /* One gigabyte (GB) in bytes */
 static constexpr uint64_t GB_BYTES{1000000000};
-
-// Default prune target displayed in GUI.
-static constexpr int DEFAULT_PRUNE_TARGET_GB{2};
 
 #endif // BITCOIN_QT_GUICONSTANTS_H

@@ -14,7 +14,6 @@
 #include <wallet/wallet.h>
 #include <validation.h>
 #include <chainparams.h>
-#include <ui_interface.h>
 
 #include <QColor>
 #include <QTimer>
@@ -287,7 +286,7 @@ static void NotifyTransactionChanged(MintingTableModel *ttm, const uint256 &hash
 MintingTableModel::MintingTableModel(WalletModel *parent) :
         QAbstractTableModel(parent),
         walletModel(parent),
-        mintingInterval(1440),
+        mintingInterval(1440*30),
         priv(new MintingTablePriv(walletModel, this)),
         cachedNumBlocks(0)
 {
@@ -297,7 +296,7 @@ MintingTableModel::MintingTableModel(WalletModel *parent) :
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateAge()));
-    timer->start(MODEL_UPDATE_DELAY);
+    timer->start(MODEL_UPDATE_DELAY*1000);
 
     connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
     m_handler_transaction_changed = walletModel->wallet().handleTransactionChanged(std::bind(NotifyTransactionChanged, this, std::placeholders::_1, std::placeholders::_2));
@@ -454,7 +453,7 @@ QString MintingTableModel::lookupAddress(const std::string &address, bool toolti
 
 double MintingTableModel::getDayToMint(KernelRecord *wtx) const
 {
-    const CBlockIndex *p = GetLastBlockIndex(::ChainActive().Tip(), true);
+    const CBlockIndex *p = GetLastBlockIndex(walletModel->getTip(), true);
     double difficulty = p->GetBlockDifficulty();
 
     double prob = wtx->getProbToMintWithinNMinutes(difficulty, mintingInterval);

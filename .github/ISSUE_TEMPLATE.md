@@ -2,6 +2,10 @@
 
 General Peercoin questions and/or support requests are best directed to the Peercoin Forum: https://talk.peercoin.net/.
 
+
+Any report, issue or feature request related to the GUI should be reported at
+https://github.com/bitcoin-core/gui/issues/
+-->
 <!-- Describe the issue -->
 <!--- What behavior did you expect? -->
 

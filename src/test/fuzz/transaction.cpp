@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Bitcoin Core developers
+// Copyright (c) 2019-2021 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,12 +21,12 @@
 
 #include <cassert>
 
-void initialize()
+void initialize_transaction()
 {
     SelectParams(CBaseChainParams::REGTEST);
 }
 
-void test_one_input(const std::vector<uint8_t>& buffer)
+FUZZ_TARGET_INIT(transaction, initialize_transaction)
 {
     CDataStream ds(buffer, SER_NETWORK, INIT_PROTO_VERSION);
     try {
@@ -42,7 +42,7 @@ void test_one_input(const std::vector<uint8_t>& buffer)
             return CTransaction(deserialize, ds);
         } catch (const std::ios_base::failure&) {
             valid_tx = false;
-            return CTransaction();
+            return CTransaction{CMutableTransaction{}};
         }
     }();
     bool valid_mutable_tx = true;
@@ -61,13 +61,15 @@ void test_one_input(const std::vector<uint8_t>& buffer)
         return;
     }
 
-    TxValidationState state_with_dupe_check;
-    (void)CheckTransaction(tx, state_with_dupe_check);
+    {
+        TxValidationState state_with_dupe_check;
+        const bool res{CheckTransaction(tx, state_with_dupe_check)};
+        Assert(res == state_with_dupe_check.IsValid());
+    }
 
-    const CFeeRate dust_relay_fee{DUST_RELAY_TX_FEE};
     std::string reason;
-    const bool is_standard_with_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ true, dust_relay_fee, reason);
-    const bool is_standard_without_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ false, dust_relay_fee, reason);
+    const bool is_standard_with_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ true, reason);
+    const bool is_standard_without_permit_bare_multisig = IsStandardTx(tx, /* permit_bare_multisig= */ false, reason);
     if (is_standard_without_permit_bare_multisig) {
         assert(is_standard_with_permit_bare_multisig);
     }
@@ -91,7 +93,6 @@ void test_one_input(const std::vector<uint8_t>& buffer)
     (void)IsFinalTx(tx, /* nBlockHeight= */ 1024, /* nBlockTime= */ 1024);
     (void)IsStandardTx(tx, reason);
     (void)RecursiveDynamicUsage(tx);
-    (void)SignalsOptInRBF(tx);
 
     CCoinsView coins_view;
     const CCoinsViewCache coins_view_cache(&coins_view);
@@ -99,16 +100,6 @@ void test_one_input(const std::vector<uint8_t>& buffer)
     (void)IsWitnessStandard(tx, coins_view_cache);
 
     UniValue u(UniValue::VOBJ);
-    // ValueFromAmount(i) not defined when i == std::numeric_limits<int64_t>::min()
-    bool skip_tx_to_univ = false;
-    for (const CTxOut& txout : tx.vout) {
-        if (txout.nValue == std::numeric_limits<int64_t>::min()) {
-            skip_tx_to_univ = true;
-        }
-    }
-    if (!skip_tx_to_univ) {
-        TxToUniv(tx, /* hashBlock */ {}, u);
-        static const uint256 u256_max(uint256S("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-        TxToUniv(tx, u256_max, u);
-    }
+    TxToUniv(tx, /*hashBlock=*/uint256::ZERO, u);
+    TxToUniv(tx, /*hashBlock=*/uint256::ONE, u);
 }
