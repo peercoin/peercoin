@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 The Bitcoin Core developers
+// Copyright (c) 2018-2021 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,6 +12,7 @@
 #include <primitives/transaction.h>
 #include <script/script.h>
 #include <streams.h>
+#include <util/golombrice.h>
 
 /// SerType used to serialize parameters in GCS filter encoding.
 static constexpr int GCS_SER_TYPE = SER_NETWORK;
@@ -23,74 +24,12 @@ static const std::map<BlockFilterType, std::string> g_filter_types = {
     {BlockFilterType::BASIC, "basic"},
 };
 
-template <typename OStream>
-static void GolombRiceEncode(BitStreamWriter<OStream>& bitwriter, uint8_t P, uint64_t x)
-{
-    // Write quotient as unary-encoded: q 1's followed by one 0.
-    uint64_t q = x >> P;
-    while (q > 0) {
-        int nbits = q <= 64 ? static_cast<int>(q) : 64;
-        bitwriter.Write(~0ULL, nbits);
-        q -= nbits;
-    }
-    bitwriter.Write(0, 1);
-
-    // Write the remainder in P bits. Since the remainder is just the bottom
-    // P bits of x, there is no need to mask first.
-    bitwriter.Write(x, P);
-}
-
-template <typename IStream>
-static uint64_t GolombRiceDecode(BitStreamReader<IStream>& bitreader, uint8_t P)
-{
-    // Read unary-encoded quotient: q 1's followed by one 0.
-    uint64_t q = 0;
-    while (bitreader.Read(1) == 1) {
-        ++q;
-    }
-
-    uint64_t r = bitreader.Read(P);
-
-    return (q << P) + r;
-}
-
-// Map a value x that is uniformly distributed in the range [0, 2^64) to a
-// value uniformly distributed in [0, n) by returning the upper 64 bits of
-// x * n.
-//
-// See: https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
-static uint64_t MapIntoRange(uint64_t x, uint64_t n)
-{
-#ifdef __SIZEOF_INT128__
-    return (static_cast<unsigned __int128>(x) * static_cast<unsigned __int128>(n)) >> 64;
-#else
-    // To perform the calculation on 64-bit numbers without losing the
-    // result to overflow, split the numbers into the most significant and
-    // least significant 32 bits and perform multiplication piece-wise.
-    //
-    // See: https://stackoverflow.com/a/26855440
-    uint64_t x_hi = x >> 32;
-    uint64_t x_lo = x & 0xFFFFFFFF;
-    uint64_t n_hi = n >> 32;
-    uint64_t n_lo = n & 0xFFFFFFFF;
-
-    uint64_t ac = x_hi * n_hi;
-    uint64_t ad = x_hi * n_lo;
-    uint64_t bc = x_lo * n_hi;
-    uint64_t bd = x_lo * n_lo;
-
-    uint64_t mid34 = (bd >> 32) + (bc & 0xFFFFFFFF) + (ad & 0xFFFFFFFF);
-    uint64_t upper64 = ac + (bc >> 32) + (ad >> 32) + (mid34 >> 32);
-    return upper64;
-#endif
-}
-
 uint64_t GCSFilter::HashToRange(const Element& element) const
 {
     uint64_t hash = CSipHasher(m_params.m_siphash_k0, m_params.m_siphash_k1)
         .Write(element.data(), element.size())
         .Finalize();
-    return MapIntoRange(hash, m_F);
+    return FastRange64(hash, m_F);
 }
 
 std::vector<uint64_t> GCSFilter::BuildHashedSet(const ElementSet& elements) const
@@ -111,7 +50,7 @@ GCSFilter::GCSFilter(const Params& params)
 GCSFilter::GCSFilter(const Params& params, std::vector<unsigned char> encoded_filter)
     : m_params(params), m_encoded(std::move(encoded_filter))
 {
-    VectorReader stream(GCS_SER_TYPE, GCS_SER_VERSION, m_encoded, 0);
+    SpanReader stream{GCS_SER_TYPE, GCS_SER_VERSION, m_encoded};
 
     uint64_t N = ReadCompactSize(stream);
     m_N = static_cast<uint32_t>(N);
@@ -122,7 +61,7 @@ GCSFilter::GCSFilter(const Params& params, std::vector<unsigned char> encoded_fi
 
     // Verify that the encoded filter contains exactly N elements. If it has too much or too little
     // data, a std::ios_base::failure exception will be raised.
-    BitStreamReader<VectorReader> bitreader(stream);
+    BitStreamReader<SpanReader> bitreader{stream};
     for (uint64_t i = 0; i < m_N; ++i) {
         GolombRiceDecode(bitreader, m_params.m_P);
     }
@@ -163,13 +102,13 @@ GCSFilter::GCSFilter(const Params& params, const ElementSet& elements)
 
 bool GCSFilter::MatchInternal(const uint64_t* element_hashes, size_t size) const
 {
-    VectorReader stream(GCS_SER_TYPE, GCS_SER_VERSION, m_encoded, 0);
+    SpanReader stream{GCS_SER_TYPE, GCS_SER_VERSION, m_encoded};
 
     // Seek forward by size of N
     uint64_t N = ReadCompactSize(stream);
     assert(N == m_N);
 
-    BitStreamReader<VectorReader> bitreader(stream);
+    BitStreamReader<SpanReader> bitreader{stream};
 
     uint64_t value = 0;
     size_t hashes_index = 0;
@@ -321,7 +260,7 @@ uint256 BlockFilter::GetHash() const
     const std::vector<unsigned char>& data = GetEncodedFilter();
 
     uint256 result;
-    CHash256().Write(data.data(), data.size()).Finalize(result.begin());
+    CHash256().Write(data).Finalize(result);
     return result;
 }
 
@@ -331,8 +270,8 @@ uint256 BlockFilter::ComputeHeader(const uint256& prev_header) const
 
     uint256 result;
     CHash256()
-        .Write(filter_hash.begin(), filter_hash.size())
-        .Write(prev_header.begin(), prev_header.size())
-        .Finalize(result.begin());
+        .Write(filter_hash)
+        .Write(prev_header)
+        .Finalize(result);
     return result;
 }

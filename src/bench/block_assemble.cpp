@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,6 +7,7 @@
 #include <consensus/validation.h>
 #include <crypto/sha256.h>
 #include <test/util/mining.h>
+#include <test/util/script.h>
 #include <test/util/setup_common.h>
 #include <test/util/wallet.h>
 #include <txmempool.h>
@@ -15,16 +16,12 @@
 
 #include <vector>
 
-static void AssembleBlock(benchmark::State& state)
+static void AssembleBlock(benchmark::Bench& bench)
 {
-    const std::vector<unsigned char> op_true{OP_TRUE};
+    const auto test_setup = MakeNoLogFileContext<const TestingSetup>();
+
     CScriptWitness witness;
-    witness.stack.push_back(op_true);
-
-    uint256 witness_program;
-    CSHA256().Write(&op_true[0], op_true.size()).Finalize(witness_program.begin());
-
-    const CScript SCRIPT_PUB{CScript(OP_0) << std::vector<unsigned char>{witness_program.begin(), witness_program.end()}};
+    witness.stack.push_back(WITNESS_STACK_ELEM_OP_TRUE);
 
     // Collect some loose transactions that spend the coinbases of our mined blocks
     constexpr size_t NUM_BLOCKS{200};
@@ -32,25 +29,24 @@ static void AssembleBlock(benchmark::State& state)
     txs.reserve(NUM_BLOCKS - ::Params().GetConsensus().nCoinbaseMaturity + 1);
     for (size_t b{0}; b < NUM_BLOCKS; ++b) {
         CMutableTransaction tx;
-        tx.vin.push_back(MineBlock(g_testing_setup->m_node, SCRIPT_PUB));
+        tx.vin.push_back(MineBlock(test_setup->m_node, P2WSH_OP_TRUE));
         tx.vin.back().scriptWitness = witness;
-        tx.vout.emplace_back(1337, SCRIPT_PUB);
+        tx.vout.emplace_back(1337, P2WSH_OP_TRUE);
         if (NUM_BLOCKS - b >= ::Params().GetConsensus().nCoinbaseMaturity)
             txs.at(b) = MakeTransactionRef(tx);
     }
     {
-        LOCK(::cs_main); // Required for ::AcceptToMemoryPool.
+        LOCK(::cs_main);
 
         for (const auto& txr : txs) {
-            TxValidationState state;
-            bool ret{::AcceptToMemoryPool(::mempool, state, txr, false /* plTxnReplaced */, false /* bypass_limits */)};
-            assert(ret);
+            const MempoolAcceptResult res = test_setup->m_node.chainman->ProcessTransaction(txr);
+            assert(res.m_result_type == MempoolAcceptResult::ResultType::VALID);
         }
     }
 
-    while (state.KeepRunning()) {
-        PrepareBlock(g_testing_setup->m_node, SCRIPT_PUB);
-    }
+    bench.run([&] {
+        PrepareBlock(test_setup->m_node, P2WSH_OP_TRUE);
+    });
 }
 
-BENCHMARK(AssembleBlock, 700);
+BENCHMARK(AssembleBlock);

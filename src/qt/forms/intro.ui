@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>674</width>
-    <height>515</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -213,17 +213,7 @@
    <item>
     <widget class="QLabel" name="lblExplanation2">
      <property name="text">
-      <string>This initial synchronisation can be very demanding. Each time you run %1, it will continue downloading where it left off.</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="lblExplanation3">
-     <property name="text">
-      <string>Please understand that deleting directory will delete your private keys as well which effectively destroys your coins. Make sure to have the backup. All the keys are stored in the wallet.dat file.</string>
+      <string>This initial synchronisation is very demanding, and may expose hardware problems with your computer that had previously gone unnoticed. Each time you run %1, it will continue downloading where it left off.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

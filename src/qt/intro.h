@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -44,10 +44,10 @@ public:
      * @returns true if a data directory was selected, false if the user cancelled the selection
      * dialog.
      *
-     * @note do NOT call global GetDataDir() before calling this function, this
+     * @note do NOT call global gArgs.GetDataDirNet() before calling this function, this
      * will cause the wrong path to be cached.
      */
-    static bool showIfNeeded(interfaces::Node& node, bool& did_show_intro, bool& prune);
+    static bool showIfNeeded(bool& did_show_intro);
 
 Q_SIGNALS:
     void requestCheck();

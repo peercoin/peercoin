@@ -5,29 +5,40 @@ etc.
 
 This directory contains the following sets of tests:
 
+- [fuzz](/test/fuzz) A runner to execute all fuzz targets from
+  [/src/test/fuzz](/src/test/fuzz).
 - [functional](/test/functional) which test the functionality of
 peercoind and bitcoin-qt by interacting with them through the RPC and P2P
 interfaces.
-- [util](/test/util) which tests the peercoin utilities, currently only
-peercoin-tx.
+- [util](/test/util) which tests the utilities (peercoin-util, peercoin-tx, ...).
 - [lint](/test/lint/) which perform various static analysis checks.
 
-The util tests are run as part of `make check` target. The functional
+The util tests are run as part of `make check` target. The fuzz tests, functional
 tests and lint scripts can be run as explained in the sections below.
 
 # Running tests locally
 
 Before tests can be run locally, Bitcoin Core must be built.  See the [building instructions](/doc#building) for help.
 
+## Fuzz tests
+
+See [/doc/fuzzing.md](/doc/fuzzing.md)
 
 ### Functional tests
 
-#### Dependencies
+#### Dependencies and prerequisites
 
 The ZMQ functional test requires a python ZMQ library. To install it:
 
 - on Unix, run `sudo apt-get install python3-zmq`
 - on mac OS, run `pip3 install pyzmq`
+
+
+On Windows the `PYTHONUTF8` environment variable must be set to 1:
+
+```cmd
+set PYTHONUTF8=1
+```
 
 #### Running the tests
 
@@ -82,6 +93,12 @@ Run all possible tests with
 
 ```
 test/functional/test_runner.py --extended
+```
+
+In order to run backwards compatibility tests, download the previous node binaries:
+
+```
+test/get_previous_releases.py -b v22.0 v0.21.0 v0.20.1 v0.19.1 v0.18.1 v0.17.2 v0.16.3 v0.15.2
 ```
 
 By default, up to 4 tests will be run in parallel by test_runner. To specify
@@ -230,6 +247,10 @@ gdb /home/example/peercoind <pid>
 Note: gdb attach step may require ptrace_scope to be modified, or `sudo` preceding the `gdb`.
 See this link for considerations: https://www.kernel.org/doc/Documentation/security/Yama.txt
 
+Often while debugging rpc calls from functional tests, the test might reach timeout before
+process can return a response. Use `--timeout-factor 0` to disable all rpc timeouts for that partcular
+functional test. Ex: `test/functional/wallet_hd.py --timeout-factor 0`.
+
 ##### Profiling
 
 An easy way to profile node performance during functional tests is provided
@@ -252,19 +273,22 @@ For ways to generate more granular profiles, see the README in
 
 ### Util tests
 
-Util tests can be run locally by running `test/util/bitcoin-util-test.py`.
+Util tests can be run locally by running `test/util/test_runner.py`.
 Use the `-v` option for verbose output.
 
 ### Lint tests
 
 #### Dependencies
 
-| Lint test | Dependency | Version [used by CI](../ci/lint/04_install.sh) | Installation
-|-----------|:----------:|:-------------------------------------------:|--------------
-| [`lint-python.sh`](lint/lint-python.sh) | [flake8](https://gitlab.com/pycqa/flake8) | [3.7.8](https://github.com/bitcoin/bitcoin/pull/15257) | `pip3 install flake8==3.7.8`
-| [`lint-shell.sh`](lint/lint-shell.sh) | [ShellCheck](https://github.com/koalaman/shellcheck) | [0.6.0](https://github.com/bitcoin/bitcoin/pull/15166) | [details...](https://github.com/koalaman/shellcheck#installing)
-| [`lint-shell.sh`](lint/lint-shell.sh) | [yq](https://github.com/kislyuk/yq) | default | `pip3 install yq`
-| [`lint-spelling.sh`](lint/lint-spelling.sh) | [codespell](https://github.com/codespell-project/codespell) | [1.15.0](https://github.com/bitcoin/bitcoin/pull/16186) | `pip3 install codespell==1.15.0`
+| Lint test | Dependency |
+|-----------|:----------:|
+| [`lint-python.sh`](lint/lint-python.sh) | [flake8](https://gitlab.com/pycqa/flake8)
+| [`lint-python.sh`](lint/lint-python.sh) | [mypy](https://github.com/python/mypy)
+| [`lint-python.sh`](lint/lint-python.sh) | [pyzmq](https://github.com/zeromq/pyzmq)
+| [`lint-shell.sh`](lint/lint-shell.sh) | [ShellCheck](https://github.com/koalaman/shellcheck)
+| [`lint-spelling.sh`](lint/lint-spelling.sh) | [codespell](https://github.com/codespell-project/codespell)
+
+In use versions and install instructions are available in the [CI setup](../ci/lint/04_install.sh).
 
 Please be aware that on Linux distributions all dependencies are usually available as packages, but could be outdated.
 
@@ -273,7 +297,7 @@ Please be aware that on Linux distributions all dependencies are usually availab
 Individual tests can be run by directly calling the test script, e.g.:
 
 ```
-test/lint/lint-filenames.sh
+test/lint/lint-files.sh
 ```
 
 You can run all the shell-based lint tests by running:

@@ -107,7 +107,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>Inputs...</string>
+             <string>Inputs…</string>
             </property>
             <property name="autoDefault">
              <bool>false</bool>

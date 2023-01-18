@@ -8,7 +8,6 @@
 #include <QStringList>
 #include <interfaces/handler.h>
 
-class CWallet;
 class MintingTablePriv;
 class MintingFilterProxy;
 class KernelRecord;

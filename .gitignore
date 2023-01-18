@@ -1,15 +1,19 @@
 *.tar.gz
 
+bench_schnorrsig
+valgrind_ctime_test
 *.exe
 *.pdb
 src/*/*.exe
 src/peercoin
 src/peercoind
 src/peercoin-cli
+src/peercoin-gui
+src/peercoin-node
 src/peercoin-tx
+src/peercoin-util
 src/peercoin-wallet
-src/test/fuzz
-!src/test/fuzz/*.*
+src/test/fuzz/fuzz
 src/test/test_peercoin
 src/qt/test/test_peercoin-qt
 
@@ -17,6 +21,17 @@ src/qt/test/test_peercoin-qt
 Makefile.in
 aclocal.m4
 autom4te.cache/
+conftest*
+*.log
+*.trs
+
+coverage/
+coverage.html
+coverage.*.html
+*.gcda
+*.gcno
+*.gcov
+
 build-aux/config.guess
 build-aux/config.sub
 build-aux/depcomp
@@ -60,7 +75,7 @@ src/qt/bitcoin-qt.includes
 .dirstamp
 .libs
 .*.swp
-*.*~*
+*~
 *.bak
 *.rej
 *.orig
@@ -77,12 +92,14 @@ src/qt/bitcoin-qt.includes
 *.log
 *.trs
 *.dmg
+*.iso
 
 *.json.h
 *.raw.h
 
 # Only ignore unexpected patches
 *.patch
+!contrib/guix/patches/*.patch
 !depends/patches/**/*.patch
 
 #libtool object files
@@ -96,7 +113,6 @@ Makefile
 src/qt/peercoin-qt
 PPCoin-Qt.app
 Peercoin-Qt.app
-background.tiff*
 
 # Qt Creator
 Makefile.am.user
@@ -122,7 +138,10 @@ releases
 /*.info
 test_bitcoin.coverage/
 total.coverage/
+fuzz.coverage/
 coverage_percent.txt
+/cov_tool_wrapper.sh
+qa-assets/
 
 #build tests
 linux-coverage-build
@@ -130,6 +149,7 @@ linux-build
 win32-build
 test/config.ini
 test/cache/*
+test/.mypy_cache/
 
 !src/leveldb*/Makefile
 
@@ -148,4 +168,5 @@ db4/
 
 osx_volname
 dist/
-*.background.tiff
+
+/guix-build-*
