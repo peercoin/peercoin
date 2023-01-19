@@ -601,11 +601,11 @@ static RPCHelpMan logging()
             "  - \"none\", \"0\" : even if other logging categories are specified, ignore all of them.\n"
             ,
                 {
-                    {"include", RPCArg::Type::ARR, RPCArg::Optional::OMITTED_NAMED_ARG, "The categories to add to debug logging",
+                    {"include", RPCArg::Type::ARR, RPCArg::Optional::OMITTED, "The categories to add to debug logging",
                         {
                             {"include_category", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "the valid logging category"},
                         }},
-                    {"exclude", RPCArg::Type::ARR, RPCArg::Optional::OMITTED_NAMED_ARG, "The categories to remove from debug logging",
+                    {"exclude", RPCArg::Type::ARR, RPCArg::Optional::OMITTED, "The categories to remove from debug logging",
                         {
                             {"exclude_category", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "the valid logging category"},
                         }},
@@ -737,7 +737,7 @@ static RPCHelpMan getindexinfo()
     return RPCHelpMan{"getindexinfo",
                 "\nReturns the status of one or all available indices currently running in the node.\n",
                 {
-                    {"index_name", RPCArg::Type::STR, RPCArg::Optional::OMITTED_NAMED_ARG, "Filter results for an index with a specific name."},
+                    {"index_name", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "Filter results for an index with a specific name."},
                 },
                 RPCResult{
                     RPCResult::Type::OBJ_DYN, "", "", {
