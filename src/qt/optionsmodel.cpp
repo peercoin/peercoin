@@ -31,7 +31,7 @@
 
 const char *DEFAULT_GUI_PROXY_HOST = "127.0.0.1";
 
-static const QString GetDefaultProxyAddress();
+static QString GetDefaultProxyAddress();
 
 /** Map GUI option ID to node setting name. */
 static const char* SettingName(OptionsModel::OptionID option)
@@ -355,7 +355,7 @@ static std::string ProxyString(bool is_set, QString ip, QString port)
     return is_set ? QString(ip + ":" + port).toStdString() : "";
 }
 
-static const QString GetDefaultProxyAddress()
+static QString GetDefaultProxyAddress()
 {
     return QString("%1:%2").arg(DEFAULT_GUI_PROXY_HOST).arg(DEFAULT_GUI_PROXY_PORT);
 }
