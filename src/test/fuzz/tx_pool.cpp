@@ -316,7 +316,7 @@ FUZZ_TARGET_INIT(tx_pool, initialize_tx_pool)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     const auto& node = g_setup->m_node;
-    auto& chainstate = node.chainman->ActiveChainstate();
+    auto& chainstate{static_cast<DummyChainState&>(node.chainman->ActiveChainstate())};
 
     MockTime(fuzzed_data_provider, chainstate);
 
@@ -332,6 +332,8 @@ FUZZ_TARGET_INIT(tx_pool, initialize_tx_pool)
 
     CTxMemPool tx_pool_{/*check_ratio=*/1};
     MockedTxPool& tx_pool = *static_cast<MockedTxPool*>(&tx_pool_);
+
+    chainstate.SetMempool(&tx_pool);
 
     LIMITED_WHILE(fuzzed_data_provider.ConsumeBool(), 300)
     {
