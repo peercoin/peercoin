@@ -26,7 +26,6 @@ class uint256;
 enum class MemPoolRemovalReason;
 struct bilingual_str;
 struct CBlockLocator;
-struct FeeCalculation;
 namespace node {
 struct NodeContext;
 } // namespace node
