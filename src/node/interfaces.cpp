@@ -547,7 +547,7 @@ public:
     bool hasBlocks(const uint256& block_hash, int min_height, std::optional<int> max_height) override
     {
         // hasBlocks returns true if all ancestors of block_hash in specified
-        // range have block data (are not pruned), false if any ancestors in
+        // range have block data, false if any ancestors in
         // specified range are missing data.
         //
         // For simplicity and robustness, min_height and max_height are only
@@ -640,11 +640,6 @@ public:
     CFeeRate relayMinFee() override { return ::minRelayTxFee; }
     CFeeRate relayIncrementalFee() override { return ::incrementalRelayFee; }
     CFeeRate relayDustFee() override { return ::dustRelayFee; }
-    bool havePruned() override
-    {
-        LOCK(cs_main);
-        return node::fHavePruned;
-    }
 */
     bool isReadyToBroadcast() override { return !node::fImporting && !node::fReindex && !isInitialBlockDownload(); }
     bool isInitialBlockDownload() override {
