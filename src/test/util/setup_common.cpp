@@ -48,7 +48,6 @@ using node::CalculateCacheSizes;
 using node::LoadChainstate;
 using node::RegenerateCommitments;
 using node::VerifyLoadedChainstate;
-using node::fPruneMode;
 using node::fReindex;
 
 const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
@@ -196,7 +195,6 @@ TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const
     auto maybe_load_error = LoadChainstate(fReindex.load(),
                                            *Assert(m_node.chainman.get()),
                                            Assert(m_node.mempool.get()),
-                                           fPruneMode,
                                            chainparams.GetConsensus(),
                                            m_args.GetBoolArg("-reindex-chainstate", false),
                                            m_cache_sizes.block_tree_db,
