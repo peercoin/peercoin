@@ -19,7 +19,6 @@ namespace node {
 enum class ChainstateLoadingError {
     ERROR_LOADING_BLOCK_DB,
     ERROR_BAD_GENESIS_BLOCK,
-    ERROR_PRUNED_NEEDS_REINDEX,
     ERROR_LOAD_GENESIS_BLOCK_FAILED,
     ERROR_CHAINSTATE_UPGRADE_FAILED,
     ERROR_REPLAYBLOCKS_FAILED,
@@ -58,7 +57,6 @@ enum class ChainstateLoadingError {
 std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
                                                      ChainstateManager& chainman,
                                                      CTxMemPool* mempool,
-                                                     bool fPruneMode,
                                                      const Consensus::Params& consensus_params,
                                                      bool fReindexChainState,
                                                      int64_t nBlockTreeDBCache,

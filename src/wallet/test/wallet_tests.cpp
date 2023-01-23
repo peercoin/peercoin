@@ -31,7 +31,6 @@
 #include <univalue.h>
 
 using node::MAX_BLOCKFILE_SIZE;
-using node::UnlinkPrunedFiles;
 
 namespace wallet {
 RPCHelpMan importmulti();

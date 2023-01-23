@@ -104,8 +104,7 @@ public:
     //! Get block hash. Height must be valid or this function will abort.
     virtual uint256 getBlockHash(int height) = 0;
 
-    //! Check that the block is available on disk (i.e. has not been
-    //! pruned), and contains transactions.
+    //! Check that the block is available on disk, and contains transactions.
     virtual bool haveBlockOnDisk(int height) = 0;
 
     //! Get locator for the current chain tip.

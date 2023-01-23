@@ -99,17 +99,13 @@ using node::CacheSizes;
 using node::CalculateCacheSizes;
 using node::ChainstateLoadVerifyError;
 using node::ChainstateLoadingError;
-using node::CleanupBlockRevFiles;
 using node::DEFAULT_PRINTPRIORITY;
 using node::DEFAULT_STOPAFTERBLOCKIMPORT;
 using node::LoadChainstate;
 using node::NodeContext;
 using node::ThreadImport;
 using node::VerifyLoadedChainstate;
-using node::fHavePruned;
-using node::fPruneMode;
 using node::fReindex;
-using node::nPruneTarget;
 using interfaces::WalletLoader;
 
 static const bool DEFAULT_PROXYRANDOMIZE = true;
@@ -1346,7 +1342,6 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
             maybe_load_error = LoadChainstate(fReset,
                                               chainman,
                                               Assert(node.mempool.get()),
-                                              fPruneMode,
                                               chainparams.GetConsensus(),
                                               fReindexChainState,
                                               cache_sizes.block_tree_db,
@@ -1373,9 +1368,6 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
                 // If the loaded chain has a wrong genesis, bail out immediately
                 // (we're likely using a testnet datadir, or the other way around).
                 return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
-            case ChainstateLoadingError::ERROR_PRUNED_NEEDS_REINDEX:
-                strLoadError = _("You need to rebuild the database using -reindex to go back to unpruned mode.  This will redownload the entire blockchain");
-                break;
             case ChainstateLoadingError::ERROR_LOAD_GENESIS_BLOCK_FAILED:
                 strLoadError = _("Error initializing block database");
                 break;
@@ -1403,10 +1395,6 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
             try {
                 uiInterface.InitMessage(_("Verifying blocks…").translated);
                 auto check_blocks = args.GetIntArg("-checkblocks", DEFAULT_CHECKBLOCKS);
-                if (fHavePruned && check_blocks > MIN_BLOCKS_TO_KEEP) {
-                    LogPrintf("Prune: pruned datadir may not have more than %d blocks; only checking available blocks\n",
-                              MIN_BLOCKS_TO_KEEP);
-                }
                 maybe_verify_error = VerifyLoadedChainstate(chainman,
                                                             fReset,
                                                             fReindexChainState,

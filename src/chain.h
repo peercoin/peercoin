@@ -336,7 +336,7 @@ public:
      * downloaded (and stored to disk) at some point.
      *
      * Does not imply the transactions are consensus-valid (ConnectTip might fail)
-     * Does not imply the transactions are still stored on disk. (IsBlockPruned might return true)
+     * Does not imply the transactions are still stored on disk.
      */
     bool HaveTxsDownloaded() const { return nChainTx != 0; }
 
