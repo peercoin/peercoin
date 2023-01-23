@@ -3337,7 +3337,8 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
     // check for version 2, 3 and 4 upgrades
-    if(block.nVersion < 2 && IsProtocolV06(pindexPrev))
+    if ((block.nVersion < 2 && IsProtocolV06(pindexPrev)) ||
+        (block.nVersion < 4 && IsProtocolV12(pindexPrev)))
             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
