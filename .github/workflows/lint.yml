@@ -1,0 +1,15 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: set -o errexit; sudo -s source ci/lint/04_install.sh
+      - name: Lint
+        run: test/lint/lint-all.sh
+      - name: Check docs
+        run: test/lint/check-doc.py
