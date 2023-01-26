@@ -46,7 +46,7 @@ const unsigned int nProtocolV09TestSwitchTime = 1581940800; // Mon 17 Feb 12:00:
 const unsigned int nProtocolV10SwitchTime     = 1635768000; // Mon  1 Nov 12:00:00 UTC 2021
 const unsigned int nProtocolV10TestSwitchTime = 1625140800; // Thu  1 Jul 12:00:00 UTC 2021
 // Protocol switch time for v12 kernel protocol
-const unsigned int nProtocolV12SwitchTime     = 1678104000; // Mon  6 Mar 12:00:00 UTC 2023
+const unsigned int nProtocolV12SwitchTime     = 1681732800; // Mon 17 Apr 12:00:00 UTC 2023
 const unsigned int nProtocolV12TestSwitchTime = 1669636800; // Mon 28 Nov 12:00:00 UTC 2022
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
