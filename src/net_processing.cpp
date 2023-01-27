@@ -5965,7 +5965,7 @@ bool PeerManagerImpl::SendMessages(CNode* pto)
             // bandwidth is insufficient.
             const auto new_timeout = std::min(2 * stalling_timeout, BLOCK_STALLING_TIMEOUT_MAX);
             if (stalling_timeout != new_timeout && m_block_stalling_timeout.compare_exchange_strong(stalling_timeout, new_timeout)) {
-                LogPrint(BCLog::NET, "Increased stalling timeout temporarily to %d seconds\n", m_block_stalling_timeout.load().count());
+                LogPrint(BCLog::NET, "Increased stalling timeout temporarily to %d seconds\n", count_seconds(new_timeout));
             }
             return true;
         }
