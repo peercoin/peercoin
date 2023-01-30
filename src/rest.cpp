@@ -33,7 +33,6 @@
 #include <univalue.h>
 
 using node::GetTransaction;
-using node::IsBlockPruned;
 using node::NodeContext;
 using node::ReadBlockFromDisk;
 
