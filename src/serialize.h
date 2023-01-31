@@ -1007,7 +1007,7 @@ struct CSerActionUnserialize
 class CSizeComputer
 {
 protected:
-    size_t nSize;
+    size_t nSize{0};
 
     const int nType;
     const int nVersion;
