@@ -4249,6 +4249,7 @@ VerifyDBResult CVerifyDB::VerifyDB(
     int nGoodTransactions = 0;
     BlockValidationState state;
     int reportDone = 0;
+    bool skipped_no_block_data{false};
     bool skipped_l3_checks{false};
     LogPrintf("Verification progress: 0%%\n");
 
@@ -4355,6 +4356,9 @@ VerifyDBResult CVerifyDB::VerifyDB(
 
     if (skipped_l3_checks) {
         return VerifyDBResult::SKIPPED_L3_CHECKS;
+    }
+    if (skipped_no_block_data) {
+        return VerifyDBResult::SKIPPED_MISSING_BLOCKS;
     }
     return VerifyDBResult::SUCCESS;
 }
