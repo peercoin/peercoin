@@ -971,15 +971,6 @@ static RPCHelpMan submitblock()
         throw JSONRPCError(-100, "Block failed CheckBlock() function.");
         }
 
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    if (!wallet) return NullUniValue;
-    const CWallet* const pwallet = wallet.get();
-
-    // peercoin: sign block
-    // rfc6: sign proof of stake blocks only after 0.8 fork
-    if ((block.IsProofOfStake() || !IsBTC16BIPsEnabled(block.GetBlockTime())) && !SignBlock(block, *pwallet))
-        throw JSONRPCError(-100, "Unable to sign block, wallet locked?");
-
     {
         LOCK(cs_main);
         const CBlockIndex* pindex = chainman.m_blockman.LookupBlockIndex(block.hashPrevBlock);
