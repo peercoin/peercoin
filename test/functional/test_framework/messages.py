@@ -706,7 +706,7 @@ BLOCK_HEADER_SIZE = len(CBlockHeader().serialize())
 assert_equal(BLOCK_HEADER_SIZE, 80)
 
 class CBlock(CBlockHeader):
-    __slots__ = ("vtx",)
+    __slots__ = ("vtx", "vchBlockSig",)
 
     def __init__(self, header=None):
         super().__init__(header)
@@ -784,9 +784,9 @@ class CBlock(CBlockHeader):
         return (WITNESS_SCALE_FACTOR - 1) * without_witness_size + with_witness_size
 
     def __repr__(self):
-        return "CBlock(nVersion=%i hashPrevBlock=%064x hashMerkleRoot=%064x nTime=%s nBits=%08x nNonce=%08x vtx=%s)" \
+        return "CBlock(nVersion=%i hashPrevBlock=%064x hashMerkleRoot=%064x nTime=%s nBits=%08x nNonce=%08x vtx=%s vtx=%s)" \
             % (self.nVersion, self.hashPrevBlock, self.hashMerkleRoot,
-               time.ctime(self.nTime), self.nBits, self.nNonce, repr(self.vtx))
+               time.ctime(self.nTime), self.nBits, self.nNonce, repr(self.vtx), repr(self.vchBlockSig))
 
 
 class PrefilledTransaction:
