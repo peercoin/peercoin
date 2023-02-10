@@ -85,7 +85,7 @@ if BUILD_BITCOIND
 endif
 
 if BUILD_BITCOIN_NODE
-  bin_PROGRAMS += bitcoin-node
+  bin_PROGRAMS += peercoin-node
 endif
 
 if BUILD_BITCOIN_CLI
