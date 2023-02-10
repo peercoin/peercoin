@@ -3362,7 +3362,10 @@ bool CWallet::Lock()
 
     {
         LOCK(cs_wallet);
-        vMasterKey.clear();
+        if (!vMasterKey.empty()) {
+            memory_cleanse(vMasterKey.data(), vMasterKey.size() * sizeof(decltype(vMasterKey)::value_type));
+            vMasterKey.clear();
+        }
     }
 
     NotifyStatusChanged(this);
