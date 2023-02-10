@@ -5,7 +5,7 @@
 bin_PROGRAMS += qt/peercoin-qt
 
 if BUILD_BITCOIN_GUI
-  bin_PROGRAMS += bitcoin-gui
+  bin_PROGRAMS += peercoin-gui
 endif
 
 EXTRA_LIBRARIES += qt/libbitcoinqt.a

@@ -1,6 +1,6 @@
-Peercoin 0.11.8 BETA
+Peercoin
 
-Copyright (c) 2011-2022 Peercoin Developers
+Copyright (c) 2011-2023 Peercoin Developers
 Distributed under the MIT software license, see the accompanying
 file COPYING or http://www.opensource.org/licenses/mit-license.php.
 This product includes software developed by the OpenSSL Project for use in

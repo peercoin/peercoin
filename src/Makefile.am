@@ -85,7 +85,7 @@ if BUILD_BITCOIND
 endif
 
 if BUILD_BITCOIN_NODE
-  bin_PROGRAMS += bitcoin-node
+  bin_PROGRAMS += peercoin-node
 endif
 
 if BUILD_BITCOIN_CLI
@@ -700,9 +700,9 @@ peercoin_cli_LDADD += $(CRYPTO_LIBS) $(EVENT_LIBS)
 peercoin_tx_SOURCES = \
   bitcoin-tx.cpp \
   timedatadummy.cpp
-peercoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(PTHREAD_FLAGS)
+peercoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 peercoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-peercoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+peercoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
 peercoin_tx_SOURCES += bitcoin-tx-res.rc
