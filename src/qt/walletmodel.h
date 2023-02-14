@@ -115,7 +115,7 @@ public:
     bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString(), int64_t nSeconds = 0, bool fMintOnly = false);
     bool changePassphrase(const SecureString &oldPass, const SecureString &newPass);
 
-    // RAI object for unlocking wallet, returned by requestUnlock()
+    // RAII object for unlocking wallet, returned by requestUnlock()
     class UnlockContext
     {
     public:
@@ -124,11 +124,12 @@ public:
 
         bool isValid() const { return valid; }
 
-        // Copy constructor is disabled.
+        // Disable unused copy/move constructors/assignments explicitly.
         UnlockContext(const UnlockContext&) = delete;
-        // Move operator and constructor transfer the context
-        UnlockContext(UnlockContext&& obj) { CopyFrom(std::move(obj)); }
-        UnlockContext& operator=(UnlockContext&& rhs) { CopyFrom(std::move(rhs)); return *this; }
+        UnlockContext(UnlockContext&&) = delete;
+        UnlockContext& operator=(const UnlockContext&) = delete;
+        UnlockContext& operator=(UnlockContext&&) = delete;
+
     private:
         WalletModel *wallet;
         bool valid;
