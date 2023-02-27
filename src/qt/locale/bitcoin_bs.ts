@@ -272,6 +272,14 @@
 <context>
     <name>bitcoin-core</name>
     <message>
+        <source>Settings file could not be read</source>
+        <translation type="unfinished">Nije moguće pročitati fajl postavki</translation>
+    </message>
+    <message>
+        <source>Settings file could not be written</source>
+        <translation type="unfinished">Nije moguće upisati datoteku postavki</translation>
+    </message>
+    <message>
         <source>Replaying blocks…</source>
         <translation type="unfinished">Reprodukcija blokova…</translation>
     </message>
@@ -424,10 +432,6 @@
         <translation type="unfinished">Nepodržana kategorija logivanja %s=%s.</translation>
     </message>
     <message>
-        <source>Upgrading UTXO database</source>
-        <translation type="unfinished">Nadogradnja UTXO baze podataka</translation>
-    </message>
-    <message>
         <source>User Agent comment (%s) contains unsafe characters.</source>
         <translation type="unfinished">Komentar korisničkog agenta (%s) sadrži nesigurne znakove.</translation>
     </message>
@@ -495,6 +499,10 @@
         <translation type="unfinished">Kreirajte novi novčanik</translation>
     </message>
     <message>
+        <source>&amp;Minimize</source>
+        <translation type="unfinished">&amp;Minimiziraj</translation>
+    </message>
+    <message>
         <source>Wallet:</source>
         <translation type="unfinished">Novčanik:</translation>
     </message>
@@ -536,12 +544,20 @@
         <translation type="unfinished">Šifrirajte privatne ključeve koji pripadaju vašem novčaniku</translation>
     </message>
     <message>
+        <source>Sign &amp;message…</source>
+        <translation type="unfinished">Potpiši &amp;poruku…</translation>
+    </message>
+    <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
         <translation type="unfinished">Potpišite poruke sa svojim Bitcoin adresama da biste dokazali da ste njihov vlasnik</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
         <translation type="unfinished">Potvrdite poruke kako biste bili sigurni da su potpisane navedenim Bitcoin adresama</translation>
+    </message>
+    <message>
+        <source>Open &amp;URI…</source>
+        <translation type="unfinished">Otvori &amp;URI…</translation>
     </message>
     <message>
         <source>Close Wallet…</source>
@@ -702,6 +718,11 @@
     <message>
         <source>No wallets available</source>
         <translation type="unfinished">Nema dostupnih novčanika</translation>
+    </message>
+    <message>
+        <source>Wallet Name</source>
+        <extracomment>Label of the input field where the name of the wallet is entered.</extracomment>
+        <translation type="unfinished">Ime Novčanika</translation>
     </message>
     <message>
         <source>&amp;Window</source>
@@ -1119,6 +1140,30 @@
 </context>
 <context>
     <name>Intro</name>
+    <message numerus="yes">
+        <source>%n GB of space available</source>
+        <translation type="unfinished">
+            <numerusform />
+            <numerusform />
+            <numerusform />
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>(of %n GB needed)</source>
+        <translation type="unfinished">
+            <numerusform />
+            <numerusform />
+            <numerusform />
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>(%n GB needed for full chain)</source>
+        <translation type="unfinished">
+            <numerusform />
+            <numerusform />
+            <numerusform />
+        </translation>
+    </message>
     <message>
         <source>At least %1 GB of data will be stored in this directory, and it will grow over time.</source>
         <translation type="unfinished">Najmanje %1 GB podataka bit će pohranjeno u ovom direktoriju i vremenom će rasti.</translation>
@@ -1163,10 +1208,6 @@
     <message>
         <source>As this is the first time the program is launched, you can choose where %1 will store its data.</source>
         <translation type="unfinished">Zato što je ovo prvi put da se program pokreće, možete odabrati gdje će %1 čuvati svoje podatke.</translation>
-    </message>
-    <message>
-        <source>When you click OK, %1 will begin to download and process the full %4 block chain (%2GB) starting with the earliest transactions in %3 when %4 initially launched.</source>
-        <translation type="unfinished">Kada kliknete OK, %1 će početi preuzimati i obrađivati ​​puni lanac blokova %4 (%2GB), počevši od najranijih transakcija u %3 kada je %4 prvi put pokrenut.</translation>
     </message>
     <message>
         <source>Reverting this setting requires re-downloading the entire blockchain. It is faster to download the full chain first and prune it later. Disables some advanced features.</source>

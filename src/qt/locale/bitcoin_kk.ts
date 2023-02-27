@@ -606,6 +606,10 @@
         <translation type="unfinished">Растық</translation>
     </message>
     <message>
+        <source>yes</source>
+        <translation type="unfinished">Иа</translation>
+    </message>
+    <message>
         <source>(no label)</source>
         <translation type="unfinished">(белгі жоқ)</translation>
     </message>
@@ -647,7 +651,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Қате</translation>
+        <translation type="unfinished">қате</translation>
     </message>
     <message>
         <source>This initial synchronisation is very demanding, and may expose hardware problems with your computer that had previously gone unnoticed. Each time you run %1, it will continue downloading where it left off.</source>
@@ -678,7 +682,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Қате</translation>
+        <translation type="unfinished">қате</translation>
     </message>
     </context>
 <context>
@@ -803,10 +807,6 @@
 <context>
     <name>TransactionDesc</name>
     <message>
-        <source>0/unconfirmed, %1</source>
-        <translation type="unfinished">0/расталмаған, %1</translation>
-    </message>
-    <message>
         <source>Date</source>
         <translation type="unfinished">Күні</translation>
     </message>
@@ -877,7 +877,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Қате</translation>
+        <translation type="unfinished">қате</translation>
     </message>
     </context>
 <context>
