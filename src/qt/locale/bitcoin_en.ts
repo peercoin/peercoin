@@ -55,7 +55,7 @@
     </message>
     <message>
         <location line="-30"/>
-        <location filename="../addressbookpage.cpp" line="+128"/>
+        <location filename="../addressbookpage.cpp" line="+127"/>
         <source>&amp;Delete</source>
         <translation>&amp;Delete</translation>
     </message>
@@ -178,7 +178,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="+51"/>
+        <location filename="../askpassphrasedialog.cpp" line="+49"/>
         <source>Encrypt wallet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -198,7 +198,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+47"/>
         <source>Confirm wallet encryption</source>
         <translation type="unfinished"></translation>
     </message>
@@ -224,7 +224,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-125"/>
+        <location line="-135"/>
         <source>Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -256,41 +256,57 @@
     <message>
         <location line="+6"/>
         <location line="+8"/>
-        <location line="+32"/>
-        <location line="+6"/>
+        <location line="+59"/>
         <source>Wallet encryption failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-45"/>
+        <location line="-66"/>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+38"/>
+        <location line="+59"/>
         <source>The supplied passphrases do not match.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+6"/>
+        <location line="-46"/>
+        <location line="+3"/>
+        <location line="+12"/>
         <source>Wallet unlock failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5"/>
-        <location line="+20"/>
+        <location line="-14"/>
+        <location line="+31"/>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-28"/>
+        <source>The passphrase entered for the wallet decryption is incorrect. It contains a null character (ie - a zero byte). If the passphrase was set with a version of this software prior to 25.0, please try again with only the characters up to — but not including — the first null character. If this is successful, please set a new passphrase to avoid this issue in the future.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
         <source>Wallet passphrase was successfully changed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+7"/>
+        <location line="+3"/>
+        <source>Passphrase change failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The old passphrase entered for the wallet decryption is incorrect. It contains a null character (ie - a zero byte). If the passphrase was set with a version of this software prior to 25.0, please try again with only the characters up to — but not including — the first null character.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
         <location line="+33"/>
         <source>Warning: The Caps Lock key is on!</source>
         <translation type="unfinished"></translation>
@@ -312,7 +328,7 @@
 <context>
     <name>BitcoinApplication</name>
     <message>
-        <location filename="../bitcoin.cpp" line="+288"/>
+        <location filename="../bitcoin.cpp" line="+283"/>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1232,7 +1248,7 @@
         <translation>&amp;Address</translation>
     </message>
     <message>
-        <location filename="../editaddressdialog.cpp" line="+29"/>
+        <location filename="../editaddressdialog.cpp" line="+27"/>
         <source>New sending address</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1631,7 +1647,7 @@
     <message>
         <location line="+7"/>
         <location line="+26"/>
-        <location filename="../modaloverlay.cpp" line="+155"/>
+        <location filename="../modaloverlay.cpp" line="+152"/>
         <source>Unknown…</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2160,7 +2176,7 @@
 <context>
     <name>OptionsModel</name>
     <message>
-        <location filename="../optionsmodel.cpp" line="+204"/>
+        <location filename="../optionsmodel.cpp" line="+198"/>
         <source>Could not read setting &quot;%1&quot;, %2.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2274,7 +2290,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../overviewpage.cpp" line="+185"/>
+        <location filename="../overviewpage.cpp" line="+184"/>
         <source>Privacy mode activated for the Overview tab. To unmask the values, uncheck Settings-&gt;Mask values.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2446,7 +2462,7 @@
 <context>
     <name>PaymentServer</name>
     <message>
-        <location filename="../paymentserver.cpp" line="+152"/>
+        <location filename="../paymentserver.cpp" line="+149"/>
         <source>Payment request error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2555,7 +2571,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished">Network</translation>
     </message>
     <message>
-        <location filename="../peertablemodel.cpp" line="+78"/>
+        <location filename="../peertablemodel.cpp" line="+77"/>
         <source>Inbound</source>
         <extracomment>An Inbound Connection from a Peer.</extracomment>
         <translation type="unfinished"></translation>
@@ -2693,7 +2709,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoin.cpp" line="-294"/>
+        <location filename="../bitcoin.cpp" line="-288"/>
         <source>Do you want to reset settings to default values, or to abort without making changes?</source>
         <extracomment>Explanatory text shown on startup when the settings file cannot be read. Prompts user to make a choice between resetting or aborting.</extracomment>
         <translation type="unfinished"></translation>
@@ -2705,17 +2721,17 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+393"/>
+        <location line="+386"/>
         <source>Error: Specified data directory &quot;%1&quot; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+9"/>
         <source>Error: Cannot parse configuration file: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+14"/>
         <source>Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2938,7 +2954,17 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+124"/>
+        <location line="+72"/>
+        <source>Whether we relay transactions to this peer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Transaction Relay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
         <source>Starting Block</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3060,17 +3086,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
-        <source>Whether the peer requested us to relay transactions.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Wants Tx Relay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
+        <location line="+52"/>
         <source>High bandwidth BIP152 compact block relay: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3338,7 +3354,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+316"/>
+        <location line="+320"/>
         <source>Ctrl+I</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3358,7 +3374,7 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-321"/>
+        <location line="-325"/>
         <source>Executing command using &quot;%1&quot; wallet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3485,7 +3501,7 @@ For more information on using this console, type %6.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../receivecoinsdialog.cpp" line="+47"/>
+        <location filename="../receivecoinsdialog.cpp" line="+46"/>
         <source>Copy &amp;URI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3578,7 +3594,7 @@ For more information on using this console, type %6.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../receiverequestdialog.cpp" line="+49"/>
+        <location filename="../receiverequestdialog.cpp" line="+48"/>
         <source>Request payment to %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4177,7 +4193,7 @@ For more information on using this console, type %6.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signverifymessagedialog.cpp" line="+120"/>
+        <location filename="../signverifymessagedialog.cpp" line="+119"/>
         <location line="+99"/>
         <source>The entered address is invalid.</source>
         <translation type="unfinished"></translation>
@@ -4251,7 +4267,7 @@ For more information on using this console, type %6.
 <context>
     <name>SplashScreen</name>
     <message>
-        <location filename="../splashscreen.cpp" line="+187"/>
+        <location filename="../splashscreen.cpp" line="+177"/>
         <source>(press q to shutdown and continue later)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4264,7 +4280,7 @@ For more information on using this console, type %6.
 <context>
     <name>TrafficGraphWidget</name>
     <message>
-        <location filename="../trafficgraphwidget.cpp" line="+79"/>
+        <location filename="../trafficgraphwidget.cpp" line="+74"/>
         <source>kB/s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4511,7 +4527,7 @@ For more information on using this console, type %6.
 <context>
     <name>TransactionTableModel</name>
     <message>
-        <location filename="../transactiontablemodel.cpp" line="+261"/>
+        <location filename="../transactiontablemodel.cpp" line="+257"/>
         <source>Date</source>
         <translation type="unfinished">Date</translation>
     </message>
@@ -5041,11 +5057,21 @@ Go to File &gt; Open Wallet to load a wallet.
     </message>
     <message>
         <location line="+4"/>
+        <source>Disk space for %s may not accommodate the block files. Approximately %u GB of data will be stored in this directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Distributed under the MIT software license, see the accompanying file %s or %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>Error loading wallet. Wallet requires blocks to be downloaded, and software does not currently support loading wallets while blocks are being downloaded out of order when using assumeutxo snapshots. Wallet should be able to load successfully after node sync reaches height %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5145,7 +5171,7 @@ Go to File &gt; Open Wallet to load a wallet.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="-90"/>
         <source>The -txindex upgrade started by a previous version cannot be completed. Restart with the previous version or run a full -reindex.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5312,6 +5338,11 @@ Go to File &gt; Open Wallet to load a wallet.
     <message>
         <location line="+1"/>
         <source>Input not found or already spent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Insufficient dbcache for block verification</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
