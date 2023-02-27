@@ -3361,7 +3361,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
             if (nCredit > nCombineThreshold)
                 break;
             // Stop adding inputs if reached reserve limit
-            if (nCredit + pcoin.txout.nValue > nBalance - nReserveBalance.value())
+            if (nCredit + pcoin.txout.nValue > nBalance - (nReserveBalance ? nReserveBalance.value() : 0))
                 break;
             // Do not add additional significant input
             if (pcoin.txout.nValue > nCombineThreshold)
