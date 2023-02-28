@@ -567,7 +567,7 @@ inspecting signatures in Mach-O binaries.")
   (list ;; The Basics
         bash-minimal
         which
-        coreutils
+        coreutils-minimal
         util-linux
         ;; File(system) inspection
         file
