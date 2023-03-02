@@ -2619,10 +2619,10 @@ bool Chainstate::FlushStateToDisk(
 
         const auto nNow = GetTime<std::chrono::microseconds>();
         // Avoid writing/flushing immediately after startup.
-        if (m_last_write.count() == 0) {
+        if (m_last_write == decltype(m_last_write){}) {
             m_last_write = nNow;
         }
-        if (m_last_flush.count() == 0) {
+        if (m_last_flush == decltype(m_last_flush){}) {
             m_last_flush = nNow;
         }
         // The cache is large and we're within 10% and 10 MiB of the limit, but we have time now (not in the middle of a block processing).
