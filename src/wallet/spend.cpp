@@ -384,9 +384,6 @@ FilteredOutputGroups GroupOutputs(const CWallet& wallet,
         // Allowing partial spends means no grouping. Each COutput gets its own OutputGroup
         for (const auto& [type, outputs] : coins.coins) {
             for (const COutput& output : outputs) {
-                // Skip outputs we cannot spend
-                if (!output.spendable) continue;
-
                 // Get mempool info
                 size_t ancestors, descendants;
                 wallet.chain().getTransactionAncestry(output.outpoint.hash, ancestors, descendants);
@@ -442,9 +439,6 @@ FilteredOutputGroups GroupOutputs(const CWallet& wallet,
     ScriptPubKeyToOutgroup spk_to_positive_groups_map;
     for (const auto& [type, outs] : coins.coins) {
         for (const COutput& output : outs) {
-            // Skip outputs we cannot spend
-            if (!output.spendable) continue;
-
             size_t ancestors, descendants;
             wallet.chain().getTransactionAncestry(output.outpoint.hash, ancestors, descendants);
 
