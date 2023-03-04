@@ -893,6 +893,7 @@ RPCHelpMan send();
 RPCHelpMan walletprocesspsbt();
 RPCHelpMan walletcreatefundedpsbt();
 RPCHelpMan signrawtransactionwithwallet();
+RPCHelpMan settxfee();
 
 // signmessage
 RPCHelpMan signmessage();
@@ -962,6 +963,7 @@ static const CRPCCommand commands[] =
     { "wallet",             &sethdseed,                      },
     { "wallet",             &setlabel,                       },
     { "wallet",             &setwalletflag,                  },
+    { "wallet",             &settxfee,                       },
     { "wallet",             &signmessage,                    },
     { "wallet",             &signrawtransactionwithwallet,   },
     { "wallet",             &unloadwallet,                   },
