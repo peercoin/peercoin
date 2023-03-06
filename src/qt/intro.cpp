@@ -17,6 +17,7 @@
 #include <qt/optionsmodel.h>
 
 #include <interfaces/node.h>
+#include <util/fs_helpers.h>
 #include <util/system.h>
 #include <validation.h>
 
