@@ -141,6 +141,11 @@ struct CoinSelectionParams {
      * associated with the same address. This helps reduce privacy leaks resulting from address
      * reuse. Dust outputs are not eligible to be added to output groups and thus not considered. */
     bool m_avoid_partial_spends = false;
+    /**
+     * When true, allow unsafe coins to be selected during Coin Selection. This may spend unconfirmed outputs:
+     * 1) Received from other wallets, 2) replacing other txs, 3) that have been replaced.
+     */
+    bool m_include_unsafe_inputs = false;
 
     CoinSelectionParams(size_t change_output_size, size_t change_spend_size,
                         size_t tx_noinputs_size, bool avoid_partial) :
