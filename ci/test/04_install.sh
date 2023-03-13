@@ -59,6 +59,10 @@ if [ -z "$DANGER_RUN_CI_ON_HOST" ]; then
                   --name $CONTAINER_NAME \
                   $CONTAINER_NAME)
   export CI_CONTAINER_ID
+  export CI_EXEC_CMD_PREFIX_ROOT="docker exec -u 0 $CI_CONTAINER_ID"
+  export CI_EXEC_CMD_PREFIX="docker exec -u $LOCAL_UID $CI_CONTAINER_ID"
+  $CI_EXEC_CMD_PREFIX_ROOT rsync --archive --stats --human-readable /ci_base_install/ "${BASE_ROOT_DIR}"
+  $CI_EXEC_CMD_PREFIX_ROOT rsync --archive --stats --human-readable /ro_base/ "$BASE_ROOT_DIR"
 
   # Create a non-root user inside the container which matches the local user.
   #
@@ -67,8 +71,6 @@ if [ -z "$DANGER_RUN_CI_ON_HOST" ]; then
   docker exec "$CI_CONTAINER_ID" useradd -u "$LOCAL_UID" -o -m "$LOCAL_USER"
   docker exec "$CI_CONTAINER_ID" groupmod -o -g "$LOCAL_GID" "$LOCAL_USER"
   docker exec "$CI_CONTAINER_ID" chown -R "$LOCAL_USER":"$LOCAL_USER" "${BASE_ROOT_DIR}"
-  export CI_EXEC_CMD_PREFIX_ROOT="docker exec -u 0 $CI_CONTAINER_ID"
-  export CI_EXEC_CMD_PREFIX="docker exec -u $LOCAL_UID $CI_CONTAINER_ID"
 else
   echo "Running on host system without docker wrapper"
   "${BASE_ROOT_DIR}/ci/test/01_base_install.sh"
@@ -84,17 +86,6 @@ export -f CI_EXEC
 export -f CI_EXEC_ROOT
 
 CI_EXEC mkdir -p "${BINS_SCRATCH_DIR}"
-
-if [ -n "$PIP_PACKAGES" ]; then
-  if [ "$CI_OS_NAME" == "macos" ]; then
-    sudo -H pip3 install --upgrade pip
-    # shellcheck disable=SC2086
-    IN_GETOPT_BIN="$(brew --prefix gnu-getopt)/bin/getopt" ${CI_RETRY_EXE} pip3 install --user $PIP_PACKAGES
-  else
-    # shellcheck disable=SC2086
-    ${CI_RETRY_EXE} CI_EXEC pip3 install --user $PIP_PACKAGES
-  fi
-fi
 
 if [ "$CI_OS_NAME" == "macos" ]; then
   top -l 1 -s 0 | awk ' /PhysMem/ {print}'
