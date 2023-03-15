@@ -15,6 +15,7 @@
 #include <outputtype.h>
 #include <psbt.h>
 #include <tinyformat.h>
+#include <util/fs.h>
 #include <util/hasher.h>
 #include <util/message.h>
 #include <util/result.h>

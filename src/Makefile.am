@@ -150,7 +150,6 @@ BITCOIN_CORE_H = \
   deploymentinfo.h \
   external_signer.h \
   flatfile.h \
-  fs.h \
   headerssync.h \
   httprpc.h \
   httpserver.h \
@@ -681,7 +680,6 @@ libbitcoin_util_a_SOURCES = \
   support/lockedpool.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
-  fs.cpp \
   logging.cpp \
   random.cpp \
   randomenv.cpp \

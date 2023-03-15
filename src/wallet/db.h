@@ -9,6 +9,7 @@
 #include <fs.h>
 #include <streams.h>
 #include <support/allocators/secure.h>
+#include <util/fs.h>
 
 #include <atomic>
 #include <memory>

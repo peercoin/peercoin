@@ -8,7 +8,6 @@
 #include <clientversion.h>
 #include <consensus/validation.h>
 #include <flatfile.h>
-#include <fs.h>
 #include <hash.h>
 #include <kernel.h>
 #include <pow.h>
@@ -17,6 +16,7 @@
 #include <signet.h>
 #include <streams.h>
 #include <undo.h>
+#include <util/fs.h>
 #include <util/syscall_sandbox.h>
 #include <util/system.h>
 #include <validation.h>
