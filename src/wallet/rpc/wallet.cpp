@@ -216,6 +216,10 @@ static RPCHelpMan loadwallet()
                     {
                         {RPCResult::Type::STR, "name", "The wallet name if loaded successfully."},
                         {RPCResult::Type::STR, "warning", "Warning messages, if any, related to loading the wallet. Multiple messages will be delimited by newlines."},
+                        {RPCResult::Type::ARR, "warnings", /*optional=*/true, "Warning messages, if any, related to loading the wallet.",
+                        {
+                            {RPCResult::Type::STR, "", ""},
+                        }},
                     }
                 },
                 RPCExamples{
@@ -249,6 +253,7 @@ static RPCHelpMan loadwallet()
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("name", wallet->GetName());
     obj.pushKV("warning", Join(warnings, Untranslated("\n")).original);
+    PushWarnings(warnings, obj);
 
     return obj;
 },
@@ -344,6 +349,10 @@ static RPCHelpMan createwallet()
             {
                 {RPCResult::Type::STR, "name", "The wallet name if created successfully. If the wallet was created using a full path, the wallet_name will be the full path."},
                 {RPCResult::Type::STR, "warning", "Warning messages, if any, related to creating the wallet. Multiple messages will be delimited by newlines."},
+                {RPCResult::Type::ARR, "warnings", /*optional=*/true, "Warning messages, if any, related to creating the wallet.",
+                {
+                    {RPCResult::Type::STR, "", ""},
+                }},
             }
         },
         RPCExamples{
@@ -414,6 +423,7 @@ static RPCHelpMan createwallet()
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("name", wallet->GetName());
     obj.pushKV("warning", Join(warnings, Untranslated("\n")).original);
+    PushWarnings(warnings, obj);
 
     return obj;
 },
@@ -431,6 +441,10 @@ static RPCHelpMan unloadwallet()
                 },
                 RPCResult{RPCResult::Type::OBJ, "", "", {
                     {RPCResult::Type::STR, "warning", "Warning messages, if any, related to unloading the wallet. Multiple messages will be delimited by newlines."},
+                    {RPCResult::Type::ARR, "warnings", /*optional=*/true, "Warning messages, if any, related to unloading the wallet.",
+                    {
+                        {RPCResult::Type::STR, "", ""},
+                    }},
                 }},
                 RPCExamples{
                     HelpExampleCli("unloadwallet", "wallet_name")
@@ -473,6 +487,8 @@ static RPCHelpMan unloadwallet()
 
     UniValue result(UniValue::VOBJ);
     result.pushKV("warning", Join(warnings, Untranslated("\n")).original);
+    PushWarnings(warnings, result);
+
     return result;
 },
     };
