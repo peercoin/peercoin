@@ -2468,7 +2468,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
                 return error("ConnectBlock(): CheckInputScripts on %s failed with %s",
                     tx.GetHash().ToString(), state.ToString());
             }
-            control.Add(vChecks);
+            control.Add(std::move(vChecks));
         }
 
         CTxUndo undoDummy;
