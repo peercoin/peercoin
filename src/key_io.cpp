@@ -83,7 +83,13 @@ CTxDestination DecodeDestination(const std::string& str, const CChainParams& par
     error_str = "";
 
     // Note this will be false if it is a valid Bech32 address for a different network
-    bool is_bech32 = (ToLower(str.substr(0, params.Bech32HRP().size())) == params.Bech32HRP());
+    bool is_bech32 = false;
+    bech32::DecodeResult dec;
+    // peercoin segwit prefix is pc, starts with same letter as legacy address, so we need to try to decode if it looks like segwit
+    if (ToLower(str.substr(0, params.Bech32HRP().size())) == params.Bech32HRP() && str.length()>13 && str[params.Bech32HRP().size()]=='1') {
+        dec = bech32::Decode(str);
+        is_bech32 = (dec.encoding != bech32::Encoding::INVALID);
+    }
 
     if (!is_bech32 && DecodeBase58Check(str, data, 21)) {
         // base58-encoded Bitcoin addresses.
@@ -123,7 +129,7 @@ CTxDestination DecodeDestination(const std::string& str, const CChainParams& par
     }
 
     data.clear();
-    const auto dec = bech32::Decode(str);
+
     if ((dec.encoding == bech32::Encoding::BECH32 || dec.encoding == bech32::Encoding::BECH32M) && dec.data.size() > 0) {
         // Bech32 decoding
         if (dec.hrp != params.Bech32HRP()) {
