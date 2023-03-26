@@ -1029,6 +1029,7 @@ static void ParseGetInfoResult(UniValue& result)
     }
 
     std::vector<std::string> formatted_proxies;
+    formatted_proxies.reserve(ordered_proxies.size());
     for (const std::string& proxy : ordered_proxies) {
         formatted_proxies.emplace_back(strprintf("%s (%s)", proxy, Join(proxy_networks.find(proxy)->second, ", ")));
     }
