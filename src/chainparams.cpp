@@ -199,8 +199,8 @@ public:
 
         consensus.SegwitHeight = 394215;
 
-        consensus.nMinimumChainWork = uint256S("0x00");
-        consensus.defaultAssumeValid = uint256S("0x0000000002e9e7b00e1f6dc5123a04aad68dd0f0968d8c7aa45f6640795c37b1"); //1135275
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000a39348f70f067a");  // 500000
+        consensus.defaultAssumeValid = uint256S("0xa40f64181ee4a3bedda2eae0107d9da0e049fe285b6e6e2a7f1f11697f22c7ed"); // 500000
 
         pchMessageStart[0] = 0xcb;
         pchMessageStart[1] = 0xf2;
@@ -208,7 +208,7 @@ public:
         pchMessageStart[3] = 0xef;
         nDefaultPort = 9903;
         nPruneAfterHeight = 1000;
-        m_assumed_blockchain_size = 2;
+        m_assumed_blockchain_size = 1;
 
         genesis = CreateGenesisBlock(1345083810, 1345090000, 122894938, 0x1d0fffff, 1, 0);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -262,13 +262,13 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x1b83b33894d51be0b8b323bfab093f638915236e0e40ba3b52bb33fdbc4053cd (height 442735)
-            1632053274, // * UNIX timestamp of last known number of transactions
-            863997,     // * total number of transactions between genesis and that timestamp
+            // Data as of block a40f64181ee4a3bedda2eae0107d9da0e049fe285b6e6e2a7f1f11697f22c7ed (height 500000)
+            1664282408, // * UNIX timestamp of last known number of transactions
+            980877,     // * total number of transactions between genesis and that timestamp
 
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            0.003020718 // * estimated number of transactions per second after that timestamp
-                        // 863997/(1632053274-1346029522) = 0.003020718
+            0.003082068 // * estimated number of transactions per second after that timestamp
+                        //   980877/(1664282408-1346029522) = 0.003082068
 
         };
     }
