@@ -229,6 +229,14 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
                 return false;
             }
         }
+
+        // peercoin check for exceeding max witness size
+        unsigned int witnesssize = 0;
+        for (const auto& item : tx.vin[i].scriptWitness.stack) {
+            witnesssize += item.size();
+        }
+        if (witnesssize > MAX_STANDARD_WITNESS_SIZE)
+            return false;
     }
     return true;
 }
