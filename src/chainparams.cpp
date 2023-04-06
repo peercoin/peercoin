@@ -87,8 +87,8 @@ public:
 
         consensus.SegwitHeight = 455470;
 
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000002a0fac8b39f476"); // 350000
-        consensus.defaultAssumeValid = uint256S("0xa3a0ffa0dbca75923ad6a53d3878d62f8b35c363282df3f13ded9e4fda921e63");  // 380000
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000516e58fb3669ea"); // 650000
+        consensus.defaultAssumeValid = uint256S("0x3125be5493e80431952593cce42b160019671108103735509238830939e1c9a3");  // 650000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -101,7 +101,7 @@ public:
         pchMessageStart[3] = 0xe5;
         nDefaultPort = 9901;
         nPruneAfterHeight = 100000;
-        m_assumed_blockchain_size = 1;
+        m_assumed_blockchain_size = 2;
 
         genesis = CreateGenesisBlock(1345083810, 1345084287, 2179302059u, 0x1d00ffff, 1, 0);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -158,12 +158,12 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 967c14abf21214639aeff0a270c4543cd3b80fe53178384ac5aa3c277662f1d0 (height 589659).
-            1635782211, // * UNIX timestamp of last known number of transactions
-            1992832,    // * total number of transactions between genesis and that timestamp
+            // Data as of block 3125be5493e80431952593cce42b160019671108103735509238830939e1c9a3 (height 650000).
+            1666903503, // * UNIX timestamp of last known number of transactions
+            2145533,    // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the ChainStateFlushed debug.log lines)
-            0.006862798 // * estimated number of transactions per second after that timestamp
-                        // 1992832/(1635782211-1345400356) = 0.006862798
+            0.006673443 // * estimated number of transactions per second after that timestamp
+                        //   2145533/(1666903503-1345400356) = 0.006673443
         };
     }
 };
@@ -199,8 +199,8 @@ public:
 
         consensus.SegwitHeight = 394215;
 
-        consensus.nMinimumChainWork = uint256S("0x00");
-        consensus.defaultAssumeValid = uint256S("0x0000000002e9e7b00e1f6dc5123a04aad68dd0f0968d8c7aa45f6640795c37b1"); //1135275
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000a39348f70f067a");  // 500000
+        consensus.defaultAssumeValid = uint256S("0xa40f64181ee4a3bedda2eae0107d9da0e049fe285b6e6e2a7f1f11697f22c7ed"); // 500000
 
         pchMessageStart[0] = 0xcb;
         pchMessageStart[1] = 0xf2;
@@ -208,7 +208,7 @@ public:
         pchMessageStart[3] = 0xef;
         nDefaultPort = 9903;
         nPruneAfterHeight = 1000;
-        m_assumed_blockchain_size = 2;
+        m_assumed_blockchain_size = 1;
 
         genesis = CreateGenesisBlock(1345083810, 1345090000, 122894938, 0x1d0fffff, 1, 0);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -262,13 +262,13 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x1b83b33894d51be0b8b323bfab093f638915236e0e40ba3b52bb33fdbc4053cd (height 442735)
-            1632053274, // * UNIX timestamp of last known number of transactions
-            863997,     // * total number of transactions between genesis and that timestamp
+            // Data as of block a40f64181ee4a3bedda2eae0107d9da0e049fe285b6e6e2a7f1f11697f22c7ed (height 500000)
+            1664282408, // * UNIX timestamp of last known number of transactions
+            980877,     // * total number of transactions between genesis and that timestamp
 
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            0.003020718 // * estimated number of transactions per second after that timestamp
-                        // 863997/(1632053274-1346029522) = 0.003020718
+            0.003082068 // * estimated number of transactions per second after that timestamp
+                        //   980877/(1664282408-1346029522) = 0.003082068
 
         };
     }
