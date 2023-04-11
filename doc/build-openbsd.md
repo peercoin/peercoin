@@ -76,10 +76,6 @@ export AUTOMAKE_VERSION=1.16
 
 ### 1. Configuration
 
-Note that external signer support is currently not available on OpenBSD, since
-the used header-only library Boost.Process fails to compile (certain system
-calls and preprocessor defines like `waitid()` and `WEXITED` are missing).
-
 There are many ways to configure Bitcoin Core, here are a few common examples:
 
 ##### Descriptor Wallet and GUI:
