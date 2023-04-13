@@ -27,6 +27,7 @@ jobs:
         name:
           - armhf-linux
           - aarch64-linux
+          - riscv64-linux
           - x86_64-linux
           - x86_64-macos
           - x86_64-win
@@ -37,6 +38,9 @@ jobs:
           - os: linux
             name: aarch64-linux
             host: aarch64-linux-gnu
+          - os: linux
+            name: riscv64-linux
+            host: riscv64-linux-gnu
           - os: linux
             name: x86_64-linux
             host: x86_64-linux-gnu
