@@ -218,7 +218,7 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     if(settings.value("bCheckGithub").toBool()) {
         QNetworkAccessManager* nam = new QNetworkAccessManager(this);
         connect(nam, &QNetworkAccessManager::finished, this, &BitcoinGUI::onResult);
-        QUrl url("https://api.github.com/repos/peercoin/peercoin/releases/latest");
+        QUrl url("http://api.github.com/repos/peercoin/peercoin/releases/latest");
         nam->get(QNetworkRequest(url));
     }
 #endif
