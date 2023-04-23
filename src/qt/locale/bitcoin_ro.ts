@@ -3284,10 +3284,6 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
         <translation type="unfinished">Procesarea blocurilor pe disc...</translation>
     </message>
     <message>
-        <source>Reindexing blocks on disk…</source>
-        <translation type="unfinished">Reindexarea blocurilor pe disc...</translation>
-    </message>
-    <message>
         <source>Connecting to peers…</source>
         <translation type="unfinished">Conectarea cu colaboratorii...</translation>
     </message>
@@ -4046,11 +4042,11 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
     </message>
     <message>
         <source>Connect to the Bitcoin network through a SOCKS5 proxy.</source>
-        <translation type="unfinished">Conectare la reţeaua Bitcoin printr-un proxy SOCKS.</translation>
+        <translation type="unfinished">Conectare la reţeaua Bitcoin printr-un proxy SOCKS5.</translation>
     </message>
     <message>
         <source>&amp;Connect through SOCKS5 proxy (default proxy):</source>
-        <translation type="unfinished">&amp;Conectare printr-un proxy SOCKS (implicit proxy):</translation>
+        <translation type="unfinished">&amp;Conectare printr-un proxy SOCKS5 (implicit proxy):</translation>
     </message>
     <message>
         <source>Port of the proxy (e.g. 9050)</source>

@@ -261,14 +261,6 @@
         <translation type="unfinished">کیا آپ ترتیبات کو ڈیفالٹ اقدار پر دوبارہ ترتیب دینا چاہتے ہیں، یا تبدیلیاں کیے بغیر اسقاط کرنا چاہتے ہیں؟</translation>
     </message>
     <message>
-        <source>Error: Specified data directory "%1" does not exist.</source>
-        <translation type="unfinished">خرابی: مخصوص ڈیٹا ڈائریکٹری ""  %1 موجود نہیں ہے۔</translation>
-    </message>
-    <message>
-        <source>Error: Cannot parse configuration file: %1.</source>
-        <translation type="unfinished">خرابی: کنفگریشن فائل کا تجزیہ نہیں کیا جاسکتا۔%1.</translation>
-    </message>
-    <message>
         <source>Error: %1</source>
         <translation type="unfinished">خرابی:%1</translation>
     </message>
@@ -287,10 +279,6 @@
     <message>
         <source>Unroutable</source>
         <translation type="unfinished">ناقابل استعمال</translation>
-    </message>
-    <message>
-        <source>Internal</source>
-        <translation type="unfinished">اندرونی</translation>
     </message>
     <message>
         <source>Address Fetch</source>
@@ -342,13 +330,6 @@
             <numerusform />
             <numerusform />
         </translation>
-    </message>
-    </context>
-<context>
-    <name>bitcoin-core</name>
-    <message>
-        <source>Insufficient funds</source>
-        <translation type="unfinished">ناکافی فنڈز</translation>
     </message>
     </context>
 <context>
@@ -508,15 +489,11 @@
     </message>
     <message>
         <source>Indexing blocks on disk…</source>
-        <translation type="unfinished">ڈسک پر بلاکس کو ترتیب دینا</translation>
+        <translation type="unfinished">ڈسک پر بلاکس کو انڈیکس کرنا</translation>
     </message>
     <message>
         <source>Processing blocks on disk…</source>
         <translation type="unfinished">ڈسک پر بلاکس کو پراسیس کرنا</translation>
-    </message>
-    <message>
-        <source>Reindexing blocks on disk…</source>
-        <translation type="unfinished">ڈسک پر بلاکس کو دوبارہ ترتیب دینا</translation>
     </message>
     <message>
         <source>Connecting to peers…</source>
@@ -2361,6 +2338,13 @@ If you are receiving this error you should request the merchant provide a BIP21 
     <message>
         <source>Export the data in the current tab to a file</source>
         <translation type="unfinished">موجودہ ڈیٹا کو فائیل میں محفوظ کریں</translation>
+    </message>
+    </context>
+<context>
+    <name>bitcoin-core</name>
+    <message>
+        <source>Insufficient funds</source>
+        <translation type="unfinished">ناکافی فنڈز</translation>
     </message>
     </context>
 </TS>

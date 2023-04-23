@@ -171,7 +171,42 @@
         <source>The supplied passphrases do not match.</source>
         <translation type="unfinished">Mật khẩu đã nhập không đúng.</translation>
     </message>
-    </context>
+    <message>
+        <source>Wallet unlock failed</source>
+        <translation type="unfinished">Mở khóa ví thất bại</translation>
+    </message>
+    <message>
+        <source>The passphrase entered for the wallet decryption was incorrect.</source>
+        <translation type="unfinished">Cụm mật khẩu đã nhập để giải mã ví không đúng.</translation>
+    </message>
+    <message>
+        <source>The passphrase entered for the wallet decryption is incorrect. It contains a null character (ie - a zero byte). If the passphrase was set with a version of this software prior to 25.0, please try again with only the characters up to — but not including — the first null character. If this is successful, please set a new passphrase to avoid this issue in the future.</source>
+        <translation type="unfinished">Cụm mật khẩu đã nhập để giải mã ví không đúng. Nó chứa ký tự rỗng (có dung lượng 0 byte). Nếu nó đã được thiết đặt từ một phiên bản cũ hơn phiên bản 25.0 của phần mềm này, vui lòng thử lại với các ký tự đứng trước ký tự rỗng đầu tiên (không bao gồm chính nó). Nếu cách này thành công, vui lòng thiết đặt cụm mật khẩu mới để tránh xảy ra sự cố tương tự trong tương lai.</translation>
+    </message>
+    <message>
+        <source>Wallet passphrase was successfully changed.</source>
+        <translation type="unfinished">Cụm mật khẩu thay đổi thành công.</translation>
+    </message>
+    <message>
+        <source>Passphrase change failed</source>
+        <translation type="unfinished">Thay đổi cụm mật khẩu thất bại.</translation>
+    </message>
+    <message>
+        <source>The old passphrase entered for the wallet decryption is incorrect. It contains a null character (ie - a zero byte). If the passphrase was set with a version of this software prior to 25.0, please try again with only the characters up to — but not including — the first null character.</source>
+        <translation type="unfinished">Cụm mật khẩu cũ đã nhập để giải mã ví không đúng. Nó chứa ký tự rỗng (có dung lượng 0 byte). Nếu nó đã được thiết đặt từ một phiên bản cũ hơn phiên bản 25.0 của phần mềm này, vui lòng thử lại với các ký tự đứng trước ký tự rỗng đầu tiên (không bao gồm chính nó).</translation>
+    </message>
+    <message>
+        <source>Warning: The Caps Lock key is on!</source>
+        <translation type="unfinished">Cảnh báo: Phím Caps Lock đang được kích hoạt!</translation>
+    </message>
+</context>
+<context>
+    <name>BanTableModel</name>
+    <message>
+        <source>Banned Until</source>
+        <translation type="unfinished">Bị cấm cho đến</translation>
+    </message>
+</context>
 <context>
     <name>BitcoinApplication</name>
     <message>
@@ -245,122 +280,55 @@
     </message>
     </context>
 <context>
-    <name>bitcoin-core</name>
-    <message>
-        <source>Settings file could not be read</source>
-        <translation type="unfinished">Không thể đọc tệp cài đặt</translation>
-    </message>
-    <message>
-        <source>Settings file could not be written</source>
-        <translation type="unfinished">Không thể ghi tệp cài đặt</translation>
-    </message>
-    <message>
-        <source>Error reading %s! Transaction data may be missing or incorrect. Rescanning wallet.</source>
-        <translation type="unfinished">Lỗi khi đọc%s! Dữ liệu giao dịch có thể bị thiếu hoặc không chính xác. Đang quét lại ví.</translation>
-    </message>
-    <message>
-        <source>Invalid or corrupt peers.dat (%s). If you believe this is a bug, please report it to %s. As a workaround, you can move the file (%s) out of the way (rename, move, or delete) to have a new one created on the next start.</source>
-        <translation type="unfinished">peers.dat (%s) không hợp lệ hoặc bị hỏng. Nếu bạn cho rằng đây là lỗi, vui lòng báo cáo cho %s. Để giải quyết vấn đề này, bạn có thể di chuyển tệp (%s) ra khỏi (đổi tên, di chuyển hoặc xóa) để tạo tệp mới vào lần bắt đầu tiếp theo.</translation>
-    </message>
-    <message>
-        <source>Prune mode is incompatible with -reindex-chainstate. Use full -reindex instead.</source>
-        <translation type="unfinished">Chế độ rút gọn không tương thích với -reindex-chainstate. Sử dụng -reindex ở chế độ đầy đủ.</translation>
-    </message>
-    <message>
-        <source>The block index db contains a legacy 'txindex'. To clear the occupied disk space, run a full -reindex, otherwise ignore this error. This error message will not be displayed again.</source>
-        <translation type="unfinished">Chỉ mục khối db chứa một 'txindex' kế thừa. Để xóa dung lượng ổ đĩa bị chiếm dụng, hãy chạy -reindex đầy đủ, nếu không, hãy bỏ qua lỗi này. Thông báo lỗi này sẽ không được hiển thị lại.</translation>
-    </message>
-    <message>
-        <source>This is the maximum transaction fee you pay (in addition to the normal fee) to prioritize partial spend avoidance over regular coin selection.</source>
-        <translation type="unfinished">Đây là phí giao dịch tối đa bạn phải trả (ngoài phí thông thường) để ưu tiên việc tránh chi xài một phần (partial spend) so với việc lựa chọn đồng coin thông thường.</translation>
-    </message>
-    <message>
-        <source>Unsupported chainstate database format found. Please restart with -reindex-chainstate. This will rebuild the chainstate database.</source>
-        <translation type="unfinished">Tìm thấy định dạng cơ sở dữ liệu trạng thái chuỗi không được hỗ trợ. Vui lòng khỏi động lại với -reindex-chainstate. Việc này sẽ tái thiết lập cơ sở dữ liệu trạng thái chuỗi.</translation>
-    </message>
-    <message>
-        <source>Wallet created successfully. The legacy wallet type is being deprecated and support for creating and opening legacy wallets will be removed in the future.</source>
-        <translation type="unfinished">Ví đã được tạo thành công. Loại ví Legacy đang bị phản đối và việc hỗ trợ mở các ví Legacy mới sẽ bị loại bỏ trong tương lai</translation>
-    </message>
-    <message>
-        <source>Cannot set -forcednsseed to true when setting -dnsseed to false.</source>
-        <translation type="unfinished">Không thể đặt -forcednsseed thành true khi đặt -dnsseed thành false.</translation>
-    </message>
-    <message>
-        <source>The -txindex upgrade started by a previous version cannot be completed. Restart with the previous version or run a full -reindex.</source>
-        <translation type="unfinished">Không thể hoàn tất nâng cấp -txindex được bắt đầu bởi phiên bản trước. Khởi động lại với phiên bản trước đó hoặc chạy -reindex đầy đủ.</translation>
-    </message>
-    <message>
-        <source>%s request to listen on port %u. This port is considered "bad" and thus it is unlikely that any Bitcoin Core peers connect to it. See doc/p2p-bad-ports.md for details and a full list.</source>
-        <translation type="unfinished">%s yêu cầu lắng nghe trên cổng %u. Cổng này được coi là "xấu" và do đó không có khả năng bất kỳ ngang hàng Bitcoin Core nào kết nối với nó. Xem doc/p2p-bad-ports.md để biết chi tiết và danh sách đầy đủ.</translation>
-    </message>
-    <message>
-        <source>-reindex-chainstate option is not compatible with -blockfilterindex. Please temporarily disable blockfilterindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes.</source>
-        <translation type="unfinished">reindex-chainstate tùy chọn không tương thích với -blockfilterindex. Vui lòng tạp thời vô hiệu hóa blockfilterindex trong khi sử dụng -reindex-chainstate, hoặc thay thế -reindex-chainstate bởi -reindex để tái thiết lập đẩy đủ tất cả các chỉ số.</translation>
-    </message>
-    <message>
-        <source>-reindex-chainstate option is not compatible with -coinstatsindex. Please temporarily disable coinstatsindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes.</source>
-        <translation type="unfinished">reindex-chainstate tùy chọn không tương thích với -coinstatsindex. Vui lòng tạp thời vô hiệu hóa coinstatsindex trong khi sử dụng -reindex-chainstate, hoặc thay thế -reindex-chainstate bởi -reindex để tái thiết lập đẩy đủ tất cả các chỉ số.</translation>
-    </message>
-    <message>
-        <source>-reindex-chainstate option is not compatible with -txindex. Please temporarily disable txindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes.</source>
-        <translation type="unfinished">reindex-chainstate tùy chọn không tương thích với -txindex. Vui lòng tạp thời vô hiệu hóa txindex trong khi sử dụng -reindex-chainstate, hoặc thay thế -reindex-chainstate bởi -reindex để tái thiết lập đẩy đủ tất cả các chỉ số.</translation>
-    </message>
-    <message>
-        <source>Assumed-valid: last wallet synchronisation goes beyond available block data. You need to wait for the background validation chain to download more blocks.</source>
-        <translation type="unfinished">Giả sử hợp lệ: lần đồng bộ ví gần nhất vượt ra ngoài dữ liệu khả dụng của khối. Bạn cần phải chờ quá trình xác thực nền tảng của chuối để tải về nhiều khối hơn.</translation>
-    </message>
-    <message>
-        <source>Cannot provide specific connections and have addrman find outgoing connections at the same time.</source>
-        <translation type="unfinished">Không thể cung cấp các kết nối cụ thể và yêu cầu addrman tìm các kết nối gửi đi cùng một lúc.</translation>
-    </message>
-    <message>
-        <source>Error loading %s: External signer wallet being loaded without external signer support compiled</source>
-        <translation type="unfinished">Lỗi khi tải %s: Ví người ký bên ngoài đang được tải mà không có hỗ trợ người ký bên ngoài được biên dịch</translation>
-    </message>
-    <message>
-        <source>Failed to rename invalid peers.dat file. Please move or delete it and try again.</source>
-        <translation type="unfinished">Không thể đổi tên tệp ngang hàng không hợp lệ. Vui lòng di chuyển hoặc xóa nó và thử lại.</translation>
-    </message>
-    <message>
-        <source>Input not found or already spent</source>
-        <translation type="unfinished">Đầu vào không được tìm thấy hoặc đã được sử dụng</translation>
-    </message>
-    <message>
-        <source>Listening for incoming connections failed (listen returned error %s)</source>
-        <translation type="unfinished">Lắng nghe những kết nối thất bại sắp xảy ra (lắng nghe lỗi được trả về %s)</translation>
-    </message>
-    <message>
-        <source>Missing amount</source>
-        <translation type="unfinished">Số tiền còn thiếu</translation>
-    </message>
-    <message>
-        <source>Missing solving data for estimating transaction size</source>
-        <translation type="unfinished">Thiếu dữ liệu giải quyết để ước tính quy mô giao dịch</translation>
-    </message>
-    <message>
-        <source>No addresses available</source>
-        <translation type="unfinished">Không có địa chỉ</translation>
-    </message>
-    <message>
-        <source>Transaction change output index out of range</source>
-        <translation type="unfinished">Chỉ số đầu ra thay đổi giao dịch nằm ngoài phạm vi</translation>
-    </message>
-    <message>
-        <source>Transaction needs a change address, but we can't generate it.</source>
-        <translation type="unfinished">Giao dịch cần thay đổi địa chỉ, nhưng chúng tôi không thể tạo địa chỉ đó.</translation>
-    </message>
-    <message>
-        <source>Unable to allocate memory for -maxsigcachesize: '%s' MiB</source>
-        <translation type="unfinished">Không có khả năng để phân bổ bộ nhớ cho -maxsigcachesize: '%s' MiB</translation>
-    </message>
-    <message>
-        <source>Unable to parse -maxuploadtarget: '%s'</source>
-        <translation type="unfinished">Không thể parse -maxuploadtarget '%s</translation>
-    </message>
-    </context>
-<context>
     <name>BitcoinGUI</name>
+    <message>
+        <source>&amp;Overview</source>
+        <translation type="unfinished">&amp;Tổng quan</translation>
+    </message>
+    <message>
+        <source>Show general overview of wallet</source>
+        <translation type="unfinished">Hiển thị tổng quan ví</translation>
+    </message>
+    <message>
+        <source>&amp;Transactions</source>
+        <translation type="unfinished">&amp;Các Giao Dịch</translation>
+    </message>
+    <message>
+        <source>Browse transaction history</source>
+        <translation type="unfinished">Trình duyệt lịch sử giao dịch</translation>
+    </message>
+    <message>
+        <source>E&amp;xit</source>
+        <translation type="unfinished">T&amp;hoát</translation>
+    </message>
+    <message>
+        <source>Quit application</source>
+        <translation type="unfinished">Đóng ứng dụng</translation>
+    </message>
+    <message>
+        <source>&amp;About %1</source>
+        <translation type="unfinished">&amp;Khoảng %1</translation>
+    </message>
+    <message>
+        <source>Show information about %1</source>
+        <translation type="unfinished">Hiện thông tin khoảng %1</translation>
+    </message>
+    <message>
+        <source>About &amp;Qt</source>
+        <translation type="unfinished">Về &amp;Qt</translation>
+    </message>
+    <message>
+        <source>Show information about Qt</source>
+        <translation type="unfinished">Hiện thông tin về Qt</translation>
+    </message>
+    <message>
+        <source>Modify configuration options for %1</source>
+        <translation type="unfinished">Sửa đổi tùy chỉnh cấu hình cho %1</translation>
+    </message>
+    <message>
+        <source>Create a new wallet</source>
+        <translation type="unfinished">Tạo một ví mới</translation>
+    </message>
     <message>
         <source>&amp;Minimize</source>
         <translation type="unfinished">&amp;Thu nhỏ</translation>
@@ -503,12 +471,8 @@
         </translation>
     </message>
     <message>
-        <source>Catching up…</source>
-        <translation type="unfinished">Đang bắt kịp...</translation>
-    </message>
-    <message>
         <source>Load Partially Signed Bitcoin Transaction</source>
-        <translation type="unfinished">Kết nối với mạng Bitcoin thông qua một proxy SOCKS5 riêng cho các dịch vụ Tor hành.</translation>
+        <translation type="unfinished">Tải một phần giao dịch Bitcoin đã ký</translation>
     </message>
     <message>
         <source>Load PSBT from &amp;clipboard…</source>
@@ -528,11 +492,11 @@
     </message>
     <message>
         <source>&amp;Sending addresses</source>
-        <translation type="unfinished">&amp;Các địa chỉ đang gửi</translation>
+        <translation type="unfinished">Các địa chỉ đang &amp;gửi</translation>
     </message>
     <message>
         <source>&amp;Receiving addresses</source>
-        <translation type="unfinished">&amp;Các địa chỉ đang nhận</translation>
+        <translation type="unfinished">Các địa chỉ đang &amp;nhận</translation>
     </message>
     <message>
         <source>Open a bitcoin: URI</source>
@@ -558,12 +522,20 @@
     <message>
     </message>
     <message>
-        <source>&amp;Mask values</source>
-        <translation type="unfinished">&amp;Giá trị mặt nạ</translation>
+        <source>Close all wallets</source>
+        <translation type="unfinished">Đóng tất cả ví</translation>
     </message>
     <message>
-        <source>Mask the values in the Overview tab</source>
-        <translation type="unfinished">Che các giá trị trong tab Tổng quan</translation>
+        <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
+        <translation type="unfinished">Hiển thị %1 tin nhắn hỗ trợ để nhận được danh sách Bitcoin command-line khả dụng</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">ví mặc định</translation>
+    </message>
+    <message>
+        <source>No wallets available</source>
+        <translation type="unfinished">Không có ví nào</translation>
     </message>
     <message>
         <source>Load Wallet Backup</source>
@@ -613,6 +585,10 @@
         <source>Enable network activity</source>
         <extracomment>A context menu item. The network activity was disabled previously.</extracomment>
         <translation type="unfinished">Bật hoạt động mạng</translation>
+    </message>
+    <message>
+        <source>Pre-syncing Headers (%1%)…</source>
+        <translation type="unfinished">Tiền đồng bộ hóa Headers (%1%)…</translation>
     </message>
     <message>
         <source>Error: %1</source>
@@ -677,14 +653,6 @@
         <translation type="unfinished">Đang tải ví…</translation>
     </message>
 </context>
-<context>
-    <name>OpenWalletActivity</name>
-    <message>
-        <source>Open Wallet</source>
-        <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
-        <translation type="unfinished">Mớ ví</translation>
-    </message>
-    </context>
 <context>
     <name>RestoreWalletActivity</name>
     <message>
@@ -807,7 +775,7 @@
     <message numerus="yes">
         <source>%n GB of space available</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%n GB dung lượng khả dụng</numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -821,6 +789,10 @@
         <translation type="unfinished">
             <numerusform>(%n GB cần cho toàn blockchain)</numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Choose data directory</source>
+        <translation type="unfinished">Chọn đường dẫn dữ liệu</translation>
     </message>
     <message numerus="yes">
         <source>(sufficient to restore backups %n day(s) old)</source>
@@ -852,6 +824,10 @@
     <message>
         <source>Reverting this setting requires re-downloading the entire blockchain. It is faster to download the full chain first and prune it later. Disables some advanced features.</source>
         <translation type="unfinished">Đảo ngược lại thiết lập này yêu cầu tại lại toàn bộ chuỗi khối. Tải về toàn bộ chuỗi khối trước và loại nó sau đó sẽ nhanh hơn. Vô hiệu hóa một số tính năng nâng cao.</translation>
+    </message>
+    <message>
+        <source>When you click OK, %1 will begin to download and process the full %4 block chain (%2 GB) starting with the earliest transactions in %3 when %4 initially launched.</source>
+        <translation type="unfinished">Khi bạn nhấn OK, %1 sẽ bắt đầu tải xuống và xử lý toàn bộ chuỗi chính %4 (%2 GB), bắt đầu từ các giao dịch sớm nhất trong %3 khi %4 được khởi chạy ban đầu.</translation>
     </message>
     </context>
 <context>
@@ -958,7 +934,11 @@
         <source>Unknown. Syncing Headers (%1, %2%)…</source>
         <translation type="unfinished">Không xác định. Đồng bộ hóa tiêu đề (%1, %2%)…</translation>
     </message>
-    </context>
+    <message>
+        <source>Unknown. Pre-syncing Headers (%1, %2%)…</source>
+        <translation type="unfinished">Không xác định. Tiền đồng bộ hóa Headers (%1, %2%)...</translation>
+    </message>
+</context>
 <context>
     <name>OpenURIDialog</name>
     <message>
@@ -988,6 +968,10 @@
     <message>
         <source>Number of script &amp;verification threads</source>
         <translation type="unfinished">Số lượng tập lệnh và chuỗi &amp;xác minh</translation>
+    </message>
+    <message>
+        <source>Full path to a %1 compatible script (e.g. C:\Downloads\hwi.exe or /Users/you/Downloads/hwi.py). Beware: malware can steal your coins!</source>
+        <translation type="unfinished">Đường dẫn đầy đủ tới một tệp mã tương thích với %1 (ví dụ: C:\Downloads\hwi.exe hoặc /Users/you/Downloads/hwi.py). Cẩn trọng: các phần mềm độc hại có thể đánh cắp tiền của bạn!</translation>
     </message>
     <message>
         <source>IP address of the proxy (e.g. IPv4: 127.0.0.1 / IPv6: ::1)</source>
@@ -1260,6 +1244,10 @@
         <source>Current total balance in watch-only addresses</source>
         <translation type="unfinished">Tổng số dư hiện tại trong watch-only addresses</translation>
     </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">Lỗi</translation>
+    </message>
     </context>
 <context>
     <name>OptionsModel</name>
@@ -1270,6 +1258,10 @@
 </context>
 <context>
     <name>PSBTOperationsDialog</name>
+    <message>
+        <source>PSBT Operations</source>
+        <translation type="unfinished">Các thao tác PSBT</translation>
+    </message>
     <message>
         <source>Cannot sign inputs while wallet is locked.</source>
         <translation type="unfinished">Không thể ký đầu vào khi ví bị khóa.</translation>
@@ -1494,6 +1486,14 @@
     </context>
 <context>
     <name>RPCConsole</name>
+    <message>
+        <source>Whether we relay transactions to this peer.</source>
+        <translation type="unfinished">Có nên chuyển tiếp giao dịch đến đồng đẳng này.</translation>
+    </message>
+    <message>
+        <source>Transaction Relay</source>
+        <translation type="unfinished">Chuyển tiếp giao dịch</translation>
+    </message>
     <message>
         <source>Last Transaction</source>
         <translation type="unfinished">Giao dịch cuối cùng</translation>
@@ -1737,6 +1737,36 @@
     </message>
 </context>
 <context>
+    <name>ReceiveCoinsDialog</name>
+    <message>
+        <source>Base58 (Legacy)</source>
+        <translation type="unfinished">Base58 (Di sản)</translation>
+    </message>
+    <message>
+        <source>Not recommended due to higher fees and less protection against typos.</source>
+        <translation type="unfinished">Không được khuyến khích vì tốn nhiều phí hơn và ít được bảo vệ trước lỗi chính tả hơn.</translation>
+    </message>
+    <message>
+        <source>Generates an address compatible with older wallets.</source>
+        <translation type="unfinished">Tạo một địa chỉ tương thích với các ví cũ hơn.</translation>
+    </message>
+    <message>
+        <source>Generates a native segwit address (BIP-173). Some old wallets don't support it.</source>
+        <translation type="unfinished">Tạo một địa chỉ segwit chuyên biệt (BIP-173). Một số ví cũ sẽ không hỗ trợ.</translation>
+    </message>
+    <message>
+        <source>Bech32m (BIP-350) is an upgrade to Bech32, wallet support is still limited.</source>
+        <translation type="unfinished">Bech32m (BIP-350) là bản nâng cấp của Bech32, hỗ trợ ví vẫn còn hạn chế.</translation>
+    </message>
+    </context>
+<context>
+    <name>ReceiveRequestDialog</name>
+    <message>
+        <source>Wallet:</source>
+        <translation type="unfinished">Ví tiền</translation>
+    </message>
+    </context>
+<context>
     <name>RecentRequestsTableModel</name>
     <message>
         <source>Label</source>
@@ -1749,6 +1779,10 @@
     </context>
 <context>
     <name>SendCoinsDialog</name>
+    <message>
+        <source>Using the fallbackfee can result in sending a transaction that will take several hours or days (or never) to confirm. Consider choosing your fee manually or wait until you have validated the complete chain.</source>
+        <translation type="unfinished">Sử dụng fallbackfee có thể dẫn đến việc gửi giao dịch mất vài giờ hoặc vài ngày (hoặc không bao giờ) để xác nhận. Hãy cân nhắc khi tự chọn phí của bạn hoặc đợi cho tới khi bạn xác minh xong chuỗi hoàn chỉnh.</translation>
+    </message>
     <message>
         <source>Do you want to create this transaction?</source>
         <extracomment>Message displayed when attempting to create a transaction. Cautionary text to prompt the user to verify that the displayed transaction details represent the transaction the user intends to create.</extracomment>
@@ -1958,6 +1992,20 @@
     <message>
         <source>Payment request expired.</source>
         <translation type="unfinished">Payment request hết hạn.</translation>
+    </message>
+    <message>
+        <source>Unsigned Transaction</source>
+        <comment>PSBT copied</comment>
+        <extracomment>Caption of "PSBT has been copied" messagebox</extracomment>
+        <translation type="unfinished">Giao dịch chưa được ký</translation>
+    </message>
+    <message>
+        <source>The PSBT has been copied to the clipboard. You can also save it.</source>
+        <translation type="unfinished">PSBT đã được sao chép vào bảng tạm. Bạn cũng có thế lưu nó lại.</translation>
+    </message>
+    <message>
+        <source>PSBT saved to disk</source>
+        <translation type="unfinished">PSBT đã được lưu vào ổ đĩa.</translation>
     </message>
     <message numerus="yes">
         <source>Estimated to begin confirmation within %n block(s).</source>
@@ -2196,6 +2244,21 @@
     <message>
         <source>Address</source>
         <translation type="unfinished">Địa chỉ</translation>
+    </message>
+    </context>
+<context>
+    <name>WalletFrame</name>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">Lỗi</translation>
+    </message>
+    </context>
+<context>
+    <name>WalletModel</name>
+    <message>
+        <source>Copied to clipboard</source>
+        <comment>Fee-bump PSBT saved</comment>
+        <translation type="unfinished">Đã sao chép vào bảng tạm.</translation>
     </message>
     </context>
 <context>

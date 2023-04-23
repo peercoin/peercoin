@@ -19,7 +19,7 @@
     <message>
         <location line="+14"/>
         <source>Copy the currently selected address to the system clipboard</source>
-        <translation type="unfinished">Скопировать выбранные адреса в буфер обмена</translation>
+        <translation type="unfinished">Copia la dirección seleccionada al portapapeles</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -246,12 +246,12 @@
     <message>
         <location line="+57"/>
         <source>Wallet to be encrypted</source>
-        <translation type="unfinished">Кошелек должен быть зашифрован</translation>
+        <translation type="unfinished">Кошелёк должен быть зашифрован</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Your wallet is about to be encrypted. </source>
-        <translation type="unfinished">Ваш кошелек будет зашифрован.</translation>
+        <translation type="unfinished">Ваш кошелёк будет зашифрован.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -4488,7 +4488,7 @@
     </message>
     <message>
         <source>Create wallet failed</source>
-        <translation type="unfinished">Не удалось создать кошелек</translation>
+        <translation type="unfinished">Не удалось создать кошелёк</translation>
     </message>
     <message>
         <source>Create wallet warning</source>
@@ -4513,7 +4513,7 @@
     <message>
         <source>Loading wallets…</source>
         <extracomment>Descriptive text of the load wallets progress window which indicates to the user that wallets are currently being loaded.</extracomment>
-        <translation type="unfinished">Загрузка кошельков…</translation>
+        <translation type="unfinished">Загрузка кошельков...</translation>
     </message>
 </context>
 <context>
@@ -4538,7 +4538,7 @@
     <message>
         <source>Opening Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
         <extracomment>Descriptive text of the open wallet progress window which indicates to the user which wallet is currently being opened.</extracomment>
-        <translation type="unfinished">Открывается кошелёк &lt;b&gt;%1&lt;/b&gt;…</translation>
+        <translation type="unfinished">Открывается кошелёк &lt;b&gt;%1&lt;/b&gt;...</translation>
     </message>
 </context>
 <context>
@@ -4551,7 +4551,7 @@
     <message>
         <source>Restoring Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
         <extracomment>Descriptive text of the restore wallets progress window which indicates to the user that wallets are currently being restored.</extracomment>
-        <translation type="unfinished">Восстановление кошелька &lt;b&gt;%1&lt;/b&gt;…</translation>
+        <translation type="unfinished">Восстановление кошелька &lt;b&gt;%1&lt;/b&gt;...</translation>
     </message>
     <message>
         <source>Restore wallet failed</source>
@@ -4623,7 +4623,7 @@
     </message>
     <message>
         <source>Disable private keys for this wallet. Wallets with private keys disabled will have no private keys and cannot have an HD seed or imported private keys. This is ideal for watch-only wallets.</source>
-        <translation type="unfinished">Отключить приватные ключи для этого кошелька. В кошельках с отключёнными приватными ключами не сохраняются приватные ключи, в них нельзя создать HD мастер-ключ или импортировать приватные ключи. Это отличный вариант для кошельков для наблюдения за балансом.</translation>
+        <translation type="unfinished">Отключить приватные ключи для этого кошелька. В кошельках с отключёнными приватными ключами не сохраняются приватные ключи, в них нельзя создать HD мастер-ключ или импортировать приватные ключи. Это удобно для наблюдающих кошельков.</translation>
     </message>
     <message>
         <source>Disable Private Keys</source>
@@ -4647,7 +4647,7 @@
     </message>
     <message>
         <source>Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
-        <translation type="unfinished">Использовать внешнее устройство для подписи. Например, аппаратный кошелек. Сначала настройте сценарий внешней подписи в настройках кошелька.</translation>
+        <translation type="unfinished">Использовать внешнее устройство для подписи, например аппаратный кошелек. Сначала настройте сценарий внешней подписи в настройках кошелька.</translation>
     </message>
     <message>
         <source>External signer</source>
@@ -4683,7 +4683,7 @@
     </message>
     <message>
         <source>The address associated with this address list entry. This can only be modified for sending addresses.</source>
-        <translation type="unfinished">Адрес, связанный с этой записью адресной книги. Если это адрес для отправки, его можно изменить.</translation>
+        <translation type="unfinished">Адрес, связанный с этой записью адресной книги. Он может быть изменён только если это адрес для отправки.</translation>
     </message>
     <message>
         <source>&amp;Address</source>
@@ -4703,15 +4703,15 @@
     </message>
     <message>
         <source>The entered address "%1" is not a valid Bitcoin address.</source>
-        <translation type="unfinished">Введенный адрес "%1" не является действительным биткоин-адресом.</translation>
+        <translation type="unfinished">Введенный адрес "%1" недействителен в сети Биткоин.</translation>
     </message>
     <message>
         <source>Address "%1" already exists as a receiving address with label "%2" and so cannot be added as a sending address.</source>
-        <translation type="unfinished">Адрес "%1" уже существует в качестве адреса для получения с меткой "%2" и поэтому не может быть добавлен в качестве адреса для отправки.</translation>
+        <translation type="unfinished">Адрес "%1" уже существует как адрес получателя с  именем "%2", и поэтому не может быть добавлен как адрес отправителя.</translation>
     </message>
     <message>
         <source>The entered address "%1" is already in the address book with label "%2".</source>
-        <translation type="unfinished">Введённый адрес "%1" уже существует в адресной книге с меткой "%2".</translation>
+        <translation type="unfinished">Введенный адрес "%1" уже существует в адресной книге под именем "%2".</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -4772,6 +4772,10 @@
         </translation>
     </message>
     <message>
+        <source>Choose data directory</source>
+        <translation type="unfinished">Выберите каталог для данных</translation>
+    </message>
+    <message>
         <source>At least %1 GB of data will be stored in this directory, and it will grow over time.</source>
         <translation type="unfinished">В этот каталог будет сохранено не менее %1 ГБ данных, и со временем их объём будет увеличиваться.</translation>
     </message>
@@ -4790,7 +4794,7 @@
     </message>
     <message>
         <source>%1 will download and store a copy of the Bitcoin block chain.</source>
-        <translation type="unfinished">%1 скачает и сохранит копию цепочки блоков Bitcoin.</translation>
+        <translation type="unfinished">%1будет скачано и сохранит копию цепи блоков Bitcoin</translation>
     </message>
     <message>
         <source>The wallet will also be stored in this directory.</source>
@@ -4798,7 +4802,7 @@
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
-        <translation type="unfinished">Ошибка: не удалось создать указанный каталог данных "%1".</translation>
+        <translation type="unfinished">Ошибка: невозможно создать указанный каталог данных "%1".</translation>
     </message>
     <message>
         <source>Error</source>
@@ -4814,7 +4818,7 @@
     </message>
     <message>
         <source>As this is the first time the program is launched, you can choose where %1 will store its data.</source>
-        <translation type="unfinished">Поскольку программа запущена впервые, вы можете выбрать, где %1 будет хранить свои данные.</translation>
+        <translation type="unfinished">Так как это первый запуск программы, вы можете выбрать, где %1будет хранить данные.</translation>
     </message>
     <message>
         <source>Limit block chain storage to</source>
@@ -4838,11 +4842,11 @@
     </message>
     <message>
         <source>If you have chosen to limit block chain storage (pruning), the historical data must still be downloaded and processed, but will be deleted afterward to keep your disk usage low.</source>
-        <translation type="unfinished">Если вы решили ограничить (обрезать) объём хранимой цепи блоков, все ранние данные всё равно должны быть скачаны и обработаны. После обработки они будут удалены с целью экономии места на диске.</translation>
+        <translation type="unfinished">Если вы решили ограничить (обрезать) объём хранимой цепи блоков, все ранние данные должны быть скачаны и обработаны. После обработки они будут удалены с целью экономии места на диске.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
-        <translation type="unfinished">Использовать каталог данных по умолчанию</translation>
+        <translation type="unfinished">Использовать стандартный каталог данных</translation>
     </message>
     <message>
         <source>Use a custom data directory:</source>
@@ -4868,11 +4872,11 @@
     <name>ShutdownWindow</name>
     <message>
         <source>%1 is shutting down…</source>
-        <translation type="unfinished">%1 выключается…</translation>
+        <translation type="unfinished">%1завершает процесс...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
-        <translation type="unfinished">Не выключайте компьютер, пока это окно не исчезнет.</translation>
+        <translation type="unfinished">Не выключайте компьютер, пока это окно не пропадёт.</translation>
     </message>
 </context>
 <context>
@@ -4883,11 +4887,11 @@
     </message>
     <message>
         <source>Recent transactions may not yet be visible, and therefore your wallet's balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the bitcoin network, as detailed below.</source>
-        <translation type="unfinished">Недавние транзакции могут быть пока не видны, и поэтому отображаемый баланс вашего кошелька может быть неверным. Информация станет верной после завершения синхронизации с сетью Bitcoin. Прогресс синхронизации вы можете видеть снизу.</translation>
+        <translation type="unfinished">Недавние транзакции могут быть пока не видны, и поэтому отображаемый баланс вашего кошелька может быть неточной. Информация станет точной после завершения синхронизации с сетью биткоина. Прогресс синхронизации вы можете видеть снизу.</translation>
     </message>
     <message>
         <source>Attempting to spend bitcoins that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
-        <translation type="unfinished">Попытка потратить средства, использованные в транзакциях, которые ещё не синхронизированы, будет отклонена сетью.</translation>
+        <translation type="unfinished">Попытка потратить средства, затронутые не видными пока транзакциями, будет отклонена сетью.</translation>
     </message>
     <message>
         <source>Number of blocks left</source>
@@ -4895,11 +4899,11 @@
     </message>
     <message>
         <source>Unknown…</source>
-        <translation type="unfinished">Неизвестно…</translation>
+        <translation type="unfinished">Неизвестно...</translation>
     </message>
     <message>
         <source>calculating…</source>
-        <translation type="unfinished">вычисляется…</translation>
+        <translation type="unfinished">вычисляется...</translation>
     </message>
     <message>
         <source>Last block time</source>
@@ -4931,7 +4935,7 @@
     </message>
     <message>
         <source>Unknown. Syncing Headers (%1, %2%)…</source>
-        <translation type="unfinished">Неизвестно. Синхронизация заголовков (%1, %2%)…</translation>
+        <translation type="unfinished">Неизвестно. Синхронизируются заголовки (%1, %2%)...</translation>
     </message>
     <message>
         <source>Unknown. Pre-syncing Headers (%1, %2%)…</source>
@@ -4979,6 +4983,10 @@
     <message>
         <source>Number of script &amp;verification threads</source>
         <translation type="unfinished">Количество потоков для &amp;проверки скриптов</translation>
+    </message>
+    <message>
+        <source>Full path to a %1 compatible script (e.g. C:\Downloads\hwi.exe or /Users/you/Downloads/hwi.py). Beware: malware can steal your coins!</source>
+        <translation type="unfinished">Полный путь до скрипта, совместимого с %1 (к примеру, C:\Downloads\hwi.exe или же /Users/you/Downloads/hwi.py). Будь бдителен: мошенники могут украсть твои деньги!</translation>
     </message>
     <message>
         <source>IP address of the proxy (e.g. IPv4: 127.0.0.1 / IPv6: ::1)</source>
@@ -5103,10 +5111,6 @@
     <message>
         <source>&amp;External signer script path</source>
         <translation type="unfinished">&amp;Внешний скрипт для подписи</translation>
-    </message>
-    <message>
-        <source>Full path to a Bitcoin Core compatible script (e.g. C:\Downloads\hwi.exe or /Users/you/Downloads/hwi.py). Beware: malware can steal your coins!</source>
-        <translation type="unfinished">Путь к скрипту, совместимому с Bitcoin Core (напр. C:\Downloads\hwi.exe or /Users/you/Downloads/hwi.py). Внимание: остерегайтесь вредоносных скриптов!</translation>
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
@@ -5397,8 +5401,8 @@
 <context>
     <name>PSBTOperationsDialog</name>
     <message>
-        <source>Dialog</source>
-        <translation type="unfinished">Диалог</translation>
+        <source>PSBT Operations</source>
+        <translation type="unfinished">Операции с PSBT</translation>
     </message>
     <message>
         <source>Sign Tx</source>
@@ -5507,7 +5511,7 @@
     </message>
     <message>
         <source>(But no wallet is loaded.)</source>
-        <translation type="unfinished">(Но ни один кошелек не загружен.)</translation>
+        <translation type="unfinished">(Но ни один кошелёк не загружен.)</translation>
     </message>
     <message>
         <source>(But this wallet cannot sign transactions.)</source>
@@ -5759,6 +5763,14 @@ If you are receiving this error you should request the merchant provide a BIP21 
         <translation type="unfinished">Версия</translation>
     </message>
     <message>
+        <source>Whether we relay transactions to this peer.</source>
+        <translation type="unfinished">Предаем ли мы транзакции этому узлу.</translation>
+    </message>
+    <message>
+        <source>Transaction Relay</source>
+        <translation type="unfinished">Ретранслятор транзакций</translation>
+    </message>
+    <message>
         <source>Starting Block</source>
         <translation type="unfinished">Начальный блок</translation>
     </message>
@@ -5855,14 +5867,6 @@ If you are receiving this error you should request the merchant provide a BIP21 
     <message>
         <source>Services</source>
         <translation type="unfinished">Службы</translation>
-    </message>
-    <message>
-        <source>Whether the peer requested us to relay transactions.</source>
-        <translation type="unfinished">Попросил ли нас узел передавать транзакции дальше.</translation>
-    </message>
-    <message>
-        <source>Wants Tx Relay</source>
-        <translation type="unfinished">Желает передавать транзакции</translation>
     </message>
     <message>
         <source>High bandwidth BIP152 compact block relay: %1</source>
@@ -6081,11 +6085,11 @@ For more information on using this console, type %6.
     </message>
     <message>
         <source>To</source>
-        <translation type="unfinished">От нас</translation>
+        <translation type="unfinished">Кому</translation>
     </message>
     <message>
         <source>From</source>
-        <translation type="unfinished">К нам</translation>
+        <translation type="unfinished">От кого</translation>
     </message>
     <message>
         <source>Ban for</source>
@@ -6189,6 +6193,26 @@ For more information on using this console, type %6.
     <message>
         <source>Copy &amp;amount</source>
         <translation type="unfinished">Копировать с&amp;умму</translation>
+    </message>
+    <message>
+        <source>Base58 (Legacy)</source>
+        <translation type="unfinished">Base58 (Устаревший)</translation>
+    </message>
+    <message>
+        <source>Not recommended due to higher fees and less protection against typos.</source>
+        <translation type="unfinished">Не рекомендуется из-за высоких комиссий и меньшей устойчивости к опечаткам.</translation>
+    </message>
+    <message>
+        <source>Generates an address compatible with older wallets.</source>
+        <translation type="unfinished">Создать адрес, совместимый со старыми кошельками.</translation>
+    </message>
+    <message>
+        <source>Generates a native segwit address (BIP-173). Some old wallets don't support it.</source>
+        <translation type="unfinished">Создать segwit адрес по BIP-173, Некоторые старые кошельки не поддерживают такие адреса.</translation>
+    </message>
+    <message>
+        <source>Bech32m (BIP-350) is an upgrade to Bech32, wallet support is still limited.</source>
+        <translation type="unfinished">Bech32m (BIP-350) — это более новая версия Bech32, поддержка таких кошельков по-прежнему ограничена.</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -6483,7 +6507,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 satos
     <message>
         <source>Set external signer script path in Options -&gt; Wallet</source>
         <extracomment>"External signer" means using devices such as hardware wallets.</extracomment>
-        <translation type="unfinished">Укажите внешний скрипт подписи в Настройки -&gt; Кошелек</translation>
+        <translation type="unfinished">Укажите внешний скрипт подписи в Настройки -&gt; Кошелёк</translation>
     </message>
     <message>
         <source>Cr&amp;eate Unsigned</source>
@@ -6534,6 +6558,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 satos
     </message>
     <message>
         <source>PSBT saved</source>
+        <extracomment>Popup message when a PSBT has been saved to a file</extracomment>
         <translation type="unfinished">PSBT сохранена</translation>
     </message>
     <message>
@@ -6579,6 +6604,20 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 satos
     <message>
         <source>Total Amount</source>
         <translation type="unfinished">Итоговая сумма</translation>
+    </message>
+    <message>
+        <source>Unsigned Transaction</source>
+        <comment>PSBT copied</comment>
+        <extracomment>Caption of "PSBT has been copied" messagebox</extracomment>
+        <translation type="unfinished">Неподписанная транзакция</translation>
+    </message>
+    <message>
+        <source>The PSBT has been copied to the clipboard. You can also save it.</source>
+        <translation type="unfinished">PSBT скопирована в буфер обмена. Вы можете её сохранить.</translation>
+    </message>
+    <message>
+        <source>PSBT saved to disk</source>
+        <translation type="unfinished">PSBT сохранена на диск</translation>
     </message>
     <message>
         <source>Confirm send coins</source>
@@ -7297,7 +7336,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 satos
     </message>
     <message>
         <source>Exporting Failed</source>
-        <translation type="unfinished">Ошибка экспорта</translation>
+        <translation type="unfinished">Ошибка при экспорте</translation>
     </message>
     <message>
         <source>There was an error trying to save the transaction history to %1.</source>
@@ -7346,7 +7385,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 satos
     <message>
         <location filename="../walletview.cpp" line="+49"/>
         <source>&amp;Export</source>
-        <translation type="unfinished">&amp;Экспорт</translation>
+        <translation type="unfinished">&amp;Экспортировать</translation>
     </message>
     <message>
         <location line="+1"/>
