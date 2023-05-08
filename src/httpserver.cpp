@@ -566,6 +566,10 @@ void HTTPRequest::WriteHeader(const std::string& hdr, const std::string& value)
 void HTTPRequest::WriteReply(int nStatus, const std::string& strReply)
 {
     assert(!replySent && req);
+    // Add cors header if it's specified
+    if (gArgs.GetArg("-corsdomain","") != "") {
+        WriteHeader("Access-Control-Allow-Origin", gArgs.GetArg("-corsdomain",""));
+    }
     if (ShutdownRequested()) {
         WriteHeader("Connection", "close");
     }
