@@ -4674,7 +4674,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                         if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
                             mapBlocksWait.erase(pindexPrev);  // prev block was rejected
                             fContinue = true;
-                            RemoveBlockRequest(hash, std::nullopt);
+                            RemoveBlockRequest(hash, pfrom.GetId());
                             break;
                         }
                         continue;   // prev block was not (yet) accepted on disk, skip to next one
@@ -4692,7 +4692,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                 // Always process the block if we requested it, since we may
                 // need it even when it's not a candidate for a new best tip.
                 forceProcessing = IsBlockRequested(hash);
-                RemoveBlockRequest(hash, std::nullopt);
+                RemoveBlockRequest(hash, pfrom.GetId());
                 // mapBlockSource is only used for punishing peers and setting
                 // which peers send us compact blocks, so the race between here and
                 // cs_main in ProcessNewBlock is fine.
