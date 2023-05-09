@@ -4319,7 +4319,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         }
 
         if (pindex->nChainTrust <= m_chainman.ActiveChain().Tip()->nChainTrust) { // We know something better
-            if (fAlreadyInFlight) {
+            if (in_flight_same_peer) {
                 // We requested this block for some reason, but our mempool will probably be useless
                 // so we just grab the block via normal getdata
                 std::vector<CInv> vInv(1);
@@ -4405,7 +4405,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                 }
             }
         } else {
-            if (fAlreadyInFlight) {
+            if (in_flight_same_peer) {
                 // We requested this block, but its far into the future, so our
                 // mempool will probably be useless - request the block normally
                 std::vector<CInv> vInv(1);
