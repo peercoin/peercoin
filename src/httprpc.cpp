@@ -146,6 +146,12 @@ static bool RPCAuthorized(const std::string& strAuth, std::string& strAuthUserna
 
 static bool HTTPReq_JSONRPC(const std::any& context, HTTPRequest* req)
 {
+    if (req->GetRequestMethod() == HTTPRequest::OPTIONS) {
+       req->WriteHeader("Access-Control-Allow-Headers", "*");
+       req->WriteHeader("Access-Control-Allow-Methods", "OPTIONS,POST");
+       req->WriteReply(HTTP_OK, "");
+       return true;
+    }
     // JSONRPC handles only POST
     if (req->GetRequestMethod() != HTTPRequest::POST) {
         req->WriteReply(HTTP_BAD_METHOD, "JSONRPC server handles only POST requests");

@@ -202,6 +202,9 @@ std::string RequestMethodString(HTTPRequest::RequestMethod m)
     case HTTPRequest::PUT:
         return "PUT";
         break;
+    case HTTPRequest::OPTIONS:
+        return "OPTIONS";
+        break;
     default:
         return "unknown";
     }
@@ -385,6 +388,9 @@ bool InitHTTPServer()
     evhttp_set_max_headers_size(http, MAX_HEADERS_SIZE);
     evhttp_set_max_body_size(http, MAX_SIZE);
     evhttp_set_gencb(http, http_request_cb, nullptr);
+
+    // allow options
+    evhttp_set_allowed_methods(http, EVHTTP_REQ_GET | EVHTTP_REQ_POST | EVHTTP_REQ_HEAD | EVHTTP_REQ_PUT | EVHTTP_REQ_OPTIONS);
 
     if (!HTTPBindAddresses(http)) {
         LogPrintf("Unable to bind any endpoint for RPC server\n");
@@ -636,6 +642,9 @@ HTTPRequest::RequestMethod HTTPRequest::GetRequestMethod() const
         break;
     case EVHTTP_REQ_PUT:
         return PUT;
+        break;
+    case EVHTTP_REQ_OPTIONS:
+        return OPTIONS;
         break;
     default:
         return UNKNOWN;
