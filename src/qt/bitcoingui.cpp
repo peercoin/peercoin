@@ -247,6 +247,9 @@ void BitcoinGUI::onResult(QNetworkReply *reply) {
             }
         }
     }
+    else {
+        LogPrintf("Network Error during latest github version fetch: %s\n", qPrintable(reply->errorString()));
+    }
     reply->deleteLater();
 }
 
