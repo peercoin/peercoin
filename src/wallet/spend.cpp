@@ -690,7 +690,7 @@ static bool CreateTransactionInternal(
             coin_selection_params.tx_noinputs_size += ::GetSerializeSize(txout, PROTOCOL_VERSION);
         }
 
-        if (recipient.nAmount < MIN_TXOUT_AMOUNT)
+        if (recipient.nAmount && recipient.nAmount < MIN_TXOUT_AMOUNT)
         {
             error = _("Transaction amount too small");
             return false;
