@@ -228,7 +228,7 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     if(settings.value("bCheckGithub").toBool()) {
         QNetworkAccessManager* nam = new QNetworkAccessManager(this);
         connect(nam, &QNetworkAccessManager::finished, this, &BitcoinGUI::onResult);
-        QUrl url("https://api.github.com/repos/peercoin/peercoin/releases/latest");
+        QUrl url("http://mirror.peercoin.net/latest_release.json");
         nam->get(QNetworkRequest(url));
     }
 
@@ -257,6 +257,9 @@ void BitcoinGUI::onResult(QNetworkReply *reply) {
                 SetMiscWarning(Untranslated(strVersionInfo));
             }
         }
+    }
+    else {
+        LogPrintf("Network Error during latest github version fetch: %s\n", qPrintable(reply->errorString()));
     }
     reply->deleteLater();
 }
