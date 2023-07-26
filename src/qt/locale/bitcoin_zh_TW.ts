@@ -67,11 +67,11 @@
     </message>
     <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>這些是你要付款過去的 Bitcoin 位址。在付錢之前，務必要檢查金額和收款位址是否正確。</translation>
+        <translation>這些是你要付款過去的 皮爾幣 位址。在付錢之前，務必要檢查金額和收款位址是否正確。</translation>
     </message>
     <message>
         <source>These are your Bitcoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.</source>
-        <translation>這些是您用於接收付款的比特幣位址。 使用接收分頁中的"生成新接收位址"按鈕創建新的位置。</translation>
+        <translation>這些是您用於接收付款的皮爾幣位址。 使用接收分頁中的"生成新接收位址"按鈕創建新的位置。</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
-        <translation>警告: 如果把錢包加密後又忘記密碼，你就會從此&lt;b&gt;失去其中所有的 Bitcoin 了&lt;/b&gt;！</translation>
+        <translation>警告: 如果把錢包加密後又忘記密碼，你就會從此&lt;b&gt;失去其中所有的 皮爾幣 了&lt;/b&gt;！</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -331,7 +331,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>付錢給一個 Bitcoin 位址</translation>
+        <translation>付錢給一個 皮爾幣 位址</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -367,11 +367,11 @@
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation>用 Bitcoin 位址簽署訊息來證明位址是你的</translation>
+        <translation>用 皮爾幣 位址簽署訊息來證明位址是你的</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
-        <translation>驗證訊息是用來確定訊息是用指定的 Bitcoin 位址簽署的</translation>
+        <translation>驗證訊息是用來確定訊息是用指定的 皮爾幣 位址簽署的</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -391,7 +391,7 @@
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>要求付款(產生 QR Code 和 bitcoin 付款協議的資源識別碼: URI)</translation>
+        <translation>要求付款(產生 QR Code 和 皮爾幣 付款協議的資源識別碼: URI)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -407,7 +407,7 @@
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin network</source>
-        <translation><numerusform>%n 個運作中的 Bitcoin 網路連線</numerusform></translation>
+        <translation><numerusform>%n 個運作中的 皮爾幣 網路連線</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>A fatal error occurred. Bitcoin can no longer continue safely and will quit.</source>
-        <translation>發生了致命的錯誤。Bitcoin 軟體沒辦法再繼續安全執行，只好結束。</translation>
+        <translation>發生了致命的錯誤。皮爾幣 軟體沒辦法再繼續安全執行，只好結束。</translation>
     </message>
 </context>
 <context>
@@ -783,7 +783,7 @@
     </message>
     <message>
         <source>The entered address "%1" is not a valid Bitcoin address.</source>
-        <translation>輸入的位址 %1 並不是有效的 Bitcoin 位址。</translation>
+        <translation>輸入的位址 %1 並不是有效的 皮爾幣 位址。</translation>
     </message>
     <message>
         <source>Address "%1" already exists as a receiving address with label "%2" and so cannot be added as a sending address.</source>
@@ -876,7 +876,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Bitcoin</translation>
+        <translation>皮爾幣</translation>
     </message>
     <message>
         <source>At least %1 GB of data will be stored in this directory, and it will grow over time.</source>
@@ -888,7 +888,7 @@
     </message>
     <message>
         <source>%1 will download and store a copy of the Bitcoin block chain.</source>
-        <translation>%1 會下載 Bitcoin 區塊鏈並且儲存一份副本。</translation>
+        <translation>%1 會下載 皮爾幣 區塊鏈並且儲存一份副本。</translation>
     </message>
     <message>
         <source>The wallet will also be stored in this directory.</source>
@@ -919,11 +919,11 @@
     </message>
     <message>
         <source>Recent transactions may not yet be visible, and therefore your wallet's balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the bitcoin network, as detailed below.</source>
-        <translation>最近的交易可能還看不到，因此錢包餘額可能不正確。在錢包軟體完成跟 bitcoin 網路的同步後，這裡的資訊就會正確。詳情請見下面。</translation>
+        <translation>最近的交易可能還看不到，因此錢包餘額可能不正確。在錢包軟體完成跟 皮爾幣 網路的同步後，這裡的資訊就會正確。詳情請見下面。</translation>
     </message>
     <message>
         <source>Attempting to spend bitcoins that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
-        <translation>使用還沒顯示出來的交易所影響到的 bitcoin 可能會不被網路所接受。</translation>
+        <translation>使用還沒顯示出來的交易所影響到的 皮爾幣 可能會不被網路所接受。</translation>
     </message>
     <message>
         <source>Number of blocks left</source>
@@ -1016,7 +1016,7 @@
     </message>
     <message>
         <source>Use separate SOCKS&amp;5 proxy to reach peers via Tor hidden services:</source>
-        <translation>透過另外的 SOCKS&amp;5 代理伺服器來連線到 Bitcoin 網路中的 Tor 隱藏服務:</translation>
+        <translation>透過另外的 SOCKS&amp;5 代理伺服器來連線到 皮爾幣 網路中的 Tor 隱藏服務:</translation>
     </message>
     <message>
         <source>Hide the icon from the system tray.</source>
@@ -1100,7 +1100,7 @@
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>自動在路由器上開放 Bitcoin 的客戶端通訊埠。只有在你的路由器支援且開啓「通用即插即用」協定(UPnP)時才有作用。</translation>
+        <translation>自動在路由器上開放 皮爾幣 的客戶端通訊埠。只有在你的路由器支援且開啓「通用即插即用」協定(UPnP)時才有作用。</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -1116,7 +1116,7 @@
     </message>
     <message>
         <source>Connect to the Bitcoin network through a SOCKS5 proxy.</source>
-        <translation>透過 SOCKS5 代理伺服器來連線到 Bitcoin 網路。</translation>
+        <translation>透過 SOCKS5 代理伺服器來連線到 皮爾幣 網路。</translation>
     </message>
     <message>
         <source>&amp;Connect through SOCKS5 proxy (default proxy):</source>
@@ -1152,7 +1152,7 @@
     </message>
     <message>
         <source>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor hidden services.</source>
-        <translation>透過另外的 SOCKS5 代理伺服器來連線到 Bitcoin 網路中的 Tor 隱藏服務。</translation>
+        <translation>透過另外的 SOCKS5 代理伺服器來連線到 皮爾幣 網路中的 Tor 隱藏服務。</translation>
     </message>
     <message>
         <source>&amp;Window</source>
@@ -1263,7 +1263,7 @@
     </message>
     <message>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>顯示的資訊可能是過期的。跟 Bitcoin 網路的連線建立後，你的錢包會自動和網路同步，但是這個步驟還沒完成。</translation>
+        <translation>顯示的資訊可能是過期的。跟 皮爾幣 網路的連線建立後，你的錢包會自動和網路同步，但是這個步驟還沒完成。</translation>
     </message>
     <message>
         <source>Watch-only:</source>
@@ -1338,7 +1338,7 @@
     </message>
     <message>
         <source>Cannot start bitcoin: click-to-pay handler</source>
-        <translation>沒辦法啟動 bitcoin 協議的「按就付」處理器</translation>
+        <translation>沒辦法啟動 皮爾幣 協議的「按就付」處理器</translation>
     </message>
     <message>
         <source>URI handling</source>
@@ -1354,7 +1354,7 @@
     </message>
     <message>
         <source>URI cannot be parsed! This can be caused by an invalid Bitcoin address or malformed URI parameters.</source>
-        <translation>沒辦法解析 URI 位址！可能是因為 Bitcoin 位址無效，或是 URI 參數格式錯誤。</translation>
+        <translation>沒辦法解析 URI 位址！可能是因為 皮爾幣 位址無效，或是 URI 參數格式錯誤。</translation>
     </message>
     <message>
         <source>Payment request file handling</source>
@@ -1396,7 +1396,7 @@
     </message>
     <message>
         <source>Enter a Bitcoin address (e.g. %1)</source>
-        <translation>輸入 Bitcoin 位址 (比如說 %1)</translation>
+        <translation>輸入 皮爾幣 位址 (比如說 %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -1853,7 +1853,7 @@
     </message>
     <message>
         <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Bitcoin network.</source>
-        <translation>附加在付款要求中的訊息，可以不填，打開要求內容時會顯示。注意: 這個訊息不會隨著付款送到 Bitcoin 網路上。</translation>
+        <translation>附加在付款要求中的訊息，可以不填，打開要求內容時會顯示。注意: 這個訊息不會隨著付款送到 皮爾幣 網路上。</translation>
     </message>
     <message>
         <source>An optional label to associate with the new receiving address.</source>
@@ -2122,7 +2122,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>When there is less transaction volume than space in the blocks, miners as well as relaying nodes may enforce a minimum fee. Paying only this minimum fee is just fine, but be aware that this can result in a never confirming transaction once there is more demand for bitcoin transactions than the network can process.</source>
-        <translation>当交易量小于可用区块空间时，矿工和中继节点可能会执行最低手续费率限制。按照这个最低费率来支付手续费也是可以的，但请注意，一旦交易需求超出比特币网络能处理的限度，你的交易可能永远也无法确认。</translation>
+        <translation>当交易量小于可用区块空间时，矿工和中继节点可能会执行最低手续费率限制。按照这个最低费率来支付手续费也是可以的，但请注意，一旦交易需求超出皮尔币网络能处理的限度，你的交易可能永远也无法确认。</translation>
     </message>
     <message>
         <source>A too low fee might result in a never confirming transaction (read the tooltip)</source>
@@ -2258,7 +2258,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Warning: Invalid Bitcoin address</source>
-        <translation>警告: Bitcoin 位址無效</translation>
+        <translation>警告: 皮爾幣 位址無效</translation>
     </message>
     <message>
         <source>Warning: Unknown change address</source>
@@ -2297,7 +2297,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>The Bitcoin address to send the payment to</source>
-        <translation>接收付款的 Bitcoin 位址</translation>
+        <translation>接收付款的 皮爾幣 位址</translation>
     </message>
     <message>
         <source>Alt+A</source>
@@ -2317,7 +2317,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>手續費會從要付款出去的金額中扣掉。因此收款人會收到比輸入的金額還要少的 bitcoin。如果有多個收款人的話，手續費會平均分配來扣除。</translation>
+        <translation>手續費會從要付款出去的金額中扣掉。因此收款人會收到比輸入的金額還要少的 皮爾幣。如果有多個收款人的話，手續費會平均分配來扣除。</translation>
     </message>
     <message>
         <source>S&amp;ubtract fee from amount</source>
@@ -2345,7 +2345,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>A message that was attached to the bitcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
-        <translation>附加在 Bitcoin 付款協議的資源識別碼(URI)中的訊息，會和交易內容一起存起來，給你自己做參考。注意: 這個訊息不會送到 Bitcoin 網路上。</translation>
+        <translation>附加在 Bitcoin 付款協議的資源識別碼(URI)中的訊息，會和交易內容一起存起來，給你自己做參考。注意: 這個訊息不會送到 皮爾幣 網路上。</translation>
     </message>
     <message>
         <source>Pay To:</source>
@@ -2383,7 +2383,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>The Bitcoin address to sign the message with</source>
-        <translation>用來簽署訊息的 Bitcoin 位址</translation>
+        <translation>用來簽署訊息的 皮爾幣 位址</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -2415,7 +2415,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Sign the message to prove you own this Bitcoin address</source>
-        <translation>簽署這個訊息來證明這個 Bitcoin 位址是你的</translation>
+        <translation>簽署這個訊息來證明這個 皮爾幣 位址是你的</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -2439,11 +2439,11 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>The Bitcoin address the message was signed with</source>
-        <translation>簽署這個訊息的 Bitcoin 位址</translation>
+        <translation>簽署這個訊息的 皮爾幣 位址</translation>
     </message>
     <message>
         <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
-        <translation>驗證這個訊息來確定是用指定的 Bitcoin 位址簽署的</translation>
+        <translation>驗證這個訊息來確定是用指定的 皮爾幣 位址簽署的</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>

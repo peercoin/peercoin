@@ -43,11 +43,11 @@
     </message>
     <message>
         <source>Choose the address to send coins to</source>
-        <translation>选择发送比特币地址</translation>
+        <translation>选择发送皮尔币地址</translation>
     </message>
     <message>
         <source>Choose the address to receive coins with</source>
-        <translation>选择接收比特币地址</translation>
+        <translation>选择接收皮尔币地址</translation>
     </message>
     <message>
         <source>C&amp;hoose</source>
@@ -63,11 +63,11 @@
     </message>
     <message>
         <source>These are your Peercoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>这是你的比特币发币地址。发送前请确认发送数量和接收地址</translation>
+        <translation>这是你的皮尔币发币地址。发送前请确认发送数量和接收地址</translation>
     </message>
     <message>
         <source>These are your Peercoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>这是你的比特币接收地址。建议每次交易都使用新地址</translation>
+        <translation>这是你的皮尔币接收地址。建议每次交易都使用新地址</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
