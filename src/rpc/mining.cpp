@@ -166,7 +166,8 @@ static RPCHelpMan getnetworkghps()
     };
 }
 
-static bool GenerateBlock(ChainstateManager& chainman, CBlock& block, uint64_t& max_tries, unsigned int& extra_nonce, uint256& block_hash)
+//static bool GenerateBlock(ChainstateManager& chainman, CBlock& block, uint64_t& max_tries, unsigned int& extra_nonce, uint256& block_hash)
+static bool GenerateBlock(ChainstateManager& chainman, CBlock& block, uint64_t& max_tries, std::shared_ptr<const CBlock>& block_out, bool process_new_block)
 {
     block_out.reset();
     block.hashMerkleRoot = BlockMerkleRoot(block);
@@ -196,9 +197,8 @@ static bool GenerateBlock(ChainstateManager& chainman, CBlock& block, uint64_t& 
 static UniValue generateBlocks(ChainstateManager& chainman, const CTxMemPool& mempool, const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries, NodeContext* m_node)
 {
     UniValue blockHashes(UniValue::VARR);
-    while (nHeight < nHeightEnd && !ShutdownRequested())
-    {
-        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(chainman.ActiveChainstate(), mempool, Params()).CreateNewBlock(coinbase_script,nullptr,nullptr,m_node));
+    while (nGenerate > 0 && !ShutdownRequested()) {
+        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(chainman.ActiveChainstate(), &mempool).CreateNewBlock(coinbase_script,nullptr,nullptr,m_node));
         if (!pblocktemplate.get())
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Couldn't create new block");
 
@@ -316,8 +316,9 @@ static RPCHelpMan generatetoaddress()
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-    const int num_blocks{request.params[0].get_int()};
-    const uint64_t max_tries{request.params[2].isNull() ? DEFAULT_MAX_TRIES : request.params[2].get_int()};
+    const int num_blocks{request.params[0].getInt<int>()};
+    const uint64_t max_tries{request.params[2].isNull() ? DEFAULT_MAX_TRIES : request.params[2].getInt<int>()};
+
     CTxDestination destination = DecodeDestination(request.params[1].get_str());
     if (!IsValidDestination(destination)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
@@ -760,7 +761,7 @@ static RPCHelpMan getblocktemplate()
 
         // Create new block
         CScript scriptDummy = CScript() << OP_TRUE;
-        pblocktemplate = BlockAssembler(active_chainstate, mempool, Params()).CreateNewBlock(scriptDummy, nullptr, nullptr, &node);
+        pblocktemplate = BlockAssembler(active_chainstate, &mempool).CreateNewBlock(scriptDummy, nullptr, nullptr, &node);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 
@@ -771,7 +772,7 @@ static RPCHelpMan getblocktemplate()
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
     // Update nTime
-    UpdateTime(pblock);
+    UpdateTime(pblock, consensusParams, pindexPrev);
     pblock->nNonce = 0;
 
     // NOTE: If at some point we support pre-segwit miners post-segwit-activation, this needs to take segwit support into consideration
@@ -841,11 +842,13 @@ static RPCHelpMan getblocktemplate()
     result.pushKV("version", pblock->nVersion);
     result.pushKV("rules", aRules);
 
+/*
     if (nMaxVersionPreVB >= 2) {
         // Because BIP 34 changed how the generation transaction is serialized, we can only use version/force back to v2 blocks
         // This is safe to do [otherwise-]unconditionally only because we are throwing an exception above if a non-force deployment gets activated
         aMutable.push_back("version/force");
     }
+*/
 
     result.pushKV("previousblockhash", pblock->hashPrevBlock.GetHex());
     result.pushKV("transactions", transactions);
@@ -1010,7 +1013,7 @@ static RPCHelpMan submitheader()
 
     BlockValidationState state;
     int tmpTemp;
-    chainman.ProcessNewBlockHeaders(tmpTemp, chainman.ActiveChain().Tip()->GetBlockHash(), {h}, state, Params());
+    chainman.ProcessNewBlockHeaders(tmpTemp, chainman.ActiveChain().Tip()->GetBlockHash(), {h}, /*min_pow_checked=*/true, state, Params());
     if (state.IsValid()) return NullUniValue;
     if (state.IsError()) {
         throw JSONRPCError(RPC_VERIFY_ERROR, state.ToString());
@@ -1019,7 +1022,7 @@ static RPCHelpMan submitheader()
 },
     };
 }
-
+/*
 static RPCHelpMan estimatesmartfee()
 {
     return RPCHelpMan{"estimatesmartfee",
@@ -1040,8 +1043,8 @@ static RPCHelpMan estimatesmartfee()
                 RPCResult{
                     RPCResult::Type::OBJ, "", "",
                     {
-                        {RPCResult::Type::NUM, "feerate", /*optional=*/true, "estimate fee rate in " + CURRENCY_UNIT + "/kvB (only present if no errors were encountered)"},
-                        {RPCResult::Type::ARR, "errors", /*optional=*/true, "Errors encountered during processing (if there are any)",
+                        {RPCResult::Type::NUM, "feerate", true, "estimate fee rate in " + CURRENCY_UNIT + "/kvB (only present if no errors were encountered)"},
+                        {RPCResult::Type::ARR, "errors", true, "Errors encountered during processing (if there are any)",
                             {
                                 {RPCResult::Type::STR, "", "error"},
                             }},
@@ -1069,29 +1072,21 @@ static RPCHelpMan estimatesmartfee()
 },
 };
 }
-
+*/
 void RegisterMiningRPCCommands(CRPCTable& t)
 {
-// clang-format off
-static const CRPCCommand commands[] =
-{ //  category               actor (function)
-  //  ---------------------  -----------------------
-    { "mining",              &getnetworkhashps,        },
-    { "mining",              &getmininginfo,           },
-    { "mining",              &getblocktemplate,        },
-    { "mining",              &submitblock,             },
-    { "mining",              &submitheader,            },
+    static const CRPCCommand commands[]{
+        {"mining", &getnetworkhashps},
+        {"mining", &getmininginfo},
+        {"mining", &getblocktemplate},
+        {"mining", &submitblock},
+        {"mining", &submitheader},
 
         {"hidden", &generatetoaddress},
         {"hidden", &generatetodescriptor},
         {"hidden", &generateblock},
-
-        {"util", &estimatesmartfee},
-
-    { "util",                &estimatesmartfee,        },
-    { "hidden",              &generate,                },
-};
-// clang-format on
+        {"hidden", &generate},
+    };
     for (const auto& c : commands) {
         t.appendCommand(c.name, &c);
     }

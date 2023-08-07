@@ -46,6 +46,14 @@ static constexpr unsigned int MAX_STANDARD_P2WSH_SCRIPT_SIZE{3600};
 static const unsigned int MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 /** The maximum size in bytes of witness input stack items */
 static const unsigned int MAX_STANDARD_WITNESS_SIZE = 100000;
+/** Default for -limitancestorcount, max number of in-mempool ancestors */
+static constexpr unsigned int DEFAULT_ANCESTOR_LIMIT{25};
+/** Default for -limitancestorsize, maximum kilobytes of tx + all in-mempool ancestors */
+static constexpr unsigned int DEFAULT_ANCESTOR_SIZE_LIMIT_KVB{101};
+/** Default for -limitdescendantcount, max number of in-mempool descendants */
+static constexpr unsigned int DEFAULT_DESCENDANT_LIMIT{25};
+/** Default for -limitdescendantsize, maximum kilobytes of in-mempool descendants */
+static constexpr unsigned int DEFAULT_DESCENDANT_SIZE_LIMIT_KVB{101};
 /**
  * An extra transaction can be added to a package, as long as it only has one
  * ancestor and is no larger than this. Not really any reason to make this
@@ -95,7 +103,7 @@ static constexpr decltype(CTransaction::nVersion) TX_MAX_STANDARD_VERSION{3};
 * Check for standard transaction types
 * @return True if all outputs (scriptPubKeys) use only standard transaction forms
 */
-bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string& reason);
+bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, std::string& reason);
 /**
 * Check for standard transaction types
 * @param[in] mapInputs       Map of previous transactions that have outputs we're spending

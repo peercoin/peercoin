@@ -55,12 +55,12 @@ struct MinerTestingSetup : public TestingSetup {
 
 BOOST_FIXTURE_TEST_SUITE(miner_tests, MinerTestingSetup)
 
-BlockAssembler MinerTestingSetup::AssemblerForTest(const CChainParams& params)
+BlockAssembler MinerTestingSetup::AssemblerForTest(CTxMemPool& tx_mempool)
 {
     BlockAssembler::Options options;
 
     options.nBlockMaxWeight = MAX_BLOCK_WEIGHT;
-    return BlockAssembler(m_node.chainman->ActiveChainstate(), *m_node.mempool, params, options);
+    return BlockAssembler{m_node.chainman->ActiveChainstate(), &tx_mempool, options};
 }
 
 constexpr static struct {
@@ -214,13 +214,15 @@ void MinerTestingSetup::TestBasicMining(const CScript& scriptPubKey, const std::
 
     fCheckpointsEnabled = false;
 
+    CTxMemPool& tx_mempool{MakeMempool()};
+    LOCK(tx_mempool.cs);
     // Simple block creation, nothing special yet:
-    BOOST_CHECK(pblocktemplate = AssemblerForTest(chainparams).CreateNewBlock(scriptPubKey));
+    auto pblocktemplate = AssemblerForTest(tx_mempool).CreateNewBlock(scriptPubKey);
+    BOOST_CHECK(pblocktemplate);
 
     // We can't make transactions until we have inputs
     // Therefore, load 110 blocks :)
     static_assert(std::size(BLOCKINFO) == 110, "Should have 110 blocks to import");
-    int baseheight = 0;
     std::vector<CTransactionRef> txFirst;
     for (const auto& bi : BLOCKINFO) {
         CBlock *pblock = &pblocktemplate->block; // pointer for convenience

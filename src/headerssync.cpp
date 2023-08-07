@@ -18,9 +18,9 @@ constexpr size_t HEADER_COMMITMENT_PERIOD{584};
 //! received and validated against commitments.
 constexpr size_t REDOWNLOAD_BUFFER_SIZE{13959}; // 13959/584 = ~23.9 commitments
 
-// Our memory analysis assumes 48 bytes for a CompressedHeader (so we should
+// Our memory analysis assumes 52 bytes for a CompressedHeader (so we should
 // re-calculate parameters if we compress further)
-static_assert(sizeof(CompressedHeader) == 48);
+static_assert(sizeof(CompressedHeader) == 52);
 
 HeadersSyncState::HeadersSyncState(NodeId id, const Consensus::Params& consensus_params,
         const CBlockIndex* chain_start, const arith_uint256& minimum_required_work) :
@@ -28,7 +28,7 @@ HeadersSyncState::HeadersSyncState(NodeId id, const Consensus::Params& consensus
     m_id(id), m_consensus_params(consensus_params),
     m_chain_start(chain_start),
     m_minimum_required_work(minimum_required_work),
-    m_current_chain_work(chain_start->nChainWork),
+    m_current_chain_work(chain_start->nChainTrust),
     m_last_header_received(m_chain_start->GetBlockHeader()),
     m_current_height(chain_start->nHeight)
 {
@@ -167,7 +167,7 @@ bool HeadersSyncState::ValidateAndStoreHeadersCommitments(const std::vector<CBlo
         m_redownload_buffer_last_height = m_chain_start->nHeight;
         m_redownload_buffer_first_prev_hash = m_chain_start->GetBlockHash();
         m_redownload_buffer_last_hash = m_chain_start->GetBlockHash();
-        m_redownload_chain_work = m_chain_start->nChainWork;
+        m_redownload_chain_work = m_chain_start->nChainTrust;
         m_download_state = State::REDOWNLOAD;
         LogPrint(BCLog::NET, "Initial headers sync transition with peer=%d: reached sufficient work at height=%i, redownloading from height=%i\n", m_id, m_current_height, m_redownload_buffer_last_height);
     }
@@ -186,12 +186,13 @@ bool HeadersSyncState::ValidateAndProcessSingleHeader(const CBlockHeader& curren
     // work chain if they compress the work into as few blocks as possible,
     // so don't let anyone give a chain that would violate the difficulty
     // adjustment maximum.
+/*
     if (!PermittedDifficultyTransition(m_consensus_params, next_height,
                 m_last_header_received.nBits, current.nBits)) {
         LogPrint(BCLog::NET, "Initial headers sync aborted with peer=%d: invalid difficulty transition at height=%i (presync phase)\n", m_id, next_height);
         return false;
     }
-
+*/
     if (next_height % HEADER_COMMITMENT_PERIOD == m_commit_offset) {
         // Add a commitment.
         m_header_commitments.push_back(m_hasher(current.GetHash()) & 1);
@@ -205,7 +206,7 @@ bool HeadersSyncState::ValidateAndProcessSingleHeader(const CBlockHeader& curren
         }
     }
 
-    m_current_chain_work += GetBlockProof(CBlockIndex(current));
+    m_current_chain_work += GetBlockTrust(CBlockIndex(current));
     m_last_header_received = current;
     m_current_height = next_height;
 
@@ -225,7 +226,7 @@ bool HeadersSyncState::ValidateAndStoreRedownloadedHeader(const CBlockHeader& he
         LogPrint(BCLog::NET, "Initial headers sync aborted with peer=%d: non-continuous headers at height=%i (redownload phase)\n", m_id, next_height);
         return false;
     }
-
+/*
     // Check that the difficulty adjustments are within our tolerance:
     uint32_t previous_nBits{0};
     if (!m_redownloaded_headers.empty()) {
@@ -239,9 +240,10 @@ bool HeadersSyncState::ValidateAndStoreRedownloadedHeader(const CBlockHeader& he
         LogPrint(BCLog::NET, "Initial headers sync aborted with peer=%d: invalid difficulty transition at height=%i (redownload phase)\n", m_id, next_height);
         return false;
     }
+*/
 
     // Track work on the redownloaded chain
-    m_redownload_chain_work += GetBlockProof(CBlockIndex(header));
+    m_redownload_chain_work += GetBlockTrust(CBlockIndex(header));
 
     if (m_redownload_chain_work >= m_minimum_required_work) {
         m_process_all_remaining_headers = true;

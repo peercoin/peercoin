@@ -60,7 +60,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
     return bnNew.GetCompact();
 }
-
+/*
 // Check that on difficulty adjustments, the new difficulty does not increase
 // or decrease beyond the permitted limits.
 bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits)
@@ -111,6 +111,7 @@ bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t heig
     }
     return true;
 }
+*/
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params& params)
 {

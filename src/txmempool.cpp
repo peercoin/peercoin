@@ -15,6 +15,7 @@
 #include <policy/settings.h>
 #include <reverse_iterator.h>
 #include <timedata.h>
+#include <util/check.h>
 #include <util/moneystr.h>
 #include <util/overflow.h>
 #include <util/result.h>
@@ -384,8 +385,19 @@ void CTxMemPoolEntry::UpdateAncestorState(int64_t modifySize, CAmount modifyFee,
     assert(int(nSigOpCostWithAncestors) >= 0);
 }
 
-CTxMemPool::CTxMemPool(int check_ratio)
-    : m_check_ratio(check_ratio)
+CTxMemPool::CTxMemPool(const Options& opts)
+    : m_check_ratio{opts.check_ratio},
+      //minerPolicyEstimator{opts.estimator},
+      m_max_size_bytes{opts.max_size_bytes},
+      m_expiry{opts.expiry},
+      //m_incremental_relay_feerate{opts.incremental_relay_feerate},
+      //m_min_relay_feerate{opts.min_relay_feerate},
+      //m_dust_relay_feerate{opts.dust_relay_feerate},
+      m_permit_bare_multisig{opts.permit_bare_multisig},
+      m_max_datacarrier_bytes{opts.max_datacarrier_bytes},
+      m_require_standard{opts.require_standard},
+      m_full_rbf{opts.full_rbf},
+      m_limits{opts.limits}
 {
 }
 
@@ -405,7 +417,7 @@ void CTxMemPool::AddTransactionsUpdated(unsigned int n)
     nTransactionsUpdated += n;
 }
 
-void CTxMemPool::addUnchecked(const CTxMemPoolEntry &entry, setEntries &setAncestors)
+void CTxMemPool::addUnchecked(const CTxMemPoolEntry &entry, setEntries &setAncestors, bool validFeeEstimate)
 {
     // Add to memory pool without checking anything.
     // Used by AcceptToMemoryPool(), which DOES do
@@ -625,23 +637,6 @@ void CTxMemPool::removeForBlock(const std::vector<CTransactionRef>& vtx, unsigne
     }
 }
 
-void CTxMemPool::_clear()
-{
-    vTxHashes.clear();
-    mapTx.clear();
-    mapNextTx.clear();
-    totalTxSize = 0;
-    m_total_fee = 0;
-    cachedInnerUsage = 0;
-    ++nTransactionsUpdated;
-}
-
-void CTxMemPool::clear()
-{
-    LOCK(cs);
-    _clear();
-}
-
 void CTxMemPool::check(const CCoinsViewCache& active_coins_tip, int64_t spendheight) const
 {
     if (m_check_ratio == 0) return;
@@ -730,7 +725,7 @@ void CTxMemPool::check(const CCoinsViewCache& active_coins_tip, int64_t spendhei
         TxValidationState dummy_state; // Not used. CheckTxInputs() should always pass
         CAmount txfee = 0;
         assert(!tx.IsCoinBase());
-        assert(Consensus::CheckTxInputs(tx, dummy_state, mempoolDuplicate, spendheight, txfee, Params().GetConsensus(), tx.nTime ? tx.nTime : GetAdjustedTime()));
+        assert(Consensus::CheckTxInputs(tx, dummy_state, mempoolDuplicate, spendheight, txfee, Params().GetConsensus(), tx.nTime ? tx.nTime : TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime())));
         for (const auto& input: tx.vin) mempoolDuplicate.SpendCoin(input.prevout);
         AddCoins(mempoolDuplicate, tx, std::numeric_limits<int>::max(), false, true);
     }
@@ -992,12 +987,10 @@ int CTxMemPool::Expire(std::chrono::seconds time)
     return stage.size();
 }
 
-void CTxMemPool::addUnchecked(const CTxMemPoolEntry &entry)
+void CTxMemPool::addUnchecked(const CTxMemPoolEntry &entry, bool validFeeEstimate)
 {
-    setEntries setAncestors;
-    std::string dummy;
-    CalculateMemPoolAncestors(entry, setAncestors, nNoLimit, nNoLimit, nNoLimit, nNoLimit, dummy);
-    return addUnchecked(entry, setAncestors);
+    auto ancestors{AssumeCalculateMemPoolAncestors(__func__, entry, Limits::NoLimits())};
+    return addUnchecked(entry, ancestors, validFeeEstimate);
 }
 
 void CTxMemPool::UpdateChild(txiter entry, txiter child, bool add)

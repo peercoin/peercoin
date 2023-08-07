@@ -8,7 +8,7 @@
 
 #include <consensus/amount.h>
 #include <consensus/tx_verify.h>
-#include <fs.h>
+#include <util/fs.h>
 #include <interfaces/chain.h>
 #include <interfaces/handler.h>
 #include <interfaces/wallet.h>
@@ -104,6 +104,7 @@ static const bool DEFAULT_WALLET_REJECT_LONG_CHAINS{true};
 static const unsigned int DEFAULT_TX_CONFIRM_TARGET = 6;
 static const bool DEFAULT_WALLETBROADCAST = true;
 static const bool DEFAULT_DISABLE_WALLET = false;
+static const bool DEFAULT_WALLETCROSSCHAIN = false;
 //! Pre-calculated constants for input size estimation in *virtual size*
 static constexpr size_t DUMMY_NESTED_P2WPKH_INPUT_SIZE = 91;
 
@@ -372,12 +373,7 @@ private:
      */
     static bool AttachChain(const std::shared_ptr<CWallet>& wallet, interfaces::Chain& chain, const bool rescan_required, bilingual_str& error, std::vector<bilingual_str>& warnings);
 
-    /**
-     * Catch wallet up to current chain, scanning new blocks, updating the best
-     * block locator and m_last_block_processed, and registering for
-     * notifications about new blocks and transactions.
-     */
-    static bool AttachChain(const std::shared_ptr<CWallet>& wallet, interfaces::Chain& chain, bilingual_str& error, std::vector<bilingual_str>& warnings);
+    static NodeClock::time_point GetDefaultNextResend();
 
 public:
     /**
@@ -1018,8 +1014,8 @@ bool AddWalletSetting(interfaces::Chain& chain, const std::string& wallet_name);
 //! Remove wallet name from persistent configuration so it will not be loaded on startup.
 bool RemoveWalletSetting(interfaces::Chain& chain, const std::string& wallet_name);
 
-bool DummySignInput(const SigningProvider& provider, CTxIn &tx_in, const CTxOut &txout, bool use_max_sig);
-} // namespace wallet
+//bool DummySignInput(const SigningProvider& provider, CTxIn &tx_in, const CTxOut &txout, bool use_max_sig);
+bool DummySignInput(const SigningProvider& provider, CTxIn &tx_in, const CTxOut &txout, bool can_grind_r, const CCoinControl* coin_control);
 
 bool FillInputToWeight(CTxIn& txin, int64_t target_weight);
 

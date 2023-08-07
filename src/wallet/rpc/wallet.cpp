@@ -10,6 +10,7 @@
 #include <rpc/server_util.h>
 #include <rpc/util.h>
 #include <timedata.h>
+#include <util/system.h>
 #include <util/translation.h>
 #include <wallet/context.h>
 #include <wallet/receive.h>
@@ -513,7 +514,7 @@ static RPCHelpMan importcoinstake()
                 "Import presigned coinstake for use in minting.\n",
                 {
                     {"coinstake", RPCArg::Type::STR_HEX, RPCArg::DefaultHint{"signed coinstake"}, "signed coinstake transaction as hex."},
-                    {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::OMITTED_NAMED_ARG, "timestamp when this coinstake will be valid."},
+                    {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "timestamp when this coinstake will be valid."},
                 },
                 RPCResult{RPCResult::Type::OBJ, "", "", {
                     {RPCResult::Type::STR, "txid", "transaction id if import is successful."},
@@ -528,11 +529,6 @@ static RPCHelpMan importcoinstake()
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
 
-    RPCTypeCheck(request.params, {
-        UniValue::VSTR,
-        UniValue::VNUM
-    });
-
     // parse hex string from parameter
     CMutableTransaction mtx;
     if (!DecodeHexTx(mtx, request.params[0].get_str()))
@@ -545,7 +541,7 @@ static RPCHelpMan importcoinstake()
     {
         int timestamp;
         if (!request.params[1].isNull())
-            timestamp = request.params[1].get_int();
+            timestamp = request.params[1].getInt<int>();
         else
             timestamp = tx->nTime;
 
@@ -576,7 +572,7 @@ static RPCHelpMan listminting()
     return RPCHelpMan{"listminting",
                 "Return all mintable outputs and provide details for each of them.\n",
                 {
-                    {"count", RPCArg::Type::NUM, RPCArg::Optional::OMITTED_NAMED_ARG, "maximum number of outputs to be returned."},
+                    {"count", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "maximum number of outputs to be returned."},
                 },
                 RPCResult{
                     RPCResult::Type::ARR, "", "",
@@ -610,13 +606,9 @@ static RPCHelpMan listminting()
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
 
-    RPCTypeCheck(request.params, {
-        UniValue::VNUM
-    });
-
     int64_t count=-1;
     if (!request.params[0].isNull())
-        count = request.params[0].get_int();
+        count = request.params[0].getInt<int>();
 
     UniValue ret(UniValue::VARR);
 
@@ -626,10 +618,14 @@ static RPCHelpMan listminting()
 
     std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(context,wallet);
     const auto& vwtx = iwallet->getWalletTxs();
+    unsigned int nTime = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime());
+
     for(const auto& wtx : vwtx) {
         std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(*iwallet, wtx);
 
         int64_t minAge = nStakeMinAge / 60 / 60 / 24;
+
+
         for (auto& kr : txList) {
             if(!kr.spent) {
 
@@ -654,7 +650,7 @@ static RPCHelpMan listminting()
                 {
                     status = "mature";
                     searchInterval = (int)nLastCoinStakeSearchInterval;
-                    attemps = GetAdjustedTime() - kr.nTime - nStakeMinAge;
+                    attemps = nTime - kr.nTime - nStakeMinAge;
                 }
 
                 UniValue obj(UniValue::VOBJ);
@@ -687,7 +683,7 @@ static RPCHelpMan listminting()
             obj.pushKV("amount",  ValueFromAmount(txn->vout[1].nValue));
             obj.pushKV("status", "imported");
             obj.pushKV("time", (uint64_t)txn->nTime);
-            obj.pushKV("due-in-seconds", (uint64_t)(txn->nTime - GetAdjustedTime()));
+            obj.pushKV("due-in-seconds", (uint64_t)(txn->nTime - nTime));
             ret.push_back(obj);
         }
     }
@@ -701,8 +697,8 @@ static RPCHelpMan reservebalance()
     return RPCHelpMan{"reservebalance",
                 "Set reserve amount not participating in network protection.\n",
                 {
-                    {"reserve", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED_NAMED_ARG, "turn balance reserve on or off."},
-                    {"amount", RPCArg::Type::NUM, RPCArg::Optional::OMITTED_NAMED_ARG, "amount of peercoin to be reserved."},
+                    {"reserve", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED, "turn balance reserve on or off."},
+                    {"amount", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "amount of peercoin to be reserved."},
                 },
                 RPCResult{RPCResult::Type::OBJ, "", "", {
                     {RPCResult::Type::STR, "reserve", "status of reserve."},
@@ -713,15 +709,13 @@ static RPCHelpMan reservebalance()
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
+    WalletContext& context = EnsureWalletContext(request.context);
+    ArgsManager& args = *Assert(context.args);
+
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
 
     EnsureWalletIsUnlocked(*pwallet);
-
-    RPCTypeCheck(request.params, {
-        UniValue::VBOOL,
-        UniValue::VNUM
-    });
 
     if (request.params.size() > 0)
     {
@@ -734,19 +728,19 @@ static RPCHelpMan reservebalance()
             nAmount = (nAmount / CENT) * CENT;  // round to cent
             if (nAmount < 0)
                 throw std::runtime_error("amount cannot be negative.\n");
-            gArgs.ForceSetArg("-reservebalance", FormatMoney(nAmount));
+            args.ForceSetArg("-reservebalance", FormatMoney(nAmount));
         }
         else
         {
             if (request.params.size() > 1)
                 throw std::runtime_error("cannot specify amount to turn off reserve.\n");
-            gArgs.ForceSetArg("-reservebalance", "0");
+            args.ForceSetArg("-reservebalance", "0");
         }
     }
 
     UniValue result(UniValue::VOBJ);
-    std::optional<CAmount> nReserveBalance = ParseMoney(gArgs.GetArg("-reservebalance", ""));
-    if (gArgs.IsArgSet("-reservebalance") && !nReserveBalance)
+    std::optional<CAmount> nReserveBalance = ParseMoney(args.GetArg("-reservebalance", ""));
+    if (args.IsArgSet("-reservebalance") && !nReserveBalance)
         throw std::runtime_error("invalid reserve balance amount\n");
     result.pushKV("reserve", (nReserveBalance > 0));
     result.pushKV("amount", nReserveBalance.value());

@@ -236,16 +236,6 @@ static T TrimAndParse(const std::string& int_str, const std::string& err)
     return parsed.value();
 }
 
-template <typename T>
-static T TrimAndParse(const std::string& int_str, const std::string& err)
-{
-    const auto parsed{ToIntegral<T>(TrimStringView(int_str))};
-    if (!parsed.has_value()) {
-        throw std::runtime_error(err + " '" + int_str + "'");
-    }
-    return parsed.value();
-}
-
 static void MutateTxAddInput(CMutableTransaction& tx, const std::string& strInput)
 {
     std::vector<std::string> vStrInputParts = SplitString(strInput, ':');

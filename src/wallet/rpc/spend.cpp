@@ -8,6 +8,7 @@
 #include <policy/policy.h>
 #include <rpc/rawtransaction_util.h>
 #include <rpc/util.h>
+#include <timedata.h>
 #include <util/fees.h>
 #include <util/rbf.h>
 #include <util/translation.h>
@@ -154,12 +155,9 @@ UniValue SendMoney(CWallet& wallet, const CCoinControl &coin_control, std::vecto
 
     // Send
     constexpr int RANDOM_CHANGE_POSITION = -1;
-    bilingual_str error;
-    CTransactionRef tx;
-    CAmount fee_calc_out;
-    const bool fCreated = CreateTransaction(wallet, recipients, tx, nFeeRequired, nChangePosRet, error, coin_control, fee_calc_out, true);
-    if (!fCreated) {
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error.original);
+    auto res = CreateTransaction(wallet, recipients, RANDOM_CHANGE_POSITION, coin_control, true);
+    if (!res) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, util::ErrorString(res).original);
     }
     const CTransactionRef& tx = res->tx;
     wallet.CommitTransaction(tx, std::move(map_value), /*orderForm=*/{});
@@ -383,22 +381,12 @@ static std::vector<RPCArg> FundTxDoc(bool solving_data = true)
 {
     std::vector<RPCArg> args = {
         {"conf_target", RPCArg::Type::NUM, RPCArg::DefaultHint{"wallet -txconfirmtarget"}, "Confirmation target in blocks"},
-        {"solving_data", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED_NAMED_ARG, "Keys and scripts needed for producing a final transaction with a dummy signature.\n"
-            "Used for fee estimation during coin selection.",
-         {
-             {"pubkeys", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "Public keys involved in this transaction.",
-             {
-                 {"pubkey", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "A public key"},
-             }},
-             {"scripts", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "Scripts involved in this transaction.",
-             {
-                 {"script", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "A script"},
-             }},
-             {"descriptors", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "Descriptors that provide solving data for this transaction.",
-             {
-                 {"descriptor", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "A descriptor"},
-             }},
-         }},
+        {"estimate_mode", RPCArg::Type::STR, RPCArg::Default{"unset"}, "The fee estimate mode, must be one of (case insensitive):\n"
+         "\""},
+        {
+            "replaceable", RPCArg::Type::BOOL, RPCArg::DefaultHint{"wallet default"}, "Marks this transaction as BIP125-replaceable.\n"
+            "Allows this transaction to be replaced by a transaction with higher fees"
+        },
     };
     if (solving_data) {
         args.push_back({"solving_data", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED, "Keys and scripts needed for producing a final transaction with a dummy signature.\n"
@@ -1005,7 +993,7 @@ RPCHelpMan sendall()
             },
             {"conf_target", RPCArg::Type::NUM, RPCArg::DefaultHint{"wallet -txconfirmtarget"}, "Confirmation target in blocks"},
             {"estimate_mode", RPCArg::Type::STR, RPCArg::Default{"unset"}, "The fee estimate mode, must be one of (case insensitive):\n"
-             "\"" + FeeModes("\"\n\"") + "\""},
+             "\""},
             {"fee_rate", RPCArg::Type::AMOUNT, RPCArg::DefaultHint{"not set, fall back to wallet fee estimation"}, "Specify a fee rate in " + CURRENCY_ATOM + "/vB."},
             {
                 "options", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED, "",
@@ -1094,8 +1082,6 @@ RPCHelpMan sendall()
 
             CCoinControl coin_control;
 
-            SetFeeEstimateMode(*pwallet, coin_control, options["conf_target"], options["estimate_mode"], options["fee_rate"], /*override_min_fee=*/false);
-
             coin_control.fAllowWatchOnly = ParseIncludeWatchonly(options["include_watching"], *pwallet);
 
             if (options.exists("minconf")) {
@@ -1115,21 +1101,8 @@ RPCHelpMan sendall()
                 }
             }
 
-            const bool rbf{options.exists("replaceable") ? options["replaceable"].get_bool() : pwallet->m_signal_rbf};
-
-            FeeCalculation fee_calc_out;
-            CFeeRate fee_rate{GetMinimumFeeRate(*pwallet, coin_control, &fee_calc_out)};
-            // Do not, ever, assume that it's fine to change the fee rate if the user has explicitly
-            // provided one
-            if (coin_control.m_feerate && fee_rate > *coin_control.m_feerate) {
-               throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Fee rate (%s) is lower than the minimum fee rate setting (%s)", coin_control.m_feerate->ToString(FeeEstimateMode::SAT_VB), fee_rate.ToString(FeeEstimateMode::SAT_VB)));
-            }
-            if (fee_calc_out.reason == FeeReason::FALLBACK && !pwallet->m_allow_fallback_fee) {
-                // eventually allow a fallback fee
-                throw JSONRPCError(RPC_WALLET_ERROR, "Fee estimation failed. Fallbackfee is disabled. Wait a few blocks or enable -fallbackfee.");
-            }
-
-            CMutableTransaction rawTx{ConstructTransaction(options["inputs"], recipient_key_value_pairs, options["locktime"], rbf)};
+            unsigned int nTime = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime());
+            CMutableTransaction rawTx{ConstructTransaction(options["inputs"], recipient_key_value_pairs, options["locktime"], nTime)};
             LOCK(pwallet->cs_wallet);
 
             CAmount total_input_value(0);
@@ -1152,12 +1125,9 @@ RPCHelpMan sendall()
             } else {
                 CoinFilterParams coins_params;
                 coins_params.min_amount = 0;
-                for (const COutput& output : AvailableCoins(*pwallet, &coin_control, fee_rate, coins_params).All()) {
+                for (const COutput& output : AvailableCoins(*pwallet, &coin_control).All()) {
                     CHECK_NONFATAL(output.input_bytes > 0);
-                    if (send_max && fee_rate.GetFee(output.input_bytes) > output.txout.nValue) {
-                        continue;
-                    }
-                    CTxIn input(output.outpoint.hash, output.outpoint.n, CScript(), rbf ? MAX_BIP125_RBF_SEQUENCE : CTxIn::SEQUENCE_FINAL);
+                    CTxIn input(output.outpoint.hash, output.outpoint.n, CScript(), CTxIn::SEQUENCE_FINAL);
                     rawTx.vin.push_back(input);
                     total_input_value += output.txout.nValue;
                 }
@@ -1165,12 +1135,8 @@ RPCHelpMan sendall()
 
             // estimate final size of tx
             const TxSize tx_size{CalculateMaximumSignedTxSize(CTransaction(rawTx), pwallet.get())};
-            const CAmount fee_from_size{fee_rate.GetFee(tx_size.vsize)};
+            const CAmount fee_from_size{GetMinFee(tx_size.vsize, nTime)};
             const CAmount effective_value{total_input_value - fee_from_size};
-
-            if (fee_from_size > pwallet->m_default_max_tx_fee) {
-                throw JSONRPCError(RPC_WALLET_ERROR, TransactionErrorString(TransactionError::MAX_FEE_EXCEEDED).original);
-            }
 
             if (effective_value <= 0) {
                 if (send_max) {
@@ -1212,16 +1178,16 @@ RPCHelpMan sendall()
                         out.nValue += remainder % addresses_without_amount.size();
                         gave_remaining_to_first = true;
                     }
-                    if (IsDust(out, pwallet->chain().relayDustFee())) {
+                    /*if (IsDust(out, pwallet->chain().relayDustFee())) {
                         // Dynamically generated output amount is dust
                         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Dynamically assigned remainder results in dust output.");
-                    }
-                } else {
+                    }*/
+                }/* else {
                     if (IsDust(out, pwallet->chain().relayDustFee())) {
                         // Specified output amount is dust
                         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Specified output amount to %s is below dust threshold.", addr));
                     }
-                }
+                }*/
             }
 
             const bool lock_unspents{options.exists("lock_unspents") ? options["lock_unspents"].get_bool() : false};
@@ -1353,7 +1319,7 @@ RPCHelpMan walletcreatefundedpsbt()
                      RPCArgOptions{.skip_type_check = true}},
                     {"locktime", RPCArg::Type::NUM, RPCArg::Default{0}, "Raw locktime. Non-0 value also locktime-activates inputs"},
                     {"timestamp", RPCArg::Type::NUM, RPCArg::Default{0}, "Transaction timestamp"},
-                    {"options", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED_NAMED_ARG, "",
+                    {"options", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED, "",
                         Cat<std::vector<RPCArg>>(
                         {
                             {"add_inputs", RPCArg::Type::BOOL, RPCArg::DefaultHint{"false when \"inputs\" are specified, true otherwise"}, "Automatically include coins from the wallet to cover the target amount.\n"},
@@ -1401,16 +1367,6 @@ RPCHelpMan walletcreatefundedpsbt()
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
     wallet.BlockUntilSyncedToCurrentChain();
-
-    RPCTypeCheck(request.params, {
-        UniValue::VARR,
-        UniValueType(), // ARR or OBJ, checked later
-        UniValue::VNUM,
-        UniValue::VNUM,
-        UniValue::VOBJ,
-        UniValue::VBOOL
-        }, true
-    );
 
     UniValue options{request.params[3].isNull() ? UniValue::VOBJ : request.params[3]};
 

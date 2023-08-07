@@ -71,7 +71,7 @@ class Node
 public:
     virtual ~Node() {}
 
-    virtual ChainstateManager& chainman() = 0;
+    //virtual ChainstateManager& chainman() = 0;
 
     //! Init logging.
     virtual void initLogging() = 0;
@@ -267,13 +267,6 @@ public:
 
 //! Return implementation of Node interface.
 std::unique_ptr<Node> MakeNode(node::NodeContext& context);
-
-//! Block tip (could be a header or not, depends on the subscribed signal).
-struct BlockTip {
-    int block_height;
-    int64_t block_time;
-    uint256 block_hash;
-};
 
 //! Block tip (could be a header or not, depends on the subscribed signal).
 struct BlockTip {

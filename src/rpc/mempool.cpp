@@ -86,12 +86,12 @@ static RPCHelpMan sendrawtransaction()
                                                      CFeeRate(AmountFromValue(request.params[1]));
 
             int64_t virtual_size = GetVirtualTransactionSize(*tx);
-            CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
+            //CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
 
             std::string err_string;
             AssertLockNotHeld(cs_main);
             NodeContext& node = EnsureAnyNodeContext(request.context);
-            const TransactionError err = BroadcastTransaction(node, tx, err_string, max_raw_tx_fee, /*relay=*/true, /*wait_callback=*/true);
+            const TransactionError err = BroadcastTransaction(node, tx, err_string, /*relay=*/true, /*wait_callback=*/true);
             if (TransactionError::OK != err) {
                 throw JSONRPCTransactionError(err, err_string);
             }
@@ -214,6 +214,7 @@ static RPCHelpMan testmempoolaccept()
                     const CAmount fee = tx_result.m_base_fees.value();
                     // Check that fee does not exceed maximum fee
                     const int64_t virtual_size = tx_result.m_vsize.value();
+/*
                     const CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
                     if (max_raw_tx_fee && fee > max_raw_tx_fee) {
                         result_inner.pushKV("allowed", false);
@@ -226,7 +227,7 @@ static RPCHelpMan testmempoolaccept()
                         result_inner.pushKV("vsize", virtual_size);
                         UniValue fees(UniValue::VOBJ);
                         fees.pushKV("base", ValueFromAmount(fee));
-                        fees.pushKV("effective-feerate", ValueFromAmount(tx_result.m_effective_feerate.value().GetFeePerK()));
+                        fees.pushKV("effective-feerate", 0.01); 
                         UniValue effective_includes_res(UniValue::VARR);
                         for (const auto& wtxid : tx_result.m_wtxids_fee_calculations.value()) {
                             effective_includes_res.push_back(wtxid.ToString());
@@ -234,6 +235,7 @@ static RPCHelpMan testmempoolaccept()
                         fees.pushKV("effective-includes", effective_includes_res);
                         result_inner.pushKV("fees", fees);
                     }
+*/
                 } else {
                     result_inner.pushKV("allowed", false);
                     const TxValidationState state = tx_result.m_state;
@@ -291,14 +293,14 @@ static void entryToJSON(const CTxMemPool& pool, UniValue& info, const CTxMemPool
     info.pushKV("ancestorcount", e.GetCountWithAncestors());
     info.pushKV("ancestorsize", e.GetSizeWithAncestors());
     info.pushKV("wtxid", pool.vTxHashes[e.vTxHashesIdx].first.ToString());
-
+/*
     UniValue fees(UniValue::VOBJ);
     fees.pushKV("base", ValueFromAmount(e.GetFee()));
     fees.pushKV("modified", ValueFromAmount(e.GetModifiedFee()));
     fees.pushKV("ancestor", ValueFromAmount(e.GetModFeesWithAncestors()));
     fees.pushKV("descendant", ValueFromAmount(e.GetModFeesWithDescendants()));
     info.pushKV("fees", fees);
-
+*/
     const CTransaction& tx = e.GetTx();
     std::set<std::string> setDepends;
     for (const CTxIn& txin : tx.vin)
@@ -323,17 +325,6 @@ static void entryToJSON(const CTxMemPool& pool, UniValue& info, const CTxMemPool
     }
 
     info.pushKV("spentby", spent);
-
-    // Add opt-in RBF status
-    bool rbfStatus = false;
-    RBFTransactionState rbfState = IsRBFOptIn(tx, pool);
-    if (rbfState == RBFTransactionState::UNKNOWN) {
-        throw JSONRPCError(RPC_MISC_ERROR, "Transaction is not in mempool");
-    } else if (rbfState == RBFTransactionState::REPLACEABLE_BIP125) {
-        rbfStatus = true;
-    }
-
-    info.pushKV("bip125-replaceable", rbfStatus);
     info.pushKV("unbroadcast", pool.IsUnbroadcastTx(tx.GetHash()));
 }
 
@@ -680,9 +671,9 @@ UniValue MempoolInfoToJSON(const CTxMemPool& pool)
     ret.pushKV("usage", (int64_t)pool.DynamicMemoryUsage());
     ret.pushKV("total_fee", ValueFromAmount(pool.GetTotalFee()));
     ret.pushKV("maxmempool", pool.m_max_size_bytes);
-    ret.pushKV("mempoolminfee", ValueFromAmount(std::max(pool.GetMinFee(), pool.m_min_relay_feerate).GetFeePerK()));
-    ret.pushKV("minrelaytxfee", ValueFromAmount(pool.m_min_relay_feerate.GetFeePerK()));
-    ret.pushKV("incrementalrelayfee", ValueFromAmount(pool.m_incremental_relay_feerate.GetFeePerK()));
+    ret.pushKV("mempoolminfee", 0.01);
+    ret.pushKV("minrelaytxfee", 0.01);
+    ret.pushKV("incrementalrelayfee", 0.01);
     ret.pushKV("unbroadcastcount", uint64_t{pool.GetUnbroadcastTxs().size()});
     ret.pushKV("fullrbf", pool.m_full_rbf);
     return ret;
@@ -856,7 +847,7 @@ static RPCHelpMan submitpackage()
             size_t num_broadcast{0};
             for (const auto& tx : txns) {
                 std::string err_string;
-                const auto err = BroadcastTransaction(node, tx, err_string, /*max_tx_fee=*/0, /*relay=*/true, /*wait_callback=*/true);
+                const auto err = BroadcastTransaction(node, tx, err_string, /*relay=*/true, /*wait_callback=*/true);
                 if (err != TransactionError::OK) {
                     throw JSONRPCTransactionError(err,
                         strprintf("transaction broadcast failed: %s (all transactions were submitted, %d transactions were broadcast successfully)",
@@ -885,7 +876,7 @@ static RPCHelpMan submitpackage()
                         // Effective feerate is not provided for MEMPOOL_ENTRY transactions even
                         // though modified fees is known, because it is unknown whether package
                         // feerate was used when it was originally submitted.
-                        fees.pushKV("effective-feerate", ValueFromAmount(tx_result.m_effective_feerate.value().GetFeePerK()));
+                        fees.pushKV("effective-feerate", 0.01);
                         UniValue effective_includes_res(UniValue::VARR);
                         for (const auto& wtxid : tx_result.m_wtxids_fee_calculations.value()) {
                             effective_includes_res.push_back(wtxid.ToString());

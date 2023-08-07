@@ -35,16 +35,12 @@ endif
 
 crc32c_libcrc32c_la_CPPFLAGS = $(AM_CPPFLAGS) $(CRC32C_CPPFLAGS_INT) $(CRC32C_CPPFLAGS)
 
-crc32c_libcrc32c_a_SOURCES =
-crc32c_libcrc32c_a_SOURCES += crc32c/include/crc32c/crc32c.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_arm64.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_arm64_linux_check.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_internal.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_prefetch.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_read_le.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_round_up.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_sse42_check.h
-crc32c_libcrc32c_a_SOURCES += crc32c/src/crc32c_sse42.h
+# Specify -static in both CXXFLAGS and LDFLAGS so libtool will only build a
+# static version of this library. We don't need a dynamic version, and a dynamic
+# version can't be used on windows anyway because the library doesn't currently
+# export DLL symbols.
+crc32c_libcrc32c_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crc32c_libcrc32c_la_LDFLAGS = $(AM_LDFLAGS) -static
 
 crc32c_libcrc32c_la_SOURCES =
 crc32c_libcrc32c_la_SOURCES += crc32c/include/crc32c/crc32c.h

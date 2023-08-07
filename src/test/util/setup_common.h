@@ -71,11 +71,7 @@ static inline void SeedInsecureRand(SeedRand seed = SeedRand::SEED)
     }
 }
 
-static inline uint32_t InsecureRand32() { return g_insecure_rand_ctx.rand32(); }
-static inline uint256 InsecureRand256() { return g_insecure_rand_ctx.rand256(); }
-static inline uint64_t InsecureRandBits(int bits) { return g_insecure_rand_ctx.randbits(bits); }
-static inline uint64_t InsecureRandRange(uint64_t range) { return g_insecure_rand_ctx.randrange(range); }
-static inline bool InsecureRandBool() { return g_insecure_rand_ctx.randbool(); }
+//static constexpr CAmount CENT{10000};
 
 /** Basic testing setup.
  * This just configures logging, data dir and chain parameters.
@@ -197,50 +193,6 @@ std::unique_ptr<T> MakeNoLogFileContext(const std::string& chain_name = CBaseCha
 
     return std::make_unique<T>(chain_name, arguments);
 }
-
-/**
- * Make a test setup that has disk access to the debug.log file disabled. Can
- * be used in "hot loops", for example fuzzing or benchmarking.
- */
-template <class T = const BasicTestingSetup>
-std::unique_ptr<T> MakeNoLogFileContext(const std::string& chain_name = CBaseChainParams::REGTEST, const std::vector<const char*>& extra_args = {})
-{
-    const std::vector<const char*> arguments = Cat(
-        {
-            "-nodebuglogfile",
-            "-nodebug",
-        },
-        extra_args);
-
-    return std::make_unique<T>(chain_name, arguments);
-}
-
-class CTxMemPoolEntry;
-
-struct TestMemPoolEntryHelper
-{
-    // Default values
-    CAmount nFee;
-    int64_t nTime;
-    unsigned int nHeight;
-    bool spendsCoinbase;
-    unsigned int sigOpCost;
-    LockPoints lp;
-
-    TestMemPoolEntryHelper() :
-        nFee(0), nTime(0), nHeight(1),
-        spendsCoinbase(false), sigOpCost(4) { }
-
-    CTxMemPoolEntry FromTx(const CMutableTransaction& tx) const;
-    CTxMemPoolEntry FromTx(const CTransactionRef& tx) const;
-
-    // Change the default value
-    TestMemPoolEntryHelper &Fee(CAmount _fee) { nFee = _fee; return *this; }
-    TestMemPoolEntryHelper &Time(int64_t _time) { nTime = _time; return *this; }
-    TestMemPoolEntryHelper &Height(unsigned int _height) { nHeight = _height; return *this; }
-    TestMemPoolEntryHelper &SpendsCoinbase(bool _flag) { spendsCoinbase = _flag; return *this; }
-    TestMemPoolEntryHelper &SigOpsCost(unsigned int _sigopsCost) { sigOpCost = _sigopsCost; return *this; }
-};
 
 CBlock getBlockf098f();
 

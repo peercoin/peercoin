@@ -100,9 +100,6 @@ private:
     /** Dirty block file entries. */
     std::set<int> m_dirty_fileinfo;
 
-    RecursiveMutex cs_LastBlockFile;
-    std::vector<CBlockFileInfo> m_blockfile_info;
-    int m_last_blockfile = 0;
     /** Global flag to indicate we should check to see if there are
      *  block/undo files that should be deleted.  Set on startup
      *  or if we allocate more file space when we're in prune mode
@@ -110,12 +107,6 @@ private:
     bool m_check_for_pruning = false;
 
     const bool m_prune_mode;
-
-    /** Dirty block index entries. */
-    std::set<CBlockIndex*> m_dirty_blockindex;
-
-    /** Dirty block file entries. */
-    std::set<int> m_dirty_fileinfo;
 
     /**
      * Map from external index name to oldest block that must not be pruned.
@@ -136,6 +127,9 @@ public:
 
     std::atomic<bool> m_importing{false};
 
+    /** Dirty block index entries. */
+    std::set<CBlockIndex*> m_dirty_blockindex;
+
     BlockMap m_block_index GUARDED_BY(cs_main);
 
     std::vector<CBlockIndex*> GetAllBlockIndices() EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
@@ -145,9 +139,6 @@ public:
      */
     std::multimap<CBlockIndex*, CBlockIndex*> m_blocks_unlinked;
     std::unique_ptr<CBlockTreeDB> m_block_tree_db GUARDED_BY(::cs_main);
-
-    /** Dirty block index entries. */
-    std::set<CBlockIndex*> m_dirty_blockindex;
 
     bool WriteBlockIndexDB() EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
     bool LoadBlockIndexDB(const Consensus::Params& consensus_params) EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
@@ -163,7 +154,8 @@ public:
     /** Create a new block index entry for a given block hash */
     CBlockIndex* InsertBlockIndex(const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
-    CBlockIndex* LookupBlockIndex(const uint256& hash) const EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    CBlockIndex* LookupBlockIndex(const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    const CBlockIndex* LookupBlockIndex(const uint256& hash) const EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
     /** Get block file info entry for one block file */
     CBlockFileInfo* GetBlockFileInfo(size_t n);
@@ -206,11 +198,6 @@ public:
 FILE* OpenBlockFile(const FlatFilePos& pos, bool fReadOnly = false);
 /** Translation to a filesystem path */
 fs::path GetBlockPosFilename(const FlatFilePos& pos);
-
-/** Open a block file (blk?????.dat) */
-FILE* OpenBlockFile(const FlatFilePos &pos, bool fReadOnly = false);
-/** Translation to a filesystem path */
-fs::path GetBlockPosFilename(const FlatFilePos &pos);
 
 /** Get block file info entry for one block file */
 CBlockFileInfo* GetBlockFileInfo(size_t n);

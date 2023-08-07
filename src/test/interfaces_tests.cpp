@@ -73,21 +73,6 @@ BOOST_AUTO_TEST_CASE(findFirstBlockWithTimeAndHeight)
     BOOST_CHECK(!chain->findFirstBlockWithTimeAndHeight(/* min_time= */ active.Tip()->GetBlockTimeMax() + 1, /* min_height= */ 0));
 }
 
-BOOST_AUTO_TEST_CASE(findNextBlock)
-{
-    auto chain = interfaces::MakeChain(m_node);
-    auto& active = ChainActive();
-    bool reorg;
-    uint256 hash;
-    BOOST_CHECK(chain->findNextBlock(active[20]->GetBlockHash(), 20, FoundBlock().hash(hash), &reorg));
-    BOOST_CHECK_EQUAL(hash, active[21]->GetBlockHash());
-    BOOST_CHECK_EQUAL(reorg, false);
-    BOOST_CHECK(!chain->findNextBlock(uint256(), 20, {}, &reorg));
-    BOOST_CHECK_EQUAL(reorg, true);
-    BOOST_CHECK(!chain->findNextBlock(active.Tip()->GetBlockHash(), active.Height(), {}, &reorg));
-    BOOST_CHECK_EQUAL(reorg, false);
-}
-
 BOOST_AUTO_TEST_CASE(findAncestorByHeight)
 {
     LOCK(Assert(m_node.chainman)->GetMutex());
@@ -144,42 +129,6 @@ BOOST_AUTO_TEST_CASE(hasBlocks)
 {
     LOCK(::cs_main);
     auto& chain = m_node.chain;
-    const CChain& active = Assert(m_node.chainman)->ActiveChain();
-
-    // Test ranges
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 10, 90));
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 10, {}));
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 0, 90));
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 0, {}));
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), -1000, 1000));
-    active[5]->nStatus &= ~BLOCK_HAVE_DATA;
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 10, 90));
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 10, {}));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 0, 90));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 0, {}));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), -1000, 1000));
-    active[95]->nStatus &= ~BLOCK_HAVE_DATA;
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 10, 90));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 10, {}));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 0, 90));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 0, {}));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), -1000, 1000));
-    active[50]->nStatus &= ~BLOCK_HAVE_DATA;
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 10, 90));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 10, {}));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 0, 90));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 0, {}));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), -1000, 1000));
-
-    // Test edge cases
-    BOOST_CHECK(chain->hasBlocks(active.Tip()->GetBlockHash(), 6, 49));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 5, 49));
-    BOOST_CHECK(!chain->hasBlocks(active.Tip()->GetBlockHash(), 6, 50));
-}
-
-BOOST_AUTO_TEST_CASE(hasBlocks)
-{
-    auto chain = interfaces::MakeChain(m_node);
     const CChain& active = Assert(m_node.chainman)->ActiveChain();
 
     // Test ranges

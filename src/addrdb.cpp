@@ -24,21 +24,6 @@
 #include <util/system.h>
 #include <util/translation.h>
 
-CBanEntry::CBanEntry(const UniValue& json)
-    : nVersion(json["version"].get_int()), nCreateTime(json["ban_created"].get_int64()),
-      nBanUntil(json["banned_until"].get_int64())
-{
-}
-
-UniValue CBanEntry::ToJson() const
-{
-    UniValue json(UniValue::VOBJ);
-    json.pushKV("version", nVersion);
-    json.pushKV("ban_created", nCreateTime);
-    json.pushKV("banned_until", nBanUntil);
-    return json;
-}
-
 namespace {
 
 class DbNotFoundError : public std::exception

@@ -323,7 +323,7 @@ public:
         strNetworkID = CBaseChainParams::SIGNET;
         consensus.signet_blocks = true;
         consensus.signet_challenge.assign(bin.begin(), bin.end());
-        consensus.BIP16Exception = uint256{};
+        //consensus.BIP16Exception = uint256{};
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
         consensus.CSVHeight = 1;
@@ -405,7 +405,7 @@ public:
         strNetworkID =  CBaseChainParams::REGTEST;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
-        consensus.BIP16Exception = uint256();
+        //consensus.BIP16Exception = uint256();
         consensus.BIP34Height = 1; // Always active unless overridden
         consensus.BIP34Hash = uint256();
         consensus.powLimit =            uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~arith_uint256(0) >> 28;
@@ -508,27 +508,21 @@ void ReadRegTestArgs(const ArgsManager& args, CChainParams::RegTestOptions& opti
         if (!ParseInt32(value, &height) || height < 0 || height >= std::numeric_limits<int>::max()) {
             throw std::runtime_error(strprintf("Invalid height value (%s) for -testactivationheight=name@height.", arg));
         }
-        if (name == "segwit") {
-            consensus.SegwitHeight = int{height};
-        } else if (name == "bip34") {
-            consensus.BIP34Height = int{height};
-        } else if (name == "dersig") {
-            //consensus.BIP66Height = int{height};
-        } else if (name == "cltv") {
-            //consensus.BIP65Height = int{height};
-        } else if (name == "csv") {
-            consensus.CSVHeight = int{height};
+
+        const auto deployment_name{arg.substr(0, found)};
+        if (const auto buried_deployment = GetBuriedDeployment(deployment_name)) {
+            options.activation_heights[*buried_deployment] = height;
         } else {
             throw std::runtime_error(strprintf("Invalid name (%s) for -testactivationheight=name@height.", arg));
         }
     }
 }
-
+/*
 void CRegTestParams::UpdateActivationParametersFromArgs(const ArgsManager& args)
 {
     MaybeUpdateHeights(args, consensus);
  }
-
+*/
 static std::unique_ptr<const CChainParams> globalChainParams;
 
 const CChainParams &Params() {

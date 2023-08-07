@@ -19,7 +19,7 @@
 #include <util/ui_change_type.h>
 #include <wallet/coincontrol.h>
 #include <wallet/context.h>
-#include <wallet/ismine.h>
+#include <wallet/types.h>
 #include <wallet/load.h>
 #include <wallet/receive.h>
 #include <wallet/rpc/wallet.h>
@@ -265,13 +265,14 @@ public:
         CAmount& fee) override
     {
         LOCK(m_wallet->cs_wallet);
-        CTransactionRef tx;
-        CAmount fee_calc_out;
-        if (!CreateTransaction(*m_wallet, recipients, tx, fee, change_pos,
-                fail_reason, coin_control, fee_calc_out, sign)) {
-            return {};
-        }
-        return tx;
+        auto res = CreateTransaction(*m_wallet, recipients, change_pos,
+                                     coin_control, sign);
+        if (!res) return util::Error{util::ErrorString(res)};
+        const auto& txr = *res;
+        fee = txr.fee;
+        change_pos = txr.change_pos;
+
+        return txr.tx;
     }
     void commitTransaction(CTransactionRef tx,
         WalletValueMap value_map,
@@ -563,15 +564,6 @@ public:
             }, command.argNames, command.unique_id);
             m_rpc_handlers.emplace_back(m_context.chain->handleRpc(m_rpc_commands.back()));
         }
-
-#ifdef ENABLE_EXTERNAL_SIGNER
-        for (const CRPCCommand& command : GetSignerRPCCommands()) {
-            m_rpc_commands.emplace_back(command.category, command.name, [this, &command](const JSONRPCRequest& request, UniValue& result, bool last_handler) {
-                return command.actor({request, m_context}, result, last_handler);
-            }, command.argNames, command.unique_id);
-            m_rpc_handlers.emplace_back(m_context.chain->handleRpc(m_rpc_commands.back()));
-        }
-#endif
     }
     bool verify() override { return VerifyWallets(m_context); }
     bool load() override { return LoadWallets(m_context); }

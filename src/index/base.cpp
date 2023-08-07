@@ -106,7 +106,7 @@ bool BaseIndex::Init()
         if (!m_best_block_index) {
             // index is not built yet
             // make sure we have all block data back to the genesis
-            prune_violation = m_chainstate->m_blockman.GetFirstStoredBlock(*active_chain.Tip()) != active_chain.Genesis();
+            //prune_violation = m_chainstate->m_blockman.GetFirstStoredBlock(*active_chain.Tip()) != active_chain.Genesis();
         }
         // in case the index has a best block set and is not fully synced
         // check if we have the required blocks to continue building the index
@@ -425,6 +425,7 @@ IndexSummary BaseIndex::GetSummary() const
 
 void BaseIndex::SetBestBlockIndex(const CBlockIndex* block)
 {
+/*
     assert(!m_chainstate->m_blockman.IsPruneMode() || AllowPrune());
 
     if (AllowPrune() && block) {
@@ -432,7 +433,7 @@ void BaseIndex::SetBestBlockIndex(const CBlockIndex* block)
         prune_lock.height_first = block->nHeight;
         WITH_LOCK(::cs_main, m_chainstate->m_blockman.UpdatePruneLock(GetName(), prune_lock));
     }
-
+*/
     // Intentionally set m_best_block_index as the last step in this function,
     // after updating prune locks above, and after making any other references
     // to *this, so the BlockUntilSyncedToCurrentChain function (which checks

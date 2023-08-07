@@ -31,16 +31,6 @@ std::string GetAllOutputTypes()
     return Join(ret, ", ");
 }
 
-std::string GetAllOutputTypes()
-{
-    std::vector<std::string> ret;
-    using U = std::underlying_type<TxoutType>::type;
-    for (U i = (U)TxoutType::NONSTANDARD; i <= (U)TxoutType::WITNESS_UNKNOWN; ++i) {
-        ret.emplace_back(GetTxnOutputType(static_cast<TxoutType>(i)));
-    }
-    return Join(ret, ", ");
-}
-
 void RPCTypeCheckObj(const UniValue& o,
     const std::map<std::string, UniValueType>& typesExpected,
     bool fAllowNull,
@@ -149,19 +139,6 @@ std::string ShellQuoteIfNeeded(const std::string& s)
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
     return "> peercoin-cli " + methodname + " " + args + "\n";
-}
-
-std::string HelpExampleCliNamed(const std::string& methodname, const RPCArgList& args)
-{
-    std::string result = "> bitcoin-cli -named " + methodname;
-    for (const auto& argpair: args) {
-        const auto& value = argpair.second.isStr()
-                ? argpair.second.get_str()
-                : argpair.second.write();
-        result += " " + argpair.first + "=" + ShellQuoteIfNeeded(value);
-    }
-    result += "\n";
-    return result;
 }
 
 std::string HelpExampleCliNamed(const std::string& methodname, const RPCArgList& args)

@@ -77,5 +77,5 @@ bool InitError(const bilingual_str& str, const std::vector<std::string>& details
 
 void InitWarning(const bilingual_str& str)
 {
-    uiInterface.ThreadSafeMessageBox(Untranslated(str), "", CClientUIInterface::MSG_WARNING);
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
 }

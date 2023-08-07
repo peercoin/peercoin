@@ -36,17 +36,20 @@ struct ChainstateLoadOptions {
     std::function<void()> coins_error_cb;
 };
 
-enum class ChainstateLoadingError {
-    ERROR_LOADING_BLOCK_DB,
-    ERROR_BAD_GENESIS_BLOCK,
-    ERROR_LOAD_GENESIS_BLOCK_FAILED,
-    ERROR_CHAINSTATE_UPGRADE_FAILED,
-    ERROR_REPLAYBLOCKS_FAILED,
-    ERROR_LOADCHAINTIP_FAILED,
-    ERROR_GENERIC_BLOCKDB_OPEN_FAILED,
-    ERROR_BLOCKS_WITNESS_INSUFFICIENTLY_VALIDATED,
-    SHUTDOWN_PROBED,
+//! Chainstate load status. Simple applications can just check for the success
+//! case, and treat other cases as errors. More complex applications may want to
+//! try reindexing in the generic failure case, and pass an interrupt callback
+//! and exit cleanly in the interrupted case.
+enum class ChainstateLoadStatus {
+    SUCCESS,
+    FAILURE,
+    FAILURE_INCOMPATIBLE_DB,
+    FAILURE_INSUFFICIENT_DBCACHE,
+    INTERRUPTED,
 };
+
+//! Chainstate load status code and optional error string.
+using ChainstateLoadResult = std::tuple<ChainstateLoadStatus, bilingual_str>;
 
 /** This sequence can have 4 types of outcomes:
  *
@@ -61,27 +64,10 @@ enum class ChainstateLoadingError {
  *
  *  LoadChainstate returns a (status code, error string) tuple.
  */
-std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
-                                                     ChainstateManager& chainman,
-                                                     CTxMemPool* mempool,
-                                                     const Consensus::Params& consensus_params,
-                                                     bool fReindexChainState,
-                                                     int64_t nBlockTreeDBCache,
-                                                     int64_t nCoinDBCache,
-                                                     int64_t nCoinCacheUsage,
-                                                     bool block_tree_db_in_memory,
-                                                     bool coins_db_in_memory,
-                                                     std::function<bool()> shutdown_requested = nullptr,
-                                                     std::function<void()> coins_error_cb = nullptr);
 
-enum class ChainstateLoadVerifyError {
-    ERROR_BLOCK_FROM_FUTURE,
-    ERROR_CORRUPTED_BLOCK_DB,
-    ERROR_GENERIC_FAILURE,
-};
-
-std::optional<ChainstateLoadVerifyError> VerifyLoadedChainstate(ChainstateManager& chainman,
-                                                                const ChainstateLoadOptions& options);
+ChainstateLoadResult LoadChainstate(ChainstateManager& chainman, const CacheSizes& cache_sizes,
+                                    const ChainstateLoadOptions& options);
+ChainstateLoadResult VerifyLoadedChainstate(ChainstateManager& chainman, const ChainstateLoadOptions& options);
 } // namespace node
 
 #endif // BITCOIN_NODE_CHAINSTATE_H

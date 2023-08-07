@@ -12,7 +12,7 @@ class CTransaction;
 
 // Policy settings which are configurable at runtime.
 extern unsigned int nBytesPerSigOp;
-
+/*
 static inline bool IsStandardTx(const CTransaction& tx, std::string& reason)
 {
     return IsStandardTx(tx, ::fIsBareMultisigStd, reason);
@@ -27,5 +27,5 @@ static inline int64_t GetVirtualTransactionSize(const CTransaction& tx, int64_t 
 {
     return GetVirtualTransactionSize(tx, sigop_cost, ::nBytesPerSigOp);
 }
-
+*/
 #endif // BITCOIN_POLICY_SETTINGS_H

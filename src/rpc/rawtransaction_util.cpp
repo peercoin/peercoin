@@ -21,7 +21,7 @@
 #include <util/system.h>
 #include <util/translation.h>
 
-CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniValue& outputs_in, const UniValue& locktime, const UniValue& timestamp)
+void AddInputs(CMutableTransaction& rawTx, const UniValue& inputs_in)
 {
     UniValue inputs;
     if (inputs_in.isNull()) {
@@ -30,30 +30,9 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
         inputs = inputs_in.get_array();
     }
 
-    const bool outputs_is_obj = outputs_in.isObject();
-    UniValue outputs = outputs_is_obj ? outputs_in.get_obj() : outputs_in.get_array();
-
-    CMutableTransaction rawTx;
-    rawTx.nVersion = std::stoi(gArgs.GetArg("-txversion", std::to_string(CTransaction::CURRENT_VERSION)));
-
-    if (!locktime.isNull()) {
-        int64_t nLockTime = locktime.getInt<int64_t>();
-        if (nLockTime < 0 || nLockTime > LOCKTIME_MAX)
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, locktime out of range");
-        rawTx.nLockTime = nLockTime;
-    }
-
-    if (!timestamp.isNull()) {
-        int64_t nTime = timestamp.get_int64();
-        if (nTime < 0 || nTime > LOCKTIME_MAX)
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, timestamp out of range");
-        rawTx.nTime = nTime;
-    }
-
     for (unsigned int idx = 0; idx < inputs.size(); idx++) {
         const UniValue& input = inputs[idx];
         const UniValue& o = input.get_obj();
-        CScript scriptSig;
 
         uint256 txid = ParseHashO(o, "txid");
 
@@ -65,6 +44,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, vout cannot be negative");
 
         uint32_t nSequence;
+
         if (rawTx.nLockTime) {
             nSequence = CTxIn::MAX_SEQUENCE_NONFINAL; /* CTxIn::SEQUENCE_FINAL - 1 */
         } else {
@@ -82,15 +62,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
             }
         }
 
-        // set redeem script
-        const UniValue& rs = find_value(o, "redeemScript");
-        if (!rs.isNull()) {
-            std::vector<unsigned char> redeemScriptData(ParseHex(rs.getValStr()));
-            CScript redeemScript(redeemScriptData.begin(), redeemScriptData.end());
-            scriptSig = redeemScript;
-        }
-
-        CTxIn in(COutPoint(txid, nOutput), scriptSig, nSequence);
+        CTxIn in(COutPoint(txid, nOutput), CScript(), nSequence);
 
         rawTx.vin.push_back(in);
     }
@@ -163,7 +135,7 @@ void AddOutputs(CMutableTransaction& rawTx, const UniValue& outputs_in)
     }
 }
 
-CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniValue& outputs_in, const UniValue& locktime, std::optional<bool> rbf)
+CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniValue& outputs_in, const UniValue& locktime, const UniValue& timestamp)
 {
     CMutableTransaction rawTx;
 
@@ -174,7 +146,14 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
         rawTx.nLockTime = nLockTime;
     }
 
-    AddInputs(rawTx, inputs_in, rbf);
+    if (!timestamp.isNull()) {
+        int64_t nTime = timestamp.getInt<int64_t>();
+        if (nTime < 0 || nTime > LOCKTIME_MAX)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, timestamp out of range");
+        rawTx.nTime = nTime;
+    }
+
+    AddInputs(rawTx, inputs_in);
     AddOutputs(rawTx, outputs_in);
 
     return rawTx;

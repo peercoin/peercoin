@@ -136,6 +136,11 @@ protected:
 public:
     CBlockHeader header;
     std::vector<unsigned char> vchBlockSig;
+
+    // Can be overridden for testing
+    using CheckBlockFn = std::function<bool(const CBlock&, BlockValidationState&, const Consensus::Params&, bool, bool, bool)>;
+    CheckBlockFn m_check_block_mock{nullptr};
+
     explicit PartiallyDownloadedBlock(CTxMemPool* poolIn) : pool(poolIn) {}
 
     // extra_txn is a list of extra transactions to look at, in <witness hash, reference> form

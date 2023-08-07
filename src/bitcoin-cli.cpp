@@ -9,6 +9,9 @@
 
 #include <chainparamsbase.h>
 #include <clientversion.h>
+#include <common/url.h>
+#include <compat/compat.h>
+#include <compat/stdin.h>
 #include <consensus/amount.h>
 #include <rpc/client.h>
 #include <rpc/mining.h>

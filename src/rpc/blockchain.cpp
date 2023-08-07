@@ -14,7 +14,7 @@
 #include <consensus/validation.h>
 #include <core_io.h>
 #include <deploymentinfo.h>
-#include <fs.h>
+#include <util/fs.h>
 #include <hash.h>
 #include <index/blockfilterindex.h>
 #include <index/coinstatsindex.h>
@@ -77,7 +77,7 @@ struct CUpdatedBlock
 static GlobalMutex cs_blockchange;
 static std::condition_variable cond_blockchange;
 static CUpdatedBlock latestblock GUARDED_BY(cs_blockchange);
-
+/*
 ChainstateManager& EnsureChainman(const util::Ref& context)
 {
     const NodeContext& node = EnsureNodeContext(context);
@@ -95,7 +95,7 @@ CBlockPolicyEstimator& EnsureFeeEstimator(const std::any& context)
     }
     return *node.fee_estimator;
 }
-
+*/
 /* Calculate the difficulty for a given block index.
  */
 double GetDifficulty(const CBlockIndex* blockindex, const CBlockIndex* tip)
@@ -503,7 +503,7 @@ static std::vector<RPCResult> MempoolEntryDescription() { return {
         {RPCResult{RPCResult::Type::STR_HEX, "transactionid", "child transaction id"}}},
     RPCResult{RPCResult::Type::BOOL, "unbroadcast", "Whether this transaction is currently unbroadcast (initial broadcast not yet acknowledged by any peers)"},
 };}
-
+/*
 static void entryToJSON(const CTxMemPool& pool, UniValue& info, const CTxMemPoolEntry& e) EXCLUSIVE_LOCKS_REQUIRED(pool.cs)
 {
     AssertLockHeld(pool.cs);
@@ -816,7 +816,7 @@ static RPCHelpMan getmempoolentry()
 },
     };
 }
-
+*/
 static RPCHelpMan getblockfrompeer()
 {
     return RPCHelpMan{
@@ -959,7 +959,7 @@ static RPCHelpMan getblockheader()
 
     if (!fVerbose)
     {
-        DataStream ssBlock{};
+        CDataStream ssBlock(SER_NETWORK, PROTOCOL_VERSION);
         ssBlock << pblockindex->GetBlockHeader();
         std::string strHex = HexStr(ssBlock);
         return strHex;
@@ -1138,19 +1138,6 @@ static RPCHelpMan getblock()
     };
 }
 
-
-CoinStatsHashType ParseHashType(const std::string& hash_type_input)
-{
-    if (hash_type_input == "hash_serialized_2") {
-        return CoinStatsHashType::HASH_SERIALIZED;
-    } else if (hash_type_input == "muhash") {
-        return CoinStatsHashType::MUHASH;
-    } else if (hash_type_input == "none") {
-        return CoinStatsHashType::NONE;
-    } else {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("'%s' is not a valid hash_type", hash_type_input));
-    }
-}
 
 CoinStatsHashType ParseHashType(const std::string& hash_type_input)
 {
@@ -1524,31 +1511,76 @@ RPCHelpMan getblockchaininfo()
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
     ChainstateManager& chainman = EnsureAnyChainman(request.context);
-    CChainState& active_chainstate = chainman.ActiveChainstate();
+    LOCK(cs_main);
+    Chainstate& active_chainstate = chainman.ActiveChainstate();
 
     const CBlockIndex& tip{*CHECK_NONFATAL(active_chainstate.m_chain.Tip())};
     const int height{tip.nHeight};
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("chain", chainman.GetParams().NetworkIDString());
     obj.pushKV("blocks", height);
-    obj.pushKV("headers", chainman.pindexBestHeader ? chainman.pindexBestHeader->nHeight : -1);
-    obj.pushKV("bestblockhash",         tip->GetBlockHash().GetHex());
-    obj.pushKV("difficulty",            (double)GetDifficulty(tip, tip));
-    obj.pushKV("time",                  (int64_t)tip->nTime);
-    obj.pushKV("mediantime",            (int64_t)tip->GetMedianTimePast());
-    obj.pushKV("verificationprogress",  GuessVerificationProgress(Params().TxData(), tip));
-    obj.pushKV("initialblockdownload",  active_chainstate.IsInitialBlockDownload());
-    obj.pushKV("chainwork",             tip->nChainTrust.GetHex());
+    obj.pushKV("headers", chainman.m_best_header ? chainman.m_best_header->nHeight : -1);
+    obj.pushKV("bestblockhash", tip.GetBlockHash().GetHex());
+    obj.pushKV("difficulty", GetDifficulty(&tip, &tip));
+    obj.pushKV("time", tip.GetBlockTime());
+    obj.pushKV("mediantime", tip.GetMedianTimePast());
+    obj.pushKV("verificationprogress", GuessVerificationProgress(chainman.GetParams().TxData(), &tip));
+    obj.pushKV("initialblockdownload", active_chainstate.IsInitialBlockDownload());
+    obj.pushKV("chainwork", tip.nChainTrust.GetHex());
     obj.pushKV("size_on_disk", chainman.m_blockman.CalculateCurrentUsage());
 
     UniValue softforks(UniValue::VARR);
-    softforks.push_back(SoftForkDesc("bip34", 2, tip, Params().GetConsensus()));
-    softforks.push_back(SoftForkDesc("bip66", 3, tip, Params().GetConsensus()));
-    softforks.push_back(SoftForkDesc("bip65", 4, tip, Params().GetConsensus()));
-    softforks.push_back(SoftForkDesc("v12", 12, tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip34", 2, &tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip66", 3, &tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip65", 4, &tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("v12", 12, &tip, Params().GetConsensus()));
 
 //    BIP9SoftForkDescPushBack(tip, softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     obj.pushKV("softforks", softforks);
+    obj.pushKV("warnings", GetWarnings(false).original);
+    return obj;
+},
+    };
+}
+
+namespace {
+const std::vector<RPCResult> RPCHelpForDeployment{
+    {RPCResult::Type::STR, "type", "one of \"buried\", \"bip9\""},
+    {RPCResult::Type::NUM, "height", /*optional=*/true, "height of the first block which the rules are or will be enforced (only for \"buried\" type, or \"bip9\" type with \"active\" status)"},
+    {RPCResult::Type::BOOL, "active", "true if the rules are enforced for the mempool and the next block"},
+    {RPCResult::Type::OBJ, "bip9", /*optional=*/true, "status of bip9 softforks (only for \"bip9\" type)",
+    {
+        {RPCResult::Type::NUM, "bit", /*optional=*/true, "the bit (0-28) in the block version field used to signal this softfork (only for \"started\" and \"locked_in\" status)"},
+        {RPCResult::Type::NUM_TIME, "start_time", "the minimum median time past of a block at which the bit gains its meaning"},
+        {RPCResult::Type::NUM_TIME, "timeout", "the median time past of a block at which the deployment is considered failed if not yet locked in"},
+        {RPCResult::Type::NUM, "min_activation_height", "minimum height of blocks for which the rules may be enforced"},
+        {RPCResult::Type::STR, "status", "status of deployment at specified block (one of \"defined\", \"started\", \"locked_in\", \"active\", \"failed\")"},
+        {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
+        {RPCResult::Type::STR, "status_next", "status of deployment at the next block"},
+        {RPCResult::Type::OBJ, "statistics", /*optional=*/true, "numeric statistics about signalling for a softfork (only for \"started\" and \"locked_in\" status)",
+        {
+            {RPCResult::Type::NUM, "period", "the length in blocks of the signalling period"},
+            {RPCResult::Type::NUM, "threshold", /*optional=*/true, "the number of blocks with the version bit set required to activate the feature (only for \"started\" status)"},
+            {RPCResult::Type::NUM, "elapsed", "the number of blocks elapsed since the beginning of the current period"},
+            {RPCResult::Type::NUM, "count", "the number of blocks with the version bit set in the current period"},
+            {RPCResult::Type::BOOL, "possible", /*optional=*/true, "returns false if there are not enough blocks left in this period to pass activation threshold (only for \"started\" status)"},
+        }},
+        {RPCResult::Type::STR, "signalling", /*optional=*/true, "indicates blocks that signalled with a # and blocks that did not with a -"},
+    }},
+};
+
+UniValue DeploymentInfo(const CBlockIndex* blockindex, const ChainstateManager& chainman)
+{
+    UniValue softforks(UniValue::VOBJ);
+    const CBlockIndex& tip{*CHECK_NONFATAL(chainman.ActiveChainstate().m_chain.Tip())};
+
+    softforks.push_back(SoftForkDesc("bip34", 2, &tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip66", 3, &tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip65", 4, &tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("v12", 12, &tip, Params().GetConsensus()));
+    return softforks;
+}
+} // anon namespace
 
 RPCHelpMan getdeploymentinfo()
 {
@@ -1705,7 +1737,7 @@ static RPCHelpMan getchaintips()
 },
     };
 }
-
+/*
 UniValue MempoolInfoToJSON(const CTxMemPool& pool)
 {
     // Make sure this call is atomic in the pool.
@@ -1749,7 +1781,7 @@ static RPCHelpMan getmempoolinfo()
 },
     };
 }
-
+*/
 static RPCHelpMan preciousblock()
 {
     return RPCHelpMan{"preciousblock",
@@ -2234,7 +2266,7 @@ static RPCHelpMan getblockstats()
     ret_all.pushKV("minfeerate", (minfeerate == MAX_MONEY) ? 0 : minfeerate);
     ret_all.pushKV("mintxsize", mintxsize == MAX_BLOCK_SERIALIZED_SIZE ? 0 : mintxsize);
     ret_all.pushKV("outs", outputs);
-    ret_all.pushKV("subsidy", GetProofOfWorkReward(pindex->nBits, pindex->nTime));
+    ret_all.pushKV("subsidy", GetProofOfWorkReward(pindex.nBits, pindex.nTime));
     ret_all.pushKV("swtotal_size", swtotal_size);
     ret_all.pushKV("swtotal_weight", swtotal_weight);
     ret_all.pushKV("swtxs", swtxs);
@@ -2968,46 +3000,38 @@ UniValue CreateUTXOSnapshot(
     // `unsigned int`, nChainTx's type.
     result.pushKV("nchaintx", uint64_t{tip->nChainTx});
     return result;
-},
-    };
 }
 
 void RegisterBlockchainRPCCommands(CRPCTable& t)
 {
-// clang-format off
-static const CRPCCommand commands[] =
-{ //  category              actor (function)
-  //  --------------------- ------------------------
-    { "blockchain",         &getblockchaininfo,                  },
-    { "blockchain",         &getchaintxstats,                    },
-    { "blockchain",         &getblockstats,                      },
-    { "blockchain",         &getbestblockhash,                   },
-    { "blockchain",         &getblockcount,                      },
-    { "blockchain",         &getblock,                           },
-    { "blockchain",         &getblockfrompeer,                   },
-    { "blockchain",         &getblockhash,                       },
-    { "blockchain",         &getblockheader,                     },
-    { "blockchain",         &getchaintips,                       },
-    { "blockchain",         &getdifficulty,                      },
-    { "blockchain",         &getdeploymentinfo,                  },
-    { "blockchain",         &gettxout,                           },
-    { "blockchain",         &gettxoutsetinfo,                    },
-    { "blockchain",         &savemempool,                        },
-    { "blockchain",         &verifychain,                        },
-    { "blockchain",         &preciousblock,                      },
-    { "blockchain",         &scantxoutset,                       },
-    { "blockchain",         &getblockfilter,                     },
-
-    /* Not shown in help */
-    { "hidden",              &invalidateblock,                   },
-    { "hidden",              &reconsiderblock,                   },
-    { "hidden",              &waitfornewblock,                   },
-    { "hidden",              &waitforblock,                      },
-    { "hidden",              &waitforblockheight,                },
-    { "hidden",              &syncwithvalidationinterfacequeue,  },
-    { "hidden",              &dumptxoutset,                      },
-};
-// clang-format on
+    static const CRPCCommand commands[]{
+        {"blockchain", &getblockchaininfo},
+        {"blockchain", &getchaintxstats},
+        {"blockchain", &getblockstats},
+        {"blockchain", &getbestblockhash},
+        {"blockchain", &getblockcount},
+        {"blockchain", &getblock},
+        {"blockchain", &getblockfrompeer},
+        {"blockchain", &getblockhash},
+        {"blockchain", &getblockheader},
+        {"blockchain", &getchaintips},
+        {"blockchain", &getdifficulty},
+        {"blockchain", &getdeploymentinfo},
+        {"blockchain", &gettxout},
+        {"blockchain", &gettxoutsetinfo},
+        {"blockchain", &verifychain},
+        {"blockchain", &preciousblock},
+        {"blockchain", &scantxoutset},
+        {"blockchain", &scanblocks},
+        {"blockchain", &getblockfilter},
+        {"hidden", &invalidateblock},
+        {"hidden", &reconsiderblock},
+        {"hidden", &waitfornewblock},
+        {"hidden", &waitforblock},
+        {"hidden", &waitforblockheight},
+        {"hidden", &syncwithvalidationinterfacequeue},
+        {"hidden", &dumptxoutset},
+    };
     for (const auto& c : commands) {
         t.appendCommand(c.name, &c);
     }

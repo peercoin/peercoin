@@ -30,8 +30,8 @@ std::atomic_bool fReindex(false);
 bool CBlockIndexWorkComparator::operator()(const CBlockIndex* pa, const CBlockIndex* pb) const
 {
     // First sort by most total work, ...
-    if (pa->nChainWork > pb->nChainWork) return false;
-    if (pa->nChainWork < pb->nChainWork) return true;
+    if (pa->nChainTrust > pb->nChainTrust) return false;
+    if (pa->nChainTrust < pb->nChainTrust) return true;
 
     // ... then by earliest time received, ...
     if (pa->nSequenceId < pb->nSequenceId) return false;
@@ -107,8 +107,9 @@ CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block, CBlockInde
         pindexNew->SetProofOfStake();
     pindexNew->nChainTrust = (pindexNew->pprev ? pindexNew->pprev->nChainTrust : 0) + GetBlockTrust(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
-    if (pindexBestHeader == nullptr || pindexBestHeader->nChainTrust < pindexNew->nChainTrust)
-        pindexBestHeader = pindexNew;
+    if (best_header == nullptr || best_header->nChainTrust < pindexNew->nChainTrust) {
+        best_header = pindexNew;
+    }
 
     m_dirty_blockindex.insert(pindexNew);
 
@@ -138,23 +139,19 @@ bool BlockManager::LoadBlockIndex(const Consensus::Params& consensus_params)
     }
 
     // Calculate nChainTrust
-    std::vector<std::pair<int, CBlockIndex*>> vSortedByHeight;
-    vSortedByHeight.reserve(m_block_index.size());
-    for (auto& [_, block_index] : m_block_index) {
-        vSortedByHeight.push_back(&block_index);
-    }
+    std::vector<CBlockIndex*> vSortedByHeight{GetAllBlockIndices()};
     std::sort(vSortedByHeight.begin(), vSortedByHeight.end(),
               CBlockIndexHeightOnlyComparator());
 
     for (CBlockIndex* pindex : vSortedByHeight) {
         if (ShutdownRequested()) return false;
-        CBlockIndex* pindex = item.second;
         pindex->nChainTrust = (pindex->pprev ? pindex->pprev->nChainTrust : 0) + GetBlockTrust(*pindex);
         pindex->nTimeMax = (pindex->pprev ? std::max(pindex->pprev->nTimeMax, pindex->nTime) : pindex->nTime);
 
         // We can link the chain of blocks for which we've received transactions at some point, or
         // blocks that are assumed-valid on the basis of snapshot load (see
         // PopulateAndValidateSnapshot()).
+        // Pruned nodes may have deleted the block.
         if (pindex->nTx > 0) {
             if (pindex->pprev) {
                 if (pindex->pprev->nChainTx > 0) {
@@ -171,54 +168,16 @@ bool BlockManager::LoadBlockIndex(const Consensus::Params& consensus_params)
             pindex->nStatus |= BLOCK_FAILED_CHILD;
             m_dirty_blockindex.insert(pindex);
         }
-        if (pindex->IsAssumedValid() ||
-                (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) &&
-                 (pindex->HaveTxsDownloaded() || pindex->pprev == nullptr))) {
-
-            // Fill each chainstate's block candidate set. Only add assumed-valid
-            // blocks to the tip candidate set if the chainstate is allowed to rely on
-            // assumed-valid blocks.
-            //
-            // If all setBlockIndexCandidates contained the assumed-valid blocks, the
-            // background chainstate's ActivateBestChain() call would add assumed-valid
-            // blocks to the chain (based on how FindMostWorkChain() works). Obviously
-            // we don't want this since the purpose of the background validation chain
-            // is to validate assued-valid blocks.
-            //
-            // Note: This is considering all blocks whose height is greater or equal to
-            // the first assumed-valid block to be assumed-valid blocks, and excluding
-            // them from the background chainstate's setBlockIndexCandidates set. This
-            // does mean that some blocks which are not technically assumed-valid
-            // (later blocks on a fork beginning before the first assumed-valid block)
-            // might not get added to the background chainstate, but this is ok,
-            // because they will still be attached to the active chainstate if they
-            // actually contain more work.
-            //
-            // Instead of this height-based approach, an earlier attempt was made at
-            // detecting "holistically" whether the block index under consideration
-            // relied on an assumed-valid ancestor, but this proved to be too slow to
-            // be practical.
-            for (CChainState* chainstate : chainman.GetAll()) {
-                if (chainstate->reliesOnAssumedValid() ||
-                        pindex->nHeight < first_assumed_valid_height) {
-                    chainstate->setBlockIndexCandidates.insert(pindex);
-                }
-            }
-        }
-        if (pindex->nStatus & BLOCK_FAILED_MASK && (!chainman.m_best_invalid || pindex->nChainTrust > chainman.m_best_invalid->nChainTrust)) {
-            chainman.m_best_invalid = pindex;
-        }
         if (pindex->pprev) {
             pindex->BuildSkip();
         }
-        if (pindex->IsValid(BLOCK_VALID_TREE) && (pindexBestHeader == nullptr || CBlockIndexWorkComparator()(pindexBestHeader, pindex)))
-            pindexBestHeader = pindex;
-
         // peercoin: calculate stake modifier checksum
         pindex->nStakeModifierChecksum = GetStakeModifierChecksum(pindex);
-        if (chainman.ActiveChain().Contains(pindex))
+        //if (chainman.ActiveChain().Contains(pindex))
+        if (pindex->nStatus & BLOCK_HAVE_DATA) {
             if (!CheckStakeModifierCheckpoints(pindex->nHeight, pindex->nStakeModifierChecksum))
                 return error("LoadBlockIndex() : Failed stake modifier checkpoint height=%d, modifier=0x%016llx", pindex->nHeight, pindex->nStakeModifier);
+        }
     }
 
     return true;
@@ -305,7 +264,7 @@ void BlockManager::ScanAndUnlinkAlreadyPrunedFiles()
         }
     }
 
-    UnlinkPrunedFiles(block_files_to_prune);
+    //UnlinkPrunedFiles(block_files_to_prune);
 }
 
 const CBlockIndex* BlockManager::GetLastCheckpoint(const CCheckpointData& data)

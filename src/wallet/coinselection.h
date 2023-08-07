@@ -6,6 +6,8 @@
 #define BITCOIN_WALLET_COINSELECTION_H
 
 #include <consensus/amount.h>
+#include <consensus/consensus.h>
+#include <outputtype.h>
 #include <primitives/transaction.h>
 #include <random.h>
 #include <util/system.h>
@@ -14,6 +16,10 @@
 #include <optional>
 
 namespace wallet {
+//! lower bound for randomly-chosen target change amount
+static constexpr CAmount CHANGE_LOWER{50000};
+//! upper bound for randomly-chosen target change amount
+static constexpr CAmount CHANGE_UPPER{1000000};
 //! final minimum change amount after paying for fees
 static const CAmount MIN_FINAL_CHANGE = MIN_TXOUT_AMOUNT;
 
@@ -65,7 +71,7 @@ public:
     /** The fee required to spend this output at the consolidation feerate. */
     CAmount long_term_fee{0};
 
-    COutput(const COutPoint& outpoint, const CTxOut& txout, int depth, int input_bytes, bool spendable, bool solvable, bool safe, int64_t time, bool from_me, const std::optional<CFeeRate> feerate = std::nullopt)
+    COutput(const COutPoint& outpoint, const CTxOut& txout, int depth, int input_bytes, bool spendable, bool solvable, bool safe, int64_t time, bool from_me)
         : outpoint{outpoint},
           txout{txout},
           depth{depth},
@@ -76,10 +82,6 @@ public:
           time{time},
           from_me{from_me}
     {
-        if (feerate) {
-            fee = input_bytes < 0 ? 0 : feerate.value().GetFee(input_bytes);
-            effective_value = txout.nValue - fee.value();
-        }
     }
 
     COutput(const COutPoint& outpoint, const CTxOut& txout, int depth, int input_bytes, bool spendable, bool solvable, bool safe, int64_t time, bool from_me, const CAmount fees)
@@ -147,14 +149,17 @@ struct CoinSelectionParams {
      */
     bool m_include_unsafe_inputs = false;
 
-    CoinSelectionParams(size_t change_output_size, size_t change_spend_size,
+    CoinSelectionParams(FastRandomContext& rng_fast, size_t change_output_size, size_t change_spend_size,
                         size_t tx_noinputs_size, bool avoid_partial) :
+        rng_fast{rng_fast},
         change_output_size(change_output_size),
         change_spend_size(change_spend_size),
         tx_noinputs_size(tx_noinputs_size),
         m_avoid_partial_spends(avoid_partial)
-    {}
-    CoinSelectionParams() {}
+    {
+    }
+    CoinSelectionParams(FastRandomContext& rng_fast)
+        : rng_fast{rng_fast} {}
 };
 
 /** Parameters for filtering which OutputGroups we may use in coin selection.
@@ -399,7 +404,7 @@ std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& ut
  * @param[in]  target_value The target value to select for
  * @returns If successful, a pair of set of outputs and total selected value, otherwise, std::nullopt
  */
-std::optional<std::pair<std::set<CInputCoin>, CAmount>> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value);
+std::optional<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value, FastRandomContext& rng);
 
 // Original coin selection algorithm as a fallback
 std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue,

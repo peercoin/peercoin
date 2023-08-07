@@ -282,6 +282,14 @@ void BIP32Hash(const ChainCode &chainCode, unsigned int nChild, unsigned char he
  */
 HashWriter TaggedHash(const std::string& tag);
 
+/** Compute the 160-bit RIPEMD-160 hash of an array. */
+inline uint160 RIPEMD160(Span<const unsigned char> data)
+{
+    uint160 result;
+    CRIPEMD160().Write(data.data(), data.size()).Finalize(result.begin());
+    return result;
+}
+
 extern int32_t peercoinRandseed;
 int univHash(const uint256 &x);
 

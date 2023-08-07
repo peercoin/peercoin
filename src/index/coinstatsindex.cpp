@@ -151,7 +151,7 @@ bool CoinStatsIndex::CustomAppend(const interfaces::BlockInfo& block)
             const auto& tx{block.data->vtx.at(i)};
 
             // Skip duplicate txid coinbase transactions (BIP30).
-            if (is_bip30_block && tx->IsCoinBase()) {
+            if (IsBIP30Unspendable(*pindex) && tx->IsCoinBase()) {
                 //m_total_unspendable_amount += block_subsidy;
                 //m_total_unspendables_bip30 += block_subsidy;
                 continue;

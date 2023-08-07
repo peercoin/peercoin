@@ -24,7 +24,7 @@
 #include <script/script_error.h>
 #include <shutdown.h>
 #include <sync.h>
-#include <chain.h>
+//#include <chain.h>
 #include <txdb.h>
 #include <txmempool.h> // For CTxMemPool::cs
 #include <uint256.h>
@@ -32,7 +32,7 @@
 #include <util/fs.h>
 #include <util/hasher.h>
 #include <util/translation.h>
-#include <wallet/wallet.h>
+//#include <wallet/wallet.h>
 
 #include <atomic>
 #include <map>
@@ -72,10 +72,6 @@ struct Params;
 static const int MAX_SCRIPTCHECK_THREADS = 15;
 /** -par default (number of script-checking threads, 0 = auto) */
 static const int DEFAULT_SCRIPTCHECK_THREADS = 0;
-static const bool DEFAULT_CHECKPOINTS_ENABLED = true;
-static const bool DEFAULT_TXINDEX = true;  // peercoin: txindex is required for PoS calculations (might change in the future)
-static constexpr bool DEFAULT_COINSTATSINDEX{false};
-static const char* const DEFAULT_BLOCKFILTERINDEX = "0";
 /** Default for -stopatheight */
 static const int DEFAULT_STOPATHEIGHT = 0;
 /** Block files containing a block-height within MIN_BLOCKS_TO_KEEP of ActiveChain().Tip() will not be pruned. */
@@ -99,13 +95,6 @@ enum class SynchronizationState {
     POST_INIT
 };
 
-/** Current sync state passed to tip changed callbacks. */
-enum class SynchronizationState {
-    INIT_REINDEX,
-    INIT_DOWNLOAD,
-    POST_INIT
-};
-
 extern RecursiveMutex cs_main;
 extern GlobalMutex g_best_block_mutex;
 extern std::condition_variable g_best_block_cv;
@@ -115,7 +104,6 @@ extern uint256 g_best_block;
  * False indicates all script checking is done on the main threadMessageHandler thread.
  */
 extern bool g_parallel_script_checks;
-extern bool fCheckBlockIndex;
 extern bool fCheckpointsEnabled;
 extern bool fAlerts;
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
@@ -139,8 +127,6 @@ void StartScriptCheckWorkerThreads(int threads_num);
 /** Stop all of the script checking worker threads */
 void StopScriptCheckWorkerThreads();
 
-
-bool AbortNode(BlockValidationState& state, const std::string& strMessage, const bilingual_str& userMessage = bilingual_str{});
 
 bool AbortNode(BlockValidationState& state, const std::string& strMessage, const bilingual_str& userMessage = bilingual_str{});
 
@@ -172,13 +158,7 @@ struct MempoolAcceptResult {
     const std::optional<int64_t> m_vsize;
     /** Raw base fees in satoshis. */
     const std::optional<CAmount> m_base_fees;
-    /** The feerate at which this transaction was considered. This includes any fee delta added
-     * using prioritisetransaction (i.e. modified fees). If this transaction was submitted as a
-     * package, this is the package feerate, which may also include its descendants and/or
-     * ancestors (see m_wtxids_fee_calculations below).
-     * Only present when m_result_type = ResultType::VALID.
-     */
-    const std::optional<CFeeRate> m_effective_feerate;
+    
     /** Contains the wtxids of the transactions used for fee-related checks. Includes this
      * transaction's wtxid and may include others if this transaction was validated as part of a
      * package. This is not necessarily equivalent to the list of transactions passed to
@@ -196,11 +176,9 @@ struct MempoolAcceptResult {
 
     static MempoolAcceptResult Success(std::list<CTransactionRef>&& replaced_txns,
                                        int64_t vsize,
-                                       CAmount fees,
-                                       CFeeRate effective_feerate,
-                                       const std::vector<uint256>& wtxids_fee_calculations) {
-        return MempoolAcceptResult(std::move(replaced_txns), vsize, fees,
-                                   effective_feerate, wtxids_fee_calculations);
+                                       CAmount fees
+                                       ) {
+        return MempoolAcceptResult(std::move(replaced_txns), vsize, fees);
     }
 
     static MempoolAcceptResult MempoolTx(int64_t vsize, CAmount fees) {
@@ -222,15 +200,11 @@ private:
     /** Constructor for success case */
     explicit MempoolAcceptResult(std::list<CTransactionRef>&& replaced_txns,
                                  int64_t vsize,
-                                 CAmount fees,
-                                 CFeeRate effective_feerate,
-                                 const std::vector<uint256>& wtxids_fee_calculations)
+                                 CAmount fees)
         : m_result_type(ResultType::VALID),
         m_replaced_transactions(std::move(replaced_txns)),
         m_vsize{vsize},
-        m_base_fees(fees),
-        m_effective_feerate(effective_feerate),
-        m_wtxids_fee_calculations(wtxids_fee_calculations) {}
+        m_base_fees(fees) {}
 
     /** Constructor for already-in-mempool case. It wouldn't replace any transactions. */
     explicit MempoolAcceptResult(int64_t vsize, CAmount fees)
@@ -256,10 +230,6 @@ struct PackageMempoolAcceptResult
     std::map<const uint256, const MempoolAcceptResult> m_tx_results;
 
     explicit PackageMempoolAcceptResult(PackageValidationState state,
-                                        std::map<const uint256, const MempoolAcceptResult>&& results)
-        : m_state{state}, m_tx_results(std::move(results)) {}
-
-    explicit PackageMempoolAcceptResult(PackageValidationState state, CFeeRate feerate,
                                         std::map<const uint256, const MempoolAcceptResult>&& results)
         : m_state{state}, m_tx_results(std::move(results)) {}
 
@@ -520,11 +490,6 @@ protected:
     //! Only the active chainstate has a mempool.
     CTxMemPool* m_mempool;
 
-    //! mempool that is kept in sync with the chain
-    CTxMemPool& m_mempool;
-
-    const CChainParams& m_params;
-
     //! Manages the UTXO set, which is a reflection of the contents of `m_chain`.
     std::unique_ptr<CoinsViews> m_coins_views;
 
@@ -545,13 +510,6 @@ public:
     //! Reference to a BlockManager instance which itself is shared across all
     //! Chainstate instances.
     node::BlockManager& m_blockman;
-
-    /** Chain parameters for this chainstate */
-    /* TODO: replace with m_chainman.GetParams() */
-    const CChainParams& m_params;
-
-    /** Chain parameters for this chainstate */
-    const CChainParams& m_params;
 
     //! The chainstate manager that owns this chainstate. The reference is
     //! necessary so that this instance can check whether it is the active
@@ -848,35 +806,8 @@ private:
     void UpdateTip(const CBlockIndex* pindexNew)
         EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
 
-    void CheckForkWarningConditions() EXCLUSIVE_LOCKS_REQUIRED(cs_main);
-    void InvalidChainFound(CBlockIndex* pindexNew) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
-
-    //! Indirection necessary to make lock annotations work with an optional mempool.
-    RecursiveMutex* MempoolMutex() const LOCK_RETURNED(m_mempool->cs)
-    {
-        return m_mempool ? &m_mempool->cs : nullptr;
-    }
-
-    /**
-     * Make mempool consistent after a reorg, by re-adding or recursively erasing
-     * disconnected block transactions from the mempool, and also removing any
-     * other transactions from the mempool that are no longer valid given the new
-     * tip/height.
-     *
-     * Note: we assume that disconnectpool only contains transactions that are NOT
-     * confirmed in the current chain nor already in the mempool (otherwise,
-     * in-mempool descendants of such transactions would be removed).
-     *
-     * Passing fAddToMempool=false will skip trying to add the transactions back,
-     * and instead just erase from the mempool as needed.
-     */
-    void MaybeUpdateMempoolForReorg(
-        DisconnectedBlockTransactions& disconnectpool,
-        bool fAddToMempool) EXCLUSIVE_LOCKS_REQUIRED(cs_main, m_mempool->cs);
-
-    /** Check warning conditions and do some notifications on new chain tip set. */
-    void UpdateTip(const CBlockIndex* pindexNew)
-        EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
+    SteadyClock::time_point m_last_write{};
+    SteadyClock::time_point m_last_flush{};
 
     /**
      * In case of an invalid snapshot, rename the coins leveldb directory so
@@ -1000,16 +931,8 @@ private:
         bool min_pow_checked) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
     friend Chainstate;
 
-    /**
-     * If a block header hasn't already been seen, call CheckBlockHeader on it, ensure
-     * that it doesn't descend from an invalid block, and then add it to m_block_index.
-     */
-    bool AcceptBlockHeader(
-        const CBlockHeader& block,
-        BlockValidationState& state,
-        const CChainParams& chainparams,
-        CBlockIndex** ppindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
-    friend CChainState;
+    /** Most recent headers presync progress update, for rate-limiting. */
+    std::chrono::time_point<std::chrono::steady_clock> m_last_presync_update GUARDED_BY(::cs_main) {};
 
     //! Returns nullptr if no snapshot has been loaded.
     const CBlockIndex* GetSnapshotBaseBlock() const EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
@@ -1138,11 +1061,6 @@ public:
         return m_blockman.m_block_index;
     }
 
-    /**
-     * Track versionbit status
-     */
-    mutable VersionBitsCache m_versionbitscache;
-
     //! @returns true if a snapshot-based chainstate is in use. Also implies
     //!          that a background validation chainstate is also in use.
     bool IsSnapshotActive() const;
@@ -1179,7 +1097,8 @@ public:
      * @param[out]  new_block A boolean which is set to indicate if the block was first received via this call
      * @returns     If the block was processed, independently of block validity
      */
-    bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock>& block, bool force_processing, bool* new_block, CBlockIndex** ppindex = nullptr, bool* fPoSDuplicate = nullptr) LOCKS_EXCLUDED(cs_main);
+    //bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock>& block, bool force_processing, bool* new_block, CBlockIndex** ppindex = nullptr, bool* fPoSDuplicate = nullptr) LOCKS_EXCLUDED(cs_main);
+    bool ProcessNewBlock(const std::shared_ptr<const CBlock>& block, bool force_processing, bool min_pow_checked, bool* new_block, CBlockIndex** ppindex = nullptr, bool* fPoSDuplicate = nullptr) LOCKS_EXCLUDED(cs_main);
 
     /**
      * Process incoming block headers.
@@ -1192,7 +1111,7 @@ public:
      * @param[in]  chainparams The params for the chain we want to connect to
      * @param[out] ppindex If set, the pointer will be set to point to the last new block index object for the given headers
      */
-    bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAcceptedHeader, const std::vector<CBlockHeader>& block, BlockValidationState& state, const CChainParams& chainparams, const CBlockIndex** ppindex = nullptr) LOCKS_EXCLUDED(cs_main);
+    bool ProcessNewBlockHeaders(int32_t& nPoSTemperature, const uint256& lastAcceptedHeader, const std::vector<CBlockHeader>& headers, bool min_pow_checked, BlockValidationState& state, const CChainParams& chainparams, const CBlockIndex** ppindex = nullptr) LOCKS_EXCLUDED(cs_main);
 
     /**
      * Try to add a transaction to the memory pool.
@@ -1225,7 +1144,7 @@ public:
      * @param[out]  new_block A boolean which is set to indicate if the block was first received via this call
      * @returns     If the block was processed, independently of block validity
      */
-    bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock>& block, bool force_processing, bool* new_block) LOCKS_EXCLUDED(cs_main);
+    //bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock>& block, bool force_processing, bool* new_block) LOCKS_EXCLUDED(cs_main);
 
     /**
      * Process incoming block headers.
@@ -1238,19 +1157,7 @@ public:
      * @param[out] state This may be set to an Error state if any error occurred processing them
      * @param[out] ppindex If set, the pointer will be set to point to the last new block index object for the given headers
      */
-    bool ProcessNewBlockHeaders(const std::vector<CBlockHeader>& block, bool min_pow_checked, BlockValidationState& state, const CBlockIndex** ppindex = nullptr) LOCKS_EXCLUDED(cs_main);
-
-    /**
-     * Try to add a transaction to the memory pool.
-     *
-     * @param[in]  tx              The transaction to submit for mempool acceptance.
-     * @param[in]  test_accept     When true, run validation checks but don't submit to mempool.
-     */
-    [[nodiscard]] MempoolAcceptResult ProcessTransaction(const CTransactionRef& tx, bool test_accept=false)
-        EXCLUSIVE_LOCKS_REQUIRED(cs_main);
-
-    //! Load the block tree and coins database from disk, initializing state if we're running with -reindex
-    bool LoadBlockIndex() EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    //bool ProcessNewBlockHeaders(const std::vector<CBlockHeader>& block, bool min_pow_checked, BlockValidationState& state, const CBlockIndex** ppindex = nullptr) LOCKS_EXCLUDED(cs_main);
 
     //! Check to see if caches are out of balance and if so, call
     //! ResizeCoinsCaches() as needed.
@@ -1297,13 +1204,13 @@ public:
 template<typename DEP>
 bool DeploymentActiveAfter(const CBlockIndex* pindexPrev, const ChainstateManager& chainman, DEP dep)
 {
-    return DeploymentActiveAfter(pindexPrev, chainman.GetConsensus(), dep, chainman.m_versionbitscache);
+    return DeploymentActiveAfter(pindexPrev, chainman.GetConsensus(), dep);
 }
 
 template<typename DEP>
 bool DeploymentActiveAt(const CBlockIndex& index, const ChainstateManager& chainman, DEP dep)
 {
-    return DeploymentActiveAt(index, chainman.GetConsensus(), dep, chainman.m_versionbitscache);
+    return DeploymentActiveAt(index, chainman.GetConsensus(), dep);
 }
 
 template<typename DEP>
@@ -1314,28 +1221,12 @@ bool DeploymentEnabled(const ChainstateManager& chainman, DEP dep)
 
 using FopenFn = std::function<FILE*(const fs::path&, const char*)>;
 
-using FopenFn = std::function<FILE*(const fs::path&, const char*)>;
-
-/** Dump the mempool to disk. */
-bool DumpMempool(const CTxMemPool& pool, const fs::path& dump_path, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen, bool skip_file_commit = false);
-
-/** Load the mempool from disk. */
-bool LoadMempool(CTxMemPool& pool, const fs::path& load_path, CChainState& active_chainstate, fsbridge::FopenFn mockable_fopen_function = fsbridge::fopen);
-
 // peercoin:
 CAmount GetProofOfWorkReward(unsigned int nBits, uint32_t nTime);
 CAmount GetProofOfStakeReward(int64_t nCoinAge, uint32_t nTime, uint64_t nMoneySupply);
 bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& nCoinAge, unsigned int nTimeTx, bool isTrueCoinAge = true); // peercoin: get transaction coin age
 bool SignBlock(CBlock& block, const CWallet& keystore);
 bool CheckBlockSignature(const CBlock& block);
-/**
- * Return the expected assumeutxo value for a given height, if one exists.
- *
- * @param[in] height Get the assumeutxo value for this height.
- *
- * @returns empty if no assumeutxo configuration exists for the given height.
- */
-const AssumeutxoData* ExpectedAssumeutxo(const int height, const CChainParams& params);
 
 /**
  * Return the expected assumeutxo value for a given height, if one exists.

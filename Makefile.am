@@ -364,27 +364,3 @@ if TARGET_LINUX
 	$(AM_V_at) CC='$(CC)' CFLAGS='$(CFLAGS)' CPPFLAGS='$(CPPFLAGS)' LDFLAGS='$(LDFLAGS)' $(PYTHON) $(top_srcdir)/contrib/devtools/test-symbol-check.py TestSymbolChecks.test_ELF
 endif
 
-if ENABLE_MODULE_EXTRAKEYS
-include src/modules/extrakeys/Makefile.am.include
-endif
-
-if ENABLE_MODULE_SCHNORRSIG
-include src/modules/schnorrsig/Makefile.am.include
-endif
-
-EXTRA_DIST += src/wycheproof/WYCHEPROOF_COPYING
-EXTRA_DIST += src/wycheproof/ecdsa_secp256k1_sha256_bitcoin_test.h
-EXTRA_DIST += src/wycheproof/ecdsa_secp256k1_sha256_bitcoin_test.json
-EXTRA_DIST += tools/tests_wycheproof_generate.py
-
-TESTVECTORS = src/wycheproof/ecdsa_secp256k1_sha256_bitcoin_test.h
-
-src/wycheproof/ecdsa_secp256k1_sha256_bitcoin_test.h:
-	python3 tools/tests_wycheproof_generate.py src/wycheproof/ecdsa_secp256k1_sha256_bitcoin_test.json > $@
-
-testvectors: $(TESTVECTORS)
-
-maintainer-clean-testvectors: clean-testvectors
-
-clean-testvectors:
-	rm -f $(TESTVECTORS)

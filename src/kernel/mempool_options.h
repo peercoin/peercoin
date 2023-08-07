@@ -6,7 +6,6 @@
 
 #include <kernel/mempool_limits.h>
 
-#include <policy/feerate.h>
 #include <policy/policy.h>
 #include <script/standard.h>
 
@@ -40,10 +39,6 @@ struct MemPoolOptions {
     int check_ratio{0};
     int64_t max_size_bytes{DEFAULT_MAX_MEMPOOL_SIZE_MB * 1'000'000};
     std::chrono::seconds expiry{std::chrono::hours{DEFAULT_MEMPOOL_EXPIRY_HOURS}};
-    CFeeRate incremental_relay_feerate{DEFAULT_INCREMENTAL_RELAY_FEE};
-    /** A fee rate smaller than this is considered zero fee (for relaying, mining and transaction creation) */
-    CFeeRate min_relay_feerate{DEFAULT_MIN_RELAY_TX_FEE};
-    CFeeRate dust_relay_feerate{DUST_RELAY_TX_FEE};
     /**
      * A data carrying output is an unspendable output containing data. The script
      * type is designated as TxoutType::NULL_DATA.

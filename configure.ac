@@ -1,13 +1,13 @@
 AC_PREREQ([2.69])
-define(_CLIENT_VERSION_MAJOR, 23)
+define(_CLIENT_VERSION_MAJOR, 25)
 define(_CLIENT_VERSION_MINOR, 0)
 define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_RC, 0)
 define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2023)
 define(_PEERCOIN_VERSION_MAJOR, 0)
-define(_PEERCOIN_VERSION_MINOR, 12)
-define(_PEERCOIN_VERSION_REVISION, 4)
+define(_PEERCOIN_VERSION_MINOR, 13)
+define(_PEERCOIN_VERSION_REVISION, 0)
 define(_PEERCOIN_VERSION_BUILD, 0)
 define(_PEERCOIN_VERSION_RC, 0)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
@@ -24,11 +24,23 @@ if test "$PKG_CONFIG" = ""; then
   AC_MSG_ERROR([pkg-config not found])
 fi
 
+# When compiling with depends, the `PKG_CONFIG_PATH` and `PKG_CONFIG_LIBDIR` variables,
+# being set in a `config.site` file, are not exported to let the `--config-cache` option
+# work properly.
+if test -n "$PKG_CONFIG_PATH"; then
+  PKG_CONFIG="env PKG_CONFIG_PATH=$PKG_CONFIG_PATH $PKG_CONFIG"
+fi
+if test -n "$PKG_CONFIG_LIBDIR"; then
+  PKG_CONFIG="env PKG_CONFIG_LIBDIR=$PKG_CONFIG_LIBDIR $PKG_CONFIG"
+fi
+
 BITCOIN_DAEMON_NAME=peercoind
 BITCOIN_GUI_NAME=peercoin-qt
+BITCOIN_TEST_NAME=test_peercoin
 BITCOIN_CLI_NAME=peercoin-cli
 BITCOIN_TX_NAME=peercoin-tx
 BITCOIN_UTIL_NAME=peercoin-util
+BITCOIN_CHAINSTATE_NAME=peercoin-chainstate
 BITCOIN_WALLET_TOOL_NAME=peercoin-wallet
 dnl Multi Process
 BITCOIN_MP_NODE_NAME=peercoin-node
@@ -273,24 +285,6 @@ AC_ARG_ENABLE([zmq],
   [disable ZMQ notifications])],
   [use_zmq=$enableval],
   [use_zmq=yes])
-
-AC_ARG_WITH([libmultiprocess],
-  [AS_HELP_STRING([--with-libmultiprocess=yes|no|auto],
-  [Build with libmultiprocess library. (default: auto, i.e. detect with pkg-config)])],
-  [with_libmultiprocess=$withval],
-  [with_libmultiprocess=auto])
-
-AC_ARG_WITH([mpgen],
-  [AS_HELP_STRING([--with-mpgen=yes|no|auto|PREFIX],
-  [Build with libmultiprocess codegen tool. Useful to specify different libmultiprocess host system library and build system codegen tool prefixes when cross-compiling (default is host system libmultiprocess prefix)])],
-  [with_mpgen=$withval],
-  [with_mpgen=auto])
-
-AC_ARG_ENABLE([multiprocess],
-  [AS_HELP_STRING([--enable-multiprocess],
-  [build multiprocess bitcoin-node, bitcoin-wallet, and bitcoin-gui executables in addition to monolithic bitcoind and bitcoin-qt executables. Requires libmultiprocess library. Experimental (default is no)])],
-  [enable_multiprocess=$enableval],
-  [enable_multiprocess=no])
 
 AC_ARG_WITH([libmultiprocess],
   [AS_HELP_STRING([--with-libmultiprocess=yes|no|auto],
@@ -1449,15 +1443,11 @@ if test "$build_bitcoind$bitcoin_enable_qt$use_bench$use_tests" = "nononono"; th
   use_zmq=no
 fi
 
-if test x$use_ebpf != xno; then
-  AC_CHECK_HEADER([sys/sdt.h], [have_sdt=yes], [have_sdt=no])
-else
-  have_sdt=no
-fi
-
-if test x$have_sdt = xyes; then
-  AC_DEFINE([ENABLE_TRACING], [1], [Define to 1 to enable eBPF user static defined tracepoints])
-fi
+#if test x$use_ebpf != xno; then
+#  AC_CHECK_HEADER([sys/sdt.h], [have_sdt=yes], [have_sdt=no])
+#else
+#  have_sdt=no
+#fi
 
 dnl Check for libminiupnpc (optional)
 if test "$use_upnp" != "no"; then
@@ -1997,10 +1987,10 @@ AC_DEFINE([CLIENT_VERSION_MAJOR], [_CLIENT_VERSION_MAJOR], [Major version])
 AC_DEFINE([CLIENT_VERSION_MINOR], [_CLIENT_VERSION_MINOR], [Minor version])
 AC_DEFINE([CLIENT_VERSION_BUILD], [_CLIENT_VERSION_BUILD], [Version Build])
 AC_DEFINE([CLIENT_VERSION_IS_RELEASE], [_CLIENT_VERSION_IS_RELEASE], [Version is release])
-AC_DEFINE(PEERCOIN_VERSION_MAJOR, _PEERCOIN_VERSION_MAJOR, [Peercoin major version])
-AC_DEFINE(PEERCOIN_VERSION_MINOR, _PEERCOIN_VERSION_MINOR, [Peercoin minor version])
-AC_DEFINE(PEERCOIN_VERSION_REVISION, _PEERCOIN_VERSION_REVISION, [Peercoin build revision])
-AC_DEFINE(PEERCOIN_VERSION_BUILD, _PEERCOIN_VERSION_BUILD, [Peercoin version Build])
+AC_DEFINE([PEERCOIN_VERSION_MAJOR], [_PEERCOIN_VERSION_MAJOR], [Peercoin major version])
+AC_DEFINE([PEERCOIN_VERSION_MINOR], [_PEERCOIN_VERSION_MINOR], [Peercoin minor version])
+AC_DEFINE([PEERCOIN_VERSION_REVISION], [_PEERCOIN_VERSION_REVISION], [Peercoin build revision])
+AC_DEFINE([PEERCOIN_VERSION_BUILD], [_PEERCOIN_VERSION_BUILD], [Peercoin version Build])
 AC_DEFINE([COPYRIGHT_YEAR], [_COPYRIGHT_YEAR], [Copyright year])
 AC_DEFINE([COPYRIGHT_HOLDERS], ["_COPYRIGHT_HOLDERS"], [Copyright holder(s) before %s replacement])
 AC_DEFINE([COPYRIGHT_HOLDERS_SUBSTITUTION], ["_COPYRIGHT_HOLDERS_SUBSTITUTION"], [Replacement for %s in copyright holders string])

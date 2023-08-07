@@ -1183,7 +1183,6 @@ std::unique_ptr<WalletDatabase> MakeDatabase(const fs::path& path, const Databas
             }
             format = DatabaseFormat::SQLITE;
         }
-#endif
     } else if (options.require_existing) {
         error = Untranslated(strprintf("Failed to load database path '%s'. Path does not exist.", fs::PathToString(path)));
         status = DatabaseStatus::FAILED_NOT_FOUND;
@@ -1216,13 +1215,6 @@ std::unique_ptr<WalletDatabase> MakeDatabase(const fs::path& path, const Databas
     if (!format) {
 #ifdef USE_SQLITE
         format = DatabaseFormat::SQLITE;
-#endif
-#ifdef USE_BDB
-        format = DatabaseFormat::BERKELEY;
-#endif
-    }
-#else
-    assert(format != DatabaseFormat::SQLITE);
 #endif
 #ifdef USE_BDB
         format = DatabaseFormat::BERKELEY;

@@ -343,7 +343,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, 
 
     return true;
 }
-
+/*
 namespace {
 
 //! Legacy class to deserialize pre-pertxout database entries without reindex.
@@ -404,11 +404,12 @@ public:
 };
 
 }
-
+*/
 /** Upgrade the database from older formats.
  *
  * Currently implemented: from the per-tx utxo model (0.8..0.14.x) to per-txout.
  */
+/*
 bool CCoinsViewDB::Upgrade() {
     std::unique_ptr<CDBIterator> pcursor(m_db->NewIterator());
     pcursor->Seek(std::make_pair(DB_COINS, uint256()));
@@ -418,7 +419,7 @@ bool CCoinsViewDB::Upgrade() {
 
     int64_t count = 0;
     LogPrintf("Upgrading utxo-set database...\n");
-    LogPrintf("[0%%]..."); /* Continued */
+    LogPrintf("[0%%]..."); // Continued 
     uiInterface.ShowProgress(_("Upgrading UTXO database").translated, 0, true);
     size_t batch_size = 1 << 24;
     CDBBatch batch(*m_db);
@@ -436,7 +437,7 @@ bool CCoinsViewDB::Upgrade() {
                 uiInterface.ShowProgress(_("Upgrading UTXO database").translated, percentageDone, true);
                 if (reportDone < percentageDone/10) {
                     // report max. every 10% step
-                    LogPrintf("[%d%%]...", percentageDone); /* Continued */
+                    LogPrintf("[%d%%]...", percentageDone); 
                     reportDone = percentageDone/10;
                 }
             }
@@ -471,3 +472,4 @@ bool CCoinsViewDB::Upgrade() {
     LogPrintf("[%s].\n", ShutdownRequested() ? "CANCELLED" : "DONE");
     return !ShutdownRequested();
 }
+*/

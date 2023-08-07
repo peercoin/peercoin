@@ -6,6 +6,7 @@
 #define BITCOIN_INTERFACES_CHAIN_H
 
 #include <node/chainstate.h>
+#include <blockfilter.h>
 #include <primitives/transaction.h> // For CTransactionRef
 #include <util/settings.h>          // For util::SettingsValue
 
@@ -141,10 +142,12 @@ public:
     //! or one of its ancestors.
     virtual std::optional<int> findLocatorFork(const CBlockLocator& locator) = 0;
 
-    //! Get current chain height, not including genesis block (returns 0 if
-    //! chain only contains genesis block, nullopt if chain does not contain
-    //! any blocks)
-    virtual Optional<int> getHeight() = 0;
+    //! Returns whether a block filter index is available.
+    virtual bool hasBlockFilterIndex(BlockFilterType filter_type) = 0;
+
+    //! Returns whether any of the elements match the block via a BIP 157 block filter
+    //! or std::nullopt if the block filter for this block couldn't be found.
+    virtual std::optional<bool> blockFilterMatchesAny(BlockFilterType filter_type, const uint256& block_hash, const GCSFilter::ElementSet& filter_set) = 0;
 
     //! Return whether node has the block and optionally return block metadata
     //! or contents.
@@ -159,7 +162,7 @@ public:
     //! Find next block if block is part of current chain. Also flag if
     //! there was a reorg and the specified block hash is no longer in the
     //! current chain, and optionally return block information.
-    virtual bool findNextBlock(const uint256& block_hash, int block_height, const FoundBlock& next={}, bool* reorg=nullptr) = 0;
+    //virtual bool findNextBlock(const uint256& block_hash, int block_height, const FoundBlock& next={}, bool* reorg=nullptr) = 0;
 
     //! Find ancestor of block at specified height and optionally return
     //! ancestor information.
@@ -192,9 +195,6 @@ public:
     //! of blocks. This checks all blocks that are ancestors of block_hash in
     //! the height range from min_height to max_height, inclusive.
     virtual bool hasBlocks(const uint256& block_hash, int min_height = 0, std::optional<int> max_height = {}) = 0;
-
-    //! Check if transaction is in mempool.
-    virtual bool isInMempool(const uint256& txid) = 0;
 
     //! Check if transaction is in mempool.
     virtual bool isInMempool(const uint256& txid) = 0;

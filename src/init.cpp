@@ -19,7 +19,7 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <consensus/amount.h>
-#include <fs.h>
+#include <util/fs.h>
 #include <hash.h>
 #include <httprpc.h>
 #include <httpserver.h>
@@ -43,7 +43,11 @@
 #include <node/chainstatemanager_args.h>
 #include <node/context.h>
 #include <node/miner.h>
-#include <node/ui_interface.h>
+#include <node/interface_ui.h>
+#include <node/mempool_args.h>
+#include <node/mempool_persist_args.h>
+#include <node/txreconciliation.h>
+#include <node/validation_cache_args.h>
 #include <policy/policy.h>
 #include <policy/settings.h>
 #include <protocol.h>
@@ -107,8 +111,7 @@ using kernel::ValidationCacheSizes;
 using node::ApplyArgsManOptions;
 using node::CacheSizes;
 using node::CalculateCacheSizes;
-using node::ChainstateLoadVerifyError;
-using node::ChainstateLoadingError;
+using node::DEFAULT_PERSIST_MEMPOOL;
 using node::DEFAULT_PRINTPRIORITY;
 using node::DEFAULT_STOPAFTERBLOCKIMPORT;
 using node::LoadChainstate;
@@ -937,8 +940,6 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
     init::SetLoggingCategories(args);
     init::SetLoggingLevel(args);
 
-    fCheckBlockIndex = args.GetBoolArg("-checkblockindex", chainparams.DefaultConsistencyChecks());
-
     if (args.IsArgSet("-minimumchainwork")) {
         const std::string minChainWorkStr = args.GetArg("-minimumchainwork", "");
         if (!IsHexNumber(minChainWorkStr)) {
@@ -964,10 +965,12 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
     if (peer_connect_timeout <= 0) {
         return InitError(Untranslated("peertimeout must be a positive integer."));
     }
+/*
     fRequireStandard = !args.GetBoolArg("-acceptnonstdtxn", !chainparams.RequireStandard());
     if (!chainparams.IsTestChain() && !fRequireStandard) {
         return InitError(strprintf(Untranslated("acceptnonstdtxn is not currently supported for %s chain"), chainparams.NetworkIDString()));
     }
+*/
     nBytesPerSigOp = args.GetIntArg("-bytespersigop", nBytesPerSigOp);
 
     if (!g_wallet_init_interface.ParameterInteraction()) return false;
@@ -984,11 +987,12 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
     if (args.GetIntArg("-rpcserialversion", DEFAULT_RPC_SERIALIZE_VERSION) > 1)
         return InitError(Untranslated("Unknown rpcserialversion requested."));
 
+/*
     nMaxTipAge = args.GetIntArg("-maxtipage", DEFAULT_MAX_TIP_AGE);
     if (args.IsArgSet("-proxy") && args.GetArg("-proxy", "").empty()) {
         return InitError(_("No proxy server specified. Use -proxy=<ip> or -proxy=<ip:port>."));
     }
-
+*/
 #if defined(USE_SYSCALL_SANDBOX)
     if (args.IsArgSet("-sandbox") && !args.IsArgNegated("-sandbox")) {
         const std::string sandbox_arg{args.GetArg("-sandbox", "")};
@@ -1101,14 +1105,13 @@ static bool LockDataDirectory(bool probeOnly)
 bool AppInitSanityChecks(const kernel::Context& kernel)
 {
     // ********************************************************* Step 4: sanity checks
-
-    init::SetGlobals();
+    if (auto error = kernel::SanityChecks(kernel)) {
+        InitError(*error);
+        return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down."), PACKAGE_NAME));
+    }
 
     // peercoin: init hash seed
     peercoinRandseed = GetRand(1 << 30);
-    if (!init::SanityChecks()) {
-        return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down."), PACKAGE_NAME));
-    }
 
     // Probe the data directory lock to give an early error message, if possible
     // We cannot hold the data directory lock here, as the forking for daemon() hasn't yet happened,
@@ -1293,9 +1296,9 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
                                               GetRand<uint64_t>(),
                                               *node.addrman, *node.netgroupman, args.GetBoolArg("-networkactive", true));
 
-    assert(!node.fee_estimator);
-    node.fee_estimator = std::make_unique<CBlockPolicyEstimator>();
-
+    //assert(!node.fee_estimator);
+    //node.fee_estimator = std::make_unique<CBlockPolicyEstimator>();
+/*
     assert(!node.mempool);
     int check_ratio = std::min<int>(std::max<int>(args.GetIntArg("-checkmempool", chainparams.DefaultConsistencyChecks() ? 1 : 0), 0), 1000000);
     node.mempool = std::make_unique<CTxMemPool>(check_ratio);
@@ -1305,10 +1308,10 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     ChainstateManager& chainman = *node.chainman;
 
     assert(!node.peerman);
-    node.peerman = PeerManager::make(chainparams, *node.connman, *node.addrman, node.banman.get(),
+    node.peerman = PeerManager::make(*node.connman, *node.addrman, node.banman.get(),
                                      chainman, *node.mempool, ignores_incoming_txs);
     RegisterValidationInterface(node.peerman.get());
-
+*/
     // Check port numbers
     for (const std::string port_option : {
         "-port",
@@ -1513,7 +1516,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     assert(!node.chainman);
 
     CTxMemPool::Options mempool_opts{
-        .estimator = node.fee_estimator.get(),
+        //.estimator = node.fee_estimator.get(),
         .check_ratio = chainparams.DefaultConsistencyChecks() ? 1 : 0,
     };
     if (const auto err{ApplyArgsManOptions(args, chainparams, mempool_opts)}) {
@@ -1549,6 +1552,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         };
 
         uiInterface.InitMessage(_("Loading block index…").translated);
+/*
         const int64_t load_block_index_start_time = GetTimeMillis();
         std::optional<ChainstateLoadingError> maybe_load_error;
         try {
@@ -1560,10 +1564,10 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
                                               cache_sizes.block_tree_db,
                                               cache_sizes.coins_db,
                                               cache_sizes.coins,
-                                              /*block_tree_db_in_memory=*/false,
-                                              /*coins_db_in_memory=*/false,
-                                              /*shutdown_requested=*/ShutdownRequested,
-                                              /*coins_error_cb=*/[]() {
+                                              /*block_tree_db_in_memory=false,
+                                              /*coins_db_in_memory=false,
+                                              /*shutdown_requested=ShutdownRequested,
+                                              /*coins_error_cb=[]() {
                                                   uiInterface.ThreadSafeMessageBox(
                                                                                    _("Error reading from database, shutting down."),
                                                                                    "", CClientUIInterface::MSG_ERROR);
@@ -1619,6 +1623,17 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
                 return std::make_tuple(node::ChainstateLoadStatus::FAILURE, _("Error opening block database"));
             }
         };
+*/
+        const auto load_block_index_start_time{SteadyClock::now()};
+        auto catch_exceptions = [](auto&& f) {
+            try {
+                return f();
+            } catch (const std::exception& e) {
+                LogPrintf("%s\n", e.what());
+                return std::make_tuple(node::ChainstateLoadStatus::FAILURE, _("Error opening block database"));
+            }
+        };
+
         auto [status, error] = catch_exceptions([&]{ return LoadChainstate(chainman, cache_sizes, options); });
         if (status == node::ChainstateLoadStatus::SUCCESS) {
             uiInterface.InitMessage(_("Verifying blocks…").translated);
@@ -1673,13 +1688,20 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     RegisterValidationInterface(node.peerman.get());
 
     // ********************************************************* Step 8: start indexers
-        if (const auto error{CheckLegacyTxindex(*Assert(chainman.m_blockman.m_block_tree_db))}) {
-            return InitError(*error);
-        }
+    if (const auto error{WITH_LOCK(cs_main, return CheckLegacyTxindex(*Assert(chainman.m_blockman.m_block_tree_db)))}) {
+        return InitError(*error);
+    }
 
-    g_txindex = std::make_unique<TxIndex>(cache_sizes.tx_index, false, fReindex);
-    if (!g_txindex->Start(chainman.ActiveChainstate())) {
+    g_txindex = std::make_unique<TxIndex>(interfaces::MakeChain(node), cache_sizes.tx_index, false, fReindex);
+    if (!g_txindex->Start()) {
         return false;
+    }
+
+    for (const auto& filter_type : g_enabled_filter_types) {
+        InitBlockFilterIndex([&]{ return interfaces::MakeChain(node); }, filter_type, cache_sizes.filter_index, false, fReindex);
+        if (!GetBlockFilterIndex(filter_type)->Start()) {
+            return false;
+        }
     }
 
     for (const auto& filter_type : g_enabled_filter_types) {
@@ -1692,13 +1714,6 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     if (args.GetBoolArg("-coinstatsindex", DEFAULT_COINSTATSINDEX)) {
         g_coin_stats_index = std::make_unique<CoinStatsIndex>(interfaces::MakeChain(node), /*cache_size=*/0, false, fReindex);
         if (!g_coin_stats_index->Start()) {
-            return false;
-        }
-    }
-
-    if (args.GetBoolArg("-coinstatsindex", DEFAULT_COINSTATSINDEX)) {
-        g_coin_stats_index = std::make_unique<CoinStatsIndex>(/* cache size */ 0, false, fReindex);
-        if (!g_coin_stats_index->Start(chainman.ActiveChainstate())) {
             return false;
         }
     }

@@ -193,17 +193,7 @@ public:
         WITH_LOCK(m_mutex, m_request_stop = false);
     }
 
-    //! Stop all of the worker threads.
-    void StopWorkerThreads()
-    {
-        WITH_LOCK(m_mutex, m_request_stop = true);
-        m_worker_cv.notify_all();
-        for (std::thread& t : m_worker_threads) {
-            t.join();
-        }
-        m_worker_threads.clear();
-        WITH_LOCK(m_mutex, m_request_stop = false);
-    }
+    bool HasThreads() const { return !m_worker_threads.empty(); }
 
     ~CCheckQueue()
     {

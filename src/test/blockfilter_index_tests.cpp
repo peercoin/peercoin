@@ -101,7 +101,7 @@ bool BuildChainTestingSetup::BuildChain(const CBlockIndex* pindex,
         CBlockHeader header = block->GetBlockHeader();
         int tmpTemp;
         BlockValidationState state;
-        if (!Assert(m_node.chainman)->ProcessNewBlockHeaders(tmpTemp, m_node.chainman->ActiveChain().Tip()->GetBlockHash(), {header}, state, Params(), &pindex)) {
+        if (!Assert(m_node.chainman)->ProcessNewBlockHeaders(tmpTemp, m_node.chainman->ActiveChain().Tip()->GetBlockHash(), {header}, true, state, Params(), &pindex)) {
             return false;
         }
     }

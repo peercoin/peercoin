@@ -9,9 +9,26 @@
 
 #include <coins.h>
 #include <kernel.h>
+#include <consensus/amount.h>
+#include <consensus/consensus.h>
+#include <consensus/validation.h>
+#include <primitives/transaction.h>
+#include <script/interpreter.h>
+#include <script/script.h>
+#include <script/standard.h>
+#include <serialize.h>
 #include <span.h>
 
-bool IsStandard(const CScript& scriptPubKey, TxoutType& whichType)
+#include <algorithm>
+#include <cstddef>
+#include <vector>
+
+bool IsDust(const CTxOut& txout)
+{
+    return (txout.nValue < MIN_TXOUT_AMOUNT);
+}
+
+bool IsStandard(const CScript& scriptPubKey, const std::optional<unsigned>& max_datacarrier_bytes, TxoutType& whichType)
 {
     std::vector<std::vector<unsigned char> > vSolutions;
     whichType = Solver(scriptPubKey, vSolutions);
@@ -35,7 +52,7 @@ bool IsStandard(const CScript& scriptPubKey, TxoutType& whichType)
     return true;
 }
 
-bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string& reason)
+bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, std::string& reason)
 {
     if (tx.nVersion > TX_MAX_STANDARD_VERSION || tx.nVersion < 1) {
         reason = "version";
@@ -84,6 +101,9 @@ bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string
             nDataOut++;
         else if ((whichType == TxoutType::MULTISIG) && (!permit_bare_multisig)) {
             reason = "bare-multisig";
+            return false;
+        } else if (IsDust(txout)) {
+            reason = "dust";
             return false;
         }
     }

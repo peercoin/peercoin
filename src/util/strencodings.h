@@ -218,13 +218,6 @@ std::optional<T> ToIntegral(std::string_view str)
 [[nodiscard]] bool ParseUInt16(std::string_view str, uint16_t* out);
 
 /**
- * Convert decimal string to unsigned 8-bit integer with strict parse error feedback.
- * @returns true if the entire string could be parsed as valid integer,
- *   false if not the entire string could be parsed or when overflow or underflow occurred.
- */
-[[nodiscard]] bool ParseUInt8(const std::string& str, uint8_t *out);
-
-/**
  * Convert decimal string to unsigned 32-bit integer with strict parse error feedback.
  * @returns true if the entire string could be parsed as valid integer,
  *   false if not the entire string could be parsed or when overflow or underflow occurred.

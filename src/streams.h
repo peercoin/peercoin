@@ -359,6 +359,7 @@ public:
           nVersion{nVersionIn} {}
 
     int GetType() const          { return nType; }
+    void SetType(int n)          { nType = n; }
     void SetVersion(int n)       { nVersion = n; }
     int GetVersion() const       { return nVersion; }
 

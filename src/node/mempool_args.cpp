@@ -45,7 +45,7 @@ std::optional<bilingual_str> ApplyArgsManOptions(const ArgsManager& argsman, con
     if (auto mb = argsman.GetIntArg("-maxmempool")) mempool_opts.max_size_bytes = *mb * 1'000'000;
 
     if (auto hours = argsman.GetIntArg("-mempoolexpiry")) mempool_opts.expiry = std::chrono::hours{*hours};
-
+/*
     // incremental relay fee sets the minimum feerate increase necessary for replacement in the mempool
     // and the amount the mempool min fee increases above the feerate of txs evicted due to mempool limiting.
     if (argsman.IsArgSet("-incrementalrelayfee")) {
@@ -78,7 +78,7 @@ std::optional<bilingual_str> ApplyArgsManOptions(const ArgsManager& argsman, con
             return AmountErrMsg("dustrelayfee", argsman.GetArg("-dustrelayfee", ""));
         }
     }
-
+*/
     mempool_opts.permit_bare_multisig = argsman.GetBoolArg("-permitbaremultisig", DEFAULT_PERMIT_BAREMULTISIG);
 
     if (argsman.GetBoolArg("-datacarrier", DEFAULT_ACCEPT_DATACARRIER)) {

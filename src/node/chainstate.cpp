@@ -29,18 +29,12 @@
 #include <vector>
 
 namespace node {
-std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
-                                                     ChainstateManager& chainman,
-                                                     CTxMemPool* mempool,
-                                                     const Consensus::Params& consensus_params,
-                                                     bool fReindexChainState,
-                                                     int64_t nBlockTreeDBCache,
-                                                     int64_t nCoinDBCache,
-                                                     int64_t nCoinCacheUsage,
-                                                     bool block_tree_db_in_memory,
-                                                     bool coins_db_in_memory,
-                                                     std::function<bool()> shutdown_requested,
-                                                     std::function<void()> coins_error_cb)
+// Complete initialization of chainstates after the initial call has been made
+// to ChainstateManager::InitializeChainstate().
+static ChainstateLoadResult CompleteChainstateInitialization(
+    ChainstateManager& chainman,
+    const CacheSizes& cache_sizes,
+    const ChainstateLoadOptions& options) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     auto& pblocktree{chainman.m_blockman.m_block_tree_db};
     // new CBlockTreeDB tries to delete the existing file, which
