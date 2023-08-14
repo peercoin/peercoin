@@ -173,6 +173,56 @@ RPCHelpMan sendtoaddress()
     };
 }
 
+
+RPCHelpMan optimizeutxoset()
+{
+    return RPCHelpMan{"optimizeutxoset",
+                "\nOptimize the UTXO set in order to maximize the PoS yield. This is only valid for continuous minting. The accumulated coinage will be reset!" +
+        HELP_REQUIRING_PASSPHRASE,
+                {
+                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " amount to set the value of new UTXOs, i.e. make new UTXOs with value of 110. If amount is not provided, hardcoded value will be used."},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The peercoin address to recieve all the new UTXOs. If not provided, new UTOXs will be assigned to the address of the input UTXOs."},
+                    {"verbose", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, return extra information about the transaction."},
+                },
+                {
+                    RPCResult{"if verbose is not set or set to false",
+                        RPCResult::Type::STR_HEX, "txid", "The transaction id."
+                    },
+                    RPCResult{"if verbose is set to true",
+                        RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR_HEX, "txid", "The transaction id."},
+                            {RPCResult::Type::STR, "fee_reason", "The transaction fee reason."}
+                        },
+                    },
+                },
+                RPCExamples{
+                    "\nTrigger UTXO optimization\n"
+                    + HelpExampleCli("optimizeutxoset") +
+                    "\nTrigger UTXO optimization with user-defined UTXO value\n"
+                    + HelpExampleCli("optimizeutxoset 110") +
+                    "\nTrigger UTXO optimization and assign all the new UTXOs to some peercoin address\n"
+                    + HelpExampleCli("optimizeutxoset " + EXAMPLE_ADDRESS[0] + "") +
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!pwallet) return UniValue::VNULL;
+
+    // Make sure the results are valid at least up to the most recent block
+    // the user could have gotten from another RPC command prior to now
+    pwallet->BlockUntilSyncedToCurrentChain();
+
+    LOCK(pwallet->cs_wallet);
+
+    EnsureWalletIsUnlocked(*pwallet);
+
+    return SendMoney(*pwallet, coin_control, recipients, mapValue, verbose);
+},
+    };
+}
+
+
 RPCHelpMan sendmany()
 {
     return RPCHelpMan{"sendmany",
