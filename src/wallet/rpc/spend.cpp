@@ -8,6 +8,7 @@
 #include <policy/policy.h>
 #include <rpc/rawtransaction_util.h>
 #include <rpc/util.h>
+#include <timedata.h>
 #include <util/fees.h>
 #include <util/translation.h>
 #include <util/vector.h>
@@ -164,13 +165,12 @@ RPCHelpMan sendtoaddress()
 
     std::vector<CRecipient> recipients;
     ParseRecipients(address_amounts, subtractFeeFromAmount, recipients);
-    const bool verbose{request.params[10].isNull() ? false : request.params[10].get_bool()};
+    const bool verbose{request.params[6].isNull() ? false : request.params[6].get_bool()};
 
     return SendMoney(*pwallet, coin_control, recipients, mapValue, verbose);
 },
     };
 }
-
 
 RPCHelpMan optimizeutxoset()
 {
@@ -178,30 +178,28 @@ RPCHelpMan optimizeutxoset()
                 "\nOptimize the UTXO set in order to maximize the PoS yield. This is only valid for continuous minting. The accumulated coinage will be reset!" +
         HELP_REQUIRING_PASSPHRASE,
                 {
-                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " amount to set the value of new UTXOs, i.e. make new UTXOs with value of 110. If amount is not provided, hardcoded value will be used."},
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The peercoin address to recieve all the new UTXOs. If not provided, new UTOXs will be assigned to the address of the input UTXOs."},
-                    {"verbose", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, return extra information about the transaction."},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The peercoin address to recieve all the new UTXOs. If not provided, new UTOXs will be assigned to the address of the input UTXOs."},
+                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The " + CURRENCY_UNIT + " amount to set the value of new UTXOs, i.e. make new UTXOs with value of 110. If amount is not provided, hardcoded value will be used."},
+                    {"transmit", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, transmit transaction after generating it."},
                 },
                 {
-                    RPCResult{"if verbose is not set or set to false",
-                        RPCResult::Type::STR_HEX, "txid", "The transaction id."
-                    },
-                    RPCResult{"if verbose is set to true",
+                    RPCResult{"if transmit is not set or set to false",
                         RPCResult::Type::OBJ, "", "",
                         {
-                            {RPCResult::Type::STR_HEX, "txid", "The transaction id."},
-                            {RPCResult::Type::STR, "fee_reason", "The transaction fee reason."}
+                            {RPCResult::Type::STR_HEX, "tx", "The transaction hex."}
+                        },
+                    },
+                    RPCResult{"if transmit is set to true",
+                        RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR_HEX, "txid", "The transaction id."}
                         },
                     },
                 },
                 RPCExamples{
-                    "\nTrigger UTXO optimization\n"
-                    + HelpExampleCli("optimizeutxoset") +
-                    "\nTrigger UTXO optimization with user-defined UTXO value\n"
-                    + HelpExampleCli("optimizeutxoset 110") +
-                    "\nTrigger UTXO optimization and assign all the new UTXOs to some peercoin address\n"
-                    + HelpExampleCli("optimizeutxoset " + EXAMPLE_ADDRESS[0] + "") +
-                },
+                    "\nTrigger UTXO optimization and assign all the new UTXOs to some peercoin address with user defined UTXO value\n"
+                    + HelpExampleCli("optimizeutxoset", EXAMPLE_ADDRESS[0] + " 110")
+               },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
     std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
@@ -214,8 +212,55 @@ RPCHelpMan optimizeutxoset()
     LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked(*pwallet);
+    CAmount availableCoins = GetAvailableBalance(*pwallet);
+    if (availableCoins == 0) {
+        LogPrintf("no available coins to optimize\n");
+        return UniValue::VOBJ;
+    }
 
-    return SendMoney(*pwallet, coin_control, recipients, mapValue, verbose);
+    LogPrintf("optimizing outputs %d satoshis\n", availableCoins);
+
+    mapValue_t mapValue;
+    CCoinControl coin_control;
+    const std::string address = request.params[0].get_str();
+    std::vector<CRecipient> recipients;
+    const bool transmit{request.params[2].isNull() ? false : request.params[2].get_bool()};
+    CAmount nFeeRequired = 0;
+    int nChangePosRet = -1;
+    bilingual_str error;
+    CTransactionRef tx;
+    CAmount fee_calc_out;
+
+    CTxDestination dest = DecodeDestination(address);
+    if (!IsValidDestination(dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + address);
+    }
+
+    CScript script_pub_key = GetScriptForDestination(dest);
+    CAmount amount = AmountFromValue(request.params[1]);
+    CAmount remaining = availableCoins;
+
+    CRecipient recipient = {script_pub_key, amount, false};
+    CAmount fee = GetMinFee( 2000 + remaining / amount * 40, GetAdjustedTime()); // very approximate
+    while (remaining > amount + fee) {
+        recipients.push_back(recipient);
+        remaining -= amount;
+    }
+
+    const bool fCreated = CreateTransaction(*pwallet, recipients, tx, nFeeRequired, nChangePosRet, error, coin_control, fee_calc_out, true);
+    if (!fCreated) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error.original);
+    }
+
+    UniValue entry(UniValue::VOBJ);
+    if (transmit) {
+        pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */);
+        entry.pushKV("txid", tx->GetHash().GetHex());
+    }
+    else {
+        entry.pushKV("tx", EncodeHexTx(*tx));
+    }
+    return entry;
 },
     };
 }
