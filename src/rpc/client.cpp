@@ -218,6 +218,8 @@ static const CRPCConvertParam vRPCConvertParams[] =
     // peercoin:
     { "importcoinstake", 1, "timestamp" },
     { "listminting", 0, "count" },
+    { "optimizeutxoset", 1, "amount" },
+    { "optimizeutxoset", 2, "transmit" },
     { "reservebalance", 0, "reserve" },
     { "reservebalance", 1, "amount" },
     { "sendalert", 2, "minver"},

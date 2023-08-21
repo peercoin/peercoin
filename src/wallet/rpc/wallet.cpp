@@ -1115,6 +1115,7 @@ RPCHelpMan walletprocesspsbt();
 RPCHelpMan walletcreatefundedpsbt();
 RPCHelpMan signrawtransactionwithwallet();
 RPCHelpMan settxfee();
+RPCHelpMan optimizeutxoset();
 
 // signmessage
 RPCHelpMan signmessage();
@@ -1177,6 +1178,7 @@ static const CRPCCommand commands[] =
     { "wallet",             &loadwallet,                     },
     { "wallet",             &lockunspent,                    },
     { "wallet",             &newkeypool,                     },
+    { "wallet",             &optimizeutxoset,                },
     { "wallet",             &rescanblockchain,               },
     { "wallet",             &send,                           },
     { "wallet",             &sendmany,                       },
