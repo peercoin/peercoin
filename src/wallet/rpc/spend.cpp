@@ -181,6 +181,7 @@ RPCHelpMan optimizeutxoset()
                     {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The peercoin address to recieve all the new UTXOs. If not provided, new UTOXs will be assigned to the address of the input UTXOs."},
                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The " + CURRENCY_UNIT + " amount to set the value of new UTXOs, i.e. make new UTXOs with value of 110. If amount is not provided, hardcoded value will be used."},
                     {"transmit", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, transmit transaction after generating it."},
+                    {"fromAddress", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The peercoin address to split coins from. If not provided, all available coins will be used."},
                 },
                 {
                     RPCResult{"if transmit is not set or set to false",
@@ -212,13 +213,7 @@ RPCHelpMan optimizeutxoset()
     LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked(*pwallet);
-    CAmount availableCoins = GetAvailableBalance(*pwallet);
-    if (availableCoins == 0) {
-        LogPrintf("no available coins to optimize\n");
-        return UniValue::VOBJ;
-    }
-
-    LogPrintf("optimizing outputs %d satoshis\n", availableCoins);
+    CAmount availableCoins;
 
     mapValue_t mapValue;
     CCoinControl coin_control;
@@ -230,6 +225,32 @@ RPCHelpMan optimizeutxoset()
     bilingual_str error;
     CTransactionRef tx;
     CAmount fee_calc_out;
+
+    if (request.params[3].isNull() == false) {
+        std::vector<COutput> vAvailableCoins;
+        AvailableCoins(*pwallet, vAvailableCoins, &coin_control);
+        CTxDestination tmpAddress, fromAddress;
+        fromAddress = DecodeDestination(request.params[3].get_str());
+        for (const COutput& out : vAvailableCoins) {
+            ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, tmpAddress);
+            if (tmpAddress == fromAddress) {
+                coin_control.Select(COutPoint(out.tx->GetHash(), out.i));
+                availableCoins += out.tx->tx->vout[out.i].nValue;
+            }
+        }
+        coin_control.m_add_inputs = false;
+        coin_control.fAllowOtherInputs = false;
+    } else {
+        availableCoins = GetAvailableBalance(*pwallet);
+    }
+
+    if (availableCoins == 0) {
+        LogPrintf("no available coins to optimize\n");
+        return UniValue::VOBJ;
+    }
+
+    LogPrintf("optimizing outputs %d satoshis\n", availableCoins);
+
 
     CTxDestination dest = DecodeDestination(address);
     if (!IsValidDestination(dest)) {
