@@ -184,10 +184,8 @@ RPCHelpMan sendtoaddress()
                                          "transaction, just kept in your wallet."},
                     {"subtractfeefromamount", RPCArg::Type::BOOL, RPCArg::Default{false}, "The fee will be deducted from the amount being sent.\n"
                                          "The recipient will receive less peercoins than you enter in the amount field."},
-                    {"conf_target", RPCArg::Type::NUM, RPCArg::DefaultHint{"wallet -txconfirmtarget"}, "Confirmation target in blocks"},
                     {"avoid_reuse", RPCArg::Type::BOOL, RPCArg::Default{true}, "(only available if avoid_reuse wallet flag is set) Avoid spending from dirty addresses; addresses are considered\n"
                                          "dirty if they have previously been used in a transaction. If true, this also activates avoidpartialspends, grouping outputs by their addresses."},
-                    {"fee_rate", RPCArg::Type::AMOUNT, RPCArg::DefaultHint{"not set, fall back to wallet fee estimation"}, "Specify a fee rate in " + CURRENCY_ATOM + "/vB."},
                     {"verbose", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, return extra information about the transaction."},
                 },
                 {
@@ -237,7 +235,7 @@ RPCHelpMan sendtoaddress()
 
     CCoinControl coin_control;
 
-    coin_control.m_avoid_address_reuse = GetAvoidReuseFlag(*pwallet, request.params[8]);
+    coin_control.m_avoid_address_reuse = GetAvoidReuseFlag(*pwallet, request.params[5]);
     // We also enable partial spend avoidance if reuse avoidance is set.
     coin_control.m_avoid_partial_spends |= coin_control.m_avoid_address_reuse;
 
@@ -253,12 +251,127 @@ RPCHelpMan sendtoaddress()
 
     std::vector<CRecipient> recipients;
     ParseRecipients(address_amounts, subtractFeeFromAmount, recipients);
-    const bool verbose{request.params[10].isNull() ? false : request.params[10].get_bool()};
+    const bool verbose{request.params[6].isNull() ? false : request.params[6].get_bool()};
 
     return SendMoney(*pwallet, coin_control, recipients, mapValue, verbose);
 },
     };
 }
+
+RPCHelpMan optimizeutxoset()
+{
+    return RPCHelpMan{"optimizeutxoset",
+                "\nOptimize the UTXO set in order to maximize the PoS yield. This is only valid for continuous minting. The accumulated coinage will be reset!" +
+        HELP_REQUIRING_PASSPHRASE,
+                {
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The peercoin address to recieve all the new UTXOs. If not provided, new UTOXs will be assigned to the address of the input UTXOs."},
+                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The " + CURRENCY_UNIT + " amount to set the value of new UTXOs, i.e. make new UTXOs with value of 110. If amount is not provided, hardcoded value will be used."},
+                    {"transmit", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, transmit transaction after generating it."},
+                    {"fromAddress", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The peercoin address to split coins from. If not provided, all available coins will be used."},
+                },
+                {
+                    RPCResult{"if transmit is not set or set to false",
+                        RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR_HEX, "tx", "The transaction hex."}
+                        },
+                    },
+                    RPCResult{"if transmit is set to true",
+                        RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR_HEX, "txid", "The transaction id."}
+                        },
+                    },
+                },
+                RPCExamples{
+                    "\nTrigger UTXO optimization and assign all the new UTXOs to some peercoin address with user defined UTXO value\n"
+                    + HelpExampleCli("optimizeutxoset", EXAMPLE_ADDRESS[0] + " 110")
+               },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!pwallet) return UniValue::VNULL;
+
+    // Make sure the results are valid at least up to the most recent block
+    // the user could have gotten from another RPC command prior to now
+    pwallet->BlockUntilSyncedToCurrentChain();
+
+    LOCK(pwallet->cs_wallet);
+
+    EnsureWalletIsUnlocked(*pwallet);
+    CAmount availableCoins;
+
+    mapValue_t mapValue;
+    CCoinControl coin_control;
+    const std::string address = request.params[0].get_str();
+    std::vector<CRecipient> recipients;
+    const bool transmit{request.params[2].isNull() ? false : request.params[2].get_bool()};
+    CAmount nFeeRequired = 0;
+    int nChangePosRet = -1;
+    bilingual_str error;
+    CTransactionRef tx;
+    CAmount fee_calc_out;
+
+    if (request.params[3].isNull() == false) {
+        std::vector<COutput> vAvailableCoins;
+        AvailableCoins(*pwallet, vAvailableCoins, &coin_control);
+        CTxDestination tmpAddress, fromAddress;
+        fromAddress = DecodeDestination(request.params[3].get_str());
+        for (const COutput& out : vAvailableCoins) {
+            ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, tmpAddress);
+            if (tmpAddress == fromAddress) {
+                coin_control.Select(COutPoint(out.tx->GetHash(), out.i));
+                availableCoins += out.tx->tx->vout[out.i].nValue;
+            }
+        }
+        coin_control.m_add_inputs = false;
+        coin_control.fAllowOtherInputs = false;
+    } else {
+        availableCoins = GetAvailableBalance(*pwallet);
+    }
+
+    if (availableCoins == 0) {
+        LogPrintf("no available coins to optimize\n");
+        return UniValue::VOBJ;
+    }
+
+    LogPrintf("optimizing outputs %d satoshis\n", availableCoins);
+
+
+    CTxDestination dest = DecodeDestination(address);
+    if (!IsValidDestination(dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + address);
+    }
+
+    CScript script_pub_key = GetScriptForDestination(dest);
+    CAmount amount = AmountFromValue(request.params[1]);
+    CAmount remaining = availableCoins;
+
+    CRecipient recipient = {script_pub_key, amount, false};
+    CAmount fee = GetMinFee( 2000 + remaining / amount * 40, GetAdjustedTime()); // very approximate
+    while (remaining > amount + fee) {
+        recipients.push_back(recipient);
+        remaining -= amount;
+    }
+
+    const bool fCreated = CreateTransaction(*pwallet, recipients, tx, nFeeRequired, nChangePosRet, error, coin_control, fee_calc_out, true);
+    if (!fCreated) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error.original);
+    }
+
+    UniValue entry(UniValue::VOBJ);
+    if (transmit) {
+        pwallet->CommitTransaction(tx, std::move(mapValue), {} /* orderForm */);
+        entry.pushKV("txid", tx->GetHash().GetHex());
+    }
+    else {
+        entry.pushKV("tx", EncodeHexTx(*tx));
+    }
+    return entry;
+},
+    };
+}
+
 
 RPCHelpMan sendmany()
 {
@@ -285,8 +398,6 @@ RPCHelpMan sendmany()
                             {"address", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "Subtract fee from this address"},
                         },
                     },
-                    {"conf_target", RPCArg::Type::NUM, RPCArg::DefaultHint{"wallet -txconfirmtarget"}, "Confirmation target in blocks"},
-                    {"fee_rate", RPCArg::Type::AMOUNT, RPCArg::DefaultHint{"not set, fall back to wallet fee estimation"}, "Specify a fee rate in " + CURRENCY_ATOM + "/vB."},
                     {"verbose", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, return extra information about the transaction."},
                 },
                 {
@@ -341,7 +452,7 @@ RPCHelpMan sendmany()
 
     std::vector<CRecipient> recipients;
     ParseRecipients(sendTo, subtractFeeFromAmount, recipients);
-    const bool verbose{request.params[9].isNull() ? false : request.params[9].get_bool()};
+    const bool verbose{request.params[5].isNull() ? false : request.params[5].get_bool()};
 
     return SendMoney(*pwallet, coin_control, recipients, std::move(mapValue), verbose);
 },
