@@ -213,7 +213,7 @@ RPCHelpMan optimizeutxoset()
     LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked(*pwallet);
-    CAmount availableCoins;
+    CAmount availableCoins = 0;
 
     mapValue_t mapValue;
     CCoinControl coin_control;
