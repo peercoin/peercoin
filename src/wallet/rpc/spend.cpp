@@ -218,6 +218,7 @@ RPCHelpMan optimizeutxoset()
     mapValue_t mapValue;
     CCoinControl coin_control;
     const std::string address = request.params[0].get_str();
+    CAmount amount = AmountFromValue(request.params[1]);
     std::vector<CRecipient> recipients;
     const bool transmit{request.params[2].isNull() ? false : request.params[2].get_bool()};
     CAmount nFeeRequired = 0;
@@ -229,11 +230,14 @@ RPCHelpMan optimizeutxoset()
     if (request.params[3].isNull() == false) {
         std::vector<COutput> vAvailableCoins;
         AvailableCoins(*pwallet, vAvailableCoins, &coin_control);
-        CTxDestination tmpAddress, fromAddress;
+        CTxDestination tmpAddress, fromAddress, toAddress;
         fromAddress = DecodeDestination(request.params[3].get_str());
+        toAddress = DecodeDestination(address);
         for (const COutput& out : vAvailableCoins) {
             ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, tmpAddress);
             if (tmpAddress == fromAddress) {
+                if (toAddress == tmpAddress && out.tx->tx->vout[out.i].nValue == amount)
+                    continue;
                 coin_control.Select(COutPoint(out.tx->GetHash(), out.i));
                 availableCoins += out.tx->tx->vout[out.i].nValue;
             }
@@ -258,7 +262,6 @@ RPCHelpMan optimizeutxoset()
     }
 
     CScript script_pub_key = GetScriptForDestination(dest);
-    CAmount amount = AmountFromValue(request.params[1]);
     CAmount remaining = availableCoins;
 
     CRecipient recipient = {script_pub_key, amount, false};
