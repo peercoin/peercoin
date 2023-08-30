@@ -265,7 +265,7 @@ RPCHelpMan optimizeutxoset()
     CAmount remaining = availableCoins;
 
     CRecipient recipient = {script_pub_key, amount, false};
-    CAmount fee = GetMinFee( 2000 + remaining / amount * 40, GetAdjustedTime()); // very approximate
+    CAmount fee = GetMinFee( 2000 + remaining / amount * 60, GetAdjustedTime()); // very approximate
     while (remaining > amount + fee) {
         recipients.push_back(recipient);
         remaining -= amount;
