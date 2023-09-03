@@ -214,11 +214,22 @@ RPCHelpMan optimizeutxoset()
 
     EnsureWalletIsUnlocked(*pwallet);
     CAmount availableCoins = 0;
-
     mapValue_t mapValue;
     CCoinControl coin_control;
     const std::string address = request.params[0].get_str();
+    CTxDestination dest = DecodeDestination(address);
+
+    if (!IsValidDestination(dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + address);
+    }
+
+    coin_control.destChange = dest;
     CAmount amount = AmountFromValue(request.params[1]);
+
+    if (amount < MIN_TXOUT_AMOUNT) {
+        throw JSONRPCError(RPC_INSUFFICIENT_SEND_AMOUNT, std::string("Output amount too small ") + request.params[1].get_str());
+    }
+
     std::vector<CRecipient> recipients;
     const bool transmit{request.params[2].isNull() ? false : request.params[2].get_bool()};
     CAmount nFeeRequired = 0;
@@ -228,20 +239,26 @@ RPCHelpMan optimizeutxoset()
     CAmount fee_calc_out;
 
     if (request.params[3].isNull() == false) {
+        CTxDestination tmpAddress, fromAddress;
+        fromAddress = DecodeDestination(request.params[3].get_str());
+
+        if (!IsValidDestination(fromAddress)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + request.params[3].get_str());
+        }
+
         std::vector<COutput> vAvailableCoins;
         AvailableCoins(*pwallet, vAvailableCoins, &coin_control);
-        CTxDestination tmpAddress, fromAddress, toAddress;
-        fromAddress = DecodeDestination(request.params[3].get_str());
-        toAddress = DecodeDestination(address);
+
         for (const COutput& out : vAvailableCoins) {
             ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, tmpAddress);
             if (tmpAddress == fromAddress) {
-                if (toAddress == tmpAddress && out.tx->tx->vout[out.i].nValue == amount)
+                if (tmpAddress == dest && out.tx->tx->vout[out.i].nValue == amount)
                     continue;
                 coin_control.Select(COutPoint(out.tx->GetHash(), out.i));
                 availableCoins += out.tx->tx->vout[out.i].nValue;
             }
         }
+
         coin_control.m_add_inputs = false;
         coin_control.fAllowOtherInputs = false;
     } else {
@@ -254,18 +271,30 @@ RPCHelpMan optimizeutxoset()
     }
 
     LogPrintf("optimizing outputs %d satoshis\n", availableCoins);
-
-
-    CTxDestination dest = DecodeDestination(address);
-    if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Peercoin address: ") + address);
-    }
-
     CScript script_pub_key = GetScriptForDestination(dest);
     CAmount remaining = availableCoins;
 
     CRecipient recipient = {script_pub_key, amount, false};
-    CAmount fee = GetMinFee( 2000 + remaining / amount * 40, GetAdjustedTime()); // very approximate
+    CMutableTransaction txTmp;
+    const uint32_t nSequence{CTxIn::MAX_SEQUENCE_NONFINAL};
+    std::vector<COutPoint> vPresetInputs;
+    coin_control.ListSelected(vPresetInputs);
+    for (const COutPoint& outpoint : vPresetInputs) {
+        txTmp.vin.push_back(CTxIn(outpoint, CScript(), nSequence));
+    }
+
+    // Calculate transaction input size
+    const CWallet& wallet{*pwallet};
+    TxSize tx_sizes = CalculateMaximumSignedTxSize(CTransaction(txTmp), &wallet, &coin_control);
+    int nBytes = tx_sizes.vsize;
+
+    // calculate size of output
+    CTxOut txout(amount, script_pub_key);
+    txTmp.vout.push_back(txout);
+    tx_sizes = CalculateMaximumSignedTxSize(CTransaction(txTmp), &wallet, &coin_control);
+    int nBytesPerOut = tx_sizes.vsize - nBytes;
+
+    CAmount fee = GetMinFee(nBytes + (unsigned int)(remaining / amount) * nBytesPerOut, GetAdjustedTime());
     while (remaining > amount + fee) {
         recipients.push_back(recipient);
         remaining -= amount;
