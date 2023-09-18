@@ -7,9 +7,11 @@
 
 #include <consensus/amount.h>
 #include <consensus/consensus.h>
+#include <consensus/tx_verify.h>
 #include <outputtype.h>
 #include <primitives/transaction.h>
 #include <random.h>
+#include <timedata.h>
 #include <util/system.h>
 #include <util/check.h>
 
@@ -82,6 +84,8 @@ public:
           time{time},
           from_me{from_me}
     {
+       fee = input_bytes < 0 ? 0 : GetMinFee(input_bytes, TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime()));
+       effective_value = txout.nValue - fee.value();
     }
 
     COutput(const COutPoint& outpoint, const CTxOut& txout, int depth, int input_bytes, bool spendable, bool solvable, bool safe, int64_t time, bool from_me, const CAmount fees)
