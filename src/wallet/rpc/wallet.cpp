@@ -580,19 +580,20 @@ static RPCHelpMan listminting()
                         {RPCResult::Type::OBJ, "", "",
                         {
                             {RPCResult::Type::STR, "address", "Address of the output"},
-                            {RPCResult::Type::STR, "input-txid", "Transaction id"},
+                            {RPCResult::Type::STR, "input-txid", /*optional=*/true, "Transaction id"},
                             {RPCResult::Type::NUM, "time", "Time of transaction"},
                             {RPCResult::Type::NUM, "amount", "Amount of transaction output"},
                             {RPCResult::Type::STR, "status", "Status of transaction output"},
-                            {RPCResult::Type::NUM, "age-in-day", "Age of transaction in days"},
-                            {RPCResult::Type::NUM, "coin-day-weight", "Weight of transaction output"},
-                            {RPCResult::Type::NUM, "proof-of-stake-difficulty", "Current proof of stake difficulty"},
-                            {RPCResult::Type::NUM, "minting-probability-10min", "Probability of minting in next 10 minutes"},
-                            {RPCResult::Type::NUM, "minting-probability-24h", "Probability of minting in next 24 hours"},
-                            {RPCResult::Type::NUM, "minting-probability-30d", "Probability of minting in next 30 days"},
-                            {RPCResult::Type::NUM, "minting-probability-90d", "Probability of minting in next 90 days"},
-                            {RPCResult::Type::NUM, "search-interval-in-sec", "Interval between last minting attempts"},
-                            {RPCResult::Type::NUM, "attempts", "Number of seconds since maturity"},
+                            {RPCResult::Type::NUM, "age-in-day", /*optional=*/true, "Age of transaction in days"},
+                            {RPCResult::Type::NUM, "coin-day-weight", /*optional=*/true, "Weight of transaction output"},
+                            {RPCResult::Type::NUM, "proof-of-stake-difficulty", /*optional=*/true, "Current proof of stake difficulty"},
+                            {RPCResult::Type::NUM, "minting-probability-10min", /*optional=*/true, "Probability of minting in next 10 minutes"},
+                            {RPCResult::Type::NUM, "minting-probability-24h", /*optional=*/true, "Probability of minting in next 24 hours"},
+                            {RPCResult::Type::NUM, "minting-probability-30d", /*optional=*/true, "Probability of minting in next 30 days"},
+                            {RPCResult::Type::NUM, "minting-probability-90d", /*optional=*/true, "Probability of minting in next 90 days"},
+                            {RPCResult::Type::NUM, "search-interval-in-sec", /*optional=*/true, "Interval between last minting attempts"},
+                            {RPCResult::Type::NUM, "attempts", /*optional=*/true, "Number of seconds since maturity"},
+                            {RPCResult::Type::NUM, "due-in-seconds", /*optional=*/true, "Number of seconds since maturity"},
                         }},
                     }
                 },
@@ -657,11 +658,11 @@ static RPCHelpMan listminting()
 //                obj.push_back(Pair("account",                   account));
                 obj.pushKV("address",                   kr.address);
                 obj.pushKV("input-txid",                kr.hash.ToString());
-                obj.pushKV("time",                      strTime);
-                obj.pushKV("amount",                    strAmount);
+                obj.pushKV("time",                      kr.nTime);
+                obj.pushKV("amount",                    kr.nValue);
                 obj.pushKV("status",                    status);
-                obj.pushKV("age-in-day",                strAge);
-                obj.pushKV("coin-day-weight",           strCoinAge);
+                obj.pushKV("age-in-day",                kr.getAge());
+                obj.pushKV("coin-day-weight",           kr.getCoinAge());
                 obj.pushKV("proof-of-stake-difficulty", difficulty);
                 obj.pushKV("minting-probability-10min", kr.getProbToMintWithinNMinutes(difficulty, 10));
                 obj.pushKV("minting-probability-24h",   kr.getProbToMintWithinNMinutes(difficulty, 60*24));
