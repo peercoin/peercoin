@@ -3568,6 +3568,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     FastRandomContext rng_fast;
     CoinSelectionParams coin_selection_params{rng_fast};
     coin_selection_params.m_subtract_fee_outputs = true;
+    coin_selection_params.m_coinstake = true;
 
     bool bnb_used;
     wallet::CoinsResult availableCoins = AvailableCoins(*pwallet, &temp);

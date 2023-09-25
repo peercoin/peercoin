@@ -152,6 +152,10 @@ struct CoinSelectionParams {
      * 1) Received from other wallets, 2) replacing other txs, 3) that have been replaced.
      */
     bool m_include_unsafe_inputs = false;
+    /**
+     * When true, skip tx weight check
+     */
+    bool m_coinstake = false;
 
     CoinSelectionParams(FastRandomContext& rng_fast, size_t change_output_size, size_t change_spend_size,
                         size_t tx_noinputs_size, bool avoid_partial) :

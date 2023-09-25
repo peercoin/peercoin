@@ -552,7 +552,7 @@ util::Result<SelectionResult> ChooseSelectionResult(const CAmount& nTargetValue,
     std::vector<SelectionResult> eligible_results;
     std::copy_if(results.begin(), results.end(), std::back_inserter(eligible_results), [coin_selection_params](const SelectionResult& result) {
         const auto initWeight{coin_selection_params.tx_noinputs_size * WITNESS_SCALE_FACTOR};
-        return initWeight + result.GetWeight() <= static_cast<int>(MAX_STANDARD_TX_WEIGHT);
+        return coin_selection_params.m_coinstake ? true : initWeight + result.GetWeight() <= static_cast<int>(MAX_STANDARD_TX_WEIGHT);
     });
 
     if (eligible_results.empty()) {
