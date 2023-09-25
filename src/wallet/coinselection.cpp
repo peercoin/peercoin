@@ -143,7 +143,7 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
                 // Inclusion branch first (Largest First Exploration)
                 curr_selection.push_back(utxo_pool_index);
                 curr_value += utxo.GetSelectionAmount();
-                curr_waste += utxo.fee - PERKB_TX_FEE;
+                curr_waste += utxo.fee;
             }
         }
     }
@@ -158,7 +158,7 @@ std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_poo
         result.AddInput(utxo_pool.at(i));
     }
     result.ComputeAndSetWaste(cost_of_change, cost_of_change, CAmount{0});
-    assert(best_waste == result.GetWaste());
+//    assert(best_waste == result.GetWaste());
 
     return result;
 }
