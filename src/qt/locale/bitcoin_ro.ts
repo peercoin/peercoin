@@ -1468,92 +1468,14 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>Amount</source>
-        <translation>Cantitate</translation>
+        <source>Do you want to reset settings to default values, or to abort without making changes?</source>
+        <extracomment>Explanatory text shown on startup when the settings file cannot be read. Prompts user to make a choice between resetting or aborting.</extracomment>
+        <translation type="unfinished">Vrei să resetezi opțiunile la valorile predeterminate sau sa abordezi fără a face schimbări?</translation>
     </message>
     <message>
-        <source>Enter a Bitcoin address (e.g. %1)</source>
-        <translation>Introduceţi o adresă Peercoin (de exemplu %1)</translation>
-    </message>
-    <message>
-        <source>%1 d</source>
-        <translation>%1 z</translation>
-    </message>
-    <message>
-        <source>%1 h</source>
-        <translation>%1 h</translation>
-    </message>
-    <message>
-        <source>%1 m</source>
-        <translation>%1 m</translation>
-    </message>
-    <message>
-        <source>%1 s</source>
-        <translation>%1 s</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation>Niciuna</translation>
-    </message>
-    <message>
-        <source>N/A</source>
-        <translation>N/A</translation>
-    </message>
-    <message>
-        <source>%1 ms</source>
-        <translation>%1 ms</translation>
-    </message>
-    <message numerus="yes">
-        <source>%n second(s)</source>
-        <translation><numerusform>%n secundă</numerusform><numerusform>%n secunde</numerusform><numerusform>%n secunde</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <source>%n minute(s)</source>
-        <translation><numerusform>%n minut</numerusform><numerusform>%n minute</numerusform><numerusform>%n minute</numerusform></translation>
-	</message>
-    <message numerus="yes">
-        <source>%n hour(s)</source>
-        <translation><numerusform>%n oră</numerusform><numerusform>%n ore</numerusform><numerusform>%n ore</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <source>%n day(s)</source>
-        <translation><numerusform>%n zi</numerusform><numerusform>%n zile</numerusform><numerusform>%n zile</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <source>%n week(s)</source>
-        <translation><numerusform>%n săptamână</numerusform><numerusform>%n săptămâni</numerusform><numerusform>%n săptămâni</numerusform></translation>
-    </message>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 și %2</translation>
-    </message>
-    <message numerus="yes">
-        <source>%n year(s)</source>
-        <translation><numerusform>%n an</numerusform><numerusform>%n ani</numerusform><numerusform>%n ani</numerusform></translation>
-    </message>
-    <message>
-        <source>%1 B</source>
-        <translation>%1 B</translation>
-    </message>
-    <message>
-        <source>%1 KB</source>
-        <translation>%1 KB</translation>
-    </message>
-    <message>
-        <source>%1 MB</source>
-        <translation>%1 MB</translation>
-    </message>
-    <message>
-        <source>%1 GB</source>
-        <translation>%1 GB</translation>
-    </message>
-    <message>
-        <source>Error: Specified data directory "%1" does not exist.</source>
-        <translation>Eroare: Folderul de date specificat "%1" nu există.</translation>
-    </message>
-    <message>
-        <source>Error: Cannot parse configuration file: %1.</source>
-        <translation>Eroare: Nu se poate analiza fișierul de configurare: %1.</translation>
+        <source>A fatal error occurred. Check that settings file is writable, or try running with -nosettings.</source>
+        <extracomment>Explanatory text shown on startup when the settings file could not be written. Prompts user to check that we have the ability to write to the file. Explains that the user has the option of running without a settings file.</extracomment>
+        <translation type="unfinished">A apărut o eroare fatală. Verificați dacă se poate scrie în fișierul de setări sau încercați să rulați cu -nosettings.</translation>
     </message>
     <message>
         <source>Error: %1</source>
@@ -3408,6 +3330,16 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
         <translation type="unfinished">Niciun portofel disponibil</translation>
     </message>
     <message>
+        <source>Wallet Data</source>
+        <extracomment>Name of the wallet data file format.</extracomment>
+        <translation type="unfinished">Datele de portmoneu</translation>
+    </message>
+    <message>
+        <source>Load Wallet Backup</source>
+        <extracomment>The title for Restore Wallet File Windows</extracomment>
+        <translation type="unfinished">Încarcă backup-ul portmoneului</translation>
+    </message>
+    <message>
         <source>Wallet Name</source>
         <extracomment>Label of the input field where the name of the wallet is entered.</extracomment>
         <translation type="unfinished">Numele portofelului</translation>
@@ -3432,6 +3364,11 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
             <numerusform />
             <numerusform />
         </translation>
+    </message>
+    <message>
+        <source>Click for more actions.</source>
+        <extracomment>A substring of the tooltip. "More actions" are available via the context menu.</extracomment>
+        <translation type="unfinished">Pulsează pentru mai multe acțiuni.</translation>
     </message>
     <message>
         <source>Error: %1</source>
@@ -3665,6 +3602,19 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
     </message>
     </context>
 <context>
+    <name>LoadWalletsActivity</name>
+    <message>
+        <source>Load Wallets</source>
+        <extracomment>Title of progress window which is displayed when wallets are being loaded.</extracomment>
+        <translation type="unfinished">Încarcă portmonee</translation>
+    </message>
+    <message>
+        <source>Loading wallets…</source>
+        <extracomment>Descriptive text of the load wallets progress window which indicates to the user that wallets are currently being loaded.</extracomment>
+        <translation type="unfinished">Încărcând portmonee</translation>
+    </message>
+</context>
+<context>
     <name>OpenWalletActivity</name>
     <message>
         <source>Open wallet failed</source>
@@ -3689,6 +3639,10 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
     <message>
         <source>Close wallet</source>
         <translation>Închide portofel</translation>
+    </message>
+    <message>
+        <source>Closing the wallet for too long can result in having to resync the entire chain if pruning is enabled.</source>
+        <translation type="unfinished">A închide portmoneul pentru prea mult timp poate rezulta în a trebui să resincronizezi lanțul complet daca "pruning" este activat.  </translation>
     </message>
     </context>
 <context>
@@ -3955,6 +3909,10 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
     <message>
         <source>&amp;Start %1 on system login</source>
         <translation type="unfinished">&amp;Porneste %1 la logarea in sistem.</translation>
+    </message>
+    <message>
+        <source>Enabling pruning significantly reduces the disk space required to store transactions. All blocks are still fully validated. Reverting this setting requires re-downloading the entire blockchain.</source>
+        <translation type="unfinished">A activa "pruning" reduce signifiant spațiul pe disk pentru a stoca tranzacțiile.</translation>
     </message>
     <message>
         <source>Size of &amp;database cache</source>
@@ -5607,6 +5565,11 @@ Nota: Cum taxa este calculată per byte, o taxă de "100 satoshi per kB" pentru 
     <message>
         <source>Backup Wallet</source>
         <translation type="unfinished">Backup portofelul electronic</translation>
+    </message>
+    <message>
+        <source>Wallet Data</source>
+        <extracomment>Name of the wallet data file format.</extracomment>
+        <translation type="unfinished">Datele de portmoneu</translation>
     </message>
     <message>
         <source>Backup Failed</source>

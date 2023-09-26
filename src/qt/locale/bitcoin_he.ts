@@ -230,6 +230,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">סיסמת הארנק שונתה בהצלחה.</translation>
     </message>
     <message>
+        <source>Passphrase change failed</source>
+        <translation type="unfinished">שינוי הסיסמה נכשל</translation>
+    </message>
+    <message>
         <source>Warning: The Caps Lock key is on!</source>
         <translation type="unfinished">אזהרה: מקש Caps Lock פעיל!</translation>
     </message>
@@ -243,6 +247,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
 </context>
 <context>
     <name>BitcoinApplication</name>
+    <message>
+        <source>Settings file %1 might be corrupt or invalid.</source>
+        <translation type="unfinished">קובץ ההגדרות %1 כנראה פגום או שגוי.</translation>
+    </message>
     <message>
         <source>Runaway exception</source>
         <translation type="unfinished">חריגת בריחה</translation>
@@ -2720,12 +2728,24 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">ה&amp;חלפת מילת צופן…</translation>
     </message>
     <message>
+        <source>Sign &amp;message…</source>
+        <translation type="unfinished">&amp;חתימה על הודעה…</translation>
+    </message>
+    <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
         <translation type="unfinished">חתום על הודעות עם כתובות הביטקוין שלך כדי להוכיח שהן בבעלותך</translation>
     </message>
     <message>
+        <source>&amp;Verify message…</source>
+        <translation type="unfinished">&amp;אשר הודעה</translation>
+    </message>
+    <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
         <translation type="unfinished">אמת הודעות כדי להבטיח שהן נחתמו עם כתובת ביטקוין מסוימות</translation>
+    </message>
+    <message>
+        <source>&amp;Load PSBT from file…</source>
+        <translation type="unfinished">&amp;טעינת PBST מקובץ…</translation>
     </message>
     <message>
         <source>Open &amp;URI…</source>
@@ -2760,8 +2780,22 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">סרגל כלים לשוניות</translation>
     </message>
     <message>
+        <source>Syncing Headers (%1%)…</source>
+        <translation type="unfinished">הכותרות מסונכרנות (%1%)…</translation>
+    </message>
+    <message>
         <source>Synchronizing with network…</source>
         <translation type="unfinished">בסנכרון עם הרשת</translation>
+    </message>
+    <message>
+        <source>Indexing blocks on disk…</source>
+        <translation type="unfinished">מעביר לאינדקס בלוקים בדיסק...
+</translation>
+    </message>
+    <message>
+        <source>Processing blocks on disk…</source>
+        <translation type="unfinished">מעבד בלוקים בדיסק...
+</translation>
     </message>
     <message>
         <source>Connecting to peers…</source>
@@ -2825,6 +2859,10 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Load Partially Signed Bitcoin Transaction</source>
         <translation type="unfinished">העלה עיסקת ביטקוין חתומה חלקית</translation>
+    </message>
+    <message>
+        <source>Load PSBT from &amp;clipboard…</source>
+        <translation type="unfinished">העלאת PSBT מהקליפבורד...</translation>
     </message>
     <message>
         <source>Load Partially Signed Bitcoin Transaction from clipboard</source>
@@ -2898,9 +2936,19 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">אין ארנקים זמינים</translation>
     </message>
     <message>
+        <source>Wallet Data</source>
+        <extracomment>Name of the wallet data file format.</extracomment>
+        <translation type="unfinished">נתוני ארנק</translation>
+    </message>
+    <message>
         <source>Load Wallet Backup</source>
         <extracomment>The title for Restore Wallet File Windows</extracomment>
         <translation type="unfinished">טעינת גיבוי הארנק</translation>
+    </message>
+    <message>
+        <source>Restore Wallet</source>
+        <extracomment>Title of pop-up window shown when the user is attempting to restore a wallet.</extracomment>
+        <translation type="unfinished">שחזור ארנק</translation>
     </message>
     <message>
         <source>Wallet Name</source>
@@ -2923,6 +2971,14 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <source>%1 client</source>
         <translation type="unfinished">לקוח %1</translation>
     </message>
+    <message>
+        <source>&amp;Hide</source>
+        <translation type="unfinished">ה&amp;סתרה</translation>
+    </message>
+    <message>
+        <source>S&amp;how</source>
+        <translation type="unfinished">ה&amp;צגה</translation>
+    </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin network.</source>
         <extracomment>A substring of the tooltip.</extracomment>
@@ -2930,6 +2986,30 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
             <numerusform />
             <numerusform />
         </translation>
+    </message>
+    <message>
+        <source>Click for more actions.</source>
+        <extracomment>A substring of the tooltip. "More actions" are available via the context menu.</extracomment>
+        <translation type="unfinished">נא ללחוץ כאן לפעולות נוספות.</translation>
+    </message>
+    <message>
+        <source>Show Peers tab</source>
+        <extracomment>A context menu item. The "Peers tab" is an element of the "Node window".</extracomment>
+        <translation type="unfinished">הצגת לשונית עמיתים</translation>
+    </message>
+    <message>
+        <source>Disable network activity</source>
+        <extracomment>A context menu item.</extracomment>
+        <translation type="unfinished">השבתת פעילות רשת</translation>
+    </message>
+    <message>
+        <source>Enable network activity</source>
+        <extracomment>A context menu item. The network activity was disabled previously.</extracomment>
+        <translation type="unfinished">הפעלת הרשת</translation>
+    </message>
+    <message>
+        <source>Pre-syncing Headers (%1%)…</source>
+        <translation type="unfinished">הכותרות בקדם סנכרון (%1%)…</translation>
     </message>
     <message>
         <source>Error: %1</source>
@@ -3086,6 +3166,18 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">העתקת הסכום</translation>
     </message>
     <message>
+        <source>&amp;Copy address</source>
+        <translation type="unfinished">ה&amp;עתקת כתובת</translation>
+    </message>
+    <message>
+        <source>Copy &amp;label</source>
+        <translation type="unfinished">העתקת &amp;תווית</translation>
+    </message>
+    <message>
+        <source>Copy &amp;amount</source>
+        <translation type="unfinished">העתקת &amp;סכום</translation>
+    </message>
+    <message>
         <source>Copy quantity</source>
         <translation type="unfinished">העתקת הכמות</translation>
     </message>
@@ -3183,6 +3275,14 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">פותח ארנק&lt;b&gt;%1&lt;/b&gt;...</translation>
     </message>
 </context>
+<context>
+    <name>RestoreWalletActivity</name>
+    <message>
+        <source>Restore Wallet</source>
+        <extracomment>Title of progress window which is displayed when wallets are being restored.</extracomment>
+        <translation type="unfinished">שחזור ארנק</translation>
+    </message>
+    </context>
 <context>
     <name>WalletController</name>
     <message>
@@ -4284,6 +4384,11 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">יוצא:</translation>
     </message>
     <message>
+        <source>&amp;Copy address</source>
+        <extracomment>Context menu action to copy the address of a peer.</extracomment>
+        <translation type="unfinished">ה&amp;עתקת כתובת</translation>
+    </message>
+    <message>
         <source>&amp;Disconnect</source>
         <translation type="unfinished">&amp;ניתוק</translation>
     </message>
@@ -4417,6 +4522,18 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message>
         <source>Copy &amp;URI</source>
         <translation type="unfinished">העתקת &amp;כתובת משאב</translation>
+    </message>
+    <message>
+        <source>&amp;Copy address</source>
+        <translation type="unfinished">ה&amp;עתקת כתובת</translation>
+    </message>
+    <message>
+        <source>Copy &amp;label</source>
+        <translation type="unfinished">העתקת &amp;תווית</translation>
+    </message>
+    <message>
+        <source>Copy &amp;amount</source>
+        <translation type="unfinished">העתקת &amp;סכום</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -5326,6 +5443,18 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">סכום מזערי</translation>
     </message>
     <message>
+        <source>&amp;Copy address</source>
+        <translation type="unfinished">ה&amp;עתקת כתובת</translation>
+    </message>
+    <message>
+        <source>Copy &amp;label</source>
+        <translation type="unfinished">העתקת &amp;תווית</translation>
+    </message>
+    <message>
+        <source>Copy &amp;amount</source>
+        <translation type="unfinished">העתקת &amp;סכום</translation>
+    </message>
+    <message>
         <source>Export Transaction History</source>
         <translation type="unfinished">יצוא היסטוריית העברה</translation>
     </message>
@@ -5495,6 +5624,11 @@ Go to File &gt; Open Wallet to load a wallet.
     <message>
         <source>Backup Wallet</source>
         <translation type="unfinished">גיבוי הארנק</translation>
+    </message>
+    <message>
+        <source>Wallet Data</source>
+        <extracomment>Name of the wallet data file format.</extracomment>
+        <translation type="unfinished">נתוני ארנק</translation>
     </message>
     <message>
         <source>Backup Failed</source>
