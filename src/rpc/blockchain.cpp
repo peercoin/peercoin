@@ -451,6 +451,7 @@ static RPCHelpMan getdifficulty()
                         {
                             {RPCResult::Type::NUM, "proof-of-work", "the difficulty as a multiple of the minimum difficulty of proof of work blocks"},
                             {RPCResult::Type::NUM, "proof-of-stake", "the difficulty as a multiple of the minimum difficulty of proof of stake blocks"},
+                            {RPCResult::Type::NUM, "search-interval", "the last coinstake search interval"},
                         }},
                 RPCExamples{
                     HelpExampleCli("getdifficulty", "")
@@ -1450,9 +1451,8 @@ static RPCHelpMan verifychain()
 }
 
 /** Implementation of IsSuperMajority with better feedback */
-static UniValue SoftForkMajorityDesc(int version, const CBlockIndex* pindex, const Consensus::Params& consensusParams)
+static bool SoftForkMajorityDesc(int version, const CBlockIndex* pindex, const Consensus::Params& consensusParams)
 {
-    UniValue rv(UniValue::VOBJ);
     bool activated = false;
     switch(version)
     {
@@ -1469,8 +1469,7 @@ static UniValue SoftForkMajorityDesc(int version, const CBlockIndex* pindex, con
             activated = IsProtocolV12(pindex);
             break;
     }
-    rv.pushKV("status", activated);
-    return rv;
+    return activated;
 }
 
 static UniValue SoftForkDesc(const std::string &name, int version, const CBlockIndex* pindex, const Consensus::Params& consensusParams)
@@ -1528,7 +1527,7 @@ RPCHelpMan getblockchaininfo()
     obj.pushKV("initialblockdownload", active_chainstate.IsInitialBlockDownload());
     obj.pushKV("chainwork", tip.nChainTrust.GetHex());
     obj.pushKV("size_on_disk", chainman.m_blockman.CalculateCurrentUsage());
-
+/*
     UniValue softforks(UniValue::VARR);
     softforks.push_back(SoftForkDesc("bip34", 2, &tip, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("bip66", 3, &tip, Params().GetConsensus()));
@@ -1537,6 +1536,7 @@ RPCHelpMan getblockchaininfo()
 
 //    BIP9SoftForkDescPushBack(tip, softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     obj.pushKV("softforks", softforks);
+*/
     obj.pushKV("warnings", GetWarnings(false).original);
     return obj;
 },
@@ -1545,39 +1545,20 @@ RPCHelpMan getblockchaininfo()
 
 namespace {
 const std::vector<RPCResult> RPCHelpForDeployment{
-    {RPCResult::Type::STR, "type", "one of \"buried\", \"bip9\""},
-    {RPCResult::Type::NUM, "height", /*optional=*/true, "height of the first block which the rules are or will be enforced (only for \"buried\" type, or \"bip9\" type with \"active\" status)"},
+    {RPCResult::Type::STR, "id", "name of the deployment"},
+    {RPCResult::Type::NUM, "version", "version number"},
     {RPCResult::Type::BOOL, "active", "true if the rules are enforced for the mempool and the next block"},
-    {RPCResult::Type::OBJ, "bip9", /*optional=*/true, "status of bip9 softforks (only for \"bip9\" type)",
-    {
-        {RPCResult::Type::NUM, "bit", /*optional=*/true, "the bit (0-28) in the block version field used to signal this softfork (only for \"started\" and \"locked_in\" status)"},
-        {RPCResult::Type::NUM_TIME, "start_time", "the minimum median time past of a block at which the bit gains its meaning"},
-        {RPCResult::Type::NUM_TIME, "timeout", "the median time past of a block at which the deployment is considered failed if not yet locked in"},
-        {RPCResult::Type::NUM, "min_activation_height", "minimum height of blocks for which the rules may be enforced"},
-        {RPCResult::Type::STR, "status", "status of deployment at specified block (one of \"defined\", \"started\", \"locked_in\", \"active\", \"failed\")"},
-        {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
-        {RPCResult::Type::STR, "status_next", "status of deployment at the next block"},
-        {RPCResult::Type::OBJ, "statistics", /*optional=*/true, "numeric statistics about signalling for a softfork (only for \"started\" and \"locked_in\" status)",
-        {
-            {RPCResult::Type::NUM, "period", "the length in blocks of the signalling period"},
-            {RPCResult::Type::NUM, "threshold", /*optional=*/true, "the number of blocks with the version bit set required to activate the feature (only for \"started\" status)"},
-            {RPCResult::Type::NUM, "elapsed", "the number of blocks elapsed since the beginning of the current period"},
-            {RPCResult::Type::NUM, "count", "the number of blocks with the version bit set in the current period"},
-            {RPCResult::Type::BOOL, "possible", /*optional=*/true, "returns false if there are not enough blocks left in this period to pass activation threshold (only for \"started\" status)"},
-        }},
-        {RPCResult::Type::STR, "signalling", /*optional=*/true, "indicates blocks that signalled with a # and blocks that did not with a -"},
-    }},
 };
 
 UniValue DeploymentInfo(const CBlockIndex* blockindex, const ChainstateManager& chainman)
 {
-    UniValue softforks(UniValue::VOBJ);
-    const CBlockIndex& tip{*CHECK_NONFATAL(chainman.ActiveChainstate().m_chain.Tip())};
+    UniValue softforks(UniValue::VARR);
+    //const CBlockIndex& tip{*CHECK_NONFATAL(chainman.ActiveChainstate().m_chain.Tip())};
 
-    softforks.push_back(SoftForkDesc("bip34", 2, &tip, Params().GetConsensus()));
-    softforks.push_back(SoftForkDesc("bip66", 3, &tip, Params().GetConsensus()));
-    softforks.push_back(SoftForkDesc("bip65", 4, &tip, Params().GetConsensus()));
-    softforks.push_back(SoftForkDesc("v12", 12, &tip, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip34", 2, blockindex, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip66", 3, blockindex, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("bip65", 4, blockindex, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("v12", 12, blockindex, Params().GetConsensus()));
     return softforks;
 }
 } // anon namespace
@@ -1593,7 +1574,7 @@ RPCHelpMan getdeploymentinfo()
             RPCResult::Type::OBJ, "", "", {
                 {RPCResult::Type::STR, "hash", "requested block hash (or tip)"},
                 {RPCResult::Type::NUM, "height", "requested block height (or tip)"},
-                {RPCResult::Type::OBJ_DYN, "deployments", "", {
+                {RPCResult::Type::ARR, "deployments", "", {
                     {RPCResult::Type::OBJ, "xxxx", "name of the deployment", RPCHelpForDeployment}
                 }},
             }
@@ -2179,7 +2160,7 @@ static RPCHelpMan getblockstats()
             }
         }
 
-        if (tx->IsCoinBase()) {
+        if (tx->IsCoinBase() || tx->IsCoinStake()) {
             continue;
         }
 

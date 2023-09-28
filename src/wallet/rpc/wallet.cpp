@@ -702,7 +702,8 @@ static RPCHelpMan reservebalance()
                     {"amount", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "amount of peercoin to be reserved."},
                 },
                 RPCResult{RPCResult::Type::OBJ, "", "", {
-                    {RPCResult::Type::STR, "reserve", "status of reserve."},
+                    {RPCResult::Type::BOOL, "reserve", "status of reserve."},
+                    {RPCResult::Type::NUM, "amount", "amount of peercoin reserved."},
                 }},
                 RPCExamples{
                     HelpExampleCli("reservebalance", "true 10")
@@ -744,7 +745,7 @@ static RPCHelpMan reservebalance()
     if (args.IsArgSet("-reservebalance") && !nReserveBalance)
         throw std::runtime_error("invalid reserve balance amount\n");
     result.pushKV("reserve", (nReserveBalance > 0));
-    result.pushKV("amount", nReserveBalance.value());
+    result.pushKV("amount", nReserveBalance ? nReserveBalance.value() : 0);
     return result;
 },
     };
