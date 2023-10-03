@@ -464,6 +464,7 @@ static RPCHelpMan getmininginfo()
                         {RPCResult::Type::NUM, "currentblocktx", /*optional=*/true, "The number of block transactions of the last assembled block (only present if a block was ever assembled)"},
                         {RPCResult::Type::NUM, "difficulty", "The current difficulty"},
                         {RPCResult::Type::NUM, "networkhashps", "The network hashes per second"},
+                        {RPCResult::Type::NUM, "networkghps", "The network gigahashes per second"},
                         {RPCResult::Type::NUM, "pooledtx", "The size of the mempool"},
                         {RPCResult::Type::STR, "chain", "current network name (main, test, signet, regtest)"},
                         {RPCResult::Type::STR, "warnings", "any network and blockchain warnings"},
@@ -552,15 +553,10 @@ static RPCHelpMan getblocktemplate()
                 {
                     {RPCResult::Type::STR, "", "name of a rule the client must understand to some extent; see BIP 9 for format"},
                 }},
-                {RPCResult::Type::OBJ_DYN, "vbavailable", "set of pending, supported versionbit (BIP 9) softfork deployments",
-                {
-                    {RPCResult::Type::NUM, "rulename", "identifies the bit number as indicating acceptance and readiness for the named softfork rule"},
-                }},
                 {RPCResult::Type::ARR, "capabilities", "",
                 {
                     {RPCResult::Type::STR, "value", "A supported feature, for example 'proposal'"},
                 }},
-                {RPCResult::Type::NUM, "vbrequired", "bit mask of versionbits the server requires set in submissions"},
                 {RPCResult::Type::STR, "previousblockhash", "The hash of current highest block"},
                 {RPCResult::Type::ARR, "transactions", "contents of non-coinbase transactions that should be included in the next block",
                 {

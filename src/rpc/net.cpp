@@ -587,6 +587,7 @@ static RPCHelpMan getnetworkinfo()
                 RPCResult{
                     RPCResult::Type::OBJ, "", "",
                     {
+                        {RPCResult::Type::STR, "fullversion", "the server version"},
                         {RPCResult::Type::NUM, "version", "the server version"},
                         {RPCResult::Type::STR, "subversion", "the server subversion string"},
                         {RPCResult::Type::NUM, "protocolversion", "the protocol version"},
@@ -612,8 +613,6 @@ static RPCHelpMan getnetworkinfo()
                                 {RPCResult::Type::BOOL, "proxy_randomize_credentials", "Whether randomized credentials are used"},
                             }},
                         }},
-                        {RPCResult::Type::NUM, "relayfee", "minimum relay fee rate for transactions in " + CURRENCY_UNIT + "/kvB"},
-                        {RPCResult::Type::NUM, "incrementalfee", "minimum fee rate increment for mempool limiting or replacement in " + CURRENCY_UNIT + "/kvB"},
                         {RPCResult::Type::ARR, "localaddresses", "list of local addresses",
                         {
                             {RPCResult::Type::OBJ, "", "",
@@ -634,7 +633,8 @@ static RPCHelpMan getnetworkinfo()
 {
     LOCK(cs_main);
     UniValue obj(UniValue::VOBJ);
-    obj.pushKV("version",       FormatFullVersion());
+    obj.pushKV("fullversion",       FormatFullVersion());
+    obj.pushKV("version",       CLIENT_VERSION);
     obj.pushKV("subversion",    strSubVersion);
     obj.pushKV("protocolversion",PROTOCOL_VERSION);
     NodeContext& node = EnsureAnyNodeContext(request.context);
