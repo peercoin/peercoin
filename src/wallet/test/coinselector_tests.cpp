@@ -68,7 +68,7 @@ static void add_coin(const CAmount& nValue, int nInput, CoinSet& set, CAmount fe
     set.insert(std::make_shared<COutput>(coin));
 }
 
-static void add_coin(CoinsResult& available_coins, CWallet& wallet, const CAmount& nValue, CFeeRate feerate = CFeeRate(0), int nAge = 6*24, bool fIsFromMe = false, int nInput =0, bool spendable = false)
+static void add_coin(CoinsResult& available_coins, CWallet& wallet, const CAmount& nValue, CAmount feerate = 0, int nAge = 6*24, bool fIsFromMe = false, int nInput =0, bool spendable = false)
 {
     CMutableTransaction tx;
     tx.nLockTime = nextLockTime++;        // so all transactions get different hashes
@@ -141,12 +141,17 @@ inline std::vector<OutputGroup>& GroupCoins(const std::vector<COutput>& availabl
 
 inline std::vector<OutputGroup>& KnapsackGroupOutputs(const CoinsResult& available_coins, CWallet& wallet, const CoinEligibilityFilter& filter)
 {
-    CoinSelectionParams coin_selection_params(/* change_output_size= */ 0,
-                                              /* change_spend_size= */ 0,
-                                              /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
-    static std::vector<OutputGroup> static_groups;
-    static_groups = GroupOutputs(wallet, available_coins.All(), coin_selection_params, filter, /*positive_only=*/false);
-    return static_groups;
+    FastRandomContext rand{};
+    CoinSelectionParams coin_selection_params{
+        rand,
+        /* change_output_size= */ 0,
+        /* change_spend_size= */ 0,
+        /* tx_noinputs_size= */ 0, 
+        /* avoid_partial= */ false
+    };
+    static OutputGroupTypeMap static_groups;
+    static_groups = GroupOutputs(wallet, available_coins, coin_selection_params, {{filter}})[filter];
+    return static_groups.all_groups.mixed_group;
 }
 
 // Branch and bound coin selection tests
@@ -268,9 +273,13 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
     }
 
     // Make sure that effective value is working in AttemptSelection when BnB is used
-    CoinSelectionParams coin_selection_params_bnb(/* change_output_size= */ 0,
-                                                  /* change_spend_size= */ 0,
-                                                  /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
+    CoinSelectionParams coin_selection_params_bnb{
+        rand,
+        /*change_output_size=*/ 31,
+        /*change_spend_size=*/ 68,
+        /*tx_noinputs_size=*/ 0,
+        /*avoid_partial=*/ false,
+    };
     {
         std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
         wallet->LoadWallet();
@@ -280,13 +289,13 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
 
         CoinsResult available_coins;
 
-        add_coin(available_coins, *wallet, 1, coin_selection_params_bnb.m_effective_feerate);
+        add_coin(available_coins, *wallet, 1);
         available_coins.All().at(0).input_bytes = 40; // Make sure that it has a negative effective value. The next check should assert if this somehow got through. Otherwise it will fail
         BOOST_CHECK(!SelectCoinsBnB(GroupCoins(available_coins.All()), 1 * CENT, coin_selection_params_bnb.m_cost_of_change));
 
         // Test fees subtracted from output:
         available_coins.Clear();
-        add_coin(available_coins, *wallet, 1 * CENT, coin_selection_params_bnb.m_effective_feerate);
+        add_coin(available_coins, *wallet, 1 * CENT);
         available_coins.All().at(0).input_bytes = 40;
         const auto result9 = SelectCoinsBnB(GroupCoins(available_coins.All()), 1 * CENT, coin_selection_params_bnb.m_cost_of_change);
         BOOST_CHECK(result9);
@@ -302,13 +311,17 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
 
         CoinsResult available_coins;
 
-        add_coin(available_coins, *wallet, 5 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 3 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 2 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 5 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 3 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 2 * CENT, 0, 6 * 24, false, 0, true);
         CCoinControl coin_control;
-        coin_control.fAllowOtherInputs = true;
-        coin_control.Select(COutPoint(coins.at(0).tx->GetHash(), coins.at(0).i));
-        const auto result10 = SelectCoins(*wallet, coins, 10 * CENT, coin_control, coin_selection_params_bnb);
+        coin_control.m_allow_other_inputs = true;
+        COutput select_coin = available_coins.All().at(0);
+        coin_control.Select(select_coin.outpoint);
+        PreSelectedInputs selected_input;
+        selected_input.Insert(select_coin, coin_selection_params_bnb.m_subtract_fee_outputs);
+        available_coins.Erase({available_coins.coins[OutputType::BECH32].begin()->outpoint});
+        const auto result10 = SelectCoins(*wallet, available_coins, selected_input, 10 * CENT, coin_control, coin_selection_params_bnb);
         BOOST_CHECK(result10);
     }
     {
@@ -321,12 +334,10 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         CoinsResult available_coins;
 
         // single coin should be selected when effective fee > long term fee
-        coin_selection_params_bnb.m_effective_feerate = CFeeRate(5000);
-        coin_selection_params_bnb.m_long_term_feerate = CFeeRate(3000);
 
-        add_coin(available_coins, *wallet, 10 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 9 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 1 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 10 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 9 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 1 * CENT, 0, 6 * 24, false, 0, true);
 
         expected_result.Clear();
         add_coin(10 * CENT, 2, expected_result);
@@ -336,12 +347,10 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         available_coins.Clear();
 
         // more coins should be selected when effective fee < long term fee
-        coin_selection_params_bnb.m_effective_feerate = CFeeRate(3000);
-        coin_selection_params_bnb.m_long_term_feerate = CFeeRate(5000);
 
-        add_coin(available_coins, *wallet, 10 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 9 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 1 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 10 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 9 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 1 * CENT, 0, 6 * 24, false, 0, true);
 
         expected_result.Clear();
         add_coin(9 * CENT, 2, expected_result);
@@ -351,12 +360,10 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         available_coins.Clear();
 
         // pre selected coin should be selected even if disadvantageous
-        coin_selection_params_bnb.m_effective_feerate = CFeeRate(5000);
-        coin_selection_params_bnb.m_long_term_feerate = CFeeRate(3000);
 
-        add_coin(available_coins, *wallet, 10 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 9 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 1 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 10 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 9 * CENT, 0, 6 * 24, false, 0, true);
+        add_coin(available_coins, *wallet, 1 * CENT, 0, 6 * 24, false, 0, true);
 
         expected_result.Clear();
         add_coin(9 * CENT, 2, expected_result);
@@ -393,7 +400,7 @@ BOOST_AUTO_TEST_CASE(knapsack_solver_test)
         // with an empty wallet we can't even pay one cent
         BOOST_CHECK(!KnapsackSolver(KnapsackGroupOutputs(available_coins, *wallet, filter_standard), 1 * CENT, CENT));
 
-        add_coin(available_coins, *wallet, 1*CENT, CFeeRate(0), 4);        // add a new 1 cent coin
+        add_coin(available_coins, *wallet, 1*CENT, 0, 4);        // add a new 1 cent coin
 
         // with a new 1 cent coin, we still can't find a mature 1 cent
         BOOST_CHECK(!KnapsackSolver(KnapsackGroupOutputs(available_coins, *wallet, filter_standard), 1 * CENT, CENT));
@@ -414,7 +421,7 @@ BOOST_AUTO_TEST_CASE(knapsack_solver_test)
         BOOST_CHECK_EQUAL(result2->GetSelectedValue(), 3 * CENT);
 
         add_coin(available_coins, *wallet, 5*CENT);           // add a mature 5 cent coin,
-        add_coin(available_coins, *wallet, 10*CENT, CFeeRate(0), 3, true); // a new 10 cent coin sent from one of our own addresses
+        add_coin(available_coins, *wallet, 10*CENT, 0, 3, true); // a new 10 cent coin sent from one of our own addresses
         add_coin(available_coins, *wallet, 20*CENT);          // and a mature 20 cent coin
 
         // now we have new: 1+10=11 (of which 10 was self-sent), and mature: 2+5+20=27.  total = 38
@@ -738,9 +745,13 @@ BOOST_AUTO_TEST_CASE(SelectCoins_test)
         CAmount target = rand.randrange(balance - 1000) + 1000;
 
         // Perform selection
-        CoinSelectionParams cs_params(/* change_output_size= */ 34,
-                                      /* change_spend_size= */ 148,
-                                      /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
+        CoinSelectionParams cs_params{
+            rand,
+            /* change_output_size= */ 34,
+            /* change_spend_size= */ 148,
+            /* tx_noinputs_size= */ 0, 
+            /* avoid_partial= */ false
+        };
         CCoinControl cc;
         const auto result = SelectCoins(*wallet, available_coins, /*pre_set_inputs=*/{}, target, cc, cs_params);
         BOOST_CHECK(result);
@@ -849,7 +860,7 @@ BOOST_AUTO_TEST_CASE(waste_test)
 BOOST_AUTO_TEST_CASE(effective_value_test)
 {
     const int input_bytes = 148;
-    const CFeeRate feerate(1000);
+    const CAmount feerate = 1000;
     const CAmount nValue = 10000;
     const int nInput = 0;
 
@@ -867,7 +878,7 @@ BOOST_AUTO_TEST_CASE(effective_value_test)
     BOOST_CHECK_EQUAL(output2.GetEffectiveValue(), nValue); // The effective value should be equal to the absolute value if input_bytes is -1
 
     // negative effective value, pass feerate in constructor
-    COutput output3(COutPoint(tx.GetHash(), nInput), tx.vout.at(nInput), /*depth=*/ 1, input_bytes, /*spendable=*/ true, /*solvable=*/ true, /*safe=*/ true, /*time=*/ 0, /*from_me=*/ false, CFeeRate(100000));
+    COutput output3(COutPoint(tx.GetHash(), nInput), tx.vout.at(nInput), /*depth=*/ 1, input_bytes, /*spendable=*/ true, /*solvable=*/ true, /*safe=*/ true, /*time=*/ 0, /*from_me=*/ false, 100000);
     const CAmount expected_ev3 = -4800; // 10000 - 14800
     BOOST_CHECK_EQUAL(output3.GetEffectiveValue(), expected_ev3);
 
@@ -916,10 +927,6 @@ BOOST_AUTO_TEST_CASE(check_max_weight)
         rand,
         /*change_output_size=*/34,
         /*change_spend_size=*/68,
-        /*min_change_target=*/CENT,
-        /*effective_feerate=*/CFeeRate(0),
-        /*long_term_feerate=*/CFeeRate(0),
-        /*discard_feerate=*/CFeeRate(0),
         /*tx_noinputs_size=*/10 + 34, // static header size + output size
         /*avoid_partial=*/false,
     };
@@ -938,10 +945,10 @@ BOOST_AUTO_TEST_CASE(check_max_weight)
             target, cs_params, cc, [&](CWallet& wallet) {
                 CoinsResult available_coins;
                 for (int j = 0; j < 1515; ++j) {
-                    add_coin(available_coins, wallet, CAmount(0.033 * COIN), CFeeRate(0), 144, false, 0, true);
+                    add_coin(available_coins, wallet, CAmount(0.033 * COIN), 0, 144, false, 0, true);
                 }
 
-                add_coin(available_coins, wallet, CAmount(50 * COIN), CFeeRate(0), 144, false, 0, true);
+                add_coin(available_coins, wallet, CAmount(50 * COIN), 0, 144, false, 0, true);
                 return available_coins;
             },
             chain);
@@ -962,10 +969,10 @@ BOOST_AUTO_TEST_CASE(check_max_weight)
             target, cs_params, cc, [&](CWallet& wallet) {
                 CoinsResult available_coins;
                 for (int j = 0; j < 400; ++j) {
-                    add_coin(available_coins, wallet, CAmount(0.0625 * COIN), CFeeRate(0), 144, false, 0, true);
+                    add_coin(available_coins, wallet, CAmount(0.0625 * COIN), 0, 144, false, 0, true);
                 }
                 for (int j = 0; j < 2000; ++j) {
-                    add_coin(available_coins, wallet, CAmount(0.025 * COIN), CFeeRate(0), 144, false, 0, true);
+                    add_coin(available_coins, wallet, CAmount(0.025 * COIN), 0, 144, false, 0, true);
                 }
                 return available_coins;
             },
@@ -986,7 +993,7 @@ BOOST_AUTO_TEST_CASE(check_max_weight)
             target, cs_params, cc, [&](CWallet& wallet) {
                 CoinsResult available_coins;
                 for (int j = 0; j < 1515; ++j) {
-                    add_coin(available_coins, wallet, CAmount(0.033 * COIN), CFeeRate(0), 144, false, 0, true);
+                    add_coin(available_coins, wallet, CAmount(0.033 * COIN), 0, 144, false, 0, true);
                 }
                 return available_coins;
             },
@@ -1029,10 +1036,6 @@ BOOST_AUTO_TEST_CASE(SelectCoins_effective_value_test)
         rand,
         /*change_output_size=*/34,
         /*change_spend_size=*/148,
-        /*min_change_target=*/1000,
-        /*effective_feerate=*/CFeeRate(3000),
-        /*long_term_feerate=*/CFeeRate(1000),
-        /*discard_feerate=*/CFeeRate(1000),
         /*tx_noinputs_size=*/0,
         /*avoid_partial=*/false,
     };

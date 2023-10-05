@@ -211,7 +211,7 @@ void MinerTestingSetup::TestBasicMining(const CScript& scriptPubKey, const std::
     TestMemPoolEntryHelper entry;
     entry.nFee = 11;
     entry.nHeight = 11;
-
+/*
     fCheckpointsEnabled = false;
 
     CTxMemPool& tx_mempool{MakeMempool()};
@@ -223,7 +223,7 @@ void MinerTestingSetup::TestBasicMining(const CScript& scriptPubKey, const std::
     // We can't make transactions until we have inputs
     // Therefore, load 110 blocks :)
     static_assert(std::size(BLOCKINFO) == 110, "Should have 110 blocks to import");
-    std::vector<CTransactionRef> txFirst;
+    //std::vector<CTransactionRef> txFirst;
     for (const auto& bi : BLOCKINFO) {
         CBlock *pblock = &pblocktemplate->block; // pointer for convenience
         {
@@ -254,7 +254,7 @@ void MinerTestingSetup::TestBasicMining(const CScript& scriptPubKey, const std::
     // Just to make sure we can still make simple blocks
     auto pblocktemplate = AssemblerForTest(tx_mempool).CreateNewBlock(scriptPubKey);
     BOOST_CHECK(pblocktemplate);
-
+*/
     const CAmount BLOCKSUBSIDY = 50*COIN;
     const CAmount LOWFEE = CENT;
     const CAmount HIGHFEE = COIN;

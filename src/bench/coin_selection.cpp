@@ -63,9 +63,15 @@ static void CoinSelection(benchmark::Bench& bench)
     }
 
     const CoinEligibilityFilter filter_standard(1, 6, 0);
-    const CoinSelectionParams coin_selection_params(/* change_output_size= */ 34,
-                                                    /* change_spend_size= */ 148,
-                                                    /* tx_noinputs_size= */ 0, /* avoid_partial= */ false);
+    FastRandomContext rand{};
+    const CoinSelectionParams coin_selection_params{
+        rand,
+        /*change_output_size=*/ 34,
+        /*change_spend_size=*/ 148,
+        /*tx_noinputs_size=*/ 0,
+        /*avoid_partial=*/ false,
+    };
+    auto group = wallet::GroupOutputs(wallet, available_coins, coin_selection_params, {{filter_standard}})[filter_standard];
     bench.run([&] {
         auto result = AttemptSelection(1003 * COIN, group, coin_selection_params, /*allow_mixed_output_types=*/true);
         assert(result);

@@ -130,9 +130,9 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
     BOOST_CHECK_THROW(CallRPC("decoderawtransaction DEADBEEF"), std::runtime_error);
     std::string rawtx = "010000001209a35e0150afd8cc27e9f6bdfdda98bdcb5cf9ffe82b479bb969e908ff0e2357ecd765c00100000048473044022077a33181fed749626ba02d41db813f53e61be4ad0b8d856fecda5977932559300220260106f50d83b82368192ae4ac4c3697951449bff18d266e25356a6d91e97de701ffffffff0300000000000000000008287e010000000023210327f1f1fc8fbd47411ab995879dbdc9f6db8f41a762ee86d028a0ca063e36b175acc82b7e010000000023210327f1f1fc8fbd47411ab995879dbdc9f6db8f41a762ee86d028a0ca063e36b175ac00000000";
     BOOST_CHECK_NO_THROW(r = CallRPC(std::string("decoderawtransaction ")+rawtx));
-    BOOST_CHECK_EQUAL(find_value(r.get_obj(), "size").get_int(), 224);
-    BOOST_CHECK_EQUAL(find_value(r.get_obj(), "version").get_int(), 1);
-    BOOST_CHECK_EQUAL(find_value(r.get_obj(), "locktime").get_int(), 0);
+    BOOST_CHECK_EQUAL(find_value(r.get_obj(), "size").getInt<int>(), 224);
+    BOOST_CHECK_EQUAL(find_value(r.get_obj(), "version").getInt<int>(), 1);
+    BOOST_CHECK_EQUAL(find_value(r.get_obj(), "locktime").getInt<int>(), 0);
     BOOST_CHECK_THROW(CallRPC(std::string("decoderawtransaction ")+rawtx+" extra"), std::runtime_error);
     BOOST_CHECK_NO_THROW(r = CallRPC(std::string("decoderawtransaction ")+rawtx+" false"));
     BOOST_CHECK_THROW(r = CallRPC(std::string("decoderawtransaction ")+rawtx+" false extra"), std::runtime_error);

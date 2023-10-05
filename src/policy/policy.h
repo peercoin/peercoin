@@ -91,7 +91,8 @@ static constexpr unsigned int STANDARD_NOT_MANDATORY_VERIFY_FLAGS{STANDARD_SCRIP
 /** Used as the flags parameter to sequence and nLocktime checks in non-consensus code. */
 static constexpr unsigned int STANDARD_LOCKTIME_VERIFY_FLAGS{LOCKTIME_VERIFY_SEQUENCE};
 
-bool IsStandard(const CScript& scriptPubKey, TxoutType& whichType);
+//bool IsStandard(const CScript& scriptPubKey, TxoutType& whichType);
+bool IsStandard(const CScript& scriptPubKey, const std::optional<unsigned>& max_datacarrier_bytes, TxoutType& whichType);
 
 
 // Changing the default transaction version requires a two step process: first
