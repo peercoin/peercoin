@@ -21,7 +21,7 @@
 #include <chainparams.h>
 #include <interfaces/node.h>
 #include <key_io.h>
-#include <node/ui_interface.h>
+#include <node/interface_ui.h>
 #include <consensus/tx_verify.h>
 #include <timedata.h>
 #include <txmempool.h>
@@ -41,9 +41,7 @@
 #include <Qt>
 
 using wallet::CCoinControl;
-
-using wallet::CCoinControl;
-using wallet::DEFAULT_PAY_TX_FEE;
+//using wallet::DEFAULT_PAY_TX_FEE;
 
 static constexpr std::array confTargets{2, 4, 6, 12, 24, 48, 144, 504, 1008};
 int getConfTargetForIndex(int index) {

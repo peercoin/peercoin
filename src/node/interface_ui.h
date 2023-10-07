@@ -95,7 +95,7 @@ public:
     /**
      * Status bar alerts changed.
      */
-    ADD_SIGNALS_DECL_WRAPPER(NotifyAlertChanged, void, const uint256 &hash, ChangeType status);
+    ADD_SIGNALS_DECL_WRAPPER(NotifyAlertChanged, void, );
 
     /**
      * Show progress e.g. for verifychain.

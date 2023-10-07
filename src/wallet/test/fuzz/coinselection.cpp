@@ -14,7 +14,7 @@
 
 namespace wallet {
 
-static void AddCoin(const CAmount& value, int n_input, int n_input_bytes, int locktime, std::vector<COutput>& coins, CFeeRate fee_rate)
+static void AddCoin(const CAmount& value, int n_input, int n_input_bytes, int locktime, std::vector<COutput>& coins, CAmount fee_rate)
 {
     CMutableTransaction tx;
     tx.vout.resize(n_input + 1);
@@ -49,8 +49,6 @@ FUZZ_TARGET(coinselection)
     FuzzedDataProvider fuzzed_data_provider{buffer.data(), buffer.size()};
     std::vector<COutput> utxo_pool;
 
-    const CFeeRate long_term_fee_rate{ConsumeMoney(fuzzed_data_provider, /*max=*/COIN)};
-    const CFeeRate effective_fee_rate{ConsumeMoney(fuzzed_data_provider, /*max=*/COIN)};
     const CAmount cost_of_change{ConsumeMoney(fuzzed_data_provider, /*max=*/COIN)};
     const CAmount target{fuzzed_data_provider.ConsumeIntegralInRange<CAmount>(1, MAX_MONEY)};
     const bool subtract_fee_outputs{fuzzed_data_provider.ConsumeBool()};
@@ -58,10 +56,7 @@ FUZZ_TARGET(coinselection)
     FastRandomContext fast_random_context{ConsumeUInt256(fuzzed_data_provider)};
     CoinSelectionParams coin_params{fast_random_context};
     coin_params.m_subtract_fee_outputs = subtract_fee_outputs;
-    coin_params.m_long_term_feerate = long_term_fee_rate;
-    coin_params.m_effective_feerate = effective_fee_rate;
     coin_params.change_output_size = fuzzed_data_provider.ConsumeIntegralInRange<int>(10, 1000);
-    coin_params.m_change_fee = effective_fee_rate.GetFee(coin_params.change_output_size);
 
     // Create some coins
     CAmount total_balance{0};
@@ -74,7 +69,7 @@ FUZZ_TARGET(coinselection)
         if (total_balance + amount >= MAX_MONEY) {
             break;
         }
-        AddCoin(amount, n_input, n_input_bytes, ++next_locktime, utxo_pool, coin_params.m_effective_feerate);
+        AddCoin(amount, n_input, n_input_bytes, ++next_locktime, utxo_pool, 0);
         total_balance += amount;
     }
 

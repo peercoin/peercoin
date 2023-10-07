@@ -131,7 +131,6 @@ Q_SIGNALS:
 public Q_SLOTS:
     void updateNetworkActive(bool networkActive);
     void updateAlert(const QString &hash, int status);
-    void updateBanlist();
 };
 
 #endif // BITCOIN_QT_CLIENTMODEL_H

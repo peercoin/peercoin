@@ -34,15 +34,6 @@ struct MockedTxPool : public CTxMemPool {
     }
 };
 
-class DummyChainState final : public CChainState
-{
-public:
-    void SetMempool(CTxMemPool* mempool)
-    {
-        m_mempool = mempool;
-    }
-};
-
 void initialize_tx_pool()
 {
     static const auto testing_setup = MakeNoLogFileContext<const TestingSetup>();
@@ -99,7 +90,7 @@ void Finish(FuzzedDataProvider& fuzzed_data_provider, MockedTxPool& tx_pool, Cha
     {
         BlockAssembler::Options options;
         options.nBlockMaxWeight = fuzzed_data_provider.ConsumeIntegralInRange(0U, MAX_BLOCK_WEIGHT);
-        auto assembler = BlockAssembler{chainstate, *static_cast<CTxMemPool*>(&tx_pool), chainstate.m_params, options};
+        auto assembler = BlockAssembler{chainstate, &tx_pool, options};
         auto block_template = assembler.CreateNewBlock(CScript{} << OP_TRUE);
         Assert(block_template->block.vtx.size() >= 1);
     }
@@ -157,7 +148,8 @@ FUZZ_TARGET_INIT(tx_pool_standard, initialize_tx_pool)
     // The sum of the values of all spendable outpoints
     constexpr CAmount SUPPLY_TOTAL{COINBASE_MATURITY * 50 * COIN};
 
-    CTxMemPool tx_pool_{/*check_ratio=*/1};
+    SetMempoolConstraints(*node.args, fuzzed_data_provider);
+    CTxMemPool tx_pool_{MakeMempool(fuzzed_data_provider, node)};
     MockedTxPool& tx_pool = *static_cast<MockedTxPool*>(&tx_pool_);
 
     chainstate.SetMempool(&tx_pool);
@@ -331,7 +323,8 @@ FUZZ_TARGET_INIT(tx_pool, initialize_tx_pool)
         txids.push_back(ConsumeUInt256(fuzzed_data_provider));
     }
 
-    CTxMemPool tx_pool_{/*check_ratio=*/1};
+    SetMempoolConstraints(*node.args, fuzzed_data_provider);
+    CTxMemPool tx_pool_{MakeMempool(fuzzed_data_provider, node)};
     MockedTxPool& tx_pool = *static_cast<MockedTxPool*>(&tx_pool_);
 
     chainstate.SetMempool(&tx_pool);

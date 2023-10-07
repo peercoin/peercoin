@@ -82,6 +82,7 @@ public:
 class NodeImpl : public Node
 {
 public:
+    //ChainstateManager& chainman() override { return *Assert(m_context->chainman); }
     explicit NodeImpl(NodeContext& context) { setContext(&context); }
     void initLogging() override { InitLogging(args()); }
     void initParameterInteraction() override { InitParameterInteraction(args()); }

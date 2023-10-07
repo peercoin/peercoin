@@ -240,6 +240,11 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
                 CClientUIInterface::MSG_ERROR);
             return TransactionCreationFailed;
         }
+    } catch (const std::runtime_error& err) {
+        // Something unexpected happened, instruct user to report this bug.
+        Q_EMIT message(tr("Send Coins"), QString::fromStdString(err.what()),
+                       CClientUIInterface::MSG_ERROR);
+        return TransactionCreationFailed;
     }
 
     return SendCoinsReturn(OK);
@@ -303,12 +308,12 @@ AddressTableModel* WalletModel::getAddressTableModel() const
     return addressTableModel;
 }
 
-MintingTableModel *WalletModel::getMintingTableModel()
+MintingTableModel* WalletModel::getMintingTableModel() const
 {
     return mintingTableModel;
 }
 
-TransactionTableModel *WalletModel::getTransactionTableModel()
+TransactionTableModel* WalletModel::getTransactionTableModel() const
 {
     return transactionTableModel;
 }
@@ -497,14 +502,14 @@ WalletModel::UnlockContext::~UnlockContext()
 
     wallet::fWalletUnlockMintOnly = minter;
 }
-
+/*
 void WalletModel::UnlockContext::CopyFrom(UnlockContext&& rhs)
 {
     // Transfer context; old object no longer relocks wallet
     *this = rhs;
     rhs.relock = false;
 }
-
+*/
 bool WalletModel::isWalletEnabled()
 {
    return !gArgs.GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET);
@@ -559,7 +564,19 @@ CBlockIndex* WalletModel::getTip() const
     return m_node.chainman().ActiveChain().Tip();
 }
 
-void WalletModel::refresh(bool pk_hash_only)
+CAmount WalletModel::getAvailableBalance(const CCoinControl* control)
 {
-    addressTableModel = new AddressTableModel(this, pk_hash_only);
+    // No selected coins, return the cached balance
+    if (!control || !control->HasSelected()) {
+        const interfaces::WalletBalances& balances = getCachedBalance();
+        CAmount available_balance = balances.balance;
+        // if wallet private keys are disabled, this is a watch-only wallet
+        // so, let's include the watch-only balance.
+        if (balances.have_watch_only && m_wallet->privateKeysDisabled()) {
+            available_balance += balances.watch_only_balance;
+        }
+        return available_balance;
+    }
+    // Fetch balance from the wallet, taking into account the selected coins
+    return wallet().getAvailableBalance(*control);
 }

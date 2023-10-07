@@ -46,8 +46,6 @@ static const char* SettingName(OptionsModel::OptionID option)
     case OptionsModel::MapPortNatpmp: return "natpmp";
     case OptionsModel::Listen: return "listen";
     case OptionsModel::Server: return "server";
-    case OptionsModel::PruneSize: return "prune";
-    case OptionsModel::Prune: return "prune";
     case OptionsModel::ProxyIP: return "proxy";
     case OptionsModel::ProxyPort: return "proxy";
     case OptionsModel::ProxyUse: return "proxy";
@@ -64,9 +62,7 @@ static void UpdateRwSetting(interfaces::Node& node, OptionsModel::OptionID optio
 {
     if (value.isNum() &&
         (option == OptionsModel::DatabaseCache ||
-         option == OptionsModel::ThreadsScriptVerif ||
-         option == OptionsModel::Prune ||
-         option == OptionsModel::PruneSize)) {
+         option == OptionsModel::ThreadsScriptVerif )) {
         // Write certain old settings as strings, even though they are numbers,
         // because Bitcoin 22.x releases try to read these specific settings as
         // strings in addOverriddenOption() calls at startup, triggering
@@ -79,7 +75,7 @@ static void UpdateRwSetting(interfaces::Node& node, OptionsModel::OptionID optio
         node.updateRwSetting(SettingName(option) + suffix, value);
     }
 }
-
+/*
 //! Convert enabled/size values to bitcoin -prune setting.
 static util::SettingsValue PruneSetting(bool prune_enabled, int prune_size_gb)
 {
@@ -109,7 +105,7 @@ static int ParsePruneSizeGB(const QVariant& prune_size)
 {
     return std::max(1, prune_size.toInt());
 }
-
+*/
 struct ProxySetting {
     bool is_set;
     QString ip;
@@ -186,7 +182,7 @@ bool OptionsModel::Init(bilingual_str& error)
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
     for (OptionID option : {DatabaseCache, ThreadsScriptVerif, SpendZeroConfChange, ExternalSignerPath, MapPortUPnP,
-                            MapPortNatpmp, Listen, Server, Prune, ProxyUse, ProxyUseTor, Language}) {
+                            MapPortNatpmp, Listen, Server, ProxyUse, ProxyUseTor, Language}) {
         std::string setting = SettingName(option);
         if (node().isSettingIgnored(setting)) addOverriddenOption("-" + setting);
         try {
@@ -361,81 +357,7 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
 {
     if(role == Qt::EditRole)
     {
-        QSettings settings;
-        switch(index.row())
-        {
-        case StartAtStartup:
-            return GUIUtil::GetStartOnSystemStartup();
-        case ShowTrayIcon:
-            return m_show_tray_icon;
-        case MinimizeToTray:
-            return fMinimizeToTray;
-        case MapPortUPnP:
-#ifdef USE_UPNP
-            return settings.value("fUseUPnP");
-#else
-            return false;
-#endif // USE_UPNP
-        case MapPortNatpmp:
-#ifdef USE_NATPMP
-            return settings.value("fUseNatpmp");
-#else
-            return false;
-#endif // USE_NATPMP
-        case MinimizeOnClose:
-            return fMinimizeOnClose;
-
-        // default proxy
-        case ProxyUse:
-            return settings.value("fUseProxy", false);
-        case ProxyIP:
-            return GetProxySetting(settings, "addrProxy").ip;
-        case ProxyPort:
-            return GetProxySetting(settings, "addrProxy").port;
-
-        // separate Tor proxy
-        case ProxyUseTor:
-            return settings.value("fUseSeparateProxyTor", false);
-        case ProxyIPTor:
-            return GetProxySetting(settings, "addrSeparateProxyTor").ip;
-        case ProxyPortTor:
-            return GetProxySetting(settings, "addrSeparateProxyTor").port;
-
-#ifdef ENABLE_WALLET
-        case SpendZeroConfChange:
-            return settings.value("bSpendZeroConfChange");
-        case ExternalSignerPath:
-            return settings.value("external_signer_path");
-        case SubFeeFromAmount:
-            return m_sub_fee_from_amount;
-        case SplitCoins:
-            return settings.value("bSplitCoins");
-        case CheckGithub:
-            return settings.value("bCheckGithub");
-#endif
-        case DisplayUnit:
-            return QVariant::fromValue(m_display_bitcoin_unit);
-        case ThirdPartyTxUrls:
-            return strThirdPartyTxUrls;
-        case Language:
-            return settings.value("language");
-        case UseEmbeddedMonospacedFont:
-            return m_use_embedded_monospaced_font;
-        case CoinControlFeatures:
-            return fCoinControlFeatures;
-        case EnablePSBTControls:
-            return settings.value("enable_psbt_controls");
-        case DatabaseCache:
-            return settings.value("nDatabaseCache");
-        case ThreadsScriptVerif:
-            return settings.value("nThreadsScriptVerif");
-        case Listen:
-            return settings.value("fListen");
-        case Server:
-            return settings.value("server");
-        default:
-            return QVariant();
-        }
+        return getOption(OptionID(index.row()));
     }
     return QVariant();
 }
@@ -446,172 +368,7 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
     bool successful = true; /* set to false on parse error */
     if(role == Qt::EditRole)
     {
-        QSettings settings;
-        switch(index.row())
-        {
-        case StartAtStartup:
-            successful = GUIUtil::SetStartOnSystemStartup(value.toBool());
-            break;
-        case ShowTrayIcon:
-            m_show_tray_icon = value.toBool();
-            settings.setValue("fHideTrayIcon", !m_show_tray_icon);
-            Q_EMIT showTrayIconChanged(m_show_tray_icon);
-            break;
-        case MinimizeToTray:
-            fMinimizeToTray = value.toBool();
-            settings.setValue("fMinimizeToTray", fMinimizeToTray);
-            break;
-        case MapPortUPnP: // core option - can be changed on-the-fly
-            settings.setValue("fUseUPnP", value.toBool());
-            break;
-        case MapPortNatpmp: // core option - can be changed on-the-fly
-            settings.setValue("fUseNatpmp", value.toBool());
-            break;
-        case MinimizeOnClose:
-            fMinimizeOnClose = value.toBool();
-            settings.setValue("fMinimizeOnClose", fMinimizeOnClose);
-            break;
-
-        // default proxy
-        case ProxyUse:
-            if (settings.value("fUseProxy") != value) {
-                settings.setValue("fUseProxy", value.toBool());
-                setRestartRequired(true);
-            }
-            break;
-        case ProxyIP: {
-            auto ip_port = GetProxySetting(settings, "addrProxy");
-            if (!ip_port.is_set || ip_port.ip != value.toString()) {
-                ip_port.ip = value.toString();
-                SetProxySetting(settings, "addrProxy", ip_port);
-                setRestartRequired(true);
-            }
-        }
-        break;
-        case ProxyPort: {
-            auto ip_port = GetProxySetting(settings, "addrProxy");
-            if (!ip_port.is_set || ip_port.port != value.toString()) {
-                ip_port.port = value.toString();
-                SetProxySetting(settings, "addrProxy", ip_port);
-                setRestartRequired(true);
-            }
-        }
-        break;
-
-        // separate Tor proxy
-        case ProxyUseTor:
-            if (settings.value("fUseSeparateProxyTor") != value) {
-                settings.setValue("fUseSeparateProxyTor", value.toBool());
-                setRestartRequired(true);
-            }
-            break;
-        case ProxyIPTor: {
-            auto ip_port = GetProxySetting(settings, "addrSeparateProxyTor");
-            if (!ip_port.is_set || ip_port.ip != value.toString()) {
-                ip_port.ip = value.toString();
-                SetProxySetting(settings, "addrSeparateProxyTor", ip_port);
-                setRestartRequired(true);
-            }
-        }
-        break;
-        case ProxyPortTor: {
-            auto ip_port = GetProxySetting(settings, "addrSeparateProxyTor");
-            if (!ip_port.is_set || ip_port.port != value.toString()) {
-                ip_port.port = value.toString();
-                SetProxySetting(settings, "addrSeparateProxyTor", ip_port);
-                setRestartRequired(true);
-            }
-        }
-        break;
-
-#ifdef ENABLE_WALLET
-        case SpendZeroConfChange:
-            if (settings.value("bSpendZeroConfChange") != value) {
-                settings.setValue("bSpendZeroConfChange", value);
-                setRestartRequired(true);
-            }
-            break;
-        case ExternalSignerPath:
-            if (settings.value("external_signer_path") != value.toString()) {
-                settings.setValue("external_signer_path", value.toString());
-                setRestartRequired(true);
-            }
-            break;
-        case SubFeeFromAmount:
-            m_sub_fee_from_amount = value.toBool();
-            settings.setValue("SubFeeFromAmount", m_sub_fee_from_amount);
-            break;
-        case SplitCoins:
-            if (settings.value("bSplitCoins") != value) {
-                settings.setValue("bSplitCoins", value.toBool());
-                setRestartRequired(true);
-            }
-            break;
-        case CheckGithub:
-            if (settings.value("bCheckGithub") != value) {
-                settings.setValue("bCheckGithub", value.toBool());
-                setRestartRequired(true);
-            }
-            break;
-#endif
-        case DisplayUnit:
-            setDisplayUnit(value);
-            break;
-        case ThirdPartyTxUrls:
-            if (strThirdPartyTxUrls != value.toString()) {
-                strThirdPartyTxUrls = value.toString();
-                settings.setValue("strThirdPartyTxUrls", strThirdPartyTxUrls);
-                setRestartRequired(true);
-            }
-            break;
-        case Language:
-            if (settings.value("language") != value) {
-                settings.setValue("language", value);
-                setRestartRequired(true);
-            }
-            break;
-        case UseEmbeddedMonospacedFont:
-            m_use_embedded_monospaced_font = value.toBool();
-            settings.setValue("UseEmbeddedMonospacedFont", m_use_embedded_monospaced_font);
-            Q_EMIT useEmbeddedMonospacedFontChanged(m_use_embedded_monospaced_font);
-            break;
-        case CoinControlFeatures:
-            fCoinControlFeatures = value.toBool();
-            settings.setValue("fCoinControlFeatures", fCoinControlFeatures);
-            Q_EMIT coinControlFeaturesChanged(fCoinControlFeatures);
-            break;
-        case EnablePSBTControls:
-            m_enable_psbt_controls = value.toBool();
-            settings.setValue("enable_psbt_controls", m_enable_psbt_controls);
-            break;
-        case DatabaseCache:
-            if (settings.value("nDatabaseCache") != value) {
-                settings.setValue("nDatabaseCache", value);
-                setRestartRequired(true);
-            }
-            break;
-        case ThreadsScriptVerif:
-            if (settings.value("nThreadsScriptVerif") != value) {
-                settings.setValue("nThreadsScriptVerif", value);
-                setRestartRequired(true);
-            }
-            break;
-        case Listen:
-            if (settings.value("fListen") != value) {
-                settings.setValue("fListen", value);
-                setRestartRequired(true);
-            }
-            break;
-        case Server:
-            if (settings.value("server") != value) {
-                settings.setValue("server", value);
-                setRestartRequired(true);
-            }
-            break;
-
-        default:
-            break;
-        }
+        successful = setOption(OptionID(index.row()), value);
     }
 
     Q_EMIT dataChanged(index, index);
@@ -693,12 +450,6 @@ QVariant OptionsModel::getOption(OptionID option, const std::string& suffix) con
         return fCoinControlFeatures;
     case EnablePSBTControls:
         return settings.value("enable_psbt_controls");
-    case Prune:
-        return PruneEnabled(setting());
-    case PruneSize:
-        return PruneEnabled(setting()) ? PruneSizeGB(setting()) :
-               suffix.empty()          ? getOption(option, "-prev") :
-                                         DEFAULT_PRUNE_TARGET_GB;
     case DatabaseCache:
         return qlonglong(SettingToInt(setting(), nDefaultDbCache));
     case ThreadsScriptVerif:
@@ -860,24 +611,6 @@ bool OptionsModel::setOption(OptionID option, const QVariant& value, const std::
         m_enable_psbt_controls = value.toBool();
         settings.setValue("enable_psbt_controls", m_enable_psbt_controls);
         break;
-    case Prune:
-        if (changed()) {
-            if (suffix.empty() && !value.toBool()) setOption(option, true, "-prev");
-            update(PruneSetting(value.toBool(), getOption(PruneSize).toInt()));
-            if (suffix.empty() && value.toBool()) UpdateRwSetting(node(), option, "-prev", {});
-            if (suffix.empty()) setRestartRequired(true);
-        }
-        break;
-    case PruneSize:
-        if (changed()) {
-            if (suffix.empty() && !getOption(Prune).toBool()) {
-                setOption(option, value, "-prev");
-            } else {
-                update(PruneSetting(true, ParsePruneSizeGB(value)));
-            }
-            if (suffix.empty() && getOption(Prune).toBool()) setRestartRequired(true);
-        }
-        break;
     case DatabaseCache:
         if (changed()) {
             update(static_cast<int64_t>(value.toLongLong()));
@@ -994,8 +727,6 @@ void OptionsModel::checkAndMigrate()
     migrate_setting(MapPortNatpmp, "fUseNatpmp");
     migrate_setting(Listen, "fListen");
     migrate_setting(Server, "server");
-    migrate_setting(PruneSize, "nPruneSize");
-    migrate_setting(Prune, "bPrune");
     migrate_setting(ProxyIP, "addrProxy");
     migrate_setting(ProxyUse, "fUseProxy");
     migrate_setting(ProxyIPTor, "addrSeparateProxyTor");

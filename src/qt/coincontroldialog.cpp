@@ -480,7 +480,7 @@ void CoinControlDialog::updateLabels(CCoinControl& m_coin_control, WalletModel *
                 nBytes -= 34;
 
         // Fee
-        nPayFee = GetMinFee(nBytes, GetAdjustedTime());
+        nPayFee = GetMinFee(nBytes, TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime()));
 
         if (nPayAmount > 0)
         {
@@ -489,7 +489,7 @@ void CoinControlDialog::updateLabels(CCoinControl& m_coin_control, WalletModel *
                 nChange -= nPayFee;
 
             // ppcoin: sub-cent change is moved to fee
-            if (nChange > 0 && nChange < MIN_CHANGE)
+            if (nChange > 0 && nChange < wallet::MIN_CHANGE)
             {
                 nPayFee += nChange;
                 nChange = 0;

@@ -575,7 +575,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
             while (pwallet->IsLocked()) {
                 if (strMintWarning != strMintMessage) {
                     strMintWarning = strMintMessage;
-                    uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                    uiInterface.NotifyAlertChanged();
                 }
                 fNeedToClear = true;
                 if (!connman->interruptNet.sleep_for(std::chrono::seconds(3)))
@@ -597,7 +597,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
                 LogPrintf("Minter thread sleeps while sync at %f\n", GuessVerificationProgress(Params().TxData(), m_node.chainman->ActiveChain().Tip()));
                 if (strMintWarning != strMintSyncMessage) {
                     strMintWarning = strMintSyncMessage;
-                    uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                    uiInterface.NotifyAlertChanged();
                 }
                 fNeedToClear = true;
                 if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
@@ -605,7 +605,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
             }
             if (fNeedToClear) {
                 strMintWarning = strMintEmpty;
-                uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                uiInterface.NotifyAlertChanged();
                 fNeedToClear = false;
             }
 
@@ -639,7 +639,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
                     continue;
                 }
                 strMintWarning = strMintBlockMessage;
-                uiInterface.NotifyAlertChanged(uint256(), CT_UPDATED);
+                uiInterface.NotifyAlertChanged();
                 LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
                 if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
                    return;

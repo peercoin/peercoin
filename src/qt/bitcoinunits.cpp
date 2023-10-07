@@ -30,14 +30,13 @@ QList<BitcoinUnit> BitcoinUnits::availableUnits()
 
 QString BitcoinUnits::longName(Unit unit)
 {
-    switch(unit)
-    {
-    case BTC: return QString("PPC");
-    case mBTC: return QString("mPPC");
-    case uBTC: return QString::fromUtf8("μPPC");
-    case SAT: return QString("Satoshi (sat)");
-    default: return QString("???");
-    }
+    switch (unit) {
+    case Unit::BTC: return QString("PPC");
+    case Unit::mBTC: return QString("mPPC");
+    case Unit::uBTC: return QString::fromUtf8("μPPC");
+    case Unit::SAT: return QString("Satoshi (sat)");
+    } // no default case, so the compiler can warn about missing cases
+    assert(false);
 }
 
 QString BitcoinUnits::shortName(Unit unit)
@@ -53,38 +52,35 @@ QString BitcoinUnits::shortName(Unit unit)
 
 QString BitcoinUnits::description(Unit unit)
 {
-    switch(unit)
-    {
-    case BTC: return QString("Peercoins");
-    case mBTC: return QString("Milli-Peercoins (1 / 1" THIN_SP_UTF8 "000)");
-    case uBTC: return QString("Micro-Peercoins (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case SAT: return QString("Satoshi (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    default: return QString("???");
-    }
+    switch (unit) {
+    case Unit::BTC: return QString("Peercoins");
+    case Unit::mBTC: return QString("Milli-Peercoins (1 / 1" THIN_SP_UTF8 "000)");
+    case Unit::uBTC: return QString("Micro-Peercoins (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::SAT: return QString("Satoshi (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    } // no default case, so the compiler can warn about missing cases
+    assert(false);
 }
 
 qint64 BitcoinUnits::factor(Unit unit)
 {
-    switch(unit)
-    {
-    case BTC:  return 1000000;
-    case mBTC: return 1000;
-    case uBTC: return 1;
-    case SAT:  return 1;
-    default:   return 1000000;
-    }
+    switch (unit) {
+    case Unit::BTC: return 1'000'000;
+    case Unit::mBTC: return 1'000;
+    case Unit::uBTC: return 1;
+    case Unit::SAT: return 1;
+    } // no default case, so the compiler can warn about missing cases
+    assert(false);
 }
 
 int BitcoinUnits::decimals(Unit unit)
 {
-    switch(unit)
-    {
-    case BTC: return 6;
-    case mBTC: return 3;
-    case uBTC: return 0;
-    case SAT: return 0;
-    default: return 0;
-    }
+    switch (unit) {
+    case Unit::BTC: return 6;
+    case Unit::mBTC: return 3;
+    case Unit::uBTC: return 0;
+    case Unit::SAT: return 0;
+    } // no default case, so the compiler can warn about missing cases
+    assert(false);
 }
 
 QString BitcoinUnits::format(Unit unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators, bool justify)

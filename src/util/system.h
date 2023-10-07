@@ -411,13 +411,6 @@ protected:
     }
 
     /**
-     * Read and update settings file with saved settings. This needs to be
-     * called after SelectParams() because the settings file location is
-     * network-specific.
-     */
-    bool InitSettings(std::string& error);
-
-    /**
      * Log the config file options and the command line arguments,
      * useful for troubleshooting.
      */

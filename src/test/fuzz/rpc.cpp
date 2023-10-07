@@ -252,7 +252,7 @@ std::string ConsumeScalarRPCArgument(FuzzedDataProvider& fuzzed_data_provider)
             if (!opt_block_header) {
                 return;
             }
-            DataStream data_stream{};
+            CDataStream data_stream{SER_NETWORK, fuzzed_data_provider.ConsumeBool() ? PROTOCOL_VERSION : (PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS)};
             data_stream << *opt_block_header;
             r = HexStr(data_stream);
         },

@@ -29,8 +29,6 @@ SendCoinsEntry::SendCoinsEntry(const PlatformStyle *_platformStyle, QWidget *par
     ui->addressBookButton->setIcon(QIcon(":/icons/address-book"));
     ui->pasteButton->setIcon(QIcon(":/icons/editpaste"));
     ui->deleteButton->setIcon(QIcon(":/icons/remove"));
-    ui->deleteButton_is->setIcon(QIcon(":/icons/remove"));
-    ui->deleteButton_s->setIcon(QIcon(":/icons/remove"));
 
     if (platformStyle->getUseExtraSpacing())
         ui->payToLayout->setSpacing(4);

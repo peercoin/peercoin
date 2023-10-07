@@ -55,11 +55,12 @@ FUZZ_TARGET_INIT(utxo_snapshot, initialize_chain)
         return chainman.ActivateSnapshot(infile, metadata, /*in_memory=*/true);
     }};
 
+    std::map<CNetAddr, int32_t> mapPoSTemperature;
     if (fuzzed_data_provider.ConsumeBool()) {
         for (const auto& block : *g_chain) {
             BlockValidationState dummy;
             int32_t& nPoSTemperature = mapPoSTemperature.begin()->second;
-            bool processed{chainman.ProcessNewBlockHeaders(nPoSTemperature, chainman.ActiveChain().Tip()->GetBlockHash(), {*block}, dummy, ::Params())};
+            bool processed{chainman.ProcessNewBlockHeaders(nPoSTemperature, chainman.ActiveChain().Tip()->GetBlockHash(), {*block}, true, dummy, ::Params())};
             Assert(processed);
             const auto* index{WITH_LOCK(::cs_main, return chainman.m_blockman.LookupBlockIndex(block->GetHash()))};
             Assert(index);

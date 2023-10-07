@@ -5,15 +5,17 @@
 #ifndef BITCOIN_INTERFACES_NODE_H
 #define BITCOIN_INTERFACES_NODE_H
 
-#include <consensus/amount.h>
-#include <node/chainstate.h>
-#include <net.h>        // For NodeId
-#include <net_types.h>  // For banmap_t
-#include <netaddress.h> // For Network
-#include <netbase.h>    // For ConnectionDirection
+#include <consensus/amount.h>          // For CAmount
+#include <net.h>                       // For NodeId
+#include <net_types.h>                 // For banmap_t
+#include <netaddress.h>                // For Network
+#include <netbase.h>                   // For ConnectionDirection
 #include <support/allocators/secure.h> // For SecureString
-#include <util/ui_change_type.h>
+#include <util/settings.h>             // For util::SettingsValue
 #include <util/translation.h>
+
+#include <node/chainstate.h>
+#include <util/ui_change_type.h>
 
 #include <functional>
 #include <memory>
@@ -71,7 +73,7 @@ class Node
 public:
     virtual ~Node() {}
 
-    //virtual ChainstateManager& chainman() = 0;
+    virtual ChainstateManager& chainman() = 0;
 
     //! Init logging.
     virtual void initLogging() = 0;
@@ -242,7 +244,7 @@ public:
     virtual std::unique_ptr<Handler> handleNotifyNetworkActiveChanged(NotifyNetworkActiveChangedFn fn) = 0;
 
     //! Register handler for notify alert messages.
-    using NotifyAlertChangedFn = std::function<void(const uint256 &hash, ChangeType status)>;
+    using NotifyAlertChangedFn = std::function<void()>;
     virtual std::unique_ptr<Handler> handleNotifyAlertChanged(NotifyAlertChangedFn fn) = 0;
 
     //! Register handler for ban list messages.
