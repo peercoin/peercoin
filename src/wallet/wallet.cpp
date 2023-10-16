@@ -2278,6 +2278,19 @@ SigningResult CWallet::SignMessage(const std::string& message, const PKHash& pkh
     return SigningResult::PRIVATE_KEY_NOT_AVAILABLE;
 }
 
+SigningResult CWallet::SignBlockHash(const uint256 &hash, const PKHash& pkhash, std::vector<unsigned char>& vchSig) const
+{
+    SignatureData sigdata;
+    CScript script_pub_key = GetScriptForDestination(pkhash);
+    for (const auto& spk_man_pair : m_spk_managers) {
+        if (spk_man_pair.second->CanProvide(script_pub_key, sigdata)) {
+            LOCK(cs_wallet);  // DescriptorScriptPubKeyMan calls IsLocked which can lock cs_wallet in a deadlocking order
+            return spk_man_pair.second->SignBlockHash(hash, pkhash, vchSig);
+        }
+    }
+    return SigningResult::PRIVATE_KEY_NOT_AVAILABLE;
+}
+
 OutputType CWallet::TransactionChangeType(const std::optional<OutputType>& change_type, const std::vector<CRecipient>& vecSend) const
 {
     // If -changetype is specified, always use that change type.
@@ -3643,13 +3656,37 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                 {
                     // convert to pay to public key type
                     CKey key;
-                    if (!pwallet->GetLegacyScriptPubKeyMan()->GetKey(CKeyID(uint160(vSolutions[0])), key))
-                    {
-                        if (bDebug)
-                            LogPrintf("CreateCoinStake : failed to get key for kernel type=%s\n", GetTxnOutputType(whichType));
-                        break;  // unable to find corresponding public key
+                    if (IsLegacy()) {
+                        auto scriptPubKeyMan = pwallet->GetLegacyScriptPubKeyMan();
+                        if (!scriptPubKeyMan) {
+                            if (bDebug)
+                                LogPrintf("CreateCoinStake : failed to get scriptpubkeyman for kernel type=%s\n", GetTxnOutputType(whichType));
+                            break;  // unable to find corresponding public key
+                        }
+                        if (!scriptPubKeyMan->GetKey(CKeyID(uint160(vSolutions[0])), key))
+                        {
+                            if (bDebug)
+                                LogPrintf("CreateCoinStake : failed to get key for kernel type=%s\n", GetTxnOutputType(whichType));
+                            break;  // unable to find corresponding public key
+                        }
+                        scriptPubKeyOut << ToByteVector(key.GetPubKey()) << OP_CHECKSIG;
                     }
-                    scriptPubKeyOut << ToByteVector(key.GetPubKey()) << OP_CHECKSIG;
+                    else {
+                        std::unique_ptr<SigningProvider> provider = pwallet->GetSolvingProvider(scriptPubKeyKernel);
+                        if (!provider) {
+                            if (bDebug)
+                                LogPrintf("CreateCoinStake : failed to get signing provider for output %s\n", pcoin->txout.ToString());
+                            break;
+                        }
+                        CKeyID ckey = CKeyID(uint160(vSolutions[0]));
+                        CPubKey pkey;
+                        if (!provider.get()->GetPubKey(ckey, pkey)) {
+                            if (bDebug)
+                                LogPrintf("CreateCoinStake : failed to get key for output %s\n", pcoin->txout.ToString());
+                            break;
+                        }
+                        scriptPubKeyOut << ToByteVector(pkey) << OP_CHECKSIG;
+                    }
                 }
                 else
                     scriptPubKeyOut = scriptPubKeyKernel;
@@ -3748,10 +3785,26 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         int nIn = 0;
         SignatureData empty;
 
-        for (const auto& pcoin : vwtxPrev)
+        if (IsLegacy()) {
+            for (const auto& pcoin : vwtxPrev)
+            {
+                if (!SignSignature(*pwallet->GetLegacyScriptPubKeyMan(), *pcoin, txNew, nIn++, SIGHASH_ALL, empty))
+                    return error("CreateCoinStake : failed to sign coinstake");
+            }
+        }
+        else
         {
-            if (!SignSignature(*pwallet->GetLegacyScriptPubKeyMan(), *pcoin, txNew, nIn++, SIGHASH_ALL, empty))
-                return error("CreateCoinStake : failed to sign coinstake");
+            // Fetch previous transactions (inputs):
+            std::map<COutPoint, Coin> coins;
+            for (const CTxIn& txin : txNew.vin) {
+                coins[txin.prevout]; // Create empty map entry keyed by prevout.
+            }
+            pwallet->chain().findCoins(coins);
+            // Script verification errors
+            std::map<int, bilingual_str> input_errors;
+            int nTime = txNew.nTime;
+            bool complete = pwallet->SignTransaction(txNew, coins, SIGHASH_ALL, input_errors);
+            txNew.nTime = nTime;
         }
 
         // Limit size
