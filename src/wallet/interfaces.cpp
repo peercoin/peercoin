@@ -60,11 +60,11 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
     result.txout_address.reserve(wtx.tx->vout.size());
     result.txout_address_is_mine.reserve(wtx.tx->vout.size());
     for (const auto& txout : wtx.tx->vout) {
+        CTxDestination address;
+        ExtractDestination(txout.scriptPubKey, address);
         result.txout_is_mine.emplace_back(wallet.IsMine(txout));
-        result.txout_address.emplace_back();
-        result.txout_address_is_mine.emplace_back(ExtractDestination(txout.scriptPubKey, result.txout_address.back()) ?
-                                                      wallet.IsMine(result.txout_address.back()) :
-                                                      ISMINE_NO);
+        result.txout_address.emplace_back(address);
+        result.txout_address_is_mine.emplace_back(wallet.IsMine(txout));
     }
     result.credit = CachedTxGetCredit(wallet, wtx, ISMINE_ALL);
     result.debit = CachedTxGetDebit(wallet, wtx, ISMINE_ALL);
