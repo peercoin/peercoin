@@ -112,24 +112,6 @@ const std::vector<std::string> CHECKLEVEL_DOC {
  * */
 static constexpr int PRUNE_LOCK_BUFFER{10};
 
-bool CBlockIndexWorkComparator::operator()(const CBlockIndex *pa, const CBlockIndex *pb) const {
-    // First sort by most total work, ...
-    if (pa->nChainTrust > pb->nChainTrust) return false;
-    if (pa->nChainTrust < pb->nChainTrust) return true;
-
-    // ... then by earliest time received, ...
-    if (pa->nSequenceId < pb->nSequenceId) return false;
-    if (pa->nSequenceId > pb->nSequenceId) return true;
-
-    // Use pointer address as tie breaker (should only happen with blocks
-    // loaded from disk, as those all have id 0).
-    if (pa < pb) return false;
-    if (pa > pb) return true;
-
-    // Identical blocks.
-    return false;
-}
-
 uint256 vStakeSeen[1024];
 /**
  * Mutex to guard access to validation specific variables, such as reading
