@@ -2516,7 +2516,7 @@ bool Chainstate::FlushStateToDisk(
             m_last_flush = nNow;
             full_flush_completed = true;
             TRACE4(utxocache, flush,
-                   (int64_t)(GetTimeMicros() - nNow.count()), // in microseconds (µs)
+                   int64_t{Ticks<std::chrono::microseconds>(SteadyClock::now() - nNow)},
                    (u_int32_t)mode,
                    (u_int64_t)coins_count,
                    (u_int64_t)coins_mem_usage);

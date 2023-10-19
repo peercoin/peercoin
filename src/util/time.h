@@ -78,10 +78,6 @@ int64_t GetTime();
 
 /** Returns the system time (not mockable) */
 int64_t GetTimeMillis();
-/** Returns the system time (not mockable) */
-int64_t GetTimeMicros();
-/** Returns the system time (not mockable) */
-int64_t GetTimeSeconds(); // Like GetTime(), but not mockable
 
 /**
  * DEPRECATED
