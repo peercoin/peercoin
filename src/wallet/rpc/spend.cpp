@@ -314,20 +314,21 @@ RPCHelpMan optimizeutxoset()
 
     if (request.params[3].isNull() == false) {
         std::vector<COutput> vAvailableCoins;
-        AvailableCoins(*pwallet, vAvailableCoins, &coin_control);
+        vAvailableCoins = AvailableCoins(*pwallet, &coin_control).All();
         CTxDestination tmpAddress, fromAddress;
         fromAddress = DecodeDestination(request.params[3].get_str());
         for (const COutput& out : vAvailableCoins) {
-            ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, tmpAddress);
-            if (tmpAddress == fromAddress) {
-                coin_control.Select(COutPoint(out.tx->GetHash(), out.i));
-                availableCoins += out.tx->tx->vout[out.i].nValue;
+            const CScript& scriptPubKey = out.txout.scriptPubKey;
+            bool fValidAddress = ExtractDestination(scriptPubKey, tmpAddress);
+            if (fValidAddress && (tmpAddress == fromAddress)) {
+                coin_control.Select(COutPoint(out.outpoint.hash, out.outpoint.n));
+                availableCoins += out.txout.nValue;
             }
         }
-        coin_control.m_add_inputs = false;
-        coin_control.fAllowOtherInputs = false;
+        //coin_control.m_add_inputs = false;
+        coin_control.m_allow_other_inputs = false;
     } else {
-        availableCoins = GetAvailableBalance(*pwallet);
+        availableCoins = AvailableCoins(*pwallet).GetTotalAmount();
     }
 
     if (availableCoins == 0) {
@@ -348,16 +349,19 @@ RPCHelpMan optimizeutxoset()
     CAmount remaining = availableCoins;
 
     CRecipient recipient = {script_pub_key, amount, false};
-    CAmount fee = GetMinFee( 2000 + remaining / amount * 40, GetAdjustedTime()); // very approximate
+    CAmount fee = GetMinFee( 2000 + remaining / amount * 40, TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime())); // very approximate
     while (remaining > amount + fee) {
         recipients.push_back(recipient);
         remaining -= amount;
     }
 
-    const bool fCreated = CreateTransaction(*pwallet, recipients, tx, nFeeRequired, nChangePosRet, error, coin_control, fee_calc_out, true);
-    if (!fCreated) {
+    auto res = CreateTransaction(*pwallet, recipients, nChangePosRet, coin_control, true);
+    if (!res) {
+        error = util::ErrorString(res);
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error.original);
     }
+    const auto& txr = *res;
+    tx = txr.tx;
 
     UniValue entry(UniValue::VOBJ);
     if (transmit) {
