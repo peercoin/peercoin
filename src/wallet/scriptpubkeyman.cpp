@@ -2122,7 +2122,14 @@ bool DescriptorScriptPubKeyMan::SignTransaction(CMutableTransaction& tx, const s
 {
     std::unique_ptr<FlatSigningProvider> keys = std::make_unique<FlatSigningProvider>();
     for (const auto& coin_pair : coins) {
-        std::unique_ptr<FlatSigningProvider> coin_keys = GetSigningProvider(coin_pair.second.out.scriptPubKey, true);
+        std::unique_ptr<FlatSigningProvider> coin_keys;
+        // handle pubkeys gracefully
+        std::vector<valtype> vSolutions;
+        TxoutType whichType = Solver(coin_pair.second.out.scriptPubKey, vSolutions);
+        if (whichType == TxoutType::PUBKEY)
+            coin_keys = GetSigningProvider(GetScriptForDestination(PKHash(CPubKey(vSolutions[0]))), true);
+        else
+            coin_keys = GetSigningProvider(coin_pair.second.out.scriptPubKey, true);
         if (!coin_keys) {
             continue;
         }

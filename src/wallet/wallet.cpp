@@ -1384,7 +1384,14 @@ CAmount CWallet::GetDebit(const CTxIn &txin, const isminefilter& filter) const
 isminetype CWallet::IsMine(const CTxOut& txout) const
 {
     AssertLockHeld(cs_wallet);
-    return IsMine(txout.scriptPubKey);
+    isminetype result = IsMine(txout.scriptPubKey);
+    if (result == ISMINE_NO) // try pubkeyhash version of the address
+    {
+        CTxDestination address;
+        ExtractDestination(txout.scriptPubKey, address);
+        result = IsMine(address);
+    }
+    return result;
 }
 
 isminetype CWallet::IsMine(const CTxDestination& dest) const
