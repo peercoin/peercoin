@@ -151,7 +151,7 @@ $(APP_DIST_DIR)/.background/background.tiff:
 $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Peercoin-Qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
 	INSTALLNAMETOOL=$(INSTALLNAMETOOL) OTOOL=$(OTOOL) STRIP=$(STRIP) $(PYTHON) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) $(OSX_VOLNAME) -translations-dir=$(QT_TRANSLATION_DIR)
 
-deploydir: $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Bitcoin-Qt
+deploydir: $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Peercoin-Qt
 endif !BUILD_DARWIN
 
 deploy: $(OSX_DMG)
