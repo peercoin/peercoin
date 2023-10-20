@@ -1327,7 +1327,7 @@ void PeerManagerImpl::FindNextBlocksToDownload(const Peer& peer, unsigned int co
     // Make sure pindexBestKnownBlock is up to date, we'll need it.
     ProcessBlockAvailability(peer.m_id);
 
-    if (state->pindexBestKnownBlock == nullptr || state->pindexBestKnownBlock->nChainTrust < m_chainman.ActiveChain().Tip()->nChainTrust || state->pindexBestKnownBlock->nChainTrust < nMinimumChainWork) {
+    if (state->pindexBestKnownBlock == nullptr || state->pindexBestKnownBlock->nChainTrust < m_chainman.ActiveChain().Tip()->nChainTrust || state->pindexBestKnownBlock->nChainTrust < m_chainman.MinimumChainWork()) {
         // This peer has nothing interesting.
         return;
     }
