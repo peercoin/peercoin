@@ -35,12 +35,11 @@ import lief #type:ignore
 MAX_VERSIONS = {
 'GCC':       (4,8,0),
 'GLIBC': {
-    lief.ELF.ARCH.i386:   (2,29),
-    lief.ELF.ARCH.x86_64: (2,29),
-    lief.ELF.ARCH.ARM:    (2,29),
-    lief.ELF.ARCH.AARCH64:(2,29),
-    lief.ELF.ARCH.PPC64:  (2,29),
-    LIEF_ELF_ARCH_RISCV:  (2,29),
+    lief.ELF.ARCH.x86_64: (2,27),
+    lief.ELF.ARCH.ARM:    (2,27),
+    lief.ELF.ARCH.AARCH64:(2,27),
+    lief.ELF.ARCH.PPC64:  (2,27),
+    lief.ELF.ARCH.RISCV:  (2,27),
 },
 'LIBATOMIC': (1,0),
 'V':         (0,5,0),  # xkb (bitcoin-qt only)
@@ -125,14 +124,12 @@ MACHO_ALLOWED_LIBRARIES = {
 'CoreText', # interface for laying out text and handling fonts.
 'CoreVideo', # video processing
 'Foundation', # base layer functionality for apps/frameworks
-'GSS',
 'ImageIO', # read and write image file formats.
 'IOKit', # user-space access to hardware devices and drivers.
 'IOSurface', # cross process image/drawing buffers
 'libobjc.A.dylib', # Objective-C runtime library
 'Metal', # 3D graphics
 'Security', # access control and authentication
-'SystemConfiguration',
 'QuartzCore', # animation
 }
 
