@@ -113,23 +113,9 @@ const std::vector<std::string> CHECKLEVEL_DOC {
 static constexpr int PRUNE_LOCK_BUFFER{10};
 
 uint256 vStakeSeen[1024];
-/**
- * Mutex to guard access to validation specific variables, such as reading
- * or changing the chainstate.
- *
- * This may also need to be locked when updating the transaction pool, e.g. on
- * AcceptToMemoryPool. See CTxMemPool::cs comment for details.
- *
- * The transaction pool has a separate lock to allow reading from it and the
- * chainstate at the same time.
- */
-RecursiveMutex cs_main;
-
 GlobalMutex g_best_block_mutex;
 std::condition_variable g_best_block_cv;
 uint256 g_best_block;
-
-arith_uint256 nMinimumChainWork;
 
 //CTxMemPool mempool;
 const CBlockIndex* Chainstate::FindForkInGlobalIndex(const CBlockLocator& locator) const
@@ -2097,7 +2083,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
         if (it != m_blockman.m_block_index.end()) {
             if (it->second.GetAncestor(pindex->nHeight) == pindex &&
                 m_chainman.m_best_header->GetAncestor(pindex->nHeight) == pindex &&
-                m_chainman.m_best_header->nChainTrust >= nMinimumChainWork) {
+                m_chainman.m_best_header->nChainTrust >= m_chainman.MinimumChainWork()) {
                 // This block is a member of the assumed verified chain and an ancestor of the best header.
                 // Script verification is skipped when connecting blocks under the
                 // assumevalid block. Assuming the assumevalid block is valid this
@@ -3939,7 +3925,7 @@ bool Chainstate::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, BlockV
         // If our tip is behind, a peer could try to send us
         // low-work blocks on a fake chain that we would never
         // request; don't process these.
-        if (pindex->nChainTrust < nMinimumChainWork) return true;
+        if (pindex->nChainTrust < m_chainman.MinimumChainWork()) return true;
     }
 
     const CChainParams& params{m_chainman.GetParams()};
