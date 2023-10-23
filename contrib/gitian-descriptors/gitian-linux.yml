@@ -26,6 +26,7 @@ packages:
 - "git"
 - "pkg-config"
 - "autoconf"
+- "bison"
 - "libtool"
 - "automake"
 - "faketime"
