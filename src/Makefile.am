@@ -127,7 +127,6 @@ BITCOIN_CORE_H = \
   bech32.h \
   blockencodings.h \
   blockfilter.h \
-  bloom.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
@@ -321,7 +320,6 @@ BITCOIN_CORE_H = \
   wallet/db.h \
   wallet/dump.h \
   wallet/external_signer_scriptpubkeyman.h \
-  wallet/ismine.h \
   wallet/load.h \
   wallet/receive.h \
   wallet/rpc/util.h \
