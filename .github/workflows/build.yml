@@ -57,7 +57,11 @@ jobs:
 
       - name: Fetch OSX SDK
         if: ${{ matrix.os == 'osx' }}
-        run: wget -N https://bitcoincore.org/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz -O ${GITIAN_DIR}/inputs/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz
+        run: |
+          wget -N https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.14.sdk.tar.xz
+          tar xf MacOSX10.14.sdk.tar.xz
+          tar czf ${GITIAN_DIR}/inputs/MacOSX10.14.sdk.tar.gz MacOSX10.14.sdk
+          rm -rf MacOSX10.14.sdk MacOSX10.14.sdk.tar.xz
 
       - uses: actions/checkout@v3
 
