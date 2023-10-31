@@ -14,7 +14,8 @@
 #include <util/strencodings.h>
 #include <version.h>
 
-#include <assert.h>
+#include <cassert>
+#include <stdexcept>
 #include <timedata.h>
 
 std::string COutPoint::ToString() const
