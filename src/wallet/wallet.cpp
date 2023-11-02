@@ -3603,6 +3603,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
+    bool bMinterKey = false;
 
     for (const auto& pcoin : result->GetInputSet())
     {
@@ -3650,10 +3651,9 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                 CScript scriptPubKeyOut;
                 scriptPubKeyKernel = pcoin->txout.scriptPubKey;
                 whichType = Solver(scriptPubKeyKernel, vSolutions);
-
                 if (bDebug)
                     LogPrintf("CreateCoinStake : parsed kernel type=%s\n", GetTxnOutputType(whichType));
-                if (whichType != TxoutType::PUBKEY && whichType != TxoutType::PUBKEYHASH && whichType != TxoutType::WITNESS_V0_KEYHASH)
+                if (whichType != TxoutType::PUBKEY && whichType != TxoutType::PUBKEYHASH && whichType != TxoutType::WITNESS_V0_KEYHASH && whichType != TxoutType::WITNESS_V1_TAPROOT)
                 {
                     if (bDebug)
                         LogPrintf("CreateCoinStake : no support for kernel type=%s\n", GetTxnOutputType(whichType));
@@ -3695,13 +3695,50 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                         scriptPubKeyOut << ToByteVector(pkey) << OP_CHECKSIG;
                     }
                 }
-                else
+                else if (whichType == TxoutType::PUBKEY)
                     scriptPubKeyOut = scriptPubKeyKernel;
+                else if (whichType == TxoutType::WITNESS_V1_TAPROOT) {
+                    // prepare reserve destination in case we need to use it for handling non legacy inputs
+                    CTxDestination dest;
+                    ReserveDestination reservedest(const_cast<CWallet *>(pwallet), OutputType::LEGACY);
+                    auto op_dest = reservedest.GetReservedDestination(true);
+                    if (!op_dest) {
+                        LogPrintf("Error: Keypool ran out, please call keypoolrefill first.\n");
+                        break;
+                    }
+                    dest = *op_dest;
+                    std::vector<valtype> vSolutionsTmp;
+                    CScript scriptPubKeyTmp = GetScriptForDestination(dest);
+                    Solver(scriptPubKeyTmp, vSolutionsTmp);
+                    std::unique_ptr<SigningProvider> provider = pwallet->GetSolvingProvider(scriptPubKeyTmp);
+                    if (!provider) {
+                        if (bDebug)
+                            LogPrintf("CreateCoinStake : failed to get signing provider for minter output\n");
+                        break;
+                    }
+                    CKeyID ckey = CKeyID(uint160(vSolutionsTmp[0]));
+                    CPubKey pkey;
+                    if (!provider.get()->GetPubKey(ckey, pkey)) {
+                        if (bDebug)
+                            LogPrintf("CreateCoinStake : failed to get key for minter output\n", pcoin->txout.ToString());
+                        break;
+                    }
+                    scriptPubKeyOut << ToByteVector(pkey) << OP_CHECKSIG;
+                    bMinterKey = true;
+                }
 
                 txNew.nTime -= n;
                 txNew.vin.push_back(CTxIn(pcoin->outpoint.hash, pcoin->outpoint.n));
                 nCredit += pcoin->txout.nValue;
                 vwtxPrev.push_back(tx);
+
+                if (bMinterKey) {
+                    // extra output for minter key
+                    txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
+                    // redefine scriptPubKeyOut to send output to input address
+                    scriptPubKeyOut = scriptPubKeyKernel;
+                    }
+
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
                 if ((header.GetBlockTime() + nStakeSplitAge > txNew.nTime) && pwallet->m_split_coins)
                     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
@@ -3780,13 +3817,13 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     while(true)
     {
         // Set output amount
-        if (txNew.vout.size() == 3)
+        if (txNew.vout.size() == 3+bMinterKey)
         {
-            txNew.vout[1].nValue = ((nCredit - nMinFee) / 2 / nMinFeeBase) * nMinFeeBase;
-            txNew.vout[2].nValue = nCredit - nMinFee - txNew.vout[1].nValue;
+            txNew.vout[1+bMinterKey].nValue = ((nCredit - nMinFee) / 2 / nMinFeeBase) * nMinFeeBase;
+            txNew.vout[2+bMinterKey].nValue = nCredit - nMinFee - txNew.vout[1+bMinterKey].nValue;
         }
         else
-            txNew.vout[1].nValue = nCredit - nMinFee;
+            txNew.vout[1+bMinterKey].nValue = nCredit - nMinFee;
 
         // Sign
         int nIn = 0;
@@ -3810,7 +3847,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
             // Script verification errors
             std::map<int, bilingual_str> input_errors;
             int nTime = txNew.nTime;
-            bool complete = pwallet->SignTransaction(txNew, coins, SIGHASH_ALL, input_errors);
+            pwallet->SignTransaction(txNew, coins, SIGHASH_ALL, input_errors);
             txNew.nTime = nTime;
         }
 

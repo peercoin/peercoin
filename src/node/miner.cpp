@@ -656,7 +656,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
                     LOCK2(pwallet->cs_wallet, cs_main);
                     if (!SignBlock(*pblock, *pwallet))
                     {
-                        LogPrintf("PoSMiner(): failed to sign PoS block");
+                        LogPrintf("PoSMiner(): failed to sign PoS block\n");
                         continue;
                     }
                 }
