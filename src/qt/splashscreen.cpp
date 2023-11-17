@@ -49,7 +49,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QString font            = QApplication::font().toString();
 
     // create a bitmap according to device pixelratio
-    QSize splashSize(480*devicePixelRatio,480*devicePixelRatio);
+    QSize splashSize(480*devicePixelRatio,590*devicePixelRatio);
     pixmap = QPixmap(splashSize);
 
     // change to HiDPI if it makes sense
@@ -72,9 +72,9 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QRect rectIcon(QPoint(40,30), requiredSize);
     pixPaint.drawPixmap(rectIcon, icon);
 
-    QRect rectAvatar(QPoint(15,125), QSize(853/2,598/2));
+    QRect rectAvatar(QPoint(15,55), QSize(1323/3,1391/3));
 
-    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/ladybug"));
+    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/dragonfly"));
 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
