@@ -573,7 +573,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation type="unfinished">وقَع الرسائل بواسطة ال: Bitcoin الخاص بك لإثبات امتلاكك لهم</translation>
+        <translation type="unfinished">وقَع الرسائل بواسطة ال: Peercoin الخاص بك لإثبات امتلاكك لهم</translation>
     </message>
     <message>
         <source>&amp;Verify message…</source>
