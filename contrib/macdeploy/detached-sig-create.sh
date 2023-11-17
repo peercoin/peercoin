@@ -8,7 +8,7 @@ set -e
 
 ROOTDIR=dist
 BUNDLE="${ROOTDIR}/Peercoin-Qt.app"
-BINARY="${BUNDLE}/Contents/MacOS/Bitcoin-Qt"
+BINARY="${BUNDLE}/Contents/MacOS/Peercoin-Qt"
 SIGNAPPLE=signapple
 TEMPDIR=sign.temp
 ARCH=$(${SIGNAPPLE} info ${BINARY} | head -n 1 | cut -d " " -f 1)
@@ -24,7 +24,7 @@ fi
 rm -rf ${TEMPDIR}
 mkdir -p ${TEMPDIR}
 
-${SIGNAPPLE} sign -f --detach "${TEMPDIR}/${OUTROOT}"  "$@" "${BUNDLE}"
+${SIGNAPPLE} sign --hardened-runtime -f --detach "${TEMPDIR}/${OUTROOT}"  "$@" "${BUNDLE}"
 
 tar -C "${TEMPDIR}" -czf "${OUT}" .
 rm -rf "${TEMPDIR}"
