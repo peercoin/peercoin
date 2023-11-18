@@ -152,6 +152,7 @@ public:
                 {479189, uint256S("0xc9c065028b20a23fbb9627bbca5946c7497f11e1f72433d4d215c79047cf06f2")},
                 {504051, uint256S("0xff65454ebdf1d89174bec10a3c016db92f7b1d9a4759603472842f254be8d7b3")},
                 {589659, uint256S("0x967c14abf21214639aeff0a270c4543cd3b80fe53178384ac5aa3c277662f1d0")},
+                {714688, uint256S("0x0000000000000000bef29f005dc65af3950b14af7200998759ba8977561f9d95")},
             }
         };
 
@@ -160,12 +161,12 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 3125be5493e80431952593cce42b160019671108103735509238830939e1c9a3 (height 650000).
-            1666903503, // * UNIX timestamp of last known number of transactions
-            2145533,    // * total number of transactions between genesis and that timestamp
+            // Data as of block 0000000000000000bef29f005dc65af3950b14af7200998759ba8977561f9d95 (height 714688).
+            1700288376, // * UNIX timestamp of last known number of transactions
+            2315476,    // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the ChainStateFlushed debug.log lines)
-            0.006673443 // * estimated number of transactions per second after that timestamp
-                        //   2145533/(1666903503-1345400356) = 0.006673443
+            0.006524526 // * estimated number of transactions per second after that timestamp
+                        //   2315476/(1700288376-1345400356) = 0.006524526
         };
     }
 };
