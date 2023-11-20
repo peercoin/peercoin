@@ -21,6 +21,7 @@
              (gnu packages llvm)
              (gnu packages mingw)
              (gnu packages moreutils)
+             (gnu packages perl)
              (gnu packages pkg-config)
              (gnu packages python)
              (gnu packages python-crypto)
@@ -166,10 +167,6 @@ desirable for building Bitcoin Core release binaries."
       (search-our-patches "gcc-10-remap-guix-store.patch"))
     "--enable-threads" "posix"))
 
-;; Required to support std::filesystem for mingw-w64 target.
-(define (make-gcc-without-newlib gcc)
-  (package-with-extra-configure-variable gcc "--with-newlib" "no"))
-
 (define (make-mingw-w64-cross-gcc cross-gcc)
   (package-with-extra-patches cross-gcc
     (search-our-patches "vmov-alignment.patch"
@@ -181,7 +178,7 @@ desirable for building Bitcoin Core release binaries."
          (pthreads-xlibc mingw-w64-x86_64-winpthreads)
          (pthreads-xgcc (make-gcc-with-pthreads
                          (cross-gcc target
-                                    #:xgcc (make-gcc-without-newlib (make-ssp-fixed-gcc (make-mingw-w64-cross-gcc base-gcc)))
+                                    #:xgcc (make-ssp-fixed-gcc (make-mingw-w64-cross-gcc base-gcc))
                                     #:xbinutils xbinutils
                                     #:libc pthreads-xlibc))))
     ;; Define a meta-package that propagates the resulting XBINUTILS, XLIBC, and
@@ -419,6 +416,11 @@ thus should be able to compile on most platforms where these exist.")
                   (string-append indent
                                  "@unittest.skip(\"Disabled by Guix\")\n"
                                  line)))
+               (substitute* "tests/test_validate.py"
+                 (("^(.*)def test_revocation_mode_soft" line indent)
+                  (string-append indent
+                                 "@unittest.skip(\"Disabled by Guix\")\n"
+                                 line)))
                #t))
            (replace 'check
              (lambda _
@@ -597,6 +599,7 @@ inspecting signatures in Mach-O binaries.")
         gcc-toolchain-10
         (list gcc-toolchain-10 "static")
         ;; Scripting
+        perl
         python-minimal ;; (3.9)
         ;; Git
         git-minimal
