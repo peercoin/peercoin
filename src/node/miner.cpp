@@ -536,7 +536,7 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
     return true;
 }
 
-void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
+void PoSMiner(NodeContext& m_node)
 {
     std::string strMintMessage = _("Info: Minting suspended due to locked wallet.").translated;
     std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.").translated;
@@ -551,13 +551,20 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
     }
 
     CConnman* connman = m_node.connman.get();
+    CWallet* pwallet;
+    // ppctodo: deal with multiple wallets better
+    if (m_node.wallet_loader->getWallets().size() && gArgs.GetBoolArg("-minting", true))
+        pwallet = m_node.wallet_loader->getWallets()[0]->wallet();
+    else
+        return;
+
     LogPrintf("CPUMiner started for proof-of-stake\n");
     util::ThreadRename("peercoin-stake-minter");
 
     unsigned int nExtraNonce = 0;
 
     OutputType output_type = pwallet->m_default_change_type ? *pwallet->m_default_change_type : pwallet->m_default_address_type;
-    ReserveDestination reservedest(pwallet.get(), output_type);
+    ReserveDestination reservedest(pwallet, output_type);
     CTxDestination dest;
     // Compute timeout for pos as sqrt(numUTXO)
     unsigned int pos_timio;
@@ -626,7 +633,7 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
             {
                 LOCK2(pwallet->cs_wallet, cs_main);
                 try {
-                    pblocktemplate = BlockAssembler(m_node.chainman->ActiveChainstate(), *m_node.mempool, Params()).CreateNewBlock(scriptPubKey, pwallet.get(), &fPoSCancel, &m_node);
+                    pblocktemplate = BlockAssembler(m_node.chainman->ActiveChainstate(), *m_node.mempool, Params()).CreateNewBlock(scriptPubKey, pwallet, &fPoSCancel, &m_node);
                 }
                 catch (const std::runtime_error &e)
                 {
@@ -698,13 +705,13 @@ void PoSMiner(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
 }
 
 // peercoin: stake minter thread
-void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
+void static ThreadStakeMinter(NodeContext& m_node)
 {
     LogPrintf("ThreadStakeMinter started\n");
     while(true) {
         try
         {
-            PoSMiner(pwallet, m_node);
+            PoSMiner(m_node);
             break;
         }
         catch (std::exception& e) {
@@ -717,13 +724,8 @@ void static ThreadStakeMinter(std::shared_ptr<CWallet> pwallet, NodeContext& m_n
 }
 
 // peercoin: stake minter
-void MintStake(std::shared_ptr<CWallet> pwallet, NodeContext& m_node)
+void MintStake(NodeContext& m_node)
 {
-    if (!WITH_LOCK(pwallet->cs_wallet, return pwallet->GetKeyPoolSize())) {
-        LogPrintf("Error: Keypool is empty, please make sure the wallet contains keys and call keypoolrefill before restarting the mining thread\n");
-        return;
-    }
-
-    m_minter_thread = std::thread([&] { util::TraceThread("minter", [&] { ThreadStakeMinter(pwallet, m_node); }); });
+    m_minter_thread = std::thread([&] { util::TraceThread("minter", [&] { ThreadStakeMinter(m_node); }); });
 }
 } // namespace node

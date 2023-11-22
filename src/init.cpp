@@ -127,8 +127,6 @@ static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
  */
 static const char* BITCOIN_PID_FILENAME = "peercoind.pid";
 
-static std::shared_ptr<CWallet> walletTmp;
-
 static fs::path GetPidFile(const ArgsManager& args)
 {
     return AbsPathForConfigVal(fs::PathFromString(args.GetArg("-pid", BITCOIN_PID_FILENAME)));
@@ -302,6 +300,10 @@ void Shutdown(NodeContext& node)
     node.mempool.reset();
     node.chainman.reset();
     node.scheduler.reset();
+
+    if (m_minter_thread.joinable()) {
+        m_minter_thread.join();
+    }
 
     try {
         if (!fs::remove(GetPidFile(*node.args))) {
@@ -1736,11 +1738,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 #endif
 #ifdef ENABLE_WALLET
 {
-// ppctodo: deal with multiple wallets
-    if (node.wallet_loader->getWallets().size() && gArgs.GetBoolArg("-stakegen", true)) {
-        walletTmp = std::shared_ptr<CWallet>(node.wallet_loader->getWallets()[0]->wallet());
-        MintStake(walletTmp, node);
-        }
+    MintStake(node);
 }
 #endif
 
