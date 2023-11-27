@@ -3822,7 +3822,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     while(true)
     {
         // Set output amount
-        if (txNew.vout.size() == 3+bMinterKey)
+        if (txNew.vout.size() == 3u+bMinterKey)
         {
             txNew.vout[1+bMinterKey].nValue = ((nCredit - nMinFee) / 2 / nMinFeeBase) * nMinFeeBase;
             txNew.vout[2+bMinterKey].nValue = nCredit - nMinFee - txNew.vout[1+bMinterKey].nValue;
