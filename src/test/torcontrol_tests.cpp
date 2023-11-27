@@ -13,9 +13,6 @@
 std::pair<std::string, std::string> SplitTorReplyLine(const std::string& s);
 std::map<std::string, std::string> ParseTorReplyMapping(const std::string& s);
 
-std::pair<std::string, std::string> SplitTorReplyLine(const std::string& s);
-std::map<std::string, std::string> ParseTorReplyMapping(const std::string& s);
-
 BOOST_AUTO_TEST_SUITE(torcontrol_tests)
 
 static void CheckSplitTorReplyLine(std::string input, std::string command, std::string args)
