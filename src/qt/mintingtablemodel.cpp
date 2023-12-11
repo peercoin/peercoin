@@ -80,7 +80,7 @@ public:
 
             if(KernelRecord::showTransaction(wtx.is_coinbase, status.depth_in_main_chain))
                 for(const KernelRecord& kr : txList) {
-                    if(!kr.spent && kr.nValue) {
+                    if(!kr.spent && kr.nValue && wtx.txout_is_mine[kr.idx] == wallet::ISMINE_SPENDABLE) {
                         cachedWallet.append(kr);
                     }
                 }
@@ -156,7 +156,7 @@ public:
                         int insert_idx = lowerIndex;
                         for (const KernelRecord &rec : toInsert)
                         {
-                            if(!rec.spent && rec.nValue)
+                            if(!rec.spent && rec.nValue && wtx.txout_is_mine[rec.idx] == wallet::ISMINE_SPENDABLE)
                             {
                                 cachedWallet.insert(insert_idx, rec);
                                 insert_idx += 1;
