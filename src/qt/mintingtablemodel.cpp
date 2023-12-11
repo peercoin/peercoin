@@ -80,7 +80,7 @@ public:
 
             if(KernelRecord::showTransaction(wtx.is_coinbase, status.depth_in_main_chain))
                 for(const KernelRecord& kr : txList) {
-                    if(!kr.spent) {
+                    if(!kr.spent && kr.nValue) {
                         cachedWallet.append(kr);
                     }
                 }
@@ -156,7 +156,7 @@ public:
                         int insert_idx = lowerIndex;
                         for (const KernelRecord &rec : toInsert)
                         {
-                            if(!rec.spent)
+                            if(!rec.spent && rec.nValue)
                             {
                                 cachedWallet.insert(insert_idx, rec);
                                 insert_idx += 1;
