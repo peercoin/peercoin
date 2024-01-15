@@ -3596,6 +3596,9 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     CAmount nAllowedBalance = nBalance;
     if (nReserveBalance) nAllowedBalance -= nReserveBalance.value();
 
+    if (nAllowedBalance < MIN_TXOUT_AMOUNT)
+        return false;
+
     util::Result<SelectionResult> result = SelectCoins(*pwallet, availableCoins, /*pre_set_inputs=*/ {}, nAllowedBalance, temp, coin_selection_params);
 
     if (!result)
