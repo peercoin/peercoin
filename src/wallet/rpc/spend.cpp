@@ -273,13 +273,13 @@ RPCHelpMan optimizeutxoset()
                     RPCResult{"if transmit is not set or set to false",
                         RPCResult::Type::OBJ, "", "",
                         {
-                            {RPCResult::Type::STR_HEX, "tx", "The transaction hex."}
+                            {RPCResult::Type::STR_HEX, "tx", /*optional=*/true, "The transaction hex."}
                         },
                     },
                     RPCResult{"if transmit is set to true",
                         RPCResult::Type::OBJ, "", "",
                         {
-                            {RPCResult::Type::STR_HEX, "txid", "The transaction id."}
+                            {RPCResult::Type::STR_HEX, "txid", /*optional=*/true, "The transaction id."}
                         },
                     },
                 },
