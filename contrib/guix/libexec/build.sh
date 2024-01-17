@@ -355,7 +355,7 @@ mkdir -p "$DISTSRC"
 
         # copy over the example bitcoin.conf file. if contrib/devtools/gen-bitcoin-conf.sh
         # has not been run before buildling, this file will be a stub
-        cp "${DISTSRC}/share/examples/bitcoin.conf" "${DISTNAME}/"
+        cp "${DISTSRC}/share/examples/peercoin.conf" "${DISTNAME}/"
 
         cp -r "${DISTSRC}/share/rpcauth" "${DISTNAME}/share/"
 
