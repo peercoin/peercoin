@@ -3470,6 +3470,26 @@ bool HasValidProofOfWork(const std::vector<CBlockHeader>& headers, const Consens
             });
 }
 
+bool IsBlockMutated(const CBlock& block, bool check_witness_root)
+{
+    BlockValidationState state;
+    if (!CheckMerkleRoot(block, state)) {
+        LogPrint(BCLog::VALIDATION, "Block mutated: %s\n", state.ToString());
+        return true;
+    }
+
+    if (block.vtx.empty() || !block.vtx[0]->IsCoinBase()) {
+        return false;
+    }
+
+    if (!CheckWitnessMalleation(block, check_witness_root, state)) {
+        LogPrint(BCLog::VALIDATION, "Block mutated: %s\n", state.ToString());
+        return true;
+    }
+
+    return false;
+}
+
 arith_uint256 CalculateHeadersWork(const std::vector<CBlockHeader>& headers)
 {
     arith_uint256 total_work{0};
