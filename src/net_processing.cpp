@@ -4677,15 +4677,25 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         LogPrint(BCLog::NET, "received block %s peer=%d\n", pblock2->GetHash().ToString(), pfrom.GetId());
 
         CBlockIndex* tip;
+        CBlockIndex* prev_block{WITH_LOCK(m_chainman.GetMutex(), return m_chainman.m_blockman.LookupBlockIndex(pblock2->hashPrevBlock))};
+        // Check for possible mutation if it connects to something we know so we can check for DEPLOYMENT_SEGWIT being active
+        if (prev_block && IsBlockMutated(/*block=*/*pblock2,
+                           /*check_witness_root=*/IsBTC16BIPsEnabled(prev_block->nTime))) {
+            LogPrint(BCLog::NET, "Received mutated block from peer=%d\n", peer->m_id);
+            Misbehaving(*peer, 100, "mutated block");
+            WITH_LOCK(cs_main, RemoveBlockRequest(pblock2->GetHash(), peer->m_id));
+            return;
+        }
+
+        bool min_pow_checked = false;
         {
             const uint256 hash2(pblock2->GetHash());
             LOCK(cs_main);
             bool fRequested = mapBlocksInFlight.count(hash2);
 
-            CBlockIndex* headerPrev = m_chainman.m_blockman.LookupBlockIndex(pblock2->hashPrevBlock);
-            if (!headerPrev) {
-                LogPrint(BCLog::NET, "previous header not found");
-                return;
+            // Check work on this block against our anti-dos thresholds.
+            if (prev_block && prev_block->nChainTrust + CalculateHeadersWork({pblock2->GetBlockHeader()}) >= GetAntiDoSWorkThreshold()) {
+                min_pow_checked = true;
             }
 
             if (!fRequested) {
@@ -4701,7 +4711,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                 if (pblock2->IsProofOfStake() && !m_chainman.ActiveChainstate().IsInitialBlockDownload())
                     nPoSTemperature += 1;
 
-                if (!headerPrev->IsValid(BLOCK_VALID_TRANSACTIONS)) {
+                if (!prev_block->IsValid(BLOCK_VALID_TRANSACTIONS)) {
                     RemoveBlockRequest(hash2, std::nullopt);
                     LogPrint(BCLog::NET, "this block does not connect to any valid known blocks");
                     return;
@@ -4709,7 +4719,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
             }
             // peercoin: store in memory until we can connect it to some chain
             WaitElement we; we.pblock = pblock2; we.time = nTimeNow;
-            mapBlocksWait[headerPrev] = we;
+            mapBlocksWait[prev_block] = we;
             tip = m_chainman.ActiveChain().Tip();
         }
 
@@ -4778,7 +4788,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                 mapBlockSource.emplace(hash, std::make_pair(pfrom.GetId(), true));
             }
 
-            ProcessBlock(pfrom, pblock, forceProcessing, /*min_pow_checked*/true);
+            ProcessBlock(pfrom, pblock, forceProcessing, min_pow_checked);
         }
         return;
     }
