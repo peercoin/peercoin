@@ -3830,11 +3830,11 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
         // Sign
         int nIn = 0;
-        SignatureData empty;
 
         if (IsLegacy()) {
             for (const auto& pcoin : vwtxPrev)
             {
+                SignatureData empty;
                 if (!SignSignature(*pwallet->GetLegacyScriptPubKeyMan(), *pcoin, txNew, nIn++, SIGHASH_ALL, empty))
                     return error("CreateCoinStake : failed to sign coinstake");
             }
