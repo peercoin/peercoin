@@ -16,7 +16,7 @@
 
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake, const Consensus::Params& params)
 {
-    if (pindexLast == nullptr)
+    if (pindexLast == nullptr || params.fPowNoRetargeting)
         return UintToArith256(params.powLimit).GetCompact(); // genesis block
 
     const CBlockIndex* pindexPrev = GetLastBlockIndex(pindexLast, fProofOfStake);

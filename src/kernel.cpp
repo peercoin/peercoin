@@ -108,6 +108,9 @@ bool IsProtocolV05(unsigned int nTimeTx)
 // Test against previous block index! (always available)
 bool IsProtocolV06(const CBlockIndex* pindexPrev)
 {
+  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+      return true;
+
   if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime))
     return false;
 
@@ -150,6 +153,9 @@ bool IsProtocolV10(unsigned int nTime)
 // Whether a given timestamp is subject to new v10 protocol
 bool IsProtocolV12(const CBlockIndex* pindexPrev)
 {
+  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+      return true;
+
   if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime))
       return false;
 
