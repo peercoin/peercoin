@@ -39,7 +39,6 @@ struct DBVal {
     CAmount total_new_outputs_ex_coinbase_amount;
     CAmount total_coinbase_amount;
     CAmount total_unspendables_genesis_block;
-    CAmount total_unspendables_bip30;
     CAmount total_unspendables_scripts;
     CAmount total_unspendables_unclaimed_rewards;
 
@@ -55,7 +54,6 @@ struct DBVal {
         READWRITE(obj.total_new_outputs_ex_coinbase_amount);
         READWRITE(obj.total_coinbase_amount);
         READWRITE(obj.total_unspendables_genesis_block);
-        READWRITE(obj.total_unspendables_bip30);
         READWRITE(obj.total_unspendables_scripts);
         READWRITE(obj.total_unspendables_unclaimed_rewards);
     }
@@ -150,13 +148,6 @@ bool CoinStatsIndex::CustomAppend(const interfaces::BlockInfo& block)
         for (size_t i = 0; i < block.data->vtx.size(); ++i) {
             const auto& tx{block.data->vtx.at(i)};
 
-            // Skip duplicate txid coinbase transactions (BIP30).
-            if (IsBIP30Unspendable(*pindex) && tx->IsCoinBase()) {
-                //m_total_unspendable_amount += block_subsidy;
-                //m_total_unspendables_bip30 += block_subsidy;
-                continue;
-            }
-
             for (uint32_t j = 0; j < tx->vout.size(); ++j) {
                 const CTxOut& out{tx->vout[j]};
                 Coin coin{out, pindex->nHeight, tx->IsCoinBase(), tx->IsCoinStake(), (int)tx->nTime};
@@ -225,7 +216,6 @@ bool CoinStatsIndex::CustomAppend(const interfaces::BlockInfo& block)
     value.second.total_new_outputs_ex_coinbase_amount = m_total_new_outputs_ex_coinbase_amount;
     value.second.total_coinbase_amount = m_total_coinbase_amount;
     //value.second.total_unspendables_genesis_block = m_total_unspendables_genesis_block;
-    //value.second.total_unspendables_bip30 = m_total_unspendables_bip30;
     value.second.total_unspendables_scripts = m_total_unspendables_scripts;
     //value.second.total_unspendables_unclaimed_rewards = m_total_unspendables_unclaimed_rewards;
 
@@ -340,7 +330,6 @@ std::optional<CCoinsStats> CoinStatsIndex::LookUpStats(const CBlockIndex& block_
     stats.total_new_outputs_ex_coinbase_amount = entry.total_new_outputs_ex_coinbase_amount;
     stats.total_coinbase_amount = entry.total_coinbase_amount;
     stats.total_unspendables_genesis_block = entry.total_unspendables_genesis_block;
-    stats.total_unspendables_bip30 = entry.total_unspendables_bip30;
     stats.total_unspendables_scripts = entry.total_unspendables_scripts;
     stats.total_unspendables_unclaimed_rewards = entry.total_unspendables_unclaimed_rewards;
 
@@ -382,7 +371,6 @@ bool CoinStatsIndex::CustomInit(const std::optional<interfaces::BlockKey>& block
         m_total_new_outputs_ex_coinbase_amount = entry.total_new_outputs_ex_coinbase_amount;
         m_total_coinbase_amount = entry.total_coinbase_amount;
         //m_total_unspendables_genesis_block = entry.total_unspendables_genesis_block;
-        //m_total_unspendables_bip30 = entry.total_unspendables_bip30;
         m_total_unspendables_scripts = entry.total_unspendables_scripts;
         //m_total_unspendables_unclaimed_rewards = entry.total_unspendables_unclaimed_rewards;
     }
@@ -495,7 +483,6 @@ bool CoinStatsIndex::ReverseBlock(const CBlock& block, const CBlockIndex* pindex
     Assert(m_total_new_outputs_ex_coinbase_amount == read_out.second.total_new_outputs_ex_coinbase_amount);
     Assert(m_total_coinbase_amount == read_out.second.total_coinbase_amount);
     Assert(m_total_unspendables_genesis_block == read_out.second.total_unspendables_genesis_block);
-    Assert(m_total_unspendables_bip30 == read_out.second.total_unspendables_bip30);
     Assert(m_total_unspendables_scripts == read_out.second.total_unspendables_scripts);
     Assert(m_total_unspendables_unclaimed_rewards == read_out.second.total_unspendables_unclaimed_rewards);
 

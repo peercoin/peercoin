@@ -34,7 +34,6 @@ private:
     CAmount m_total_new_outputs_ex_coinbase_amount{0};
     CAmount m_total_coinbase_amount{0};
     CAmount m_total_unspendables_genesis_block{0};
-    CAmount m_total_unspendables_bip30{0};
     CAmount m_total_unspendables_scripts{0};
     CAmount m_total_unspendables_unclaimed_rewards{0};
 
