@@ -1625,7 +1625,7 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo &txund
         }
     }
     // add outputs
-    AddCoins(inputs, tx, nHeight, false, skipZeroValue);
+    AddCoins(inputs, tx, nHeight, skipZeroValue);
 }
 
 bool CScriptCheck::operator()() {
@@ -4265,8 +4265,7 @@ bool Chainstate::RollforwardBlock(const CBlockIndex* pindex, CCoinsViewCache& in
                 inputs.SpendCoin(txin.prevout);
             }
         }
-        // Pass check = true as every addition may be an overwrite.
-        AddCoins(inputs, *tx, pindex->nHeight, true, IsProtocolV12(pindex));
+        AddCoins(inputs, *tx, pindex->nHeight, IsProtocolV12(pindex));
     }
     return true;
 }
