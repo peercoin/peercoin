@@ -724,6 +724,8 @@ def SegwitV0SignatureMsg(script, txTo, inIdx, hashtype, amount):
 
     ss = bytes()
     ss += struct.pack("<i", txTo.nVersion)
+    if (txTo.nVersion < 3):
+        ss += struct.pack("<i", txTo.nTime)
     ss += ser_uint256(hashPrevouts)
     ss += ser_uint256(hashSequence)
     ss += txTo.vin[inIdx].prevout.serialize()
@@ -789,6 +791,8 @@ def TaprootSignatureMsg(txTo, spent_utxos, hash_type, input_index = 0, scriptpat
     spk = spent_utxos[input_index].scriptPubKey
     ss = bytes([0, hash_type]) # epoch, hash_type
     ss += struct.pack("<i", txTo.nVersion)
+    #if (txTo.nVersion < 3):
+    #    ss += struct.pack("<i", txTo.nTime)
     ss += struct.pack("<I", txTo.nLockTime)
     if in_type != SIGHASH_ANYONECANPAY:
         ss += BIP341_sha_prevouts(txTo)
@@ -821,7 +825,7 @@ def TaprootSignatureMsg(txTo, spent_utxos, hash_type, input_index = 0, scriptpat
         ss += TaggedHash("TapLeaf", bytes([leaf_ver]) + ser_string(script))
         ss += bytes([0])
         ss += struct.pack("<i", codeseparator_pos)
-    assert len(ss) ==  175 - (in_type == SIGHASH_ANYONECANPAY) * 49 - (out_type != SIGHASH_ALL and out_type != SIGHASH_SINGLE) * 32 + (annex is not None) * 32 + scriptpath * 37
+    assert len(ss) ==  175 - (in_type == SIGHASH_ANYONECANPAY) * 49 - (out_type != SIGHASH_ALL and out_type != SIGHASH_SINGLE) * 32 + (annex is not None) * 32 + scriptpath * 37 #+ (txTo.nVersion < 3) * 4
     return ss
 
 def TaprootSignatureHash(*args, **kwargs):

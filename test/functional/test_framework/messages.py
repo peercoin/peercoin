@@ -215,12 +215,6 @@ def tx_from_hex(hex_string):
     return from_hex(CTransaction(), hex_string)
 
 
-
-def tx_from_hex(hex_string):
-    """Deserialize from hex string to a transaction object"""
-    return FromHex(CTransaction(), hex_string)
-
-
 # Objects that map to bitcoind objects, which can be serialized/deserialized
 
 
@@ -445,7 +439,7 @@ class CTxOut:
         return r
 
     def __repr__(self):
-        return "CTxOut(nValue=%i.%08i scriptPubKey=%s)" \
+        return "CTxOut(nValue=%i.%06i scriptPubKey=%s)" \
             % (self.nValue // COIN, self.nValue % COIN,
                self.scriptPubKey.hex())
 
@@ -683,7 +677,7 @@ class CBlockHeader:
         self.nTime = struct.unpack("<I", f.read(4))[0]
         self.nBits = struct.unpack("<I", f.read(4))[0]
         self.nNonce = struct.unpack("<I", f.read(4))[0]
-        self.nFlags = struct.unpack("<I", f.read(4))[0]
+        #self.nFlags = struct.unpack("<I", f.read(4))[0]
         self.sha256 = None
         self.hash = None
 
@@ -695,7 +689,7 @@ class CBlockHeader:
         r += struct.pack("<I", self.nTime)
         r += struct.pack("<I", self.nBits)
         r += struct.pack("<I", self.nNonce)
-        r += struct.pack("<I", self.nFlags)
+        #r += struct.pack("<I", self.nFlags)
         return r
 
     def calc_sha256(self):
@@ -721,7 +715,7 @@ class CBlockHeader:
                time.ctime(self.nTime), self.nBits, self.nNonce, self.nFlags)
 
 BLOCK_HEADER_SIZE = len(CBlockHeader().serialize())
-assert_equal(BLOCK_HEADER_SIZE, 84)
+assert_equal(BLOCK_HEADER_SIZE, 80)
 
 class CBlock(CBlockHeader):
     __slots__ = ("vtx", "vchBlockSig",)

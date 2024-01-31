@@ -1364,13 +1364,13 @@ class TaprootTest(BitcoinTestFramework):
             # Add the 50 highest-value inputs
             unspents = node.listunspent()
             random.shuffle(unspents)
-            unspents.sort(key=lambda x: int(x["amount"] * 100000000), reverse=True)
+            unspents.sort(key=lambda x: int(x["amount"] * 1000000), reverse=True)
             if len(unspents) > 50:
                 unspents = unspents[:50]
             random.shuffle(unspents)
             balance = 0
             for unspent in unspents:
-                balance += int(unspent["amount"] * 100000000)
+                balance += int(unspent["amount"] * 1000000)
                 txid = int(unspent["txid"], 16)
                 fund_tx.vin.append(CTxIn(COutPoint(txid, int(unspent["vout"])), CScript()))
             # Add outputs
@@ -1380,11 +1380,13 @@ class TaprootTest(BitcoinTestFramework):
             self.log.debug("Create %i UTXOs in a transaction spending %i inputs worth %.8f (sending ~%.8f to change)" % (count_this_tx, len(unspents), balance * 0.00000001, change_goal * 0.00000001))
             for i in range(count_this_tx):
                 avg = (balance - change_goal) / (count_this_tx - i)
-                amount = int(random.randrange(int(avg*0.85 + 0.5), int(avg*1.15 + 0.5)) + 0.5)
+                amount = min(int(random.randrange(int(avg*0.85 + 0.5), int(avg*1.15 + 0.5)) + 0.5),1000000)
                 balance -= amount
+                if balance < 1000000:
+                    break
                 fund_tx.vout.append(CTxOut(amount, spenders[done + i].script))
             # Add change
-            fund_tx.vout.append(CTxOut(balance - 10000, random.choice(host_spks)))
+            fund_tx.vout.append(CTxOut(balance - 1000000, random.choice(host_spks)))
             # Ask the wallet to sign
             fund_tx = tx_from_hex(node.signrawtransactionwithwallet(fund_tx.serialize().hex())["hex"])
             # Construct UTXOData entries
@@ -1397,7 +1399,8 @@ class TaprootTest(BitcoinTestFramework):
                     normal_utxos.append(utxodata)
                 done += 1
             # Mine into a block
-            self.block_submit(node, [fund_tx], "Funding tx", None, random.choice(host_pubkeys), 10000, MAX_BLOCK_SIGOPS_WEIGHT, True, True)
+
+            self.block_submit(node, [fund_tx], "Funding tx", None, random.choice(host_pubkeys), -10000, MAX_BLOCK_SIGOPS_WEIGHT, True, True)
 
         # Consume groups of choice(input_coins) from utxos in a tx, testing the spenders.
         self.log.info("- Running %i spending tests" % done)
@@ -1446,7 +1449,8 @@ class TaprootTest(BitcoinTestFramework):
 
             # Decide fee, and add CTxIns to tx.
             amount = sum(utxo.output.nValue for utxo in input_utxos)
-            fee = min(random.randrange(MIN_FEE * 2, MIN_FEE * 4), amount - DUST_LIMIT)  # 10000-20000 sat fee
+            #fee = min(random.randrange(MIN_FEE * 2, MIN_FEE * 4), amount - DUST_LIMIT)  # 10000-20000 sat fee
+            fee = 20000
             in_value = amount - fee
             tx.vin = [CTxIn(outpoint=utxo.outpoint, nSequence=random.randint(min_sequence, 0xffffffff)) for utxo in input_utxos]
             tx.wit.vtxinwit = [CTxInWitness() for _ in range(len(input_utxos))]
@@ -1511,7 +1515,7 @@ class TaprootTest(BitcoinTestFramework):
                 else:
                     assert_raises_rpc_error(-26, None, node.sendrawtransaction, tx.serialize().hex(), 0)
                 # Submit in a block
-                self.block_submit(node, [tx], msg, witness=True, accept=fail_input is None, cb_pubkey=cb_pubkey, fees=fee, sigops_weight=sigops_weight, err_msg=expected_fail_msg)
+                self.block_submit(node, [tx], msg, witness=True, accept=fail_input is None, cb_pubkey=cb_pubkey, fees=-fee, sigops_weight=sigops_weight, err_msg=expected_fail_msg)
 
             if (len(spenders) - left) // 200 > (len(spenders) - left - len(input_utxos)) // 200:
                 self.log.info("  - %i tests done" % (len(spenders) - left))
@@ -1529,17 +1533,19 @@ class TaprootTest(BitcoinTestFramework):
         # Deterministically mine coins to OP_TRUE in block 1
         assert_equal(self.nodes[0].getblockcount(), 0)
         coinbase = CTransaction()
+        coinbase.nTime = 0
         coinbase.nVersion = 1
         coinbase.vin = [CTxIn(COutPoint(0, 0xffffffff), CScript([OP_1, OP_1]), SEQUENCE_FINAL)]
-        coinbase.vout = [CTxOut(5000000000, CScript([OP_1]))]
+        coinbase.vout = [CTxOut(50000000, CScript([OP_1]))]
         coinbase.nLockTime = 0
         coinbase.rehash()
-        assert coinbase.hash == "f60c73405d499a956d3162e3483c395526ef78286458a4cb17b125aa92e49b20"
+        assert coinbase.hash == "d72317a57b22fb7b8bbb05b6245937fd1bc4f1fc488b827ebab0c6d1bb8c57d2"
         # Mine it
         block = create_block(hashprev=int(self.nodes[0].getbestblockhash(), 16), coinbase=coinbase)
         block.rehash()
         block.solve()
         self.nodes[0].submitblock(block.serialize().hex())
+        self.tip = block.sha256
         assert_equal(self.nodes[0].getblockcount(), 1)
         self.generate(self.nodes[0], COINBASE_MATURITY)
 
@@ -1617,25 +1623,26 @@ class TaprootTest(BitcoinTestFramework):
         # come from distinct txids).
         txn = []
         lasttxid = coinbase.sha256
-        amount = 5000000000
+        amount = 50000000
         for i, spk in enumerate(old_spks + tap_spks):
-            val = 42000000 * (i + 7)
+            val = 420000 * (i + 7)
             tx = CTransaction()
             tx.nVersion = 1
+            tx.nTime = 0
             tx.vin = [CTxIn(COutPoint(lasttxid, i & 1), CScript([]), SEQUENCE_FINAL)]
-            tx.vout = [CTxOut(val, spk), CTxOut(amount - val, CScript([OP_1]))]
+            tx.vout = [CTxOut(val, spk), CTxOut(amount - val - 10000, CScript([OP_1]))]
             if i & 1:
                 tx.vout = list(reversed(tx.vout))
             tx.nLockTime = 0
             tx.rehash()
-            amount -= val
+            amount -= val + 10000
             lasttxid = tx.sha256
             txn.append(tx)
             spend_info[spk]['prevout'] = COutPoint(tx.sha256, i & 1)
             spend_info[spk]['utxo'] = CTxOut(val, spk)
         # Mine those transactions
         self.init_blockinfo(self.nodes[0])
-        self.block_submit(self.nodes[0], txn, "Crediting txn", None, sigops_weight=10, accept=True)
+        self.block_submit(self.nodes[0], txn, "Crediting txn", None, sigops_weight=10, accept=True, fees=-1000000)
 
         # scriptPubKey computation
         tests = {"version": 1}
@@ -1679,6 +1686,7 @@ class TaprootTest(BitcoinTestFramework):
         # Construct a deterministic transaction spending all outputs created above.
         tx = CTransaction()
         tx.nVersion = 2
+        tx.nTime = 0
         tx.vin = []
         inputs = []
         input_spks = [tap_spks[0], tap_spks[1], old_spks[0], tap_spks[2], tap_spks[5], old_spks[2], tap_spks[6], tap_spks[3], tap_spks[4]]
@@ -1687,8 +1695,8 @@ class TaprootTest(BitcoinTestFramework):
         for i, spk in enumerate(input_spks):
             tx.vin.append(CTxIn(spend_info[spk]['prevout'], CScript(), sequences[i]))
             inputs.append(spend_info[spk]['utxo'])
-        tx.vout.append(CTxOut(1000000000, old_spks[1]))
-        tx.vout.append(CTxOut(3410000000, pubs[98]))
+        tx.vout.append(CTxOut(10000000, old_spks[1]))
+        tx.vout.append(CTxOut(34100000, old_spks[1]))
         tx.nLockTime = 500000000
         precomputed = {
             "hashAmounts": BIP341_sha_amounts(inputs),
@@ -1745,9 +1753,9 @@ class TaprootTest(BitcoinTestFramework):
         aux = tx_test.setdefault("auxiliary", {})
         aux['fullySignedTx'] = tx.serialize().hex()
         keypath_tests.append(tx_test)
-        assert_equal(hashlib.sha256(tx.serialize()).hexdigest(), "24bab662cb55a7f3bae29b559f651674c62bcc1cd442d44715c0133939107b38")
+        assert_equal(hashlib.sha256(tx.serialize()).hexdigest(), "91c69a985a133c704d066244f92d1ef9b1f7c8c922b3571170bd2205a01cd1e4")
         # Mine the spending transaction
-        self.block_submit(self.nodes[0], [tx], "Spending txn", None, sigops_weight=10000, accept=True, witness=True)
+        self.block_submit(self.nodes[0], [tx], "Spending txn", None, sigops_weight=10000, accept=True, witness=True, fees=-1000000)
 
         if GEN_TEST_VECTORS:
             print(json.dumps(tests, indent=4, sort_keys=False))
