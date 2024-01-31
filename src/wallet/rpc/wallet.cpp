@@ -68,7 +68,7 @@ static RPCHelpMan getwalletinfo()
                         {RPCResult::Type::NUM_TIME, "unlocked_until", /*optional=*/true, "the " + UNIX_EPOCH_TIME + " until which the wallet is unlocked for transfers, or 0 if the wallet is locked (only present for passphrase-encrypted wallets)"},
                         {RPCResult::Type::STR_HEX, "hdseedid", /*optional=*/true, "the Hash160 of the HD seed (only present when HD is enabled)"},
                         {RPCResult::Type::BOOL, "private_keys_enabled", "false if privatekeys are disabled for this wallet (enforced watch-only wallet)"},
-                        {RPCResult::Type::BOOL, "unlocked_minting_only", "true if wallet is unlocked for minting only"},
+                        {RPCResult::Type::BOOL, "unlocked_minting_only", /*optional=*/true, "true if wallet is unlocked for minting only"},
                         {RPCResult::Type::BOOL, "avoid_reuse", "whether this wallet tracks clean/dirty coins in terms of reuse"},
                         {RPCResult::Type::OBJ, "scanning", "current scanning details, or false if no scan is in progress",
                         {
