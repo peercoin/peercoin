@@ -199,16 +199,6 @@ bool OptionsModel::Init(bilingual_str& error)
     // If setting doesn't exist create it with defaults.
 
     // Main
-    if (!settings.contains("nDatabaseCache"))
-        settings.setValue("nDatabaseCache", (qint64)nDefaultDbCache);
-    if (!gArgs.SoftSetArg("-dbcache", settings.value("nDatabaseCache").toString().toStdString()))
-        addOverriddenOption("-dbcache");
-
-    if (!settings.contains("nThreadsScriptVerif"))
-        settings.setValue("nThreadsScriptVerif", DEFAULT_SCRIPTCHECK_THREADS);
-    if (!gArgs.SoftSetArg("-par", settings.value("nThreadsScriptVerif").toString().toStdString()))
-        addOverriddenOption("-par");
-
     if (!settings.contains("strDataDir"))
         settings.setValue("strDataDir", GUIUtil::getDefaultDataDirectory());
 
@@ -227,35 +217,6 @@ bool OptionsModel::Init(bilingual_str& error)
     if (!gArgs.SoftSetBoolArg("-checkgithub", settings.value("bCheckGithub").toBool()))
         addOverriddenOption("-checkgithub");
 #endif
-
-    // Network
-
-    if (!settings.contains("server")) {
-        settings.setValue("server", false);
-    }
-    if (!gArgs.SoftSetBoolArg("-server", settings.value("server").toBool())) {
-        addOverriddenOption("-server");
-    }
-
-    if (!settings.contains("fUseProxy"))
-        settings.setValue("fUseProxy", false);
-    if (!settings.contains("addrProxy"))
-        settings.setValue("addrProxy", GetDefaultProxyAddress());
-    // Only try to set -proxy, if user has enabled fUseProxy
-    if ((settings.value("fUseProxy").toBool() && !gArgs.SoftSetArg("-proxy", settings.value("addrProxy").toString().toStdString())))
-        addOverriddenOption("-proxy");
-    else if(!settings.value("fUseProxy").toBool() && !gArgs.GetArg("-proxy", "").empty())
-        addOverriddenOption("-proxy");
-
-    if (!settings.contains("fUseSeparateProxyTor"))
-        settings.setValue("fUseSeparateProxyTor", false);
-    if (!settings.contains("addrSeparateProxyTor"))
-        settings.setValue("addrSeparateProxyTor", GetDefaultProxyAddress());
-    // Only try to set -onion, if user has enabled fUseSeparateProxyTor
-    if ((settings.value("fUseSeparateProxyTor").toBool() && !gArgs.SoftSetArg("-onion", settings.value("addrSeparateProxyTor").toString().toStdString())))
-        addOverriddenOption("-onion");
-    else if(!settings.value("fUseSeparateProxyTor").toBool() && !gArgs.GetArg("-onion", "").empty())
-        addOverriddenOption("-onion");
 
     // Display
     if (!settings.contains("UseEmbeddedMonospacedFont")) {
