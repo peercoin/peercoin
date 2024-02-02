@@ -142,7 +142,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
 
     LOCK(::cs_main);
 
-    CBlockIndex* pindexPrev = m_node->chainman->ActiveChain().Tip();
+    CBlockIndex* pindexPrev = m_chainstate.m_chain.Tip();
     assert(pindexPrev != nullptr);
     nHeight = pindexPrev->nHeight + 1;
 
