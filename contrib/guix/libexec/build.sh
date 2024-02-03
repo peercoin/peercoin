@@ -199,6 +199,10 @@ make -C depends --jobs="$JOBS" HOST="$HOST" \
 # Source Tarball Building #
 ###########################
 
+if [ -z "$GITHUB_ACTIONS" ]; then
+    git config --global --add safe.directory "${PWD}"
+fi
+
 GIT_ARCHIVE="${DIST_ARCHIVE_BASE}/${DISTNAME}.tar.gz"
 
 # Create the source tarball if not already there
