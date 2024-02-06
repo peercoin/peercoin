@@ -313,7 +313,7 @@ jobs:
 
       - name: Set up environment
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
-        run: sudo apt-get update && sudo apt-get install -y mktorrent gpg bash
+        run: sudo apt-get update && sudo apt-get install -y gpg bash
 
       - uses: actions/checkout@v4
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
@@ -337,28 +337,28 @@ jobs:
           echo "email:       ${{ steps.import_gpg.outputs.email }}"
           gpg --keyserver hkp://keyserver.ubuntu.com --send-key ${{ steps.import_gpg.outputs.keyid }}
 
-      - name: Create torrent
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
-        run: |
-          rm -rf ${{ steps.detect.outputs.tag-name }}/*
-          mkdir -p ${{ steps.detect.outputs.tag-name }}
-          mv peercoin-*-**/peercoin-*.tar.gz \
-            peercoin-*-**/peercoin-*.zip \
-            peercoin-*-**/peercoin-*.exe \
-            peercoin-*-**/peercoin-*.dmg \
-            peercoin-*-**/*.AppImage* \
-          ${{ steps.detect.outputs.tag-name }}/
-          cd ${{ steps.detect.outputs.tag-name }}
-          sha256sum * > SHA256SUMS
-          gpg --digest-algo sha256 --clearsign SHA256SUMS
-          rm SHA256SUMS
-          cd -
-          mktorrent -w ${{ github.server_url }}/${{ github.repository }}/releases/download \
-            -o ${{ steps.detect.outputs.tag-name }}/peercoin-${{ steps.detect.outputs.tag-name }}.torrent \
-            -a udp://tracker.opentrackr.org:1337/announce \
-            -a udp://tracker.openbittorrent.com:6969/announce \
-            -a udp://exodus.desync.com:6969/announce \
-          ${{ steps.detect.outputs.tag-name }}
+#      - name: Create torrent
+#        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+#        run: |
+#          rm -rf ${{ steps.detect.outputs.tag-name }}/*
+#          mkdir -p ${{ steps.detect.outputs.tag-name }}
+#          mv peercoin-*-**/peercoin-*.tar.gz \
+#            peercoin-*-**/peercoin-*.zip \
+#            peercoin-*-**/peercoin-*.exe \
+#            peercoin-*-**/peercoin-*.dmg \
+#            peercoin-*-**/*.AppImage* \
+#          ${{ steps.detect.outputs.tag-name }}/
+#          cd ${{ steps.detect.outputs.tag-name }}
+#          sha256sum * > SHA256SUMS
+#          gpg --digest-algo sha256 --clearsign SHA256SUMS
+#          rm SHA256SUMS
+#          cd -
+#          mktorrent -w ${{ github.server_url }}/${{ github.repository }}/releases/download \
+#            -o ${{ steps.detect.outputs.tag-name }}/peercoin-${{ steps.detect.outputs.tag-name }}.torrent \
+#            -a udp://tracker.opentrackr.org:1337/announce \
+#            -a udp://tracker.openbittorrent.com:6969/announce \
+#            -a udp://exodus.desync.com:6969/announce \
+#          ${{ steps.detect.outputs.tag-name }}
 
       - name: Check latest
         id: detect-publish-latest
