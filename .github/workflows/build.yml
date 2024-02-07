@@ -90,12 +90,25 @@ jobs:
       - run: apk add tar
       - name: Cache dependencies
         uses: actions/cache@v4
-        id: depends
-        env:
-          cache-name: guix-host
         with:
-          path: depends/built/${{ matrix.host }}
-          key: ${{ matrix.name }}-${{ env.cache-name }}-${{ hashFiles('depends/packages/*') }}
+          path: depends/built/
+          key: depends-built-${{ matrix.name }}-${{ hashFiles('depends/packages/*') }}
+
+      - name: Cache guix
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/guix/
+            /var/log/guix/
+            /gnu/
+            /etc/guix/
+            /home/*/.config/guix/
+            /home/*/.cache/guix/
+            /home/*/.guix-profile/
+            /root/.config/guix/
+            /root/.cache/guix/
+            /root/.guix-profile/
+          key: guix-${{ hashFiles('contrib/guix/**') }}
 
       - name: Fetch OSX SDK
         if: ${{ matrix.name == 'x86_64-apple-darwin' || matrix.name == 'arm64-apple-darwin' }}
@@ -116,8 +129,7 @@ jobs:
         id: detect-outdir
         run: |
           source "contrib/guix/libexec/prelude.bash"
-          export OUTDIR_BASE="${OUTDIR_BASE:-${VERSION_BASE}/output}"
-          echo "outdir=${OUTDIR_BASE}/${1}${2:+-${2}}/${{ matrix.name }}" >> $GITHUB_OUTPUT
+          echo "outdir=${OUTDIR_BASE:-${VERSION_BASE}/output}/${{ matrix.name }}" >> $GITHUB_OUTPUT
 
       - name: Get short SHA
         id: slug
