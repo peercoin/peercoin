@@ -73,17 +73,17 @@ BOOST_AUTO_TEST_CASE(headers_sync_state)
     std::unique_ptr<HeadersSyncState> hss;
 
     const int target_blocks = 15000;
-    arith_uint256 chain_work = target_blocks*2;
+    arith_uint256 chain_work = target_blocks;
 
     // Generate headers for two different chains (using differing merkle roots
     // to ensure the headers are different).
     GenerateHeaders(first_chain, target_blocks-1, Params().GenesisBlock().GetHash(),
             Params().GenesisBlock().nVersion, Params().GenesisBlock().nTime,
-            ArithToUint256(0), Params().GenesisBlock().nBits);
+            ArithToUint256(0), UintToArith256(Params().GetConsensus().powLimit).GetCompact());
 
     GenerateHeaders(second_chain, target_blocks-2, Params().GenesisBlock().GetHash(),
             Params().GenesisBlock().nVersion, Params().GenesisBlock().nTime,
-            ArithToUint256(1), Params().GenesisBlock().nBits);
+            ArithToUint256(1), UintToArith256(Params().GetConsensus().powLimit).GetCompact());
 
     const CBlockIndex* chain_start = WITH_LOCK(::cs_main, return m_node.chainman->m_blockman.LookupBlockIndex(Params().GenesisBlock().GetHash()));
     std::vector<CBlockHeader> headers_batch;
