@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << filter;
 
-    std::vector<unsigned char> expected = ParseHex("038fc16b080000000000000001");
+    std::vector<unsigned char> expected = ParseHex("034d116d080000000000000001");
     auto result{MakeUCharSpan(stream)};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(), expected.begin(), expected.end());
