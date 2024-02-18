@@ -9,25 +9,89 @@ on:
       - 'doc/**'
       - 'contrib/**'
       - '**/*.md'
+env:
+  JOBS: 4
 
 jobs:
+  guix-base:
+    runs-on: ubuntu-22.04
+    outputs:
+      tag-hash: ${{ steps.detect.outputs.tag-hash }}
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: contrib/guix
+      - run: |
+          echo tag-hash="$(echo "${{ hashFiles('contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}" | cut -c 1-8)" >> $GITHUB_OUTPUT
+        id: detect
+      - run: >
+          docker buildx build contrib/guix
+          --allow security.insecure
+          --target guix-base
+          --tag ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --build-arg JOBS="${JOBS}"
+          --cache-from "type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}-cache"
+          --cache-to "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}-cache"
+          --push
+  guix-host:
+    runs-on: ubuntu-22.04
+    needs: [guix-base]
+    strategy:
+      matrix:
+        name:
+          - x86_64-linux-gnu
+          - arm-linux-gnueabihf
+          - aarch64-linux-gnu
+          - riscv64-linux-gnu
+          - x86_64-w64-mingw32
+          - x86_64-apple-darwin
+          - arm64-apple-darwin
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: contrib/guix
+      - run: >
+          docker buildx build contrib/guix
+          --allow security.insecure
+          --target guix-host
+          --tag ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}
+          --build-arg HOST=${{ matrix.name }}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --build-arg JOBS="${JOBS}"
+          --cache-from "type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}-cache"
+          --cache-to "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}-cache"
+          --push
   binary:
     runs-on: ubuntu-22.04
-    container:
-      image: alpine:3.19
-      options: --privileged
+    needs: [guix-base, guix-host]
     env:
-      guix_download_path: ftp://ftp.gnu.org/gnu/guix
-      guix_version: 1.4.0
-      guix_checksum_aarch64: 72d807392889919940b7ec9632c45a259555e6b0942ea7bfd131101e08ebfcf4
-      guix_checksum_x86_64: 236ca7c9c5958b1f396c2924fcc5bc9d6fdebcb1b4cf3c7c6d46d4bf660ed9c9
       xcode_download_path: https://bitcoincore.org/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz
       xcode_checksum: df75d30ecafc429e905134333aeae56ac65fac67cb4182622398fd717df77619
-      builder_count: 32
-      GUIX_LOCPATH: /root/.guix-profile/lib/locale
-      LC_ALL: en_US.UTF-8
       HOSTS: ${{ matrix.name }}
-      SUBSTITUTE_URLS: https://ci.guix.gnu.org
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}
+      options: --privileged
 
     strategy:
       matrix:
@@ -41,49 +105,6 @@ jobs:
           - arm64-apple-darwin
 
     steps:
-      - run: >
-          apk --update add
-          nodejs-current
-          wget
-          zstd
-          bash
-          bzip2
-          ca-certificates
-          curl
-          git
-          make
-          shadow
-
-      - name: Set up guix
-        run: |
-          guix_file_name=guix-binary-${guix_version}.$(uname -m)-linux.tar.xz
-          eval "guix_checksum=\${guix_checksum_$(uname -m)}"
-          cd /tmp
-          wget -q -O "$guix_file_name" "${guix_download_path}/${guix_file_name}"
-          echo "${guix_checksum}  ${guix_file_name}" | sha256sum -c
-          tar xJf "$guix_file_name"
-          mv var/guix /var/
-          mv gnu /
-          mkdir -p ~root/.config/guix
-          ln -sf /var/guix/profiles/per-user/root/current-guix ~root/.config/guix/current
-          source ~root/.config/guix/current/etc/profile
-
-      - run: echo "/root/.config/guix/current/bin" >> $GITHUB_PATH
-
-      - run: touch /etc/nsswitch.conf
-
-      - run: guix archive --authorize < ~root/.config/guix/current/share/guix/ci.guix.gnu.org.pub
-
-      - run: groupadd --system guixbuild
-
-      - run: |
-          for i in $(seq -w 1 ${builder_count}); do \
-            useradd -g guixbuild -G guixbuild \
-                    -d /var/empty -s $(which nologin) \
-                    -c "Guix build user ${i}" --system \
-                    "guixbuilder${i}" ; \
-          done
-
       - uses: actions/checkout@v4
       - run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
@@ -93,22 +114,6 @@ jobs:
         with:
           path: depends/built/
           key: depends-built-${{ matrix.name }}-${{ hashFiles('depends/packages/*') }}
-
-      - name: Cache guix
-        uses: actions/cache@v4
-        with:
-          path: |
-            /var/guix/
-            /var/log/guix/
-            /gnu/
-            /etc/guix/
-            /home/*/.config/guix/
-            /home/*/.cache/guix/
-            /home/*/.guix-profile/
-            /root/.config/guix/
-            /root/.cache/guix/
-            /root/.guix-profile/
-          key: guix-${{ hashFiles('contrib/guix/**') }}
 
       - name: Fetch OSX SDK
         if: ${{ matrix.name == 'x86_64-apple-darwin' || matrix.name == 'arm64-apple-darwin' }}
