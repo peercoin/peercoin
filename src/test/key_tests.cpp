@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(key_test1)
     BOOST_CHECK(key2.Sign(hashMsg, detsig));
     BOOST_CHECK(key2C.Sign(hashMsg, detsigc));
     BOOST_CHECK(detsig == detsigc);
-    BOOST_CHECK(detsig == ParseHex("30450221008f0ea4c2603c55258df73391c9ba623ffe73d71de7f7aef0d8932aeed9ff693a02204ccdd1e6dabfaf33ff05b9ef0786f3aff8e882a99a4123775aa6654db549f9c9"));
+    BOOST_CHECK(detsig == ParseHex("304402202a75ef2c210691f076a3397cdcf3414e8dc92c0e543251f00b84e703fc26791d02204667e08f5162f0f39ce978e8342826729d22392cb7135fe02209f7231de1f2d4"));
     BOOST_CHECK(key1.SignCompact(hashMsg, detsig));
     BOOST_CHECK(key1C.SignCompact(hashMsg, detsigc));
     BOOST_CHECK(detsig == ParseHex("1c66fdd0b32830fd697137a5b4f5140982b48542959ab0e52acbf95dcc1e132ba500c0980179ff30d01e30f2d34e91a8cd6222cbc2344c00d4fa0bdc62d8f49db6"));
