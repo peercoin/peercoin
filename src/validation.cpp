@@ -2103,7 +2103,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
 
     // Enforce BIP68 (sequence locks) and BIP112 (CHECKSEQUENCEVERIFY)
     int nLockTimeFlags = 0;
-    if (pindex->pprev && IsBTC16BIPsEnabled(pindex->pprev->nTime)) {
+    if (pindex->pprev && IsBTC16BIPsEnabled(pindex->pprev->nTime) && !params.IsMockableChain()) {
         nLockTimeFlags |= LOCKTIME_VERIFY_SEQUENCE;
     }
 
