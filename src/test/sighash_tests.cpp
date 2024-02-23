@@ -99,6 +99,7 @@ void static RandomTransaction(CMutableTransaction& tx, bool fSingle)
     tx.nLockTime = (InsecureRandBool()) ? InsecureRand32() : 0;
     int ins = (InsecureRandBits(2)) + 1;
     int outs = fSingle ? ins : (InsecureRandBits(2)) + 1;
+    CAmount total = 0;
     for (int in = 0; in < ins; in++) {
         tx.vin.push_back(CTxIn());
         CTxIn &txin = tx.vin.back();
@@ -111,11 +112,16 @@ void static RandomTransaction(CMutableTransaction& tx, bool fSingle)
         tx.vout.push_back(CTxOut());
         CTxOut &txout = tx.vout.back();
         txout.nValue = InsecureRandMoneyAmount();
+        if (total+txout.nValue > MAX_MONEY)
+            txout.nValue = MIN_TXOUT_AMOUNT;
+        total += txout.nValue;
         RandomScript(txout.scriptPubKey);
     }
 }
 
 BOOST_FIXTURE_TEST_SUITE(sighash_tests, BasicTestingSetup)
+
+// #define PRINT_SIGHASH_JSON
 
 BOOST_AUTO_TEST_CASE(sighash_test)
 {
