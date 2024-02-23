@@ -380,17 +380,13 @@ bool ParseFixedPoint(std::string_view val, int decimals, int64_t *amount_out)
     if (ptr < end && val[ptr] == '.')
     {
         ++ptr;
-        int peercoin_digits = 6;
         if (ptr < end && IsDigit(val[ptr]))
         {
             while (ptr < end && IsDigit(val[ptr])) {
-                if (peercoin_digits) {
-                    if (!ProcessMantissaDigit(val[ptr], mantissa, mantissa_tzeros))
-                        return false; /* overflow */
-                    ++point_ofs;
-                    --peercoin_digits;
-                    }
+                if (!ProcessMantissaDigit(val[ptr], mantissa, mantissa_tzeros))
+                    return false; /* overflow */
                 ++ptr;
+                ++point_ofs;
             }
         } else return false; /* missing expected digit */
     }
@@ -426,8 +422,15 @@ bool ParseFixedPoint(std::string_view val, int decimals, int64_t *amount_out)
 
     /* convert to one 64-bit fixed-point value */
     exponent += decimals;
-    if (exponent < 0)
-        return false; /* cannot represent values smaller than 10^-decimals */
+
+    if (exponent < -2)
+        return false; /* we don't allow values smaller than 10^-8 */
+
+    while (exponent < 0) {
+        mantissa /= 10;
+        exponent++;
+    }
+
     if (exponent >= 18)
         return false; /* cannot represent values larger than or equal to 10^(18-decimals) */
 
