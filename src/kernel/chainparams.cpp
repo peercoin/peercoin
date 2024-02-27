@@ -521,6 +521,8 @@ public:
         m_is_test_chain = true;
         m_is_mockable_chain = true;
 
+        fMiningRequiresPeers = false;
+
         checkpointData = {
             {
                 {0, uint256S("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06")}
@@ -551,10 +553,6 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "pcrt";
-        fMiningRequiresPeers = false;
-        fDefaultConsistencyChecks = true;
-        fRequireStandard = false;
-        //fMineBlocksOnDemand = true;
     }
 };
 
