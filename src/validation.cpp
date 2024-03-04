@@ -1884,6 +1884,7 @@ void StopScriptCheckWorkerThreads()
 static unsigned int GetBlockScriptFlags(const CBlockIndex& block_index, const ChainstateManager& chainman)
 {
     const Consensus::Params& consensusparams = chainman.GetConsensus();
+    const CChainParams& params{chainman.GetParams()};
 
     // BIP16 didn't become active until Apr 1 2012 (on mainnet, and
     // retroactively applied to testnet)
@@ -1900,7 +1901,7 @@ static unsigned int GetBlockScriptFlags(const CBlockIndex& block_index, const Ch
     }
 
     // Enforce the DERSIG (BIP66) rule
-    if (block_index.pprev && IsBTC16BIPsEnabled(block_index.pprev->nTime)) {
+    if (block_index.pprev && IsBTC16BIPsEnabled(block_index.pprev->nTime) && !params.IsMockableChain()) {
         flags |= SCRIPT_VERIFY_DERSIG;
     }
 
