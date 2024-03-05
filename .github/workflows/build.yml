@@ -9,116 +9,155 @@ on:
       - 'doc/**'
       - 'contrib/**'
       - '**/*.md'
-
 env:
-  MAKEJOBS: 3
-  DOCKER_BUILDKIT: 1
-  GITIAN_DIR: /opt/gitian-builder
-  GITIAN_CACHE: /opt/gitian-builder/cache
-  DEBIAN_FRONTEND: noninteractive
-  USE_DOCKER: 1
+  JOBS: 4
 
 jobs:
-  binary:
-    runs-on: ubuntu-20.04
-    container: docker:stable-dind
+  check-permission:
+    runs-on: ubuntu-22.04
+    outputs:
+      permission: ${{ steps.check-permission.outputs.permission }}
+    steps:
+      - run: |
+          permission=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
+            -X GET https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission \
+            | jq -r .permission)
+          echo "Permission for ${{ github.actor }} is ${permission}"
+          echo permission="${permission}" >> $GITHUB_OUTPUT
+        id: check-permission
+  guix-base:
+    runs-on: ubuntu-22.04
+    needs: check-permission
+    outputs:
+      tag-hash: ${{ steps.detect.outputs.tag-hash }}
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: contrib/guix
+      - run: echo tag-hash="$(echo "${{ hashFiles('contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}" | cut -c 1-8)" >> $GITHUB_OUTPUT
+        id: detect
+      - run: >
+          docker buildx build contrib/guix
+          --allow security.insecure
+          --target guix-base
+          --tag ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --build-arg JOBS="${JOBS}"
+          --cache-from "type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}-cache"
+          --cache-to "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}-cache"
+          --push
+        if: ${{ needs.check-permission.outputs.permission == 'admin' || needs.check-permission.outputs.permission == 'write' }}
+  guix-host:
+    runs-on: ubuntu-22.04
+    needs: [check-permission, guix-base]
     strategy:
       matrix:
         name:
-          - armhf-linux
-          - aarch64-linux
-          - riscv64-linux
-          - x86_64-linux
-          - x86_64-macos
-          - x86_64-win
-        include:
-          - os: linux
-            name: armhf-linux
-            host: arm-linux-gnueabihf
-          - os: linux
-            name: aarch64-linux
-            host: aarch64-linux-gnu
-          - os: linux
-            name: riscv64-linux
-            host: riscv64-linux-gnu
-          - os: linux
-            name: x86_64-linux
-            host: x86_64-linux-gnu
-          - os: osx
-            name: x86_64-macos
-            host: x86_64-apple-darwin16
-          - os: win
-            name: x86_64-win
-            host: x86_64-w64-mingw32
+          - x86_64-linux-gnu
+          - arm-linux-gnueabihf
+          - aarch64-linux-gnu
+          - riscv64-linux-gnu
+          - x86_64-w64-mingw32
+          - x86_64-apple-darwin
+          - arm64-apple-darwin
     steps:
-      - name: Set up environment
-        run: |
-          apk add --no-cache curl make ruby wget git sed tar grep bash
-          git clone https://github.com/devrandom/gitian-builder.git ${GITIAN_DIR}
-          mkdir -p ${GITIAN_DIR}/inputs ${GITIAN_DIR}/var
-          wget https://github.com/mikefarah/yq/releases/download/v4.13.5/yq_linux_amd64.tar.gz -O - |\
-            tar xz && mv yq_linux_amd64 /usr/bin/yq
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: contrib/guix
+      - run: >
+          docker buildx build contrib/guix
+          --allow security.insecure
+          --target guix-host
+          --tag ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}
+          --build-arg HOST=${{ matrix.name }}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --build-arg JOBS="${JOBS}"
+          --cache-from "type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}-cache"
+          --cache-from "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}-cache"
+          --cache-to "type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}-cache"
+          --push
+        if: ${{ needs.check-permission.outputs.permission == 'admin' || needs.check-permission.outputs.permission == 'write' }}
+  binary:
+    runs-on: ubuntu-22.04
+    needs: [guix-base, guix-host]
+    env:
+      xcode_download_path: https://bitcoincore.org/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz
+      xcode_checksum: df75d30ecafc429e905134333aeae56ac65fac67cb4182622398fd717df77619
+      HOSTS: ${{ matrix.name }}
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.name }}
+      options: --privileged
+
+    strategy:
+      matrix:
+        name:
+          - x86_64-linux-gnu
+          - arm-linux-gnueabihf
+          - aarch64-linux-gnu
+          - riscv64-linux-gnu
+          - x86_64-w64-mingw32
+          - x86_64-apple-darwin
+          - arm64-apple-darwin
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
+
+      - run: apk add tar
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: depends/built/
+          key: depends-built-${{ matrix.name }}-${{ hashFiles('depends/packages/*') }}
 
       - name: Fetch OSX SDK
-        if: ${{ matrix.os == 'osx' }}
-        run: wget -N https://bitcoincore.org/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz -O ${GITIAN_DIR}/inputs/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz
-
-      - uses: actions/checkout@v3
-
-      - name: Detect suite
-        id: detect
-        shell: bash
+        if: ${{ matrix.name == 'x86_64-apple-darwin' || matrix.name == 'arm64-apple-darwin' }}
+        working-directory: /tmp
         run: |
-          DESCRIPTOR=$PWD/contrib/gitian-descriptors/gitian-${{ matrix.os }}.yml
-          NAME=$(yq e '.name' ${DESCRIPTOR})
-          COMMIT_OR_TAG=$(git log --format="%H" -n 1)
-          FETCH_TAGS=""
-          if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            COMMIT_OR_TAG=$(echo ${GITHUB_REF/refs\/tags\//})
-            FETCH_TAGS="--fetch-tags"
-          fi
-          echo "descriptor=${DESCRIPTOR}" >> $GITHUB_OUTPUT
-          echo "name=${NAME}" >> $GITHUB_OUTPUT
-          echo "version=$(echo ${NAME} | grep -Eo [0-9.]+)" >> $GITHUB_OUTPUT
-          echo "suite=$(yq e '.suites[0]' ${DESCRIPTOR})" >> $GITHUB_OUTPUT
-          echo "architecture=$(yq e '.architectures[0]' ${DESCRIPTOR})" >> $GITHUB_OUTPUT
-          echo "build-dir=${PWD}" >> $GITHUB_OUTPUT
-          echo "commit-or-tag=${COMMIT_OR_TAG}" >> $GITHUB_OUTPUT
-          echo "fetch-tags=${FETCH_TAGS}" >> $GITHUB_OUTPUT
+          wget -q -O xcode.tar.gz ${xcode_download_path}
+          echo "${xcode_checksum} xcode.tar.gz" | sha256sum -c
 
-      - name: Build gitian base image
+      - name: Extract OSX SDK
+        if: ${{ matrix.name == 'x86_64-apple-darwin' || matrix.name == 'arm64-apple-darwin' }}
         run: |
-          docker build --tag base-${{ steps.detect.outputs.suite }}-${{ steps.detect.outputs.architecture }} -<<EOF
-            FROM ubuntu:${{ steps.detect.outputs.suite }}
-            ENV DEBIAN_FRONTEND=noninteractive
-            RUN apt-get update && apt-get --no-install-recommends -y install pciutils build-essential git subversion language-pack-en wget lsb-release
-            RUN useradd -ms /bin/bash -U ubuntu
-            USER ubuntu:ubuntu
-            WORKDIR /home/ubuntu
-            CMD ["sleep", "infinity"]
-          EOF
+          mkdir depends/SDKs
+          tar -C depends/SDKs -xaf /tmp/xcode.tar.gz
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        id: gitian-deps
-        env:
-          cache-name: gitian-host
-        with:
-          path: ${{ env.GITIAN_CACHE }}/${{ steps.detect.outputs.name }}/${{ matrix.host }}
-          key: ${{ matrix.name }}-${{ env.cache-name }}-${{ hashFiles('depends/packages/*') }}
+      - run: guix-daemon --build-users-group=guixbuild & ./contrib/guix/guix-build
 
-      - name: Build binary
-        working-directory: ${{ env.GITIAN_DIR }}
+      - shell: bash
+        id: detect-outdir
         run: |
-          sed -i "s/^\ \ \(HOSTS=\"\).*/\ \ \1${{ matrix.host }}\"/g" ${{ steps.detect.outputs.descriptor }}
-          ./bin/gbuild -j $MAKEJOBS ${{ steps.detect.outputs.fetch-tags }} --commit peercoin=${{ steps.detect.outputs.commit-or-tag }} --url peercoin=${{ github.server_url }}/${{ github.repository }} ${{ steps.detect.outputs.descriptor }}
-          cp -r ${GITIAN_DIR}/build/out/* ${{ steps.detect.outputs.build-dir }}/
+          source "contrib/guix/libexec/prelude.bash"
+          echo "outdir=${OUTDIR_BASE:-${VERSION_BASE}/output}/${{ matrix.name }}" >> $GITHUB_OUTPUT
 
       - name: Get short SHA
         id: slug
         run: echo "sha8=$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_OUTPUT
 
-      - uses: actions/upload-artifact@v3
+      - name: Copy artifacts
+        run: cp -r ${{ steps.detect-outdir.outputs.outdir }}/* ${PWD}/
+
+      - uses: actions/upload-artifact@v4
         with:
           name: peercoin-${{ steps.slug.outputs.sha8 }}-${{ matrix.name }}
           path: |
@@ -131,14 +170,14 @@ jobs:
           retention-days: 5
           if-no-files-found: error
   docker:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [binary]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: peercoin/packaging
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: docker
 
@@ -146,15 +185,15 @@ jobs:
         working-directory: docker
         run: |
           mkdir -p linux/amd64 linux/arm/v7 linux/arm64
-          mv peercoin-*-x86_64-linux/peercoin-*-x86_64-linux-gnu.tar.gz linux/amd64/
-          mv peercoin-*-armhf-linux/peercoin-*-arm-linux-gnueabihf.tar.gz linux/arm/v7/
-          mv peercoin-*-aarch64-linux/peercoin-*-aarch64-linux-gnu.tar.gz linux/arm64/
+          mv peercoin-*-x86_64-linux-gnu/peercoin-*-x86_64-linux-gnu.tar.gz linux/amd64/
+          mv peercoin-*-arm-linux-gnueabihf/peercoin-*-arm-linux-gnueabihf.tar.gz linux/arm/v7/
+          mv peercoin-*-aarch64-linux-gnu/peercoin-*-aarch64-linux-gnu.tar.gz linux/arm64/
 
-      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-qemu-action@v3
         with:
           platforms: arm,arm64
 
-      - uses: docker/setup-buildx-action@v2
+      - uses: docker/setup-buildx-action@v3
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
 
@@ -187,14 +226,14 @@ jobs:
           echo "tag-name=${TAG_NAME}" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         if: steps.detect.outputs.push == 'true'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         if: steps.detect.outputs.push == 'true'
         with:
           registry: ghcr.io
@@ -211,7 +250,7 @@ jobs:
             --tag ghcr.io/${{ github.repository }}/peercoind:${{ steps.detect.outputs.tag-name }} \
           .
   appimage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [binary]
     strategy:
       matrix:
@@ -233,18 +272,17 @@ jobs:
             sources_repo: http://archive.ubuntu.com/ubuntu
             apt_arch: amd64
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: peercoin/packaging
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: appimage
 
       - name: Set up environment
         working-directory: appimage
-        run: |
-          pip3 install --upgrade pyOpenSSL git+https://github.com/AppImageCrafters/appimage-builder@3396839c9e3419f4bd726cb129e54e6da4212e48
+        run: pip3 install --upgrade pyOpenSSL git+https://github.com/AppImageCrafters/appimage-builder@3396839c9e3419f4bd726cb129e54e6da4212e48
 
       - name: Detect env
         id: detect
@@ -265,19 +303,19 @@ jobs:
       - name: Build AppImage
         working-directory: appimage
         run: |
-          tar xzf peercoin-${{ steps.detect.outputs.sha8 }}-${{ matrix.name }}-linux/peercoin-*-${{ matrix.host }}.tar.gz -C AppDir --strip-components=1
+          tar xzf peercoin-${{ steps.detect.outputs.sha8 }}-${{ matrix.host }}/peercoin-*-${{ matrix.host }}.tar.gz -C AppDir --strip-components=1
           find AppDir/bin ! -name 'peercoin-qt' -type f -exec rm -f {} +
           VERSION=${{ steps.detect.outputs.tag-name }} SOURCES_REPO=${{ matrix.sources_repo }} APT_ARCH=${{ matrix.apt_arch }} BUILD_ARCH=${{ matrix.name }} appimage-builder --skip-tests
           mv *.AppImage ${{ steps.detect.outputs.build-dir }}/
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: peercoin-appimage-${{ steps.detect.outputs.tag-name }}-${{ matrix.name }}
           path: |
             *.AppImage
           retention-days: 5
   release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [binary, appimage]
     if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-') }}
     steps:
@@ -308,16 +346,16 @@ jobs:
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
         run: sudo apt-get update && sudo apt-get install -y mktorrent gpg bash
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
 
       - name: Import GPG key
         if: ${{ steps.detect.outputs.tag-name != 'noop' }}
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v5
+        uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
 

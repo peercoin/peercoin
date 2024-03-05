@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2021 The Bitcoin Core developers
+# Copyright (c) 2014-2022 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test mining RPCs
@@ -35,6 +35,9 @@ from test_framework.wallet import MiniWallet
 VERSIONBITS_TOP_BITS = 0x20000000
 VERSIONBITS_DEPLOYMENT_TESTDUMMY_BIT = 28
 
+VERSIONBITS_TOP_BITS = 0x20000000
+VERSIONBITS_DEPLOYMENT_TESTDUMMY_BIT = 28
+
 
 def assert_template(node, block, expect, rehash=True):
     if rehash:
@@ -52,6 +55,9 @@ class MiningTest(BitcoinTestFramework):
         self.num_nodes = 2
         self.setup_clean_chain = True
         self.supports_cli = False
+
+    def skip_test_if_missing_module(self):
+        self.skip_if_no_wallet()
 
     def mine_chain(self):
         self.log.info('Create some old blocks')
@@ -200,7 +206,7 @@ class MiningTest(BitcoinTestFramework):
 
         self.log.info("getblocktemplate: Test bad timestamps")
         bad_block = copy.deepcopy(block)
-        bad_block.nTime = 2**31 - 1
+        bad_block.nTime = 2**32 - 1
         assert_template(node, bad_block, 'time-too-new')
         assert_submitblock(bad_block, 'time-too-new', 'time-too-new')
         bad_block.nTime = 0

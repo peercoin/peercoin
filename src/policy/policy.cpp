@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,12 +7,28 @@
 
 #include <policy/policy.h>
 
-#include <consensus/validation.h>
 #include <coins.h>
 #include <kernel.h>
+#include <consensus/amount.h>
+#include <consensus/consensus.h>
+#include <consensus/validation.h>
+#include <primitives/transaction.h>
+#include <script/interpreter.h>
+#include <script/script.h>
+#include <script/standard.h>
+#include <serialize.h>
 #include <span.h>
 
-bool IsStandard(const CScript& scriptPubKey, TxoutType& whichType)
+#include <algorithm>
+#include <cstddef>
+#include <vector>
+
+bool IsDust(const CTxOut& txout)
+{
+    return (txout.nValue < MIN_TXOUT_AMOUNT);
+}
+
+bool IsStandard(const CScript& scriptPubKey, const std::optional<unsigned>& max_datacarrier_bytes, TxoutType& whichType)
 {
     std::vector<std::vector<unsigned char> > vSolutions;
     whichType = Solver(scriptPubKey, vSolutions);
@@ -27,15 +43,16 @@ bool IsStandard(const CScript& scriptPubKey, TxoutType& whichType)
             return false;
         if (m < 1 || m > n)
             return false;
-    } else if (whichType == TxoutType::NULL_DATA &&
-               (!fAcceptDatacarrier || scriptPubKey.size() > nMaxDatacarrierBytes)) {
-          return false;
+    } else if (whichType == TxoutType::NULL_DATA) {
+        if (!max_datacarrier_bytes || scriptPubKey.size() > *max_datacarrier_bytes) {
+            return false;
+        }
     }
 
     return true;
 }
 
-bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string& reason)
+bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, std::string& reason)
 {
     if (tx.nVersion > TX_MAX_STANDARD_VERSION || tx.nVersion < 1) {
         reason = "version";
@@ -75,7 +92,7 @@ bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string
     unsigned int nDataOut = 0;
     TxoutType whichType;
     for (const CTxOut& txout : tx.vout) {
-        if (!::IsStandard(txout.scriptPubKey, whichType)) {
+        if (!::IsStandard(txout.scriptPubKey, max_datacarrier_bytes, whichType)) {
             reason = "scriptpubkey";
             return false;
         }
@@ -84,6 +101,9 @@ bool IsStandardTx(const CTransaction& tx, bool permit_bare_multisig, std::string
             nDataOut++;
         else if ((whichType == TxoutType::MULTISIG) && (!permit_bare_multisig)) {
             reason = "bare-multisig";
+            return false;
+        } else if (IsDust(txout)) {
+            reason = "dust";
             return false;
         }
     }

@@ -207,6 +207,20 @@ class FilterTest(BitcoinTestFramework):
         with self.nodes[0].assert_debug_log(['Misbehaving']):
             filter_peer.send_and_ping(msg_filteradd(data=b'letsmisbehave'))
 
+        self.log.info('Check that request for filtered blocks is ignored if no filter is set')
+        filter_node.merkleblock_received = False
+        filter_node.tx_received = False
+        with self.nodes[0].assert_debug_log(expected_msgs=['received getdata']):
+            block_hash = self.nodes[0].generatetoaddress(1, self.nodes[0].getnewaddress())[0]
+            filter_node.wait_for_inv([CInv(MSG_BLOCK, int(block_hash, 16))])
+            filter_node.sync_with_ping()
+            assert not filter_node.merkleblock_received
+            assert not filter_node.tx_received
+
+        self.log.info('Check that sending "filteradd" if no filter is set is treated as misbehavior')
+        with self.nodes[0].assert_debug_log(['Misbehaving']):
+            filter_node.send_and_ping(msg_filteradd(data=b'letsmisbehave'))
+
         self.log.info("Check that division-by-zero remote crash bug [CVE-2013-5700] is fixed")
         filter_peer.send_and_ping(msg_filterload(data=b'', nHashFuncs=1))
         filter_peer.send_and_ping(msg_filteradd(data=b'letstrytocrashthisnode'))
@@ -214,7 +228,6 @@ class FilterTest(BitcoinTestFramework):
 
     def run_test(self):
         self.wallet = MiniWallet(self.nodes[0])
-        self.wallet.rescan_utxos()
 
         filter_peer = self.nodes[0].add_p2p_connection(P2PBloomFilter())
         self.log.info('Test filter size limits')

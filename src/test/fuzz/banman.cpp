@@ -1,14 +1,15 @@
-// Copyright (c) 2020-2021 The Bitcoin Core developers
+// Copyright (c) 2020-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <banman.h>
-#include <fs.h>
 #include <netaddress.h>
 #include <test/fuzz/FuzzedDataProvider.h>
 #include <test/fuzz/fuzz.h>
 #include <test/fuzz/util.h>
+#include <test/fuzz/util/net.h>
 #include <test/util/setup_common.h>
+#include <util/fs.h>
 #include <util/readwritefile.h>
 #include <util/system.h>
 
@@ -41,6 +42,10 @@ static bool operator==(const CBanEntry& lhs, const CBanEntry& rhs)
 
 FUZZ_TARGET_INIT(banman, initialize_banman)
 {
+    // The complexity is O(N^2), where N is the input size, because each call
+    // might call DumpBanlist (or other methods that are at least linear
+    // complexity of the input size).
+    int limit_max_ops{300};
     FuzzedDataProvider fuzzed_data_provider{buffer.data(), buffer.size()};
     SetMockTime(ConsumeTime(fuzzed_data_provider));
     fs::path banlist_file = gArgs.GetDataDirNet() / "fuzzed_banlist";

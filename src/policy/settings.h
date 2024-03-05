@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2019 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,8 +12,7 @@ class CTransaction;
 
 // Policy settings which are configurable at runtime.
 extern unsigned int nBytesPerSigOp;
-extern bool fIsBareMultisigStd;
-
+/*
 static inline bool IsStandardTx(const CTransaction& tx, std::string& reason)
 {
     return IsStandardTx(tx, ::fIsBareMultisigStd, reason);
@@ -28,5 +27,5 @@ static inline int64_t GetVirtualTransactionSize(const CTransaction& tx, int64_t 
 {
     return GetVirtualTransactionSize(tx, sigop_cost, ::nBytesPerSigOp);
 }
-
+*/
 #endif // BITCOIN_POLICY_SETTINGS_H

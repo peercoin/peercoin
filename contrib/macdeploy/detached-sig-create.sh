@@ -8,7 +8,7 @@ set -e
 
 ROOTDIR=dist
 BUNDLE="${ROOTDIR}/Peercoin-Qt.app"
-BINARY="${BUNDLE}/Contents/MacOS/Bitcoin-Qt"
+BINARY="${BUNDLE}/Contents/MacOS/Peercoin-Qt"
 SIGNAPPLE=signapple
 TEMPDIR=sign.temp
 ARCH=$(${SIGNAPPLE} info ${BINARY} | head -n 1 | cut -d " " -f 1)

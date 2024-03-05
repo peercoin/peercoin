@@ -48,6 +48,7 @@ void DummyWalletInit::AddWalletOptions(ArgsManager& argsman) const
         "-flushwallet",
         "-privdb",
         "-walletrejectlongchains",
+        "-walletcrosschain",
         "-unsafesqlitesync",
     });
 }
@@ -57,6 +58,11 @@ const WalletInitInterface& g_wallet_init_interface = DummyWalletInit();
 namespace interfaces {
 
 std::unique_ptr<WalletLoader> MakeWalletLoader(Chain& chain, ArgsManager& args)
+{
+    throw std::logic_error("Wallet function called in non-wallet build.");
+}
+
+std::unique_ptr<WalletClient> MakeWalletClient(Chain& chain, ArgsManager& args)
 {
     throw std::logic_error("Wallet function called in non-wallet build.");
 }

@@ -121,7 +121,7 @@ else
 fi
 
 ################
-# When building for darwin, the macOS SDK should exists
+# When building for darwin, the macOS SDK should exist
 ################
 
 for host in $HOSTS; do
@@ -130,8 +130,9 @@ for host in $HOSTS; do
             OSX_SDK="$(make -C "${PWD}/depends" --no-print-directory HOST="$host" print-OSX_SDK | sed 's@^[^=]\+=@@g')"
             if [ -e "$OSX_SDK" ]; then
                 echo "Found macOS SDK at '${OSX_SDK}', using..."
+                break
             else
-                echo "macOS SDK does not exist at '${OSX_SDK}', please place the extracted, untarred SDK there to perform darwin builds, exiting..."
+                echo "macOS SDK does not exist at '${OSX_SDK}', please place the extracted, untarred SDK there to perform darwin builds, or define SDK_PATH environment variable. Exiting..."
                 exit 1
             fi
             ;;
@@ -156,7 +157,7 @@ done
 if (( total_required_KiB > avail_KiB )); then
     total_required_GiB=$((total_required_KiB / 1048576))
     avail_GiB=$((avail_KiB / 1048576))
-    echo "Performing a Bitcoin Core Guix build for the selected HOSTS requires ${total_required_GiB} GiB, however, only ${avail_GiB} GiB is available. Please free up some disk space before performing the build."
+    echo "Performing a Peercoin Guix build for the selected HOSTS requires ${total_required_GiB} GiB, however, only ${avail_GiB} GiB is available. Please free up some disk space before performing the build."
     exit 1
 fi
 
@@ -233,21 +234,6 @@ host_to_commonname() {
 
 # Determine the reference time used for determinism (overridable by environment)
 SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(git -c log.showSignature=false log --format=%at -1)}"
-
-# Execute "$@" in a pinned, possibly older version of Guix, for reproducibility
-# across time.
-time-machine() {
-    # shellcheck disable=SC2086
-    guix time-machine --url=https://git.savannah.gnu.org/git/guix.git \
-                      --commit=ae03f401381e956c4c41b4cf495cbde964fa43d0 \
-                      --cores="$JOBS" \
-                      --keep-failed \
-                      --fallback \
-                      ${SUBSTITUTE_URLS:+--substitute-urls="$SUBSTITUTE_URLS"} \
-                      ${ADDITIONAL_GUIX_COMMON_FLAGS} ${ADDITIONAL_GUIX_TIMEMACHINE_FLAGS} \
-                      -- "$@"
-}
-
 
 # Precious directories are those which should not be cleaned between successive
 # guix builds
@@ -351,7 +337,7 @@ output directory.
 EOF
 }
 
-# Deterministically build Bitcoin Core
+# Deterministically build Peercoin
 # shellcheck disable=SC2153
 for host in $HOSTS; do
 
@@ -369,7 +355,7 @@ INFO: Building ${VERSION:?not set} for platform triple ${HOST:?not set}:
       ...using reference timestamp: ${SOURCE_DATE_EPOCH:?not set}
       ...running at most ${JOBS:?not set} jobs
       ...from worktree directory: '${PWD}'
-          ...bind-mounted in container to: '/bitcoin'
+          ...bind-mounted in container to: '/peercoin'
       ...in build directory: '$(distsrc_for_host "$HOST")'
           ...bind-mounted in container to: '$(DISTSRC_BASE=/distsrc-base && distsrc_for_host "$HOST")'
       ...outputting in: '$(outdir_for_host "$HOST")'
@@ -395,24 +381,24 @@ EOF
         #
         #     When --container is specified, the default behavior is to share
         #     the current working directory with the isolated container at the
-        #     same exact path (e.g. mapping '/home/satoshi/bitcoin/' to
-        #     '/home/satoshi/bitcoin/'). This means that the $PWD inside the
+        #     same exact path (e.g. mapping '/home/satoshi/peercoin/' to
+        #     '/home/satoshi/peercoin/'). This means that the $PWD inside the
         #     container becomes a source of irreproducibility. --no-cwd disables
         #     this behaviour.
         #
         #   --share=SPEC       for containers, share writable host file system
         #                      according to SPEC
         #
-        #   --share="$PWD"=/bitcoin
+        #   --share="$PWD"=/peercoin
         #
-        #                     maps our current working directory to /bitcoin
+        #                     maps our current working directory to /peercoin
         #                     inside the isolated container, which we later cd
         #                     into.
         #
         #     While we don't want to map our current working directory to the
         #     same exact path (as this introduces irreproducibility), we do want
         #     it to be at a _fixed_ path _somewhere_ inside the isolated
-        #     container so that we have something to build. '/bitcoin' was
+        #     container so that we have something to build. '/peercoin' was
         #     chosen arbitrarily.
         #
         #   ${SOURCES_PATH:+--share="$SOURCES_PATH"}
@@ -427,7 +413,7 @@ EOF
         #
         #   --keep-failed     keep build tree of failed builds
         #
-        #     When builds of the Guix environment itself (not Bitcoin Core)
+        #     When builds of the Guix environment itself (not Peercoin)
         #     fail, it is useful for the build tree to be kept for debugging
         #     purposes.
         #
@@ -446,7 +432,7 @@ EOF
                                  --container \
                                  --pure \
                                  --no-cwd \
-                                 --share="$PWD"=/bitcoin \
+                                 --share="$PWD"=/peercoin \
                                  --share="$DISTSRC_BASE"=/distsrc-base \
                                  --share="$OUTDIR_BASE"=/outdir-base \
                                  --expose="$(git rev-parse --git-common-dir)" \
@@ -471,7 +457,7 @@ EOF
                                         DISTSRC="$(DISTSRC_BASE=/distsrc-base && distsrc_for_host "$HOST")" \
                                         OUTDIR="$(OUTDIR_BASE=/outdir-base && outdir_for_host "$HOST")" \
                                         DIST_ARCHIVE_BASE=/outdir-base/dist-archive \
-                                      bash -c "cd /bitcoin && bash contrib/guix/libexec/build.sh"
+                                      bash -c "cd /peercoin && bash contrib/guix/libexec/build.sh"
     )
 
 done

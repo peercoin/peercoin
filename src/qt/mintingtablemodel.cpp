@@ -80,7 +80,7 @@ public:
 
             if(KernelRecord::showTransaction(wtx.is_coinbase, status.depth_in_main_chain))
                 for(const KernelRecord& kr : txList) {
-                    if(!kr.spent) {
+                    if(!kr.spent && kr.nValue && wtx.txout_is_mine[kr.idx] == wallet::ISMINE_SPENDABLE) {
                         cachedWallet.append(kr);
                     }
                 }
@@ -156,7 +156,7 @@ public:
                         int insert_idx = lowerIndex;
                         for (const KernelRecord &rec : toInsert)
                         {
-                            if(!rec.spent)
+                            if(!rec.spent && rec.nValue && wtx.txout_is_mine[rec.idx] == wallet::ISMINE_SPENDABLE)
                             {
                                 cachedWallet.insert(insert_idx, rec);
                                 insert_idx += 1;
@@ -238,7 +238,7 @@ public:
     QString describe(TransactionRecord *rec)
     {
         {
-            return TransactionDesc::toHTML(walletModel->node(), walletModel->wallet(), rec, BitcoinUnits::BTC);  
+            return TransactionDesc::toHTML(walletModel->node(), walletModel->wallet(), rec, BitcoinUnits::Unit::BTC);  
         }
         return QString("");
     }
@@ -298,7 +298,7 @@ MintingTableModel::MintingTableModel(WalletModel *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(updateAge()));
     timer->start(MODEL_UPDATE_DELAY*1000);
 
-    connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
+    connect(walletModel->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &MintingTableModel::updateDisplayUnit);
     m_handler_transaction_changed = walletModel->wallet().handleTransactionChanged(std::bind(NotifyTransactionChanged, this, std::placeholders::_1, std::placeholders::_2));
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,7 +15,7 @@
 
 struct Dersig100Setup : public TestChain100Setup {
     Dersig100Setup()
-        : TestChain100Setup{{"-testactivationheight=dersig@102"}} {}
+        : TestChain100Setup{CBaseChainParams::REGTEST, {"-testactivationheight=dersig@102"}} {}
 };
 
 bool CheckInputScripts(const CTransaction& tx, TxValidationState& state,
@@ -45,7 +45,7 @@ BOOST_FIXTURE_TEST_CASE(tx_mempool_block_doublespend, Dersig100Setup)
     spends.resize(2);
     for (int i = 0; i < 2; i++)
     {
-        spends[i].nVersion = 1;
+        spends[i].nVersion = 3;
         spends[i].vin.resize(1);
         spends[i].vin[0].prevout.hash = m_coinbase_txns[0]->GetHash();
         spends[i].vin[0].prevout.n = 0;
@@ -77,7 +77,9 @@ BOOST_FIXTURE_TEST_CASE(tx_mempool_block_doublespend, Dersig100Setup)
         LOCK(cs_main);
         BOOST_CHECK(m_node.chainman->ActiveChain().Tip()->GetBlockHash() != block.GetHash());
     }
-    m_node.mempool->clear();
+    BOOST_CHECK_EQUAL(m_node.mempool->size(), 1U);
+    WITH_LOCK(m_node.mempool->cs, m_node.mempool->removeRecursive(CTransaction{spends[0]}, MemPoolRemovalReason::CONFLICT));
+    BOOST_CHECK_EQUAL(m_node.mempool->size(), 0U);
 
     // Test 3: ... and should be rejected if spend2 is in the memory pool
     BOOST_CHECK(ToMemPool(spends[1]));
@@ -86,7 +88,9 @@ BOOST_FIXTURE_TEST_CASE(tx_mempool_block_doublespend, Dersig100Setup)
         LOCK(cs_main);
         BOOST_CHECK(m_node.chainman->ActiveChain().Tip()->GetBlockHash() != block.GetHash());
     }
-    m_node.mempool->clear();
+    BOOST_CHECK_EQUAL(m_node.mempool->size(), 1U);
+    WITH_LOCK(m_node.mempool->cs, m_node.mempool->removeRecursive(CTransaction{spends[1]}, MemPoolRemovalReason::CONFLICT));
+    BOOST_CHECK_EQUAL(m_node.mempool->size(), 0U);
 
     // Final sanity test: first spend in *m_node.mempool, second in block, that's OK:
     std::vector<CMutableTransaction> oneSpend;
@@ -113,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE(tx_mempool_block_doublespend, Dersig100Setup)
 // should fail.
 // Capture this interaction with the upgraded_nop argument: set it when evaluating
 // any script flag that is implemented as an upgraded NOP code.
-static void ValidateCheckInputsForAllFlags(const CTransaction &tx, uint32_t failing_flags, bool add_to_cache, CCoinsViewCache& active_coins_tip) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+static void ValidateCheckInputsForAllFlags(const CTransaction &tx, uint32_t failing_flags, bool add_to_cache, CCoinsViewCache& active_coins_tip) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     PrecomputedTransactionData txdata;
 
@@ -161,11 +165,6 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
 {
     // Test that passing CheckInputScripts with one set of script flags doesn't imply
     // that we would pass again with a different set of flags.
-    {
-        LOCK(cs_main);
-        InitScriptExecutionCache();
-    }
-
     CScript p2pk_scriptPubKey = CScript() << ToByteVector(coinbaseKey.GetPubKey()) << OP_CHECKSIG;
     CScript p2sh_scriptPubKey = GetScriptForDestination(ScriptHash(p2pk_scriptPubKey));
     CScript p2pkh_scriptPubKey = GetScriptForDestination(PKHash(coinbaseKey.GetPubKey()));
@@ -181,7 +180,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
     // coinbase tx.
     CMutableTransaction spend_tx;
 
-    spend_tx.nVersion = 1;
+    spend_tx.nVersion = 3;
     spend_tx.vin.resize(1);
     spend_tx.vin[0].prevout.hash = m_coinbase_txns[0]->GetHash();
     spend_tx.vin[0].prevout.n = 0;
@@ -234,7 +233,6 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
     // enabled yet), even though there's no cache entry.
     CBlock block;
 
-    spend_tx.nTime = block.nTime;
     block = CreateAndProcessBlock({spend_tx}, p2pk_scriptPubKey);
     LOCK(cs_main);
     BOOST_CHECK(m_node.chainman->ActiveChain().Tip()->GetBlockHash() == block.GetHash());
@@ -244,7 +242,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
     // then test validity with P2SH.
     {
         CMutableTransaction invalid_under_p2sh_tx;
-        invalid_under_p2sh_tx.nVersion = 1;
+        invalid_under_p2sh_tx.nVersion = 3;
         invalid_under_p2sh_tx.vin.resize(1);
         invalid_under_p2sh_tx.vin[0].prevout.hash = spend_tx.GetHash();
         invalid_under_p2sh_tx.vin[0].prevout.n = 0;
@@ -260,7 +258,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
     // Test CHECKLOCKTIMEVERIFY
     {
         CMutableTransaction invalid_with_cltv_tx;
-        invalid_with_cltv_tx.nVersion = 1;
+        invalid_with_cltv_tx.nVersion = 3;
         invalid_with_cltv_tx.nLockTime = 100;
         invalid_with_cltv_tx.vin.resize(1);
         invalid_with_cltv_tx.vin[0].prevout.hash = spend_tx.GetHash();
@@ -289,7 +287,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
     // TEST CHECKSEQUENCEVERIFY
     {
         CMutableTransaction invalid_with_csv_tx;
-        invalid_with_csv_tx.nVersion = 2;
+        invalid_with_csv_tx.nVersion = 3;
         invalid_with_csv_tx.vin.resize(1);
         invalid_with_csv_tx.vin[0].prevout.hash = spend_tx.GetHash();
         invalid_with_csv_tx.vin[0].prevout.n = 3;
@@ -320,7 +318,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
     // for the same tx with a different witness.
     {
         CMutableTransaction valid_with_witness_tx;
-        valid_with_witness_tx.nVersion = 1;
+        valid_with_witness_tx.nVersion = 3;
         valid_with_witness_tx.vin.resize(1);
         valid_with_witness_tx.vin[0].prevout.hash = spend_tx.GetHash();
         valid_with_witness_tx.vin[0].prevout.n = 1;
@@ -330,7 +328,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
 
         // Sign
         SignatureData sigdata;
-        BOOST_CHECK(ProduceSignature(keystore, MutableTransactionSignatureCreator(&valid_with_witness_tx, 0, 11*CENT, SIGHASH_ALL), spend_tx.vout[1].scriptPubKey, sigdata));
+        BOOST_CHECK(ProduceSignature(keystore, MutableTransactionSignatureCreator(valid_with_witness_tx, 0, 11 * CENT, SIGHASH_ALL), spend_tx.vout[1].scriptPubKey, sigdata));
         UpdateInput(valid_with_witness_tx.vin[0], sigdata);
 
         // This should be valid under all script flags.
@@ -345,7 +343,7 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
         // Test a transaction with multiple inputs.
         CMutableTransaction tx;
 
-        tx.nVersion = 1;
+        tx.nVersion = 3;
         tx.vin.resize(2);
         tx.vin[0].prevout.hash = spend_tx.GetHash();
         tx.vin[0].prevout.n = 0;
@@ -356,9 +354,9 @@ BOOST_FIXTURE_TEST_CASE(checkinputs_test, Dersig100Setup)
         tx.vout[0].scriptPubKey = p2pk_scriptPubKey;
 
         // Sign
-        for (int i=0; i<2; ++i) {
+        for (int i = 0; i < 2; ++i) {
             SignatureData sigdata;
-            BOOST_CHECK(ProduceSignature(keystore, MutableTransactionSignatureCreator(&tx, i, 11*CENT, SIGHASH_ALL), spend_tx.vout[i].scriptPubKey, sigdata));
+            BOOST_CHECK(ProduceSignature(keystore, MutableTransactionSignatureCreator(tx, i, 11 * CENT, SIGHASH_ALL), spend_tx.vout[i].scriptPubKey, sigdata));
             UpdateInput(tx.vin[i], sigdata);
         }
 

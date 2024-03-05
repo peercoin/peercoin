@@ -51,7 +51,6 @@ The Peercoin repo's [root README](/README.md) contains relevant information on t
 
 - [Developer Notes](developer-notes.md)
 - [Productivity Notes](productivity.md)
-- [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
 - [Source Code Documentation (External Link)](none-yet)
 - [Translation Process](translation_process.md)
@@ -62,13 +61,13 @@ The Peercoin repo's [root README](/README.md) contains relevant information on t
 - [BIPS](bips.md)
 - [Dnsseed Policy](dnsseed-policy.md)
 - [Benchmarking](benchmarking.md)
+- [Internal Design Docs](design/)
 
 ### Resources
 * Discuss on the [Peercoin](https://talk.peercoin.net/) forums.
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
-- [Assumeutxo design](assumeutxo.md)
 - [bitcoin.conf Configuration File](bitcoin-conf.md)
 - [CJDNS Support](cjdns.md)
 - [Files](files.md)

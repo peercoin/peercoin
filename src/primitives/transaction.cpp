@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,10 +7,15 @@
 
 #include <consensus/amount.h>
 #include <hash.h>
+#include <script/script.h>
+#include <serialize.h>
 #include <tinyformat.h>
+#include <uint256.h>
 #include <util/strencodings.h>
+#include <version.h>
 
-#include <assert.h>
+#include <cassert>
+#include <stdexcept>
 #include <timedata.h>
 
 std::string COutPoint::ToString() const
@@ -58,7 +63,7 @@ std::string CTxOut::ToString() const
     return strprintf("CTxOut(nValue=%d.%06d, scriptPubKey=%s)", nValue / COIN, nValue % COIN, HexStr(scriptPubKey).substr(0, 30));
 }
 
-CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nTime(GetAdjustedTime()), nLockTime(0) {}
+CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nTime(TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime())), nLockTime(0) {}
 CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nTime(tx.nTime), nLockTime(tx.nLockTime) {}
 
 uint256 CMutableTransaction::GetHash() const

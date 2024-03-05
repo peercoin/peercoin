@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include <chain.h>
 #include <interfaces/wallet.h>
 #include <key_io.h>
-#include <wallet/ismine.h>
+#include <wallet/types.h>
 
 #include <stdint.h>
 
@@ -47,8 +47,13 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const interface
         CTxDestination address;
         const CTxOut& txout = wtx.tx->vout[1];
         isminetype mine = wtx.txout_is_mine[1];
-
-        if(ExtractDestination(txout.scriptPubKey, address) && wtx.txout_address_is_mine[1])
+        if (wtx.tx->vout[1].nValue == 0) {
+            const CTxOut& txout2 = wtx.tx->vout[2];
+            mine = wtx.txout_is_mine[2];
+            if(ExtractDestination(txout2.scriptPubKey, address) && wtx.txout_address_is_mine[2])
+                sub.address = EncodeDestination(address);
+        }
+        else if(ExtractDestination(txout.scriptPubKey, address) && wtx.txout_address_is_mine[1])
             sub.address = EncodeDestination(address);
 
         sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;

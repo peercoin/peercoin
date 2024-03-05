@@ -1,11 +1,12 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_NODE_MINER_H
 #define BITCOIN_NODE_MINER_H
 
+#include <policy/policy.h>
 #include <primitives/block.h>
 #include <txmempool.h>
 #include <node/context.h>
@@ -18,8 +19,11 @@
 #include <boost/multi_index_container.hpp>
 
 extern int64_t nLastCoinStakeSearchInterval;
+extern std::thread m_minter_thread;
+
 class ChainstateManager;
 
+class ChainstateManager;
 class CBlockIndex;
 class CChainParams;
 class CScript;
@@ -48,7 +52,7 @@ struct CTxMemPoolModifiedEntry {
         nSigOpCostWithAncestors = entry->GetSigOpCostWithAncestors();
     }
 
-    int64_t GetModifiedFee() const { return iter->GetModifiedFee(); }
+    CAmount GetModifiedFee() const { return iter->GetModifiedFee(); }
     uint64_t GetSizeWithAncestors() const { return nSizeWithAncestors; }
     CAmount GetModFeesWithAncestors() const { return nModFeesWithAncestors; }
     size_t GetTxSize() const { return iter->GetTxSize(); }
@@ -119,7 +123,7 @@ struct update_for_parent_inclusion
 
     void operator() (CTxMemPoolModifiedEntry &e)
     {
-        e.nModFeesWithAncestors -= iter->GetFee();
+        e.nModFeesWithAncestors -= iter->GetModifiedFee();
         e.nSizeWithAncestors -= iter->GetTxSize();
         e.nSigOpCostWithAncestors -= iter->GetSigOpCost();
     }
@@ -134,10 +138,6 @@ private:
     // The constructed block template
     std::unique_ptr<CBlockTemplate> pblocktemplate;
 
-    // Configuration parameters for the block size
-    bool fIncludeWitness;
-    unsigned int nBlockMaxWeight;
-
     // Information on the current status of the block
     uint64_t nBlockWeight;
     uint64_t nBlockTx;
@@ -150,17 +150,19 @@ private:
     int64_t m_lock_time_cutoff;
 
     const CChainParams& chainparams;
-    const CTxMemPool& m_mempool;
-    CChainState& m_chainstate;
+    const CTxMemPool* const m_mempool;
+    Chainstate& m_chainstate;
 
 public:
     struct Options {
-        Options();
-        size_t nBlockMaxWeight;
+        // Configuration parameters for the block size
+        size_t nBlockMaxWeight{DEFAULT_BLOCK_MAX_WEIGHT};
+        // Whether to call TestBlockValidity() at the end of CreateNewBlock().
+        bool test_block_validity{true};
     };
 
-    explicit BlockAssembler(CChainState& chainstate, const CTxMemPool& mempool, const CChainParams& params);
-    explicit BlockAssembler(CChainState& chainstate, const CTxMemPool& mempool, const CChainParams& params, const Options& options);
+    explicit BlockAssembler(Chainstate& chainstate, const CTxMemPool* mempool);
+    explicit BlockAssembler(Chainstate& chainstate, const CTxMemPool* mempool, const Options& options);
 
     /** Construct a new block template with coinbase to scriptPubKeyIn */
     std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet=nullptr, bool* pfPoSCancel=nullptr, NodeContext* m_node=nullptr);
@@ -170,6 +172,8 @@ public:
     inline static std::optional<int64_t> m_last_block_weight{};
 
 private:
+    const Options m_options;
+
     // utility functions
     /** Clear the block's state and prepare for assembling a new block */
     void resetBlock();
@@ -180,7 +184,7 @@ private:
     /** Add transactions based on feerate including unconfirmed ancestors
       * Increments nPackagesSelected / nDescendantsUpdated with corresponding
       * statistics from the package selection (for logging statistics). */
-    void addPackageTxs(int& nPackagesSelected, int& nDescendantsUpdated, uint32_t nTime) EXCLUSIVE_LOCKS_REQUIRED(m_mempool.cs);
+    void addPackageTxs(const CTxMemPool& mempool, int& nPackagesSelected, int& nDescendantsUpdated, uint32_t nTime) EXCLUSIVE_LOCKS_REQUIRED(mempool.cs);
 
     // helper functions for addPackageTxs()
     /** Remove confirmed (inBlock) entries from given set */
@@ -192,29 +196,25 @@ private:
       * These checks should always succeed, and they're here
       * only as an extra check in case of suboptimal node configuration */
     bool TestPackageTransactions(const CTxMemPool::setEntries& package, uint32_t nTime) const;
-    /** Return true if given transaction from mapTx has already been evaluated,
-      * or if the transaction's cached data in mapTx is incorrect. */
-    bool SkipMapTxEntry(CTxMemPool::txiter it, indexed_modified_transaction_set& mapModifiedTx, CTxMemPool::setEntries& failedTx) EXCLUSIVE_LOCKS_REQUIRED(m_mempool.cs);
     /** Sort the package in an order that is valid to appear in a block */
     void SortForBlock(const CTxMemPool::setEntries& package, std::vector<CTxMemPool::txiter>& sortedEntries);
-    /** Add descendants of given transactions to mapModifiedTx with ancestor
-      * state updated assuming given transactions are inBlock. Returns number
-      * of updated descendants. */
-    int UpdatePackagesForAdded(const CTxMemPool::setEntries& alreadyAdded, indexed_modified_transaction_set& mapModifiedTx) EXCLUSIVE_LOCKS_REQUIRED(m_mempool.cs);
 };
 
 /** Modify the extranonce in a block */
 void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
-int64_t UpdateTime(CBlockHeader* pblock);
+int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev);
 
 namespace boost {
     class thread_group;
 } // namespace boost
 
-void MintStake(std::shared_ptr<CWallet> pwallet, NodeContext& m_node);
+void MintStake(NodeContext& m_node);
 
 /** Update an old GenerateCoinbaseCommitment from CreateNewBlock after the block txs have changed */
 void RegenerateCommitments(CBlock& block, ChainstateManager& chainman);
+
+/** Apply -blockmintxfee and -blockmaxweight options from ArgsManager to BlockAssembler options. */
+void ApplyArgsManOptions(const ArgsManager& gArgs, BlockAssembler::Options& options);
 } // namespace node
 
 #endif // BITCOIN_NODE_MINER_H

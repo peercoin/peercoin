@@ -7,10 +7,6 @@
 #ifndef SECP256K1_FIELD_IMPL_H
 #define SECP256K1_FIELD_IMPL_H
 
-#if defined HAVE_CONFIG_H
-#include "libsecp256k1-config.h"
-#endif
-
 #include "util.h"
 
 #if defined(SECP256K1_WIDEMUL_INT128)
@@ -134,7 +130,5 @@ static int secp256k1_fe_sqrt(secp256k1_fe *r, const secp256k1_fe *a) {
     secp256k1_fe_sqr(&t1, r);
     return secp256k1_fe_equal(&t1, a);
 }
-
-static const secp256k1_fe secp256k1_fe_one = SECP256K1_FE_CONST(0, 0, 0, 0, 0, 0, 0, 1);
 
 #endif /* SECP256K1_FIELD_IMPL_H */

@@ -128,7 +128,7 @@ class TestFrameworkScript(unittest.TestCase):
     def test_segwit_encode_decode(self):
         def test_python_bech32(addr):
             hrp = addr[:4]
-            self.assertEqual(hrp, "bcrt")
+            self.assertEqual(hrp, "pcrt")
             (witver, witprog) = decode_segwit_address(hrp, addr)
             self.assertEqual(encode_segwit_address(hrp, witver, witprog), addr)
 
