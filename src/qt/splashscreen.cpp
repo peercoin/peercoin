@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,7 +28,7 @@
 
 
 SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
-    : QWidget(), curAlignment(0)
+    : QWidget()
 {
     // set reference point, paddings
     int paddingRight            = 165;
@@ -49,7 +49,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QString font            = QApplication::font().toString();
 
     // create a bitmap according to device pixelratio
-    QSize splashSize(480*devicePixelRatio,480*devicePixelRatio);
+    QSize splashSize(480*devicePixelRatio,590*devicePixelRatio);
     pixmap = QPixmap(splashSize);
 
     // change to HiDPI if it makes sense
@@ -72,9 +72,9 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QRect rectIcon(QPoint(40,30), requiredSize);
     pixPaint.drawPixmap(rectIcon, icon);
 
-    QRect rectAvatar(QPoint(15,125), QSize(853/2,598/2));
+    QRect rectAvatar(QPoint(15,55), QSize(1323/3,1391/3));
 
-    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/ladybug"));
+    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/dragonfly"));
 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
@@ -162,16 +162,6 @@ bool SplashScreen::eventFilter(QObject * obj, QEvent * ev) {
         }
     }
     return QObject::eventFilter(obj, ev);
-}
-
-void SplashScreen::finish()
-{
-    /* If the window is minimized, hide() will be ignored. */
-    /* Make sure we de-minimize the splashscreen window before hiding */
-    if (isMinimized())
-        showNormal();
-    hide();
-    deleteLater(); // No more need for this
 }
 
 static void InitMessage(SplashScreen *splash, const std::string &message)

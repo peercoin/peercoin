@@ -6,6 +6,7 @@
 #define BITCOIN_QT_WALLETVIEW_H
 
 #include <consensus/amount.h>
+#include <qt/bitcoinunits.h>
 
 #include <QStackedWidget>
 
@@ -50,7 +51,7 @@ public:
     void showOutOfSyncWarning(bool fShow);
 
 private:
-    ClientModel *clientModel;
+    ClientModel* clientModel{nullptr};
 
     //!
     //! The wallet model represents a bitcoin wallet, and offers access to
@@ -113,6 +114,9 @@ public Q_SLOTS:
     /** Show progress dialog e.g. for rescan */
     void showProgress(const QString &title, int nProgress);
 
+private Q_SLOTS:
+    void disableTransactionView(bool disable);
+
 Q_SIGNALS:
     void setPrivacy(bool privacy);
     void transactionClicked();
@@ -122,7 +126,7 @@ Q_SIGNALS:
     /** Encryption status of wallet changed */
     void encryptionStatusChanged();
     /** Notify that a new transaction appeared */
-    void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address, const QString& label, const QString& walletName);
+    void incomingTransaction(const QString& date, BitcoinUnit unit, const CAmount& amount, const QString& type, const QString& address, const QString& label, const QString& walletName);
     /** Notify that the out of sync warning icon has been pressed */
     void outOfSyncWarningClicked();
 };

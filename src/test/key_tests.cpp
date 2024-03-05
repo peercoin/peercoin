@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 The Bitcoin Core developers
+// Copyright (c) 2012-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,6 +6,7 @@
 
 #include <key_io.h>
 #include <streams.h>
+#include <test/util/random.h>
 #include <test/util/setup_common.h>
 #include <uint256.h>
 #include <util/strencodings.h>
@@ -142,7 +143,7 @@ BOOST_AUTO_TEST_CASE(key_test1)
     BOOST_CHECK(key2.Sign(hashMsg, detsig));
     BOOST_CHECK(key2C.Sign(hashMsg, detsigc));
     BOOST_CHECK(detsig == detsigc);
-    BOOST_CHECK(detsig == ParseHex("30450221008f0ea4c2603c55258df73391c9ba623ffe73d71de7f7aef0d8932aeed9ff693a02204ccdd1e6dabfaf33ff05b9ef0786f3aff8e882a99a4123775aa6654db549f9c9"));
+    BOOST_CHECK(detsig == ParseHex("304402202a75ef2c210691f076a3397cdcf3414e8dc92c0e543251f00b84e703fc26791d02204667e08f5162f0f39ce978e8342826729d22392cb7135fe02209f7231de1f2d4"));
     BOOST_CHECK(key1.SignCompact(hashMsg, detsig));
     BOOST_CHECK(key1C.SignCompact(hashMsg, detsigc));
     BOOST_CHECK(detsig == ParseHex("1c66fdd0b32830fd697137a5b4f5140982b48542959ab0e52acbf95dcc1e132ba500c0980179ff30d01e30f2d34e91a8cd6222cbc2344c00d4fa0bdc62d8f49db6"));
@@ -204,9 +205,8 @@ BOOST_AUTO_TEST_CASE(key_key_negation)
     // create a dummy hash for signature comparison
     unsigned char rnd[8];
     std::string str = "Bitcoin key verification\n";
-    GetRandBytes(rnd, sizeof(rnd));
-    uint256 hash;
-    CHash256().Write(MakeUCharSpan(str)).Write(rnd).Finalize(hash);
+    GetRandBytes(rnd);
+    uint256 hash{Hash(str, rnd)};
 
     // import the static test key
     CKey key = DecodeSecret(strSecret1C);
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(key_key_negation)
 
 static CPubKey UnserializePubkey(const std::vector<uint8_t>& data)
 {
-    CDataStream stream{SER_NETWORK, INIT_PROTO_VERSION};
+    DataStream stream{};
     stream << data;
     CPubKey pubkey;
     stream >> pubkey;
@@ -251,7 +251,7 @@ static unsigned int GetLen(unsigned char chHeader)
 
 static void CmpSerializationPubkey(const CPubKey& pubkey)
 {
-    CDataStream stream{SER_NETWORK, INIT_PROTO_VERSION};
+    DataStream stream{};
     stream << pubkey;
     CPubKey pubkey2;
     stream >> pubkey2;

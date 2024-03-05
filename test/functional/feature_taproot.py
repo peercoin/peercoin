@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2019-2021 The Bitcoin Core developers
+# Copyright (c) 2019-2022 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 # Test Taproot softfork (BIPs 340-342)
@@ -10,7 +10,6 @@ from test_framework.blocktools import (
     create_block,
     add_witness_commitment,
     MAX_BLOCK_SIGOPS_WEIGHT,
-    NORMAL_GBT_REQUEST_PARAMS,
     WITNESS_SCALE_FACTOR,
 )
 from test_framework.messages import (
@@ -20,6 +19,7 @@ from test_framework.messages import (
     CTxInWitness,
     CTxOut,
     SEQUENCE_FINAL,
+    tx_from_hex,
 )
 from test_framework.script import (
     ANNEX_TAG,
@@ -92,15 +92,24 @@ from test_framework.script_util import (
     script_to_p2wsh_script,
 )
 from test_framework.test_framework import BitcoinTestFramework
-from test_framework.util import assert_raises_rpc_error, assert_equal
-from test_framework.key import generate_privkey, compute_xonly_pubkey, sign_schnorr, tweak_add_privkey, ECKey
+from test_framework.util import (
+    assert_raises_rpc_error,
+    assert_equal,
+    random_bytes,
+)
+from test_framework.key import (
+    generate_privkey,
+    compute_xonly_pubkey,
+    sign_schnorr,
+    tweak_add_privkey,
+    ECKey,
+    SECP256K1
+)
 from test_framework.address import (
     hash160,
-    program_to_witness
+    program_to_witness,
 )
 from collections import OrderedDict, namedtuple
-from enum import Enum
-from io import BytesIO
 import json
 import hashlib
 import os
@@ -458,7 +467,7 @@ def spend(tx, idx, utxos, **kwargs):
 # Each spender is a tuple of:
 # - A scriptPubKey which is to be spent from (CScript)
 # - A comment describing the test (string)
-# - Whether the spending (on itself) is expected to be standard (Enum.Standard)
+# - Whether the spending (on itself) is expected to be standard (bool)
 # - A tx-signing lambda returning (scriptsig, witness_stack), taking as inputs:
 #   - A transaction to sign (CTransaction)
 #   - An input position (int)
@@ -470,14 +479,9 @@ def spend(tx, idx, utxos, **kwargs):
 # - Whether this test demands being placed in a txin with no corresponding txout (for testing SIGHASH_SINGLE behavior)
 
 Spender = namedtuple("Spender", "script,comment,is_standard,sat_function,err_msg,sigops_weight,no_fail,need_vin_vout_mismatch")
-# The full node versions that treat the tx standard.
-# ALL means any version
-# V23 means the major version 23.0 and any later version
-# NONE means no version
-Standard = Enum('Standard', 'ALL V23 NONE')
 
 
-def make_spender(comment, *, tap=None, witv0=False, script=None, pkh=None, p2sh=False, spk_mutate_pre_p2sh=None, failure=None, standard=Standard.ALL, err_msg=None, sigops_weight=0, need_vin_vout_mismatch=False, **kwargs):
+def make_spender(comment, *, tap=None, witv0=False, script=None, pkh=None, p2sh=False, spk_mutate_pre_p2sh=None, failure=None, standard=True, err_msg=None, sigops_weight=0, need_vin_vout_mismatch=False, **kwargs):
     """Helper for constructing Spender objects using the context signing framework.
 
     * tap: a TaprootInfo object (see taproot_construct), for Taproot spends (cannot be combined with pkh, witv0, or script)
@@ -487,17 +491,12 @@ def make_spender(comment, *, tap=None, witv0=False, script=None, pkh=None, p2sh=
     * p2sh: whether the output is P2SH wrapper (this is supported even for Taproot, where it makes the output unencumbered)
     * spk_mutate_pre_psh: a callable to be applied to the script (before potentially P2SH-wrapping it)
     * failure: a dict of entries to override in the context when intentionally failing to spend (if None, no_fail will be set)
-    * standard: whether the (valid version of) spending is expected to be standard (True is mapped to Standard.ALL, False is mapped to Standard.NONE)
+    * standard: whether the (valid version of) spending is expected to be standard
     * err_msg: a string with an expected error message for failure (or None, if not cared about)
     * sigops_weight: the pre-taproot sigops weight consumed by a successful spend
     * need_vin_vout_mismatch: whether this test requires being tested in a transaction input that has no corresponding
                               transaction output.
     """
-
-    if standard == True:
-        standard = Standard.ALL
-    elif standard == False:
-        standard = Standard.NONE
 
     conf = dict()
 
@@ -578,10 +577,6 @@ def random_checksig_style(pubkey):
         ret = CScript([pubkey, opcode])
     return bytes(ret)
 
-def random_bytes(n):
-    """Return a random bytes object of length n."""
-    return bytes(random.getrandbits(8) for i in range(n))
-
 def bitflipper(expr):
     """Return a callable that evaluates expr and returns it with a random bitflip."""
     def fn(ctx):
@@ -643,8 +638,8 @@ SIG_POP_BYTE = {"failure": {"sign": byte_popper(default_sign)}}
 SINGLE_SIG = {"inputs": [getter("sign")]}
 SIG_ADD_ZERO = {"failure": {"sign": zero_appender(default_sign)}}
 
-DUST_LIMIT = 600
-MIN_FEE = 50000
+DUST_LIMIT = 10000
+MIN_FEE = 10000
 
 # === Actual test cases ===
 
@@ -672,6 +667,44 @@ def spenders_taproot_active():
     add_spender(spenders, "sig/flip_p", tap=tap, key=secs[0], failure={"flag_flip_p": True}, **ERR_SIG_SCHNORR)
     # Test with signature with bit flipped.
     add_spender(spenders, "sig/bitflip", tap=tap, key=secs[0], failure={"signature": bitflipper(default_signature)}, **ERR_SIG_SCHNORR)
+
+    # == Test involving an internal public key not on the curve ==
+
+    # X-only public keys are 32 bytes, but not every 32-byte array is a valid public key; only
+    # around 50% of them are. This does not affect users using correct software; these "keys" have
+    # no corresponding private key, and thus will never appear as output of key
+    # generation/derivation/tweaking.
+    #
+    # Using an invalid public key as P2TR output key makes the UTXO unspendable. Revealing an
+    # invalid public key as internal key in a P2TR script path spend also makes the spend invalid.
+    # These conditions are explicitly spelled out in BIP341.
+    #
+    # It is however hard to create test vectors for this, because it involves "guessing" how a
+    # hypothetical incorrect implementation deals with an obviously-invalid condition, and making
+    # sure that guessed behavior (accepting it in certain condition) doesn't occur.
+    #
+    # The test case added here tries to detect a very specific bug a verifier could have: if they
+    # don't verify whether or not a revealed internal public key in a script path spend is valid,
+    # and (correctly) implement output_key == tweak(internal_key, tweakval) but (incorrectly) treat
+    # tweak(invalid_key, tweakval) as equal the public key corresponding to private key tweakval.
+    # This may seem like a far-fetched edge condition to test for, but in fact, the BIP341 wallet
+    # pseudocode did exactly that (but obviously only triggerable by someone invoking the tweaking
+    # function with an invalid public key, which shouldn't happen).
+
+    # Generate an invalid public key
+    while True:
+        invalid_pub = random_bytes(32)
+        if not SECP256K1.is_x_coord(int.from_bytes(invalid_pub, 'big')):
+            break
+
+    # Implement a test case that detects validation logic which maps invalid public keys to the
+    # point at infinity in the tweaking logic.
+    tap = taproot_construct(invalid_pub, [("true", CScript([OP_1]))], treat_internal_as_infinity=True)
+    add_spender(spenders, "output/invalid_x", tap=tap, key_tweaked=tap.tweak, failure={"leaf": "true", "inputs": []}, **ERR_WITNESS_PROGRAM_MISMATCH)
+
+    # Do the same thing without invalid point, to make sure there is no mistake in the test logic.
+    tap = taproot_construct(pubs[0], [("true", CScript([OP_1]))])
+    add_spender(spenders, "output/invalid_x_mock", tap=tap, key=secs[0], leaf="true", inputs=[])
 
     # == Tests for signature hashing ==
 
@@ -717,7 +750,7 @@ def spenders_taproot_active():
     # Reusing the scripts above, test that various features affect the sighash.
     add_spender(spenders, "sighash/annex", tap=tap, leaf="pk_codesep", key=secs[1], hashtype=hashtype, standard=False, **SINGLE_SIG, annex=bytes([ANNEX_TAG]), failure={"sighash": override(default_sighash, annex=None)}, **ERR_SIG_SCHNORR)
     add_spender(spenders, "sighash/script", tap=tap, leaf="pk_codesep", key=secs[1], **common, **SINGLE_SIG, failure={"sighash": override(default_sighash, script_taproot=tap.leaves["codesep_pk"].script)}, **ERR_SIG_SCHNORR)
-    add_spender(spenders, "sighash/leafver", tap=tap, leaf="pk_codesep", key=secs[1], **common, **SINGLE_SIG, failure={"sighash": override(default_sighash, leafversion=random.choice([x & 0xFE for x in range(0x100) if x & 0xFE != 0xC0]))}, **ERR_SIG_SCHNORR)
+    add_spender(spenders, "sighash/leafver", tap=tap, leaf="pk_codesep", key=secs[1], **common, **SINGLE_SIG, failure={"sighash": override(default_sighash, leafversion=random.choice([x & 0xFE for x in range(0x100) if x & 0xFE != LEAF_VERSION_TAPSCRIPT]))}, **ERR_SIG_SCHNORR)
     add_spender(spenders, "sighash/scriptpath", tap=tap, leaf="pk_codesep", key=secs[1], **common, **SINGLE_SIG, failure={"sighash": override(default_sighash, leaf=None)}, **ERR_SIG_SCHNORR)
     add_spender(spenders, "sighash/keypath", tap=tap, key=secs[0], **common, failure={"sighash": override(default_sighash, leaf="pk_codesep")}, **ERR_SIG_SCHNORR)
 
@@ -1019,13 +1052,13 @@ def spenders_taproot_active():
     # input a valid signature with the passed pk followed by a dummy push of bytes that are to be dropped, and
     # will execute sigops signature checks.
     SIGOPS_RATIO_SCRIPTS = [
-        # n OP_CHECKSIGVERFIYs and 1 OP_CHECKSIG.
+        # n OP_CHECKSIGVERIFYs and 1 OP_CHECKSIG.
         lambda n, pk: (CScript([OP_DROP, pk] + [OP_2DUP, OP_CHECKSIGVERIFY] * n + [OP_CHECKSIG]), n + 1),
         # n OP_CHECKSIGVERIFYs and 1 OP_CHECKSIGADD, but also one unexecuted OP_CHECKSIGVERIFY.
         lambda n, pk: (CScript([OP_DROP, pk, OP_0, OP_IF, OP_2DUP, OP_CHECKSIGVERIFY, OP_ENDIF] + [OP_2DUP, OP_CHECKSIGVERIFY] * n + [OP_2, OP_SWAP, OP_CHECKSIGADD, OP_3, OP_EQUAL]), n + 1),
         # n OP_CHECKSIGVERIFYs and 1 OP_CHECKSIGADD, but also one unexecuted OP_CHECKSIG.
         lambda n, pk: (CScript([random_bytes(220), OP_2DROP, pk, OP_1, OP_NOTIF, OP_2DUP, OP_CHECKSIG, OP_VERIFY, OP_ENDIF] + [OP_2DUP, OP_CHECKSIGVERIFY] * n + [OP_4, OP_SWAP, OP_CHECKSIGADD, OP_5, OP_EQUAL]), n + 1),
-        # n OP_CHECKSIGVERFIYs and 1 OP_CHECKSIGADD, but also one unexecuted OP_CHECKSIGADD.
+        # n OP_CHECKSIGVERIFYs and 1 OP_CHECKSIGADD, but also one unexecuted OP_CHECKSIGADD.
         lambda n, pk: (CScript([OP_DROP, pk, OP_1, OP_IF, OP_ELSE, OP_2DUP, OP_6, OP_SWAP, OP_CHECKSIGADD, OP_7, OP_EQUALVERIFY, OP_ENDIF] + [OP_2DUP, OP_CHECKSIGVERIFY] * n + [OP_8, OP_SWAP, OP_CHECKSIGADD, OP_9, OP_EQUAL]), n + 1),
         # n+1 OP_CHECKSIGs, but also one OP_CHECKSIG with an empty signature.
         lambda n, pk: (CScript([OP_DROP, OP_0, pk, OP_CHECKSIG, OP_NOT, OP_VERIFY, pk] + [OP_2DUP, OP_CHECKSIG, OP_VERIFY] * n + [OP_CHECKSIG]), n + 1),
@@ -1143,6 +1176,12 @@ def spenders_taproot_active():
         tap = taproot_construct(pubs[0], scripts)
         add_spender(spenders, "alwaysvalid/notsuccessx", tap=tap, leaf="op_success", inputs=[], standard=False, failure={"leaf": "normal"}) # err_msg differs based on opcode
 
+    # == Test case for https://github.com/bitcoin/bitcoin/issues/24765 ==
+
+    zero_fn = lambda h: bytes([0 for _ in range(32)])
+    tap = taproot_construct(pubs[0], [("leaf", CScript([pubs[1], OP_CHECKSIG, pubs[1], OP_CHECKSIGADD, OP_2, OP_EQUAL])), zero_fn])
+    add_spender(spenders, "case24765", tap=tap, leaf="leaf", inputs=[getter("sign"), getter("sign")], key=secs[1], no_fail=True)
+
     # == Legacy tests ==
 
     # Also add a few legacy spends into the mix, so that transactions which combine taproot and pre-taproot spends get tested too.
@@ -1168,29 +1207,21 @@ def spenders_taproot_active():
 
     return spenders
 
-def spenders_taproot_inactive():
-    """Spenders for testing that pre-activation Taproot rules don't apply."""
+
+def spenders_taproot_nonstandard():
+    """Spenders for testing that post-activation Taproot rules may be nonstandard."""
 
     spenders = []
 
     sec = generate_privkey()
     pub, _ = compute_xonly_pubkey(sec)
     scripts = [
-        ("pk", CScript([pub, OP_CHECKSIG])),
         ("future_leaf", CScript([pub, OP_CHECKSIG]), 0xc2),
         ("op_success", CScript([pub, OP_CHECKSIG, OP_0, OP_IF, CScriptOp(0x50), OP_ENDIF])),
     ]
     tap = taproot_construct(pub, scripts)
 
-    # Test that keypath spending is valid & non-standard, regardless of validity.
-    add_spender(spenders, "inactive/keypath_valid", key=sec, tap=tap, standard=Standard.V23)
-    add_spender(spenders, "inactive/keypath_invalidsig", key=sec, tap=tap, standard=False, sighash=bitflipper(default_sighash))
-    add_spender(spenders, "inactive/keypath_empty", key=sec, tap=tap, standard=False, witness=[])
-
-    # Same for scriptpath spending (and features like annex, leaf versions, or OP_SUCCESS don't change this)
-    add_spender(spenders, "inactive/scriptpath_valid", key=sec, tap=tap, leaf="pk", standard=Standard.V23, inputs=[getter("sign")])
-    add_spender(spenders, "inactive/scriptpath_invalidsig", key=sec, tap=tap, leaf="pk", standard=False, inputs=[getter("sign")], sighash=bitflipper(default_sighash))
-    add_spender(spenders, "inactive/scriptpath_invalidcb", key=sec, tap=tap, leaf="pk", standard=False, inputs=[getter("sign")], controlblock=bitflipper(default_controlblock))
+    # Test that features like annex, leaf versions, or OP_SUCCESS are valid but non-standard
     add_spender(spenders, "inactive/scriptpath_valid_unkleaf", key=sec, tap=tap, leaf="future_leaf", standard=False, inputs=[getter("sign")])
     add_spender(spenders, "inactive/scriptpath_invalid_unkleaf", key=sec, tap=tap, leaf="future_leaf", standard=False, inputs=[getter("sign")], sighash=bitflipper(default_sighash))
     add_spender(spenders, "inactive/scriptpath_valid_opsuccess", key=sec, tap=tap, leaf="op_success", standard=False, inputs=[getter("sign")])
@@ -1218,7 +1249,7 @@ def dump_json_test(tx, input_utxos, idx, success, failure):
 
     # The "final" field indicates that a spend should be always valid, even with more validation flags enabled
     # than the listed ones. Use standardness as a proxy for this (which gives a conservative underestimate).
-    if spender.is_standard == Standard.ALL:
+    if spender.is_standard:
         fields.append(("final", True))
 
     def dump_witness(wit):
@@ -1243,33 +1274,17 @@ UTXOData = namedtuple('UTXOData', 'outpoint,output,spender')
 
 class TaprootTest(BitcoinTestFramework):
     def add_options(self, parser):
+        self.add_wallet_options(parser)
         parser.add_argument("--dumptests", dest="dump_tests", default=False, action="store_true",
                             help="Dump generated test cases to directory set by TEST_DUMP_DIR environment variable")
-        parser.add_argument("--previous_release", dest="previous_release", default=False, action="store_true",
-                            help="Use a previous release as taproot-inactive node")
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
-        if self.options.previous_release:
-            self.skip_if_no_previous_releases()
 
     def set_test_params(self):
-        self.num_nodes = 2
+        self.num_nodes = 1
         self.setup_clean_chain = True
-        # Node 0 has Taproot inactive, Node 1 active.
-        self.extra_args = [["-par=1"], ["-par=1"]]
-        if self.options.previous_release:
-            self.wallet_names = [None, self.default_wallet_name]
-        else:
-            self.extra_args[0].append("-vbparams=taproot:1:1")
-
-    def setup_nodes(self):
-        self.add_nodes(self.num_nodes, self.extra_args, versions=[
-            200100 if self.options.previous_release else None,
-            None,
-        ])
-        self.start_nodes()
-        self.import_deterministic_coinbase_privkeys()
+        self.extra_args = [["-par=1"]]
 
     def block_submit(self, node, txs, msg, err_msg, cb_pubkey=None, fees=0, sigops_weight=0, witness=False, accept=False):
 
@@ -1277,7 +1292,7 @@ class TaprootTest(BitcoinTestFramework):
         # It is not impossible to fit enough tapscript sigops to hit the old 80k limit without
         # busting txin-level limits. We simply have to account for the p2pk outputs in all
         # transactions.
-        extra_output_script = CScript([OP_CHECKSIG]*((MAX_BLOCK_SIGOPS_WEIGHT - sigops_weight) // WITNESS_SCALE_FACTOR))
+        extra_output_script = CScript(bytes([OP_CHECKSIG]*((MAX_BLOCK_SIGOPS_WEIGHT - sigops_weight) // WITNESS_SCALE_FACTOR)))
 
         coinbase_tx = create_coinbase(self.lastblockheight + 1, pubkey=cb_pubkey, extra_output_script=extra_output_script, fees=fees)
         block = create_block(self.tip, coinbase_tx, self.lastblocktime + 1, txlist=txs)
@@ -1349,13 +1364,13 @@ class TaprootTest(BitcoinTestFramework):
             # Add the 50 highest-value inputs
             unspents = node.listunspent()
             random.shuffle(unspents)
-            unspents.sort(key=lambda x: int(x["amount"] * 100000000), reverse=True)
+            unspents.sort(key=lambda x: int(x["amount"] * 1000000), reverse=True)
             if len(unspents) > 50:
                 unspents = unspents[:50]
             random.shuffle(unspents)
             balance = 0
             for unspent in unspents:
-                balance += int(unspent["amount"] * 100000000)
+                balance += int(unspent["amount"] * 1000000)
                 txid = int(unspent["txid"], 16)
                 fund_tx.vin.append(CTxIn(COutPoint(txid, int(unspent["vout"])), CScript()))
             # Add outputs
@@ -1365,14 +1380,15 @@ class TaprootTest(BitcoinTestFramework):
             self.log.debug("Create %i UTXOs in a transaction spending %i inputs worth %.8f (sending ~%.8f to change)" % (count_this_tx, len(unspents), balance * 0.00000001, change_goal * 0.00000001))
             for i in range(count_this_tx):
                 avg = (balance - change_goal) / (count_this_tx - i)
-                amount = int(random.randrange(int(avg*0.85 + 0.5), int(avg*1.15 + 0.5)) + 0.5)
+                amount = min(int(random.randrange(int(avg*0.85 + 0.5), int(avg*1.15 + 0.5)) + 0.5),1000000)
                 balance -= amount
+                if balance < 1000000:
+                    break
                 fund_tx.vout.append(CTxOut(amount, spenders[done + i].script))
             # Add change
-            fund_tx.vout.append(CTxOut(balance - 10000, random.choice(host_spks)))
+            fund_tx.vout.append(CTxOut(balance - 1000000, random.choice(host_spks)))
             # Ask the wallet to sign
-            ss = BytesIO(bytes.fromhex(node.signrawtransactionwithwallet(fund_tx.serialize().hex())["hex"]))
-            fund_tx.deserialize(ss)
+            fund_tx = tx_from_hex(node.signrawtransactionwithwallet(fund_tx.serialize().hex())["hex"])
             # Construct UTXOData entries
             fund_tx.rehash()
             for i in range(count_this_tx):
@@ -1383,7 +1399,8 @@ class TaprootTest(BitcoinTestFramework):
                     normal_utxos.append(utxodata)
                 done += 1
             # Mine into a block
-            self.block_submit(node, [fund_tx], "Funding tx", None, random.choice(host_pubkeys), 10000, MAX_BLOCK_SIGOPS_WEIGHT, True, True)
+
+            self.block_submit(node, [fund_tx], "Funding tx", None, random.choice(host_pubkeys), -10000, MAX_BLOCK_SIGOPS_WEIGHT, True, True)
 
         # Consume groups of choice(input_coins) from utxos in a tx, testing the spenders.
         self.log.info("- Running %i spending tests" % done)
@@ -1432,7 +1449,8 @@ class TaprootTest(BitcoinTestFramework):
 
             # Decide fee, and add CTxIns to tx.
             amount = sum(utxo.output.nValue for utxo in input_utxos)
-            fee = min(random.randrange(MIN_FEE * 2, MIN_FEE * 4), amount - DUST_LIMIT)  # 10000-20000 sat fee
+            #fee = min(random.randrange(MIN_FEE * 2, MIN_FEE * 4), amount - DUST_LIMIT)  # 10000-20000 sat fee
+            fee = 20000
             in_value = amount - fee
             tx.vin = [CTxIn(outpoint=utxo.outpoint, nSequence=random.randint(min_sequence, 0xffffffff)) for utxo in input_utxos]
             tx.wit.vtxinwit = [CTxInWitness() for _ in range(len(input_utxos))]
@@ -1483,11 +1501,10 @@ class TaprootTest(BitcoinTestFramework):
                 for i in range(len(input_utxos)):
                     tx.vin[i].scriptSig = input_data[i][i != fail_input][0]
                     tx.wit.vtxinwit[i].scriptWitness.stack = input_data[i][i != fail_input][1]
-                taproot_spend_policy = Standard.V23 if node.version is None else Standard.ALL
                 # Submit to mempool to check standardness
                 is_standard_tx = (
                     fail_input is None  # Must be valid to be standard
-                    and (all(utxo.spender.is_standard == Standard.ALL or utxo.spender.is_standard == taproot_spend_policy for utxo in input_utxos))  # All inputs must be standard
+                    and (all(utxo.spender.is_standard for utxo in input_utxos))  # All inputs must be standard
                     and tx.nVersion >= 1  # The tx version must be standard
                     and tx.nVersion <= 2)
                 tx.rehash()
@@ -1498,7 +1515,7 @@ class TaprootTest(BitcoinTestFramework):
                 else:
                     assert_raises_rpc_error(-26, None, node.sendrawtransaction, tx.serialize().hex(), 0)
                 # Submit in a block
-                self.block_submit(node, [tx], msg, witness=True, accept=fail_input is None, cb_pubkey=cb_pubkey, fees=fee, sigops_weight=sigops_weight, err_msg=expected_fail_msg)
+                self.block_submit(node, [tx], msg, witness=True, accept=fail_input is None, cb_pubkey=cb_pubkey, fees=-fee, sigops_weight=sigops_weight, err_msg=expected_fail_msg)
 
             if (len(spenders) - left) // 200 > (len(spenders) - left - len(input_utxos)) // 200:
                 self.log.info("  - %i tests done" % (len(spenders) - left))
@@ -1514,21 +1531,23 @@ class TaprootTest(BitcoinTestFramework):
         self.log.info("Unit test scenario...")
 
         # Deterministically mine coins to OP_TRUE in block 1
-        assert self.nodes[1].getblockcount() == 0
+        assert_equal(self.nodes[0].getblockcount(), 0)
         coinbase = CTransaction()
+        coinbase.nTime = 0
         coinbase.nVersion = 1
         coinbase.vin = [CTxIn(COutPoint(0, 0xffffffff), CScript([OP_1, OP_1]), SEQUENCE_FINAL)]
-        coinbase.vout = [CTxOut(5000000000, CScript([OP_1]))]
+        coinbase.vout = [CTxOut(50000000, CScript([OP_1]))]
         coinbase.nLockTime = 0
         coinbase.rehash()
-        assert coinbase.hash == "f60c73405d499a956d3162e3483c395526ef78286458a4cb17b125aa92e49b20"
+        assert coinbase.hash == "d72317a57b22fb7b8bbb05b6245937fd1bc4f1fc488b827ebab0c6d1bb8c57d2"
         # Mine it
-        block = create_block(hashprev=int(self.nodes[1].getbestblockhash(), 16), coinbase=coinbase)
+        block = create_block(hashprev=int(self.nodes[0].getbestblockhash(), 16), coinbase=coinbase)
         block.rehash()
         block.solve()
-        self.nodes[1].submitblock(block.serialize().hex())
-        assert self.nodes[1].getblockcount() == 1
-        self.generate(self.nodes[1], COINBASE_MATURITY)
+        self.nodes[0].submitblock(block.serialize().hex())
+        self.tip = block.sha256
+        assert_equal(self.nodes[0].getblockcount(), 1)
+        self.generate(self.nodes[0], COINBASE_MATURITY)
 
         SEED = 317
         VALID_LEAF_VERS = list(range(0xc0, 0x100, 2)) + [0x66, 0x7e, 0x80, 0x84, 0x96, 0x98, 0xba, 0xbc, 0xbe]
@@ -1541,12 +1560,16 @@ class TaprootTest(BitcoinTestFramework):
 
         script_lists = [
             None,
-            [("0", CScript([pubs[50], OP_CHECKSIG]), 0xc0)],
-            [("0", CScript([pubs[51], OP_CHECKSIG]), 0xc0)],
-            [("0", CScript([pubs[52], OP_CHECKSIG]), 0xc0), ("1", CScript([b"BIP341"]), VALID_LEAF_VERS[pubs[99][0] % 41])],
-            [("0", CScript([pubs[53], OP_CHECKSIG]), 0xc0), ("1", CScript([b"Taproot"]), VALID_LEAF_VERS[pubs[99][1] % 41])],
-            [("0", CScript([pubs[54], OP_CHECKSIG]), 0xc0), [("1", CScript([pubs[55], OP_CHECKSIG]), 0xc0), ("2", CScript([pubs[56], OP_CHECKSIG]), 0xc0)]],
-            [("0", CScript([pubs[57], OP_CHECKSIG]), 0xc0), [("1", CScript([pubs[58], OP_CHECKSIG]), 0xc0), ("2", CScript([pubs[59], OP_CHECKSIG]), 0xc0)]],
+            [("0", CScript([pubs[50], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT)],
+            [("0", CScript([pubs[51], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT)],
+            [("0", CScript([pubs[52], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT), ("1", CScript([b"BIP341"]), VALID_LEAF_VERS[pubs[99][0] % 41])],
+            [("0", CScript([pubs[53], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT), ("1", CScript([b"Taproot"]), VALID_LEAF_VERS[pubs[99][1] % 41])],
+            [("0", CScript([pubs[54], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT),
+                [("1", CScript([pubs[55], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT), ("2", CScript([pubs[56], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT)]
+            ],
+            [("0", CScript([pubs[57], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT),
+                [("1", CScript([pubs[58], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT), ("2", CScript([pubs[59], OP_CHECKSIG]), LEAF_VERSION_TAPSCRIPT)]
+            ],
         ]
         taps = [taproot_construct(inner_keys[i], script_lists[i]) for i in range(len(inner_keys))]
 
@@ -1600,25 +1623,26 @@ class TaprootTest(BitcoinTestFramework):
         # come from distinct txids).
         txn = []
         lasttxid = coinbase.sha256
-        amount = 5000000000
+        amount = 50000000
         for i, spk in enumerate(old_spks + tap_spks):
-            val = 42000000 * (i + 7)
+            val = 420000 * (i + 7)
             tx = CTransaction()
             tx.nVersion = 1
+            tx.nTime = 0
             tx.vin = [CTxIn(COutPoint(lasttxid, i & 1), CScript([]), SEQUENCE_FINAL)]
-            tx.vout = [CTxOut(val, spk), CTxOut(amount - val, CScript([OP_1]))]
+            tx.vout = [CTxOut(val, spk), CTxOut(amount - val - 10000, CScript([OP_1]))]
             if i & 1:
                 tx.vout = list(reversed(tx.vout))
             tx.nLockTime = 0
             tx.rehash()
-            amount -= val
+            amount -= val + 10000
             lasttxid = tx.sha256
             txn.append(tx)
             spend_info[spk]['prevout'] = COutPoint(tx.sha256, i & 1)
             spend_info[spk]['utxo'] = CTxOut(val, spk)
         # Mine those transactions
-        self.init_blockinfo(self.nodes[1])
-        self.block_submit(self.nodes[1], txn, "Crediting txn", None, sigops_weight=10, accept=True)
+        self.init_blockinfo(self.nodes[0])
+        self.block_submit(self.nodes[0], txn, "Crediting txn", None, sigops_weight=10, accept=True, fees=-1000000)
 
         # scriptPubKey computation
         tests = {"version": 1}
@@ -1662,6 +1686,7 @@ class TaprootTest(BitcoinTestFramework):
         # Construct a deterministic transaction spending all outputs created above.
         tx = CTransaction()
         tx.nVersion = 2
+        tx.nTime = 0
         tx.vin = []
         inputs = []
         input_spks = [tap_spks[0], tap_spks[1], old_spks[0], tap_spks[2], tap_spks[5], old_spks[2], tap_spks[6], tap_spks[3], tap_spks[4]]
@@ -1670,8 +1695,8 @@ class TaprootTest(BitcoinTestFramework):
         for i, spk in enumerate(input_spks):
             tx.vin.append(CTxIn(spend_info[spk]['prevout'], CScript(), sequences[i]))
             inputs.append(spend_info[spk]['utxo'])
-        tx.vout.append(CTxOut(1000000000, old_spks[1]))
-        tx.vout.append(CTxOut(3410000000, pubs[98]))
+        tx.vout.append(CTxOut(10000000, old_spks[1]))
+        tx.vout.append(CTxOut(34100000, old_spks[1]))
         tx.nLockTime = 500000000
         precomputed = {
             "hashAmounts": BIP341_sha_amounts(inputs),
@@ -1728,55 +1753,23 @@ class TaprootTest(BitcoinTestFramework):
         aux = tx_test.setdefault("auxiliary", {})
         aux['fullySignedTx'] = tx.serialize().hex()
         keypath_tests.append(tx_test)
-        assert_equal(hashlib.sha256(tx.serialize()).hexdigest(), "24bab662cb55a7f3bae29b559f651674c62bcc1cd442d44715c0133939107b38")
+        assert_equal(hashlib.sha256(tx.serialize()).hexdigest(), "91c69a985a133c704d066244f92d1ef9b1f7c8c922b3571170bd2205a01cd1e4")
         # Mine the spending transaction
-        self.block_submit(self.nodes[1], [tx], "Spending txn", None, sigops_weight=10000, accept=True, witness=True)
+        self.block_submit(self.nodes[0], [tx], "Spending txn", None, sigops_weight=10000, accept=True, witness=True, fees=-1000000)
 
         if GEN_TEST_VECTORS:
             print(json.dumps(tests, indent=4, sort_keys=False))
 
-
     def run_test(self):
         self.gen_test_vectors()
 
-        # Post-taproot activation tests go first (pre-taproot tests' blocks are invalid post-taproot).
         self.log.info("Post-activation tests...")
-        self.test_spenders(self.nodes[1], spenders_taproot_active(), input_counts=[1, 2, 2, 2, 2, 3])
-
-        # Re-connect nodes in case they have been disconnected
-        self.disconnect_nodes(0, 1)
-        self.connect_nodes(0, 1)
-
-        # Transfer value of the largest 500 coins to pre-taproot node.
-        addr = self.nodes[0].getnewaddress()
-
-        unsp = self.nodes[1].listunspent()
-        unsp = sorted(unsp, key=lambda i: i['amount'], reverse=True)
-        unsp = unsp[:500]
-
-        rawtx = self.nodes[1].createrawtransaction(
-            inputs=[{
-                'txid': i['txid'],
-                'vout': i['vout']
-            } for i in unsp],
-            outputs={addr: sum(i['amount'] for i in unsp)}
-        )
-        rawtx = self.nodes[1].signrawtransactionwithwallet(rawtx)['hex']
-
-        # Mine a block with the transaction
-        block = create_block(tmpl=self.nodes[1].getblocktemplate(NORMAL_GBT_REQUEST_PARAMS), txlist=[rawtx])
-        add_witness_commitment(block)
-        block.solve()
-        assert_equal(None, self.nodes[1].submitblock(block.serialize().hex()))
-        self.sync_blocks()
-
-        # Pre-taproot activation tests.
-        self.log.info("Pre-activation tests...")
+        self.test_spenders(self.nodes[0], spenders_taproot_active(), input_counts=[1, 2, 2, 2, 2, 3])
         # Run each test twice; once in isolation, and once combined with others. Testing in isolation
         # means that the standardness is verified in every test (as combined transactions are only standard
         # when all their inputs are standard).
-        self.test_spenders(self.nodes[0], spenders_taproot_inactive(), input_counts=[1])
-        self.test_spenders(self.nodes[0], spenders_taproot_inactive(), input_counts=[2, 3])
+        self.test_spenders(self.nodes[0], spenders_taproot_nonstandard(), input_counts=[1])
+        self.test_spenders(self.nodes[0], spenders_taproot_nonstandard(), input_counts=[2, 3])
 
 
 if __name__ == '__main__':

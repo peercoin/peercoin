@@ -36,6 +36,7 @@ public:
 
     QString getDataDirectory();
     void setDataDirectory(const QString &dataDir);
+    int64_t getPruneMiB() const;
 
     /**
      * Determine data directory. Let the user choose if the current one doesn't exist.
@@ -63,9 +64,9 @@ private Q_SLOTS:
 
 private:
     Ui::Intro *ui;
-    QThread *thread;
+    QThread* thread{nullptr};
     QMutex mutex;
-    bool signalled;
+    bool signalled{false};
     QString pathToCheck;
     const int64_t m_blockchain_size_gb;
     //! Total required space (in GB).

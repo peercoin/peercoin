@@ -1,10 +1,11 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_QT_SENDCOINSDIALOG_H
 #define BITCOIN_QT_SENDCOINSDIALOG_H
 
+#include <qt/clientmodel.h>
 #include <qt/walletmodel.h>
 
 #include <QDialog>
@@ -12,7 +13,6 @@
 #include <QString>
 #include <QTimer>
 
-class ClientModel;
 class PlatformStyle;
 class SendCoinsEntry;
 class SendCoinsRecipient;
@@ -49,6 +49,9 @@ public:
     void pasteEntry(const SendCoinsRecipient &rv);
     bool handlePaymentRequest(const SendCoinsRecipient &recipient);
 
+    // Only used for testing-purposes
+    wallet::CCoinControl* getCoinControl() { return m_coin_control.get(); }
+
 public Q_SLOTS:
     void clear();
     void reject() override;
@@ -62,12 +65,12 @@ Q_SIGNALS:
 
 private:
     Ui::SendCoinsDialog *ui;
-    ClientModel *clientModel;
-    WalletModel *model;
+    ClientModel* clientModel{nullptr};
+    WalletModel* model{nullptr};
     std::unique_ptr<wallet::CCoinControl> m_coin_control;
     std::unique_ptr<WalletModelTransaction> m_current_transaction;
-    bool fNewRecipientAllowed;
-    bool fFeeMinimized;
+    bool fNewRecipientAllowed{true};
+    bool fFeeMinimized{true};
     const PlatformStyle *platformStyle;
 
     // Copy PSBT to clipboard and offer to save it.
@@ -97,7 +100,7 @@ private Q_SLOTS:
     //void on_buttonMinimizeFee_clicked();
     void removeEntry(SendCoinsEntry* entry);
     void useAvailableBalance(SendCoinsEntry* entry);
-    void updateDisplayUnit();
+    void refreshBalance();
     void coinControlFeatureChanged(bool);
     void coinControlButtonClicked();
     void coinControlChangeChecked(int);

@@ -2,6 +2,9 @@
 
 bench_schnorrsig
 valgrind_ctime_test
+ecdh_example
+ecdsa_example
+schnorr_example
 *.exe
 *.pdb
 src/*/*.exe
@@ -92,7 +95,6 @@ src/qt/bitcoin-qt.includes
 *.log
 *.trs
 *.dmg
-*.iso
 
 *.json.h
 *.raw.h
@@ -170,3 +172,5 @@ osx_volname
 dist/
 
 /guix-build-*
+
+/ci/scratch/

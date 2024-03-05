@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -128,6 +128,7 @@ const std::vector<std::string> RPC_COMMANDS_SAFE_FOR_FUZZING{
     "getmempoolancestors",
     "getmempooldescendants",
     "getmempoolentry",
+    "gettxspendingprevout",
     "getmempoolinfo",
     "getmininginfo",
     "getnettotals",
@@ -148,8 +149,8 @@ const std::vector<std::string> RPC_COMMANDS_SAFE_FOR_FUZZING{
     "mockscheduler",
     "ping",
     "preciousblock",
-    "pruneblockchain",
     "reconsiderblock",
+    "scanblocks",
     "scantxoutset",
     "sendrawtransaction",
     "setmocktime",
@@ -158,6 +159,7 @@ const std::vector<std::string> RPC_COMMANDS_SAFE_FOR_FUZZING{
     "signrawtransactionwithkey",
     "submitblock",
     "submitheader",
+    "submitpackage",
     "syncwithvalidationinterfacequeue",
     "testmempoolaccept",
     "uptime",
@@ -250,7 +252,7 @@ std::string ConsumeScalarRPCArgument(FuzzedDataProvider& fuzzed_data_provider)
             if (!opt_block_header) {
                 return;
             }
-            CDataStream data_stream{SER_NETWORK, PROTOCOL_VERSION};
+            CDataStream data_stream{SER_NETWORK, fuzzed_data_provider.ConsumeBool() ? PROTOCOL_VERSION : (PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS)};
             data_stream << *opt_block_header;
             r = HexStr(data_stream);
         },

@@ -76,6 +76,9 @@ Note: If you run into issues while installing Homebrew or pulling packages, refe
 
 The first step is to download the required dependencies.
 These dependencies represent the packages required to get a barebones installation up and running.
+
+See [dependencies.md](dependencies.md) for a complete overview.
+
 To install, run the following from your terminal:
 
 ``` bash
@@ -97,29 +100,21 @@ git clone https://github.com/bitcoin/bitcoin.git
 #### Wallet Dependencies
 
 It is not necessary to build wallet functionality to run `bitcoind` or  `bitcoin-qt`.
-To enable legacy wallets, you must install `berkeley-db@4`.
-To enable [descriptor wallets](https://github.com/bitcoin/bitcoin/blob/master/doc/descriptors.md), `sqlite` is required.
-Skip `berkeley-db@4` if you intend to *exclusively* use descriptor wallets.
+
+###### Descriptor Wallet Support
+
+`sqlite` is required to support for descriptor wallets.
+
+macOS ships with a useable `sqlite` package, meaning you don't need to
+install anything.
 
 ###### Legacy Wallet Support
 
-`berkeley-db@4` is required to enable support for legacy wallets.
+`berkeley-db@4` is only required to support for legacy wallets.
 Skip if you don't intend to use legacy wallets.
 
 ``` bash
 brew install berkeley-db@4
-```
-
-###### Descriptor Wallet Support
-
-Note: Apple has included a useable `sqlite` package since macOS 10.14.
-You may not need to install this package.
-
-`sqlite` is required to enable support for descriptor wallets.
-Skip if you don't intend to use descriptor wallets.
-
-``` bash
-brew install sqlite
 ```
 ---
 
@@ -133,14 +128,6 @@ Skip if you don't intend to use the GUI.
 
 ``` bash
 brew install qt@5
-```
-
-Ensure that the `qt@5` package is installed, not the `qt` package.
-If 'qt' is installed, the build process will fail.
-if installed, remove the `qt` package with the following command:
-
-``` bash
-brew uninstall qt
 ```
 
 Note: Building with Qt binaries downloaded from the Qt website is not officially supported.

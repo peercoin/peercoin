@@ -18,10 +18,6 @@
  *    imply normality.
  */
 
-#if defined HAVE_CONFIG_H
-#include "libsecp256k1-config.h"
-#endif
-
 #include "util.h"
 
 #if defined(SECP256K1_WIDEMUL_INT128)
@@ -31,6 +27,12 @@
 #else
 #error "Please select wide multiplication implementation"
 #endif
+
+static const secp256k1_fe secp256k1_fe_one = SECP256K1_FE_CONST(0, 0, 0, 0, 0, 0, 0, 1);
+static const secp256k1_fe secp256k1_const_beta = SECP256K1_FE_CONST(
+    0x7ae96a2bul, 0x657c0710ul, 0x6e64479eul, 0xac3434e9ul,
+    0x9cf04975ul, 0x12f58995ul, 0xc1396c28ul, 0x719501eeul
+);
 
 /** Normalize a field element. This brings the field element to a canonical representation, reduces
  *  its magnitude to 1, and reduces it modulo field size `p`.
@@ -83,6 +85,9 @@ static void secp256k1_fe_get_b32(unsigned char *r, const secp256k1_fe *a);
  *  as an argument. The magnitude of the output is one higher. */
 static void secp256k1_fe_negate(secp256k1_fe *r, const secp256k1_fe *a, int m);
 
+/** Adds a small integer (up to 0x7FFF) to r. The resulting magnitude increases by one. */
+static void secp256k1_fe_add_int(secp256k1_fe *r, int a);
+
 /** Multiplies the passed field element with a small integer constant. Multiplies the magnitude by that
  *  small integer. */
 static void secp256k1_fe_mul_int(secp256k1_fe *r, int a);
@@ -123,5 +128,17 @@ static void secp256k1_fe_storage_cmov(secp256k1_fe_storage *r, const secp256k1_f
 
 /** If flag is true, set *r equal to *a; otherwise leave it. Constant-time.  Both *r and *a must be initialized.*/
 static void secp256k1_fe_cmov(secp256k1_fe *r, const secp256k1_fe *a, int flag);
+
+/** Halves the value of a field element modulo the field prime. Constant-time.
+ *  For an input magnitude 'm', the output magnitude is set to 'floor(m/2) + 1'.
+ *  The output is not guaranteed to be normalized, regardless of the input. */
+static void secp256k1_fe_half(secp256k1_fe *r);
+
+/** Sets each limb of 'r' to its upper bound at magnitude 'm'. The output will also have its
+ *  magnitude set to 'm' and is normalized if (and only if) 'm' is zero. */
+static void secp256k1_fe_get_bounds(secp256k1_fe *r, int m);
+
+/** Determine whether a is a square (modulo p). */
+static int secp256k1_fe_is_square_var(const secp256k1_fe *a);
 
 #endif /* SECP256K1_FIELD_H */

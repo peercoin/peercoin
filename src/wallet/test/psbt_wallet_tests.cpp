@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 The Bitcoin Core developers
+// Copyright (c) 2017-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -68,7 +68,6 @@ BOOST_AUTO_TEST_CASE(psbt_updater_test)
     // Try to sign the mutated input
     SignatureData sigdata;
     BOOST_CHECK(m_wallet.FillPSBT(psbtx, complete, SIGHASH_ALL, true, true) != TransactionError::OK);
-    //BOOST_CHECK(spk_man->FillPSBT(psbtx, PrecomputePSBTData(psbtx), SIGHASH_ALL, true, true) != TransactionError::OK);
 }
 
 BOOST_AUTO_TEST_CASE(parse_hd_keypath)

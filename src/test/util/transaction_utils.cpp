@@ -9,7 +9,8 @@
 CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey, int nValue)
 {
     CMutableTransaction txCredit;
-    txCredit.nVersion = 1;
+    txCredit.nVersion = 3;
+    txCredit.nTime = 0;
     txCredit.nLockTime = 0;
     txCredit.vin.resize(1);
     txCredit.vout.resize(1);
@@ -25,7 +26,8 @@ CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey, int n
 CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CScriptWitness& scriptWitness, const CTransaction& txCredit)
 {
     CMutableTransaction txSpend;
-    txSpend.nVersion = 1;
+    txSpend.nVersion = 3;
+    txSpend.nTime = 0;
     txSpend.nLockTime = 0;
     txSpend.vin.resize(1);
     txSpend.vout.resize(1);
@@ -44,6 +46,8 @@ std::vector<CMutableTransaction> SetupDummyInputs(FillableSigningProvider& keyst
 {
     std::vector<CMutableTransaction> dummyTransactions;
     dummyTransactions.resize(2);
+    dummyTransactions[0].nTime = 0;
+    dummyTransactions[1].nTime = 0;
 
     // Add some keys to the keystore:
     CKey key[4];

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 The Peercoin developers
+// Copyright (c) 2012-2024 The Peercoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,6 +10,7 @@
 #include <bignum.h>
 #include <txdb.h>
 #include <consensus/validation.h>
+#include <util/system.h>
 #include <validation.h>
 #include <random.h>
 #include <script/interpreter.h>
@@ -65,6 +66,7 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints =
     (479189, 0xe04fb8e0u )
     (504051, 0x459f5a16u )
     (589659, 0xbd02492au )
+    (714688, 0xd70a5b68u )
     ;
 
 static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
@@ -81,6 +83,7 @@ static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
     (412691, 0x93138e67u )
     (441299, 0x03e195cbu )
     (442735, 0xe42d94feu )
+    (516308, 0x04a0897au )
     ;
 
 // Whether the given coinstake is subject to new v0.3 protocol
@@ -105,6 +108,9 @@ bool IsProtocolV05(unsigned int nTimeTx)
 // Test against previous block index! (always available)
 bool IsProtocolV06(const CBlockIndex* pindexPrev)
 {
+  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+      return true;
+
   if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime))
     return false;
 
@@ -147,6 +153,9 @@ bool IsProtocolV10(unsigned int nTime)
 // Whether a given timestamp is subject to new v10 protocol
 bool IsProtocolV12(const CBlockIndex* pindexPrev)
 {
+  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+      return true;
+
   if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime))
       return false;
 
@@ -195,7 +204,7 @@ static bool SelectBlockFromCandidates(
     map<uint256, const CBlockIndex*>& mapSelectedBlocks,
     int64_t nSelectionIntervalStop, uint64_t nStakeModifierPrev,
     const CBlockIndex** pindexSelected,
-    CChainState& chainstate)
+    Chainstate& chainstate)
 {
     bool fSelected = false;
     arith_uint256 hashBest = 0;
@@ -256,7 +265,7 @@ static bool SelectBlockFromCandidates(
 // block. This is to make it difficult for an attacker to gain control of
 // additional bits in the stake modifier, even after generating a chain of
 // blocks.
-bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t &nStakeModifier, bool& fGeneratedStakeModifier, CChainState& chainstate)
+bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t &nStakeModifier, bool& fGeneratedStakeModifier, Chainstate& chainstate)
 {
     const Consensus::Params& params = Params().GetConsensus();
     const CBlockIndex* pindexPrev = pindexCurrent->pprev;
@@ -311,15 +320,17 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t &nStake
 
     // Shuffle before sort
     for(int i = vSortedByTimestamp.size() - 1; i > 1; --i)
-    std::swap(vSortedByTimestamp[i], vSortedByTimestamp[GetRand(i)]);
+    	std::swap(vSortedByTimestamp[i], vSortedByTimestamp[GetRand(i)]);
 
     sort(vSortedByTimestamp.begin(), vSortedByTimestamp.end(), [] (const pair<int64_t, uint256> &a, const pair<int64_t, uint256> &b)
     {
         if (a.first != b.first)
             return a.first < b.first;
+//        return b.second < a.second;
+
         // Timestamp equals - compare block hashes
-        const uint32_t *pa = a.second.GetDataPtr();
-        const uint32_t *pb = b.second.GetDataPtr();
+        const uint32_t *pa = (const uint32_t *)a.second.data();
+        const uint32_t *pb = (const uint32_t *)b.second.data();
         int cnt = 256 / 32;
         do {
             --cnt;
@@ -327,6 +338,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t &nStake
                 return pa[cnt] < pb[cnt];
         } while(cnt);
             return false; // Elements are equal
+
     });
 
     // Select 64 blocks from candidate blocks to generate stake modifier
@@ -422,7 +434,7 @@ static bool GetKernelStakeModifierV05(CBlockIndex* pindexPrev, unsigned int nTim
 
 // V0.3: Stake modifier used to hash for a stake kernel is chosen as the stake
 // modifier about a selection interval later than the coin generating the kernel
-static bool GetKernelStakeModifierV03(CBlockIndex* pindexPrev, uint256 hashBlockFrom, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake, CChainState& chainstate)
+static bool GetKernelStakeModifierV03(CBlockIndex* pindexPrev, uint256 hashBlockFrom, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake, Chainstate& chainstate)
 {
     const Consensus::Params& params = Params().GetConsensus();
     nStakeModifier = 0;
@@ -460,7 +472,7 @@ static bool GetKernelStakeModifierV03(CBlockIndex* pindexPrev, uint256 hashBlock
         pindex = (!tmpChain.empty() && pindex->nHeight >= tmpChain[0]->nHeight - 1)? tmpChain[n++] : chainstate.m_chain.Next(pindex);
         if (n > tmpChain.size() || pindex == NULL) // check if tmpChain[n+1] exists
         {   // reached best block; may happen if node is behind on block chain
-            if (fPrintProofOfStake || (old_pindex->GetBlockTime() + params.nStakeMinAge - nStakeModifierSelectionInterval > GetAdjustedTime()))
+            if (fPrintProofOfStake || (old_pindex->GetBlockTime() + params.nStakeMinAge - nStakeModifierSelectionInterval > TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime())))
                 return error("GetKernelStakeModifier() : reached best block %s at height %d from block %s",
                     old_pindex->GetBlockHash().ToString(), old_pindex->nHeight, hashBlockFrom.ToString());
             else
@@ -477,7 +489,7 @@ static bool GetKernelStakeModifierV03(CBlockIndex* pindexPrev, uint256 hashBlock
 }
 
 // Get the stake modifier specified by the protocol to hash for a stake kernel
-static bool GetKernelStakeModifier(CBlockIndex* pindexPrev, uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake, CChainState& chainstate)
+static bool GetKernelStakeModifier(CBlockIndex* pindexPrev, uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake, Chainstate& chainstate)
 {
     if (IsProtocolV05(nTimeTx))
         return GetKernelStakeModifierV05(pindexPrev, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
@@ -511,7 +523,7 @@ static bool GetKernelStakeModifier(CBlockIndex* pindexPrev, uint256 hashBlockFro
 //   quantities so as to generate blocks faster, degrading the system back into
 //   a proof-of-work situation.
 //
-bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBlockHeader& blockFrom, unsigned int nTxPrevOffset, const CTransactionRef& txPrev, const COutPoint& prevout, unsigned int nTimeTx, uint256& hashProofOfStake, bool fPrintProofOfStake, CChainState& chainstate)
+bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBlockHeader& blockFrom, unsigned int nTxPrevOffset, const CTransactionRef& txPrev, const COutPoint& prevout, unsigned int nTimeTx, uint256& hashProofOfStake, bool fPrintProofOfStake, Chainstate& chainstate)
 {
     const Consensus::Params& params = Params().GetConsensus();
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
@@ -588,7 +600,7 @@ bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBl
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, const CTransactionRef& tx, unsigned int nBits, uint256& hashProofOfStake, unsigned int nTimeTx, CChainState& chainstate)
+bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, const CTransactionRef& tx, unsigned int nBits, uint256& hashProofOfStake, unsigned int nTimeTx, Chainstate& chainstate)
 {
     if (!tx->IsCoinStake())
         return error("CheckProofOfStake() : called on non-coinstake %s", tx->GetHash().ToString());
@@ -716,7 +728,7 @@ unsigned int GetStakeEntropyBit(const CBlock& block)
         uint160 hashSig = Hash160(block.vchBlockSig);
         if (gArgs.GetBoolArg("-printstakemodifier", false))
             LogPrintf("GetStakeEntropyBit(v0.3): nTime=%u hashSig=%s", block.nTime, hashSig.ToString());
-        nEntropyBit = hashSig.GetDataPtr()[4] >> 31;  // take the first bit of the hash
+        nEntropyBit = hashSig.data()[19] >> 7;  // take the first bit of the hash
         if (gArgs.GetBoolArg("-printstakemodifier", false))
             LogPrintf(" entropybit=%d\n", nEntropyBit);
     }
