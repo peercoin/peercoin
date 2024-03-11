@@ -530,6 +530,18 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
 
 void PoSMiner(NodeContext& m_node)
 {
+    std::string strMintMessage = _("Info: Minting suspended due to locked wallet.").translated;
+    std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.").translated;
+    std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.").translated;
+    std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.").translated;
+    std::string strMintEmpty = "";
+    if (!gArgs.GetBoolArg("-minting", true) || !gArgs.GetBoolArg("-staking", true))
+    {
+        strMintWarning = strMintDisabledMessage;
+        LogPrintf("proof-of-stake minter disabled\n");
+        return;
+    }
+
     CConnman* connman = m_node.connman.get();
     CWallet* pwallet;
     // ppctodo: deal with multiple wallets better
@@ -562,18 +574,6 @@ void PoSMiner(NodeContext& m_node)
         availableCoins = AvailableCoins(*pwallet, &coincontrol);
         pos_timio = 500 + 30 * sqrt(availableCoins.Size());
         LogPrintf("Set proof-of-stake timeout: %ums for %u UTXOs\n", pos_timio, availableCoins.Size());
-    }
-
-    std::string strMintMessage = _("Info: Minting suspended due to locked wallet.").translated;
-    std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.").translated;
-    std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.").translated;
-    std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.").translated;
-    std::string strMintEmpty = "";
-    if (!gArgs.GetBoolArg("-minting", true) || !gArgs.GetBoolArg("-staking", true))
-    {
-        strMintWarning = strMintDisabledMessage;
-        LogPrintf("proof-of-stake minter disabled\n");
-        return;
     }
 
     try {
