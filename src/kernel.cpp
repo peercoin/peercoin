@@ -49,6 +49,9 @@ const unsigned int nProtocolV10TestSwitchTime = 1625140800; // Thu  1 Jul 12:00:
 // Protocol switch time for v12 kernel protocol
 const unsigned int nProtocolV12SwitchTime     = 1681732800; // Mon 17 Apr 12:00:00 UTC 2023
 const unsigned int nProtocolV12TestSwitchTime = 1669636800; // Mon 28 Nov 12:00:00 UTC 2022
+// Protocol switch time for v14 kernel protocol
+const unsigned int nProtocolV14SwitchTime     = 1717416000; // Mon  3 Jun 12:00:00 UTC 2024
+const unsigned int nProtocolV14TestSwitchTime = 1710720000; // Mon 18 Mar 00:00:00 UTC 2024
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
@@ -150,7 +153,7 @@ bool IsProtocolV10(unsigned int nTime)
   return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV10TestSwitchTime : nProtocolV10SwitchTime));
 }
 
-// Whether a given timestamp is subject to new v10 protocol
+// Whether a given block is subject to new v12 protocol
 bool IsProtocolV12(const CBlockIndex* pindexPrev)
 {
   if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
@@ -161,6 +164,22 @@ bool IsProtocolV12(const CBlockIndex* pindexPrev)
 
   if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(4, pindexPrev, 900, 1000)) ||
       (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(4, pindexPrev, 90, 100)))
+    return true;
+
+  return false;
+}
+
+// Whether a given block is subject to new v14 protocol
+bool IsProtocolV14(const CBlockIndex* pindexPrev)
+{
+  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+      return true;
+
+  if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV14TestSwitchTime : nProtocolV14SwitchTime))
+      return false;
+
+  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(5, pindexPrev, 750, 1000)) ||
+      (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(5, pindexPrev, 75, 100)))
     return true;
 
   return false;
