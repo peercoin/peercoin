@@ -222,6 +222,8 @@ public:
 
     // peercoin: proof-of-stake related block index fields
     unsigned int nFlags{0};  // peercoin: block index flags
+    // peercoin: height of pos blocks only
+    unsigned int nHeightStake{0};
     enum
     {
         BLOCK_PROOF_OF_STAKE = (1 << 0), // is proof-of-stake block
@@ -395,8 +397,8 @@ public:
 
     std::string ToString() const
     {
-        return strprintf("CBlockIndex(nprev=%08x, "/*nFile=%d, */"nHeight=%d, nMint=%s, nMoneySupply=%s, nFlags=(%s)(%d)(%s), nStakeModifier=%016llx, nStakeModifierChecksum=%08x, hashProofOfStake=%s, prevoutStake=(%s), nStakeTime=%d merkle=%s, hashBlock=%s)",
-            pprev, /*nFile, */nHeight,
+        return strprintf("CBlockIndex(nprev=%08x, "/*nFile=%d, */"nHeight=%d, nHeightStake=%d, nMint=%s, nMoneySupply=%s, nFlags=(%s)(%d)(%s), nStakeModifier=%016llx, nStakeModifierChecksum=%08x, hashProofOfStake=%s, prevoutStake=(%s), nStakeTime=%d merkle=%s, hashBlock=%s)",
+            pprev, /*nFile, */nHeight, nHeightStake,
             FormatMoney(nMint), FormatMoney(nMoneySupply),
             GeneratedStakeModifier() ? "MOD" : "-", GetStakeEntropyBit(), IsProofOfStake()? "PoS" : "PoW",
             nStakeModifier, nStakeModifierChecksum,
@@ -511,6 +513,7 @@ public:
         READWRITE(obj.nMint);
         READWRITE(obj.nMoneySupply);
         READWRITE(obj.nFlags);
+        READWRITE(obj.nHeightStake);
         READWRITE(obj.nStakeModifier);
         if (obj.nFlags & BLOCK_PROOF_OF_STAKE)
         {

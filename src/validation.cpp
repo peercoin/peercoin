@@ -2237,6 +2237,9 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
 
+    // peercoin increment nHeightStake if block is proof of stake
+    pindex->nHeightStake = (pindex->pprev ? pindex->pprev->nHeightStake : 0) + block.IsProofOfStake();
+
     // peercoin: fees are not collected by miners as in bitcoin
     // peercoin: fees are destroyed to compensate the entire network
     if (gArgs.GetBoolArg("-printcreation", false))
