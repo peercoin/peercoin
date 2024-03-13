@@ -4272,6 +4272,7 @@ void Chainstate::UnloadBlockIndex()
     AssertLockHeld(::cs_main);
     nBlockSequenceId = 1;
     setBlockIndexCandidates.clear();
+    ResetASERTAnchorBlockCache();
 }
 
 bool ChainstateManager::LoadBlockIndex()
