@@ -599,6 +599,13 @@ public:
         return int(vChain.size()) - 1;
     }
 
+    /** Return height of the chain counting only proof of stake blocks */
+
+    int HeightStake() const
+    {
+        return vChain.size() > 0 ? vChain[vChain.size() - 1]->nHeightStake : 0;
+    }
+
     /** Set/initialize a chain with a given tip. */
     void SetTip(CBlockIndex& block);
 
