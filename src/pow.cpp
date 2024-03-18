@@ -16,7 +16,7 @@
 #include <atomic>
 
 static std::atomic<const CBlockIndex *> cachedAnchor{nullptr};
-static int64_t nDAAHalfLife = 12 * 60 * 60;
+static int64_t nDAAHalfLife = 24 * 60 * 60;
 
 /**
  * ASERT caches a special block index for efficiency. If block indices are
