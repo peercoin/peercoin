@@ -22,9 +22,6 @@ struct NodeContext;
 /** Create a blockchain, starting from genesis */
 std::vector<std::shared_ptr<CBlock>> CreateBlockChain(size_t total_height, const CChainParams& params);
 
-/** Create a blockchain, starting from genesis */
-std::vector<std::shared_ptr<CBlock>> CreateBlockChain(size_t total_height, const CChainParams& params);
-
 /** Returns the generated coin */
 CTxIn MineBlock(const node::NodeContext&, const CScript& coinbase_scriptPubKey);
 
