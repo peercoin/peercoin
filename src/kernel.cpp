@@ -47,8 +47,8 @@ const unsigned int nProtocolV09TestSwitchTime = 1581940800; // Mon 17 Feb 12:00:
 const unsigned int nProtocolV10SwitchTime     = 1635768000; // Mon  1 Nov 12:00:00 UTC 2021
 const unsigned int nProtocolV10TestSwitchTime = 1625140800; // Thu  1 Jul 12:00:00 UTC 2021
 // Protocol switch time for v12 kernel protocol
-const unsigned int nProtocolV12SwitchTime     = 1681732800; // Mon 17 Apr 12:00:00 UTC 2023
-const unsigned int nProtocolV12TestSwitchTime = 1669636800; // Mon 28 Nov 12:00:00 UTC 2022
+const unsigned int nProtocolV12SwitchTime     = 1700276331; // Sat 18 Nov 02:58:51 UTC 2023
+const unsigned int nProtocolV12TestSwitchTime = 1671060214; // Wed 14 Dec 11:23:34 UTC 2022
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
@@ -156,14 +156,7 @@ bool IsProtocolV12(const CBlockIndex* pindexPrev)
   if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
       return true;
 
-  if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime))
-      return false;
-
-  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(4, pindexPrev, 900, 1000)) ||
-      (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(4, pindexPrev, 90, 100)))
-    return true;
-
-  return false;
+  return (pindexPrev->nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime));
 }
 
 // Get the last stake modifier and its generation time from a given block
