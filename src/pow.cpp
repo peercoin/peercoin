@@ -178,7 +178,7 @@ GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
     // Do the actual target adaptation calculation in separate
     // CalculateASERT() function
     arith_uint256 nextTarget =
-        CalculateASERT(refBlockTarget, params.nPowTargetSpacing, nTimeDiff,
+        CalculateASERT(refBlockTarget, params.nStakeTargetSpacing * 6, nTimeDiff,
                        nHeightDiff, powLimit, nDAAHalfLife);
 
     // CalculateASERT() already clamps to powLimit.
