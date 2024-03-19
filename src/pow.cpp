@@ -94,7 +94,7 @@ static const CBlockIndex *GetASERTAnchorBlock(const CBlockIndex *const pindex,
             continue;
         }
         // cannot skip here, walk back by 1
-        if (!IsProtocolV14(anchor->pprev) && anchor->pprev->IsProofOfWork()) {
+        if (!IsProtocolV14(anchor->pprev) && anchor->IsProofOfWork()) {
             // found it -- highest block where ASERT is not enabled is
             // anchor->pprev, and anchor points to the first block for which
             // IsProtocolV14() == true
