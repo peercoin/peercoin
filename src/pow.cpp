@@ -47,7 +47,7 @@ GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
 
 /**
  * Returns a pointer to the anchor block used for ASERT.
- * As anchor we use the first block for which IsProtocolV14() returns true.
+ * As anchor we use the last POW block for which IsProtocolV14() returns false.
  * This block happens to be the last block which was mined under the old
  * rules.
  *
@@ -56,10 +56,8 @@ GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
  *
  * Preconditions: - pindex must not be nullptr
  *                - pindex must satisfy: IsProtocolV14(pindex) == true
- * Postcondition: Returns a pointer to the first (lowest) block for which
- *                IsProtocolV14 is true, and for which IsProtocolV14(pprev)
- *                is false (or for which pprev is nullptr). The return value may
- *                be pindex itself.
+ * Postcondition: Returns a pointer to the last (highest) POW block for which
+ *                IsProtocolV14 is false.
  */
 static const CBlockIndex *GetASERTAnchorBlock(const CBlockIndex *const pindex,
                                               const Consensus::Params &params) {
@@ -80,8 +78,8 @@ static const CBlockIndex *GetASERTAnchorBlock(const CBlockIndex *const pindex,
         return lastCached;
     }
 
-    // Slow path: walk back until we find the first ancestor for which
-    // IsAxionEnabled() == true.
+    // Slow path: walk back until we find the first PoW block for which
+    // IsProtocolV14 == false.
     const CBlockIndex *anchor = pindex;
 
     while (anchor->pprev) {
@@ -96,8 +94,8 @@ static const CBlockIndex *GetASERTAnchorBlock(const CBlockIndex *const pindex,
         // cannot skip here, walk back by 1
         if (!IsProtocolV14(anchor->pprev) && anchor->IsProofOfWork()) {
             // found it -- highest block where ASERT is not enabled is
-            // anchor->pprev, and anchor points to the first block for which
-            // IsProtocolV14() == true
+            // anchor->pprev, and anchor points to the last POW block for which
+            // IsProtocolV14() == false
             break;
         }
         anchor = anchor->pprev;
@@ -324,58 +322,6 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
     return bnNew.GetCompact();
 }
-/*
-// Check that on difficulty adjustments, the new difficulty does not increase
-// or decrease beyond the permitted limits.
-bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits)
-{
-    if (params.fPowAllowMinDifficultyBlocks) return true;
-
-    if (height % params.DifficultyAdjustmentInterval() == 0) {
-        int64_t smallest_timespan = params.nPowTargetTimespan/4;
-        int64_t largest_timespan = params.nPowTargetTimespan*4;
-
-        const arith_uint256 pow_limit = UintToArith256(params.powLimit);
-        arith_uint256 observed_new_target;
-        observed_new_target.SetCompact(new_nbits);
-
-        // Calculate the largest difficulty value possible:
-        arith_uint256 largest_difficulty_target;
-        largest_difficulty_target.SetCompact(old_nbits);
-        largest_difficulty_target *= largest_timespan;
-        largest_difficulty_target /= params.nPowTargetTimespan;
-
-        if (largest_difficulty_target > pow_limit) {
-            largest_difficulty_target = pow_limit;
-        }
-
-        // Round and then compare this new calculated value to what is
-        // observed.
-        arith_uint256 maximum_new_target;
-        maximum_new_target.SetCompact(largest_difficulty_target.GetCompact());
-        if (maximum_new_target < observed_new_target) return false;
-
-        // Calculate the smallest difficulty value possible:
-        arith_uint256 smallest_difficulty_target;
-        smallest_difficulty_target.SetCompact(old_nbits);
-        smallest_difficulty_target *= smallest_timespan;
-        smallest_difficulty_target /= params.nPowTargetTimespan;
-
-        if (smallest_difficulty_target > pow_limit) {
-            smallest_difficulty_target = pow_limit;
-        }
-
-        // Round and then compare this new calculated value to what is
-        // observed.
-        arith_uint256 minimum_new_target;
-        minimum_new_target.SetCompact(smallest_difficulty_target.GetCompact());
-        if (minimum_new_target > observed_new_target) return false;
-    } else if (old_nbits != new_nbits) {
-        return false;
-    }
-    return true;
-}
-*/
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params& params)
 {
