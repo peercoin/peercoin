@@ -166,7 +166,7 @@ GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
     const auto anchorTime = pindexAnchorBlock->pprev
                                 ? pindexAnchorBlock->pprev->GetBlockTime()
                                 : pindexAnchorBlock->GetBlockTime();
-    const int64_t nTimeDiff = pindexPrev->GetBlockTime() - anchorTime;
+    const int64_t nTimeDiff = pindex->GetBlockTime() - anchorTime;
     // Height difference is from current block to anchor block
     const int64_t nHeightDiff =
         pindexPrev->nHeight - pindexAnchorBlock->nHeight -
