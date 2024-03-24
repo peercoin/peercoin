@@ -277,7 +277,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
         return UintToArith256(params.bnInitialHashTarget).GetCompact(); // second block
 
     if (!fProofOfStake && IsProtocolV14(pindexPrev))
-        return GetNextASERTWorkRequired(pindexPrevPrev, pindexLast, params);
+        return GetNextASERTWorkRequired(pindexPrev, pindexLast, params);
 
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
 
