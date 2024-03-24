@@ -145,15 +145,6 @@ GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
 
     const arith_uint256 powLimit = UintToArith256(params.powLimit);
 
-    // Special difficulty rule for testnet
-    // If the new block's timestamp is more than 2* 10 minutes then allow
-    // mining of a min-difficulty block.
-    if (params.fPowAllowMinDifficultyBlocks &&
-        (pindex->GetBlockTime() >
-         pindexPrev->GetBlockTime() + 2 * params.nPowTargetSpacing)) {
-        return UintToArith256(params.powLimit).GetCompact();
-    }
-
     // For nTimeDiff calculation, the timestamp of the parent to the anchor
     // block is used, as per the absolute formulation of ASERT. This is somewhat
     // counterintuitive since it is referred to as the anchor timestamp, but as
