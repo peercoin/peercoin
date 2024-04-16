@@ -100,6 +100,7 @@ CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block, CBlockInde
     if (miPrev != m_block_index.end()) {
         pindexNew->pprev = &(*miPrev).second;
         pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
+        pindexNew->nHeightStake = pindexNew->pprev->nHeightStake + (block.nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE);
         pindexNew->BuildSkip();
     }
     pindexNew->nTimeMax = (pindexNew->pprev ? std::max(pindexNew->pprev->nTimeMax, pindexNew->nTime) : pindexNew->nTime);

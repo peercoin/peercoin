@@ -203,6 +203,7 @@ UniValue blockToJSON(BlockManager& blockman, const CBlock& block, const CBlockIn
     result.pushKV("weight", (int)::GetBlockWeight(block));
     result.pushKV("mint", ValueFromAmount(blockindex->nMint));
     result.pushKV("flags", strprintf("%s%s", blockindex->IsProofOfStake()? "proof-of-stake" : "proof-of-work", blockindex->GeneratedStakeModifier()? " stake-modifier": ""));
+    result.pushKV("nHeightStake", (int)blockindex->nHeightStake);
     result.pushKV("proofhash", blockindex->IsProofOfStake()? blockindex->hashProofOfStake.GetHex() : blockindex->GetBlockHash().GetHex());
     result.pushKV("entropybit", (int)blockindex->GetStakeEntropyBit());
     result.pushKV("modifier", strprintf("%016llx", blockindex->nStakeModifier));
@@ -1118,6 +1119,9 @@ static bool SoftForkMajorityDesc(int version, const CBlockIndex* pindex, const C
         case 12:
             activated = IsProtocolV12(pindex);
             break;
+        case 14:
+            activated = IsProtocolV14(pindex);
+            break;
     }
     return activated;
 }
@@ -1209,6 +1213,7 @@ UniValue DeploymentInfo(const CBlockIndex* blockindex, const ChainstateManager& 
     softforks.push_back(SoftForkDesc("bip66", 3, blockindex, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("bip65", 4, blockindex, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("v12", 12, blockindex, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("v14", 14, blockindex, Params().GetConsensus()));
     return softforks;
 }
 } // anon namespace

@@ -323,6 +323,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, 
                 pindexNew->nMint          = diskindex.nMint;
                 pindexNew->nMoneySupply   = diskindex.nMoneySupply;
                 pindexNew->nFlags         = diskindex.nFlags;
+                pindexNew->nHeightStake   = diskindex.nHeightStake;
                 pindexNew->nStakeModifier = diskindex.nStakeModifier;
                 pindexNew->prevoutStake   = diskindex.prevoutStake;
                 pindexNew->nStakeTime     = diskindex.nStakeTime;

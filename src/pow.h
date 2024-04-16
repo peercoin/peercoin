@@ -9,10 +9,29 @@
 #include <consensus/params.h>
 
 #include <stdint.h>
+#include <arith_uint256.h>
 
 class CBlockHeader;
 class CBlockIndex;
 class uint256;
+
+void ResetASERTAnchorBlockCache() noexcept;
+
+arith_uint256 CalculateASERT(const arith_uint256 &refTarget,
+                             const int64_t nPowTargetSpacing,
+                             const int64_t nTimeDiff, const int64_t nHeightDiff,
+                             const arith_uint256 &powLimit,
+                             const int64_t nHalfLife) noexcept;
+
+uint32_t GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
+                                  const CBlockIndex *pindex,
+                                  const Consensus::Params &params) noexcept;
+
+uint32_t
+GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
+                         const CBlockIndex *pindex,
+                         const Consensus::Params &params,
+                         const CBlockIndex *pindexAnchorBlock) noexcept;
 
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake, const Consensus::Params& params);
 
