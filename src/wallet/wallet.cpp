@@ -3319,10 +3319,12 @@ CKeyPool::CKeyPool(const CPubKey& vchPubKeyIn, bool internalIn)
 int CWallet::GetTxDepthInMainChain(const CWalletTx& wtx) const
 {
     AssertLockHeld(cs_wallet);
+    LOCK(cs_main);
+    ChainstateManager& chainman = chain().chainman();
     if (auto* conf = wtx.state<TxStateConfirmed>()) {
-        return GetLastBlockHeight() - conf->confirmed_block_height + 1;
+        return chainman.ActiveChain().HeightStake() - chainman.m_blockman.LookupBlockIndex(conf->confirmed_block_hash)->nHeightStake + 1;
     } else if (auto* conf = wtx.state<TxStateConflicted>()) {
-        return -1 * (GetLastBlockHeight() - conf->conflicting_block_height + 1);
+        return -1 * (chainman.ActiveChain().HeightStake() - chainman.m_blockman.LookupBlockIndex(conf->conflicting_block_hash)->nHeightStake + 1);
     } else {
         return 0;
     }

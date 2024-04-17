@@ -2237,6 +2237,9 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
 
+    // peercoin increment nHeightStake if block is proof of stake
+    pindex->nHeightStake = (pindex->pprev ? pindex->pprev->nHeightStake : 0) + block.IsProofOfStake();
+
     // peercoin: fees are not collected by miners as in bitcoin
     // peercoin: fees are destroyed to compensate the entire network
     if (gArgs.GetBoolArg("-printcreation", false))
@@ -3499,7 +3502,8 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
     // check for version 2, 3 and 4 upgrades
     if ((block.nVersion < 2 && IsProtocolV06(pindexPrev)) ||
-        (block.nVersion < 4 && IsProtocolV12(pindexPrev))) {
+        (block.nVersion < 4 && IsProtocolV12(pindexPrev)) ||
+        (block.nVersion < 5 && IsProtocolV14(pindexPrev))) {
             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
     }
@@ -4268,6 +4272,7 @@ void Chainstate::UnloadBlockIndex()
     AssertLockHeld(::cs_main);
     nBlockSequenceId = 1;
     setBlockIndexCandidates.clear();
+    ResetASERTAnchorBlockCache();
 }
 
 bool ChainstateManager::LoadBlockIndex()
