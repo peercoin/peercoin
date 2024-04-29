@@ -102,9 +102,6 @@ bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_dat
         else if ((whichType == TxoutType::MULTISIG) && (!permit_bare_multisig)) {
             reason = "bare-multisig";
             return false;
-        } else if (IsDust(txout)) {
-            reason = "dust";
-            return false;
         }
     }
 
