@@ -398,6 +398,10 @@ QVariant OptionsModel::getOption(OptionID option, const std::string& suffix) con
         return QString::fromStdString(SettingToString(setting(), ""));
     case SubFeeFromAmount:
         return m_sub_fee_from_amount;
+    case SplitCoins:
+        return settings.value("bSplitCoins");
+    case CheckGithub:
+        return settings.value("bCheckGithub");
 #endif
     case DisplayUnit:
         return QVariant::fromValue(m_display_bitcoin_unit);
