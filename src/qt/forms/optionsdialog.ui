@@ -232,31 +232,37 @@
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBoxHww">
-         <property name="title">
-          <string>External Signer (e.g. hardware wallet)</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayoutHww">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayoutHww">
+           <layout class="QHBoxLayout" name="horizontalLayout_minting" stretch="0,0,0,0">
             <item>
-             <widget class="QLabel" name="externalSignerPathLabel">
+             <widget class="QLabel" name="maxMintingUtxosLabel">
               <property name="text">
-               <string>&amp;External signer script path</string>
+               <string>&amp;Maximum minting outputs:</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::PlainText</enum>
               </property>
               <property name="buddy">
-               <cstring>externalSignerPath</cstring>
+               <cstring>maxMintingUtxos</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="externalSignerPath">
+             <widget class="QLineEdit" name="maxMintingUtxos">
+              <property name="minimumSize">
+               <size>
+                <width>55</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>55</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="toolTip">
-               <string>Full path to a Bitcoin Core compatible script (e.g. C:\Downloads\hwi.exe or /Users/you/Downloads/hwi.py). Beware: malware can steal your coins!</string>
+               <string>Maximum number of minting outputs (e.g. 1000)</string>
               </property>
              </widget>
             </item>
