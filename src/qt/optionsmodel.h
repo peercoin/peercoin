@@ -60,6 +60,7 @@ public:
         SpendZeroConfChange,    // bool
         SplitCoins,             // bool
         CheckGithub,            // bool
+        MaxMintingUtxos,        // int
         Listen,                 // bool
         Server,                 // bool
         EnablePSBTControls,     // bool
