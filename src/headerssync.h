@@ -214,9 +214,6 @@ private:
     /** NodeId of the peer (used for log messages) **/
     const NodeId m_id;
 
-    /** We use the consensus params in our anti-DoS calculations */
-    const Consensus::Params& m_consensus_params;
-
     /** Store the last block in our block index that the peer's chain builds from */
     const CBlockIndex* m_chain_start{nullptr};
 

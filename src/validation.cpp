@@ -95,8 +95,6 @@ static const unsigned int MAX_DISCONNECTED_TX_POOL_SIZE = 20000;
 static constexpr std::chrono::hours DATABASE_WRITE_INTERVAL{1};
 /** Time to wait between flushing chainstate to disk. */
 static constexpr std::chrono::hours DATABASE_FLUSH_INTERVAL{24};
-/** Maximum age of our tip for us to be considered current for fee estimation */
-static constexpr std::chrono::hours MAX_FEE_ESTIMATION_TIP_AGE{3};
 const std::vector<std::string> CHECKLEVEL_DOC {
     "level 0 reads the blocks from disk",
     "level 1 verifies block validity",
@@ -105,12 +103,6 @@ const std::vector<std::string> CHECKLEVEL_DOC {
     "level 4 tries to reconnect the blocks",
     "each level includes the checks of the previous levels",
 };
-/** The number of blocks to keep below the deepest prune lock.
- *  There is nothing special about this number. It is higher than what we
- *  expect to see in regular mainnet reorgs, but not so high that it would
- *  noticeably interfere with the pruning mechanism.
- * */
-static constexpr int PRUNE_LOCK_BUFFER{10};
 
 uint256 vStakeSeen[1024];
 GlobalMutex g_best_block_mutex;
@@ -651,9 +643,6 @@ private:
     Chainstate& m_active_chainstate;
 
     CTxMemPool::Limits m_limits;
-
-    /** Whether the transaction(s) would replace any mempool transactions. If so, RBF rules apply. */
-    bool m_rbf{false};
 };
 
 bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
@@ -1111,11 +1100,12 @@ PackageMempoolAcceptResult MemPoolAccept::AcceptMultipleTransactions(const std::
     // Transactions must meet two minimum feerates: the mempool minimum fee and min relay fee.
     // For transactions consisting of exactly one child and its parents, it suffices to use the
     // package feerate (total modified fees / total virtual size) to check this requirement.
+/*
     const auto m_total_vsize = std::accumulate(workspaces.cbegin(), workspaces.cend(), int64_t{0},
         [](int64_t sum, auto& ws) { return sum + ws.m_vsize; });
     const auto m_total_modified_fees = std::accumulate(workspaces.cbegin(), workspaces.cend(), CAmount{0},
         [](CAmount sum, auto& ws) { return sum + ws.m_modified_fees; });
-/*
+
     const CFeeRate package_feerate(m_total_modified_fees, m_total_vsize);
 
 ppctodo simple check
@@ -2417,13 +2407,6 @@ void Chainstate::ForceFlushStateToDisk()
     }
 }
 
-/** Private helper function that concatenates warning messages. */
-static void AppendWarning(bilingual_str& res, const bilingual_str& warn)
-{
-    if (!res.empty()) res += Untranslated(", ");
-    res += warn;
-}
-
 static void UpdateTipLog(
     const CCoinsViewCache& coins_tip,
     const CBlockIndex* tip,
@@ -3522,7 +3505,6 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
     const int nHeight = pindexPrev == nullptr ? 0 : pindexPrev->nHeight + 1;
 
     // Enforce BIP113 (Median Time Past).
-    int nLockTimeFlags = 0;
     bool enforce_locktime_median_time_past{false};
     if (pindexPrev && IsBTC16BIPsEnabled(pindexPrev->nTime)) {
         enforce_locktime_median_time_past = true;

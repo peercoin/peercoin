@@ -613,8 +613,12 @@ static RPCHelpMan listminting()
 
     UniValue ret(UniValue::VARR);
 
-    const CBlockIndex *p = GetLastBlockIndex(context.chain->chainman().ActiveChain().Tip(), true);
-    double difficulty = p->GetBlockDifficulty();
+    double difficulty;
+    {
+        LOCK(cs_main);
+        const CBlockIndex *p = GetLastBlockIndex(context.chain->chainman().ActiveChain().Tip(), true);
+        difficulty = p->GetBlockDifficulty();
+    }
     int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
 
     std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(context,wallet);
@@ -1177,6 +1181,7 @@ static const CRPCCommand commands[] =
     { "wallet",             &listwallets,                    },
     { "wallet",             &loadwallet,                     },
     { "wallet",             &lockunspent,                    },
+    { "wallet",             &migratewallet,                  },
     { "wallet",             &newkeypool,                     },
     { "wallet",             &optimizeutxoset,                },
     { "wallet",             &rescanblockchain,               },
@@ -1194,7 +1199,7 @@ static const CRPCCommand commands[] =
     { "wallet",             &upgradewallet,                  },
     { "wallet",             &walletcreatefundedpsbt,         },
 #ifdef ENABLE_EXTERNAL_SIGNER
-        {"wallet", &walletdisplayaddress},
+    { "wallet",             &walletdisplayaddress,           },
 #endif // ENABLE_EXTERNAL_SIGNER
     { "wallet",             &walletlock,                     },
     { "wallet",             &walletpassphrase,               },

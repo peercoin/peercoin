@@ -72,6 +72,7 @@ static RPCHelpMan estimatesmartfee()
 
             UniValue result(UniValue::VOBJ);
             result.pushKV("feerate", 0.01);
+            LOCK(cs_main);
             result.pushKV("blocks", chainman.ActiveChain().Height());
             return result;
         },

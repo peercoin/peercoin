@@ -1019,13 +1019,11 @@ void CTxMemPool::UpdateParent(txiter entry, txiter parent, bool add)
 void CTxMemPool::TrimToSize(size_t sizelimit, std::vector<COutPoint>* pvNoSpendsRemaining) {
     AssertLockHeld(cs);
 
-    unsigned nTxnRemoved = 0;
     while (!mapTx.empty() && DynamicMemoryUsage() > sizelimit) {
         indexed_transaction_set::index<descendant_score>::type::iterator it = mapTx.get<descendant_score>().begin();
 
         setEntries stage;
         CalculateDescendants(mapTx.project<0>(it), stage);
-        nTxnRemoved += stage.size();
 
         std::vector<CTransaction> txn;
         if (pvNoSpendsRemaining) {

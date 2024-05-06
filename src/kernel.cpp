@@ -219,6 +219,7 @@ static bool SelectBlockFromCandidates(
     const CBlockIndex** pindexSelected,
     Chainstate& chainstate)
 {
+    LOCK(cs_main);
     bool fSelected = false;
     arith_uint256 hashBest = 0;
     *pindexSelected = (const CBlockIndex*) 0;
@@ -452,7 +453,12 @@ static bool GetKernelStakeModifierV03(CBlockIndex* pindexPrev, uint256 hashBlock
     const Consensus::Params& params = Params().GetConsensus();
     nStakeModifier = 0;
 
-    const CBlockIndex* pindexFrom = chainstate.m_blockman.LookupBlockIndex(hashBlockFrom);
+    const CBlockIndex* pindexFrom;
+    {
+        LOCK(cs_main);
+        pindexFrom = chainstate.m_blockman.LookupBlockIndex(hashBlockFrom);
+    }
+
     if (!pindexFrom)
         return error("GetKernelStakeModifier() : block not indexed");
 
@@ -576,6 +582,7 @@ bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBl
     if (fPrintProofOfStake)
     {
         if (IsProtocolV03(nTimeTx)) {
+            LOCK(cs_main);
             const CBlockIndex* pindexTmp = chainstate.m_blockman.LookupBlockIndex(blockFrom.GetHash());
             LogPrintf("CheckStakeKernelHash() : using modifier 0x%016x at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
                 nStakeModifier, nStakeModifierHeight,
@@ -596,6 +603,7 @@ bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBl
     if (gArgs.GetBoolArg("-debug", false) && !fPrintProofOfStake)
     {
         if (IsProtocolV03(nTimeTx)) {
+            LOCK(cs_main);
             const CBlockIndex* pindexTmp = chainstate.m_blockman.LookupBlockIndex(blockFrom.GetHash());
             LogPrintf("CheckStakeKernelHash() : using modifier 0x%016x at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
                 nStakeModifier, nStakeModifierHeight, 
