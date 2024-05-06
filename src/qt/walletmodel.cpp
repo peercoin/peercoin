@@ -561,6 +561,7 @@ uint256 WalletModel::getLastBlockProcessed() const
 
 CBlockIndex* WalletModel::getTip() const
 {
+    LOCK(cs_main);
     return m_node.chainman().ActiveChain().Tip();
 }
 

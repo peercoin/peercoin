@@ -164,10 +164,6 @@ static constexpr unsigned int INVENTORY_MAX_RECENT_RELAY = 3500;
  *  lower bound, and it should be larger to account for higher inv rate to outbound
  *  peers, and random variations in the broadcast mechanism. */
 static_assert(INVENTORY_MAX_RECENT_RELAY >= INVENTORY_BROADCAST_PER_SECOND * UNCONDITIONAL_RELAY_DELAY / std::chrono::seconds{1}, "INVENTORY_RELAY_MAX too low");
-/** Average delay between feefilter broadcasts in seconds. */
-static constexpr auto AVG_FEEFILTER_BROADCAST_INTERVAL{10min};
-/** Maximum feefilter broadcast delay after significant change. */
-static constexpr auto MAX_FEEFILTER_CHANGE_DELAY{5min};
 /** Maximum number of compact filters that may be requested with one getcfilters. See BIP 157. */
 static constexpr uint32_t MAX_GETCFILTERS_SIZE = 1000;
 /** Maximum number of cf hashes that may be requested with one getcfheaders. See BIP 157. */
@@ -704,12 +700,6 @@ private:
      *                         addresses less.
      */
     void RelayAddress(NodeId originator, const CAddress& addr, bool fReachable) EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex, g_msgproc_mutex);
-
-    /** Send `feefilter` message. */
-//    void MaybeSendFeefilter(CNode& node, std::chrono::microseconds current_time) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
-
-    /** Send `feefilter` message. */
-    void MaybeSendFeefilter(CNode& node, Peer& peer, std::chrono::microseconds current_time) EXCLUSIVE_LOCKS_REQUIRED(g_msgproc_mutex);
 
     const CChainParams& m_chainparams;
     CConnman& m_connman;
@@ -4227,32 +4217,34 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         bool received_new_header = false;
         const auto blockhash = cmpctblock.header.GetHash();
-
+        CBlockIndex* tip;
         {
-        LOCK(cs_main);
+            LOCK(cs_main);
 
-        const CBlockIndex* prev_block = m_chainman.m_blockman.LookupBlockIndex(cmpctblock.header.hashPrevBlock);
-        if (!prev_block) {
-            // Doesn't connect (or is genesis), instead of DoSing in AcceptBlockHeader, request deeper headers
-            if (!m_chainman.ActiveChainstate().IsInitialBlockDownload()) {
-                MaybeSendGetHeaders(pfrom, GetLocator(m_chainman.m_best_header), *peer);
+            tip = m_chainman.ActiveChain().Tip();
+
+            const CBlockIndex* prev_block = m_chainman.m_blockman.LookupBlockIndex(cmpctblock.header.hashPrevBlock);
+            if (!prev_block) {
+                // Doesn't connect (or is genesis), instead of DoSing in AcceptBlockHeader, request deeper headers
+                if (!m_chainman.ActiveChainstate().IsInitialBlockDownload()) {
+                    MaybeSendGetHeaders(pfrom, GetLocator(m_chainman.m_best_header), *peer);
+                }
+                return;
+            } else if (prev_block->nChainTrust + CalculateHeadersWork({cmpctblock.header}) < GetAntiDoSWorkThreshold()) {
+                // If we get a low-work header in a compact block, we can ignore it.
+                LogPrint(BCLog::NET, "Ignoring low-work compact block from peer %d\n", pfrom.GetId());
+                return;
             }
-            return;
-        } else if (prev_block->nChainTrust + CalculateHeadersWork({cmpctblock.header}) < GetAntiDoSWorkThreshold()) {
-            // If we get a low-work header in a compact block, we can ignore it.
-            LogPrint(BCLog::NET, "Ignoring low-work compact block from peer %d\n", pfrom.GetId());
-            return;
-        }
 
-        if (!m_chainman.m_blockman.LookupBlockIndex(blockhash)) {
-            received_new_header = true;
-        }
+            if (!m_chainman.m_blockman.LookupBlockIndex(blockhash)) {
+                received_new_header = true;
+            }
         }
 
         int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
         const CBlockIndex *pindex = nullptr;
         BlockValidationState state;
-        if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, m_chainman.ActiveChain().Tip()->GetBlockHash(), {cmpctblock.header}, /*min_pow_checked=*/true, state, m_chainparams, &pindex)) {
+        if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, tip->GetBlockHash(), {cmpctblock.header}, /*min_pow_checked=*/true, state, m_chainparams, &pindex)) {
             if (state.IsInvalid()) {
                 MaybePunishNodeForBlock(pfrom.GetId(), state, /*via_compact_block=*/true, "invalid header via cmpctblock");
                 return;
@@ -4293,7 +4285,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         // If this was a new header with more work than our tip, update the
         // peer's last block announcement time
-        if (received_new_header && pindex->nChainTrust > m_chainman.ActiveChain().Tip()->nChainTrust) {
+        if (received_new_header && pindex->nChainTrust > tip->nChainTrust) {
             nodestate->m_last_block_announcement = GetTime();
         }
 
@@ -4303,7 +4295,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         if (pindex->nStatus & BLOCK_HAVE_DATA) // Nothing to do here
             return;
 
-        if (pindex->nChainTrust <= m_chainman.ActiveChain().Tip()->nChainTrust || // We know something better
+        if (pindex->nChainTrust <= tip->nChainTrust || // We know something better
                 pindex->nTx != 0) { // We had this block at some point
             if (fAlreadyInFlight) {
                 // We requested this block for some reason, but our mempool will probably be useless
@@ -4605,6 +4597,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         LogPrint(BCLog::NET, "received block %s peer=%d\n", pblock2->GetHash().ToString(), pfrom.GetId());
 
+        CBlockIndex* tip;
         {
             const uint256 hash2(pblock2->GetHash());
             LOCK(cs_main);
@@ -4638,11 +4631,12 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
             // peercoin: store in memory until we can connect it to some chain
             WaitElement we; we.pblock = pblock2; we.time = nTimeNow;
             mapBlocksWait[headerPrev] = we;
+            tip = m_chainman.ActiveChain().Tip();
         }
 
         static CBlockIndex* pindexLastAccepted = nullptr;
         if (pindexLastAccepted == nullptr)
-            pindexLastAccepted = m_chainman.ActiveChain().Tip();
+            pindexLastAccepted = tip;
         bool fContinue = true;
 
         // peercoin: accept as many blocks as we possibly can from mapBlocksWait

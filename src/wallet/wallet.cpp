@@ -3612,14 +3612,12 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     if (nBalance <= nReserveBalance)
         return false;
     std::vector<CTransactionRef> vwtxPrev;
-    CAmount nValueIn = 0;
     CCoinControl temp;
     FastRandomContext rng_fast;
     CoinSelectionParams coin_selection_params{rng_fast};
     coin_selection_params.m_subtract_fee_outputs = true;
     coin_selection_params.m_coinstake = true;
 
-    bool bnb_used;
     wallet::CoinsResult availableCoins = AvailableCoins(*pwallet, &temp);
 
     CAmount nAllowedBalance = nBalance;

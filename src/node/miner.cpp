@@ -589,7 +589,7 @@ void PoSMiner(NodeContext& m_node)
                     return;
             }
 
-            //if (Params().MiningRequiresPeers()) {
+            if (Params().MiningRequiresPeers()) {
                 // Busy-wait for the network to come online so we don't waste time mining
                 // on an obsolete chain. In regtest mode we expect to fly solo.
                 while(connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0 || m_node.chainman->ActiveChainstate().IsInitialBlockDownload()) {
@@ -597,18 +597,23 @@ void PoSMiner(NodeContext& m_node)
                     if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
                         return;
                     }
-            //}
-
-            while (GuessVerificationProgress(Params().TxData(), m_node.chainman->ActiveChain().Tip()) < 0.996)
+            }
+            CBlockIndex* pindexPrev;
             {
-                LogPrintf("Minter thread sleeps while sync at %f\n", GuessVerificationProgress(Params().TxData(), m_node.chainman->ActiveChain().Tip()));
-                if (strMintWarning != strMintSyncMessage) {
-                    strMintWarning = strMintSyncMessage;
-                    uiInterface.NotifyAlertChanged();
+                LOCK(cs_main);
+                pindexPrev = m_node.chainman->ActiveChain().Tip();
+
+                while (GuessVerificationProgress(Params().TxData(), pindexPrev) < 0.996)
+                {
+                    LogPrintf("Minter thread sleeps while sync at %f\n", GuessVerificationProgress(Params().TxData(), pindexPrev));
+                    if (strMintWarning != strMintSyncMessage) {
+                        strMintWarning = strMintSyncMessage;
+                        uiInterface.NotifyAlertChanged();
+                    }
+                    fNeedToClear = true;
+                    if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                            return;
                 }
-                fNeedToClear = true;
-                if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
-                        return;
             }
             if (fNeedToClear) {
                 strMintWarning = strMintEmpty;
@@ -619,7 +624,6 @@ void PoSMiner(NodeContext& m_node)
             //
             // Create new block
             //
-            CBlockIndex* pindexPrev = m_node.chainman->ActiveChain().Tip();
             bool fPoSCancel = false;
             CScript scriptPubKey = GetScriptForDestination(dest);
             CBlock *pblock;

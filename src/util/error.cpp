@@ -31,6 +31,8 @@ bilingual_str TransactionErrorString(const TransactionError err)
             return Untranslated("PSBTs not compatible (different transactions)");
         case TransactionError::SIGHASH_MISMATCH:
             return Untranslated("Specified sighash value does not match value stored in PSBT");
+        case TransactionError::MAX_BURN_EXCEEDED:
+            return Untranslated("Unspendable output exceeds maximum configured by user (maxburnamount)");
         case TransactionError::EXTERNAL_SIGNER_NOT_FOUND:
             return Untranslated("External signer not found");
         case TransactionError::EXTERNAL_SIGNER_FAILED:
