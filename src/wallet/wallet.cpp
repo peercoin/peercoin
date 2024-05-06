@@ -3550,12 +3550,10 @@ double SecurityToOptimalFraction(double security, bool isTestnet) {
         -4.68984257228335,      // security^(1/7)
         1.63578550998557        // security^(1/8)
     };
-    double optimalFraction = isTestnet ? coeffsTestnet[0] : coeffsMain[0];  // const term
-    double securityPower = security;
-
+    const auto coeffs = isTestnet ? coeffsTestnet : coeffsMain;
+    double optimalFraction = coeffs[0]; // const term
     for (int i = 1; i < 9; ++i) {
-        optimalFraction += securityPower * (isTestnet ? coeffsTestnet[i] : coeffsMain[i]);
-        securityPower = std::pow(security, 1.0 / (i + 1));
+        optimalFraction += std::pow(security, 1.0 / i) * coeffs[i];
     }
     return optimalFraction;
 }
@@ -3771,7 +3769,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
                     // redefine scriptPubKeyOut to send output to input address
                     scriptPubKeyOut = scriptPubKeyKernel;
-                    }
+                }
 
                 if (bDebug)
                     LogPrintf("CreateCoinStake : added kernel type=%s\n", GetTxnOutputType(whichType));
@@ -3786,24 +3784,26 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         return false;
 
     // rfc28 precalculation
+    int maxMintingUtxos = gArgs.GetIntArg("-maxmintingutxos", MAX_MINTING_UTXOS);
+
     double difficulty = GetDifficulty(GetLastBlockIndex(chainman.ActiveChain().Tip(), true), chainman.ActiveChain().Tip());
     CAmount supply = chainman.ActiveChain().Tip()->nMoneySupply;
     int maxDayWeight = (params.nStakeMaxAge - params.nStakeMinAge) / (60*60*24);
-    int maxMintingUtxos = gArgs.GetIntArg("-maxmintingutxos", MAX_MINTING_UTXOS);
     double securityLevel = (long(2) << 31)*difficulty / maxDayWeight / (supply/COIN) / params.nStakeTargetSpacing;
     bool isTestnet = Params().NetworkIDString() != CBaseChainParams::MAIN;
-    CAmount nTarget = SecurityToOptimalFraction(securityLevel, isTestnet)*supply;
+    CAmount nTargetOutputAmount = SecurityToOptimalFraction(securityLevel, isTestnet)*supply;
 
-    if (nTarget < MIN_TARGET_OUTPUT_AMOUNT)
-        nTarget = MIN_TARGET_OUTPUT_AMOUNT;
+    if (nTargetOutputAmount < MIN_TARGET_OUTPUT_AMOUNT)
+        nTargetOutputAmount = MIN_TARGET_OUTPUT_AMOUNT;
 
     CAmount nCombineThreshold;
-    if ((nAllowedBalance / nTarget) > maxMintingUtxos) {
-        nTarget = nAllowedBalance / maxMintingUtxos;
-        nCombineThreshold = nTarget;
-        }
-    else
-        nCombineThreshold = nTarget / RECOMBINE_DIVISOR;
+    // if available balance split by target amount would exceed max minting utxos
+    // reset target amount and nCombineThreshold to evenly split available balance
+    if ((nAllowedBalance / nTargetOutputAmount) > maxMintingUtxos) {
+        nTargetOutputAmount = nAllowedBalance / maxMintingUtxos;
+        nCombineThreshold = nTargetOutputAmount;
+    } else
+        nCombineThreshold = nTargetOutputAmount / RECOMBINE_DIVISOR;
 
     for (const auto& pcoin : result->GetInputSet())
     {
@@ -3829,10 +3829,10 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
             && pcoin->outpoint.hash != txNew.vin[0].prevout.hash)
         {
             // Stop adding more inputs if already too many inputs and we are above target
-            if ((txNew.vin.size() >= MAX_COINSTAKE_INPUTS) && (nCredit > nTarget))
+            if ((txNew.vin.size() >= MAX_COINSTAKE_INPUTS) && (nCredit > nTargetOutputAmount))
                 break;
             // Stop adding more inputs if we are below target but about to exceed 1kb
-            if ((txNew.vin.size() >= 8) && (nCredit < nTarget))
+            if ((txNew.vin.size() >= 8) && (nCredit < nTargetOutputAmount))
                 break;
             // Stop adding inputs if reached reserve limit
             if (nCredit + pcoin->txout.nValue > nAllowedBalance)
@@ -3862,41 +3862,49 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     }
 
     CAmount nMinFee = 0;
-    CAmount nDeduct = 0;
-    bool bOutputsComplete = false;
+    int maxOutputs = 30;
     CAmount nMinFeeBase = (IsProtocolV07(txNew.nTime) ? MIN_TX_FEE : MIN_TX_FEE_PREV7);
     while(true)
     {
+        // Clear outputs
+        txNew.vout.erase(txNew.vout.begin() + 1u+bMinterKey, txNew.vout.end());
+
+        // Assume success
+        bool outputsOk = true;
+
         // split and set amounts based on rfc28
-        if (!bOutputsComplete) {
-            if (pwallet->m_split_coins) {
-                CAmount current = nCredit - nMinFee;
-                double ratio = current / nTarget;
-                int desiredOutputs = int(std::floor((std::sqrt(4 * std::pow(ratio, 2) + 1) + 1) / 2));
-                if (bDebug)
-                    LogPrintf("rfc28: security level is %f, target amount %f, desired outputs %d from %f ppc\n",
-                        securityLevel, double(nTarget)/COIN, desiredOutputs, double(current)/COIN);
-                CAmount remaining = current;
-                for (int i=1; i<desiredOutputs; i++) {
-                    txNew.vout.push_back(CTxOut(nTarget, scriptPubKeyOut));
-                    remaining -= nTarget;
-                    // make sure transaction below 1kb
-                    if (::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION) > 950)
-                        break;
+        if (pwallet->m_split_coins) {
+            CAmount current = nCredit - nMinFee;
+            double ratio = current / nTargetOutputAmount;
+            // Obtain the optimal number of outputs and clamp it to maxOutputs to ensure the fee is not exceeded
+            int desiredOutputs = std::min(
+                int(std::floor((std::sqrt(4 * std::pow(ratio, 2) + 1) + 1) / 2)),
+                maxOutputs
+            );
+
+            if (bDebug)
+                LogPrintf("rfc28: security level is %f, target amount %f, desired outputs %d from %f ppc\n",
+                    securityLevel, double(nTargetOutputAmount)/COIN, desiredOutputs, double(current)/COIN);
+
+            CAmount outValue = current / desiredOutputs;
+            CAmount remainder = current - outValue*desiredOutputs;
+
+            for (int i=0; i<desiredOutputs; i++) {
+                // Add remainder to first output
+                txNew.vout.push_back(CTxOut(outValue + (i == 0 ? remainder : 0), scriptPubKeyOut));
+                // make sure transaction below 1kb
+                if (::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION) > 1024) {
+                    // Remove output that goes over max size and set maxOutputs so that the logic can be re-run
+                    txNew.vout.pop_back();
+                    outputsOk = false;
+                    maxOutputs = i;
+                    break;
                 }
-                txNew.vout.push_back(CTxOut(remaining, scriptPubKeyOut));
             }
-            else {
-                txNew.vout.push_back(CTxOut(nCredit - nMinFee, scriptPubKeyOut));
-            }
-            bOutputsComplete = true;
+        } else {
+            txNew.vout.push_back(CTxOut(nCredit - nMinFee, scriptPubKeyOut));
         }
-        else {
-            unsigned int nVouts = txNew.vout.size()-1;
-            if (txNew.vout[nVouts].nValue <= nDeduct)
-                return error("CreateCoinStake : failed to deduct fee from coinstake");
-            txNew.vout[nVouts].nValue -= nDeduct;
-        }
+
         // Sign
         int nIn = 0;
 
@@ -3930,14 +3938,11 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
         // Check enough fee is paid
         CAmount nNeededFee = GetMinFee(CTransaction(txNew), txNew.nTime) - nMinFeeBase;
-        if (nMinFee < nNeededFee)
-        {
-            nDeduct = nNeededFee - nMinFee;
+        // If not enough fee paid or max outputs have changed requiring a new split and fee, run again
+        if (nMinFee < nNeededFee || !outputsOk) {
             nMinFee = nNeededFee;
             continue; // try signing again
-        }
-        else
-        {
+        } else {
             if (bDebug)
                 LogPrintf("CreateCoinStake : fee for coinstake %s\n", FormatMoney(nMinFee).c_str());
             break;
