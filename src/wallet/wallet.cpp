@@ -3787,7 +3787,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     double difficulty = GetDifficulty(GetLastBlockIndex(chainman.ActiveChain().Tip(), true), chainman.ActiveChain().Tip());
     CAmount supply = chainman.ActiveChain().Tip()->nMoneySupply;
     int maxDayWeight = (params.nStakeMaxAge - params.nStakeMinAge) / (60*60*24);
-    double securityLevel = (long(2) << 31)*difficulty / maxDayWeight / (supply/COIN) / params.nStakeTargetSpacing;
+    double securityLevel = (uint64_t(2) << 31)*difficulty / maxDayWeight / (supply/COIN) / params.nStakeTargetSpacing;
     bool isTestnet = Params().NetworkIDString() != CBaseChainParams::MAIN;
     CAmount nTargetOutputAmount = SecurityToOptimalFraction(securityLevel, isTestnet)*supply;
 
@@ -3826,8 +3826,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         if (((pcoin->txout.scriptPubKey == scriptPubKeyKernel || pcoin->txout.scriptPubKey == txNew.vout[1].scriptPubKey))
             && pcoin->outpoint.hash != txNew.vin[0].prevout.hash)
         {
-            // Stop adding more inputs if already too many inputs and we are above target
-            if ((txNew.vin.size() >= MAX_COINSTAKE_INPUTS) && (nCredit > nTargetOutputAmount))
+            // Stop adding more inputs if already too many inputs and we are above target or have minter key to add
+            if ((txNew.vin.size() >= MAX_COINSTAKE_INPUTS) && (bMinterKey || nCredit > nTargetOutputAmount))
                 break;
             // Stop adding more inputs if we are below target but about to exceed 1kb
             if ((txNew.vin.size() >= 8) && (nCredit < nTargetOutputAmount))
@@ -3861,7 +3861,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
     CAmount nMinFee = 0;
     int maxOutputs = 30;
-    CAmount nMinFeeBase = (IsProtocolV07(txNew.nTime) ? MIN_TX_FEE : MIN_TX_FEE_PREV7);
+    CAmount nSubsidizedFee = PERKB_TX_FEE;
     while(true)
     {
         // Clear outputs
@@ -3891,7 +3891,9 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                 // Add remainder to first output
                 txNew.vout.push_back(CTxOut(outValue + (i == 0 ? remainder : 0), scriptPubKeyOut));
                 // make sure transaction below 1kb
-                if (::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION) > 1024) {
+                if (::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION) > 1000) {
+                    if (!i)
+                        return error("CreateCoinStake : failed to create coinstake");
                     // Remove output that goes over max size and set maxOutputs so that the logic can be re-run
                     txNew.vout.pop_back();
                     outputsOk = false;
@@ -3935,7 +3937,12 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
             return error("CreateCoinStake : exceeded coinstake size limit");
 
         // Check enough fee is paid
-        CAmount nNeededFee = GetMinFee(CTransaction(txNew), txNew.nTime) - nMinFeeBase;
+        CAmount nTxnFee = GetMinFee(CTransaction(txNew), txNew.nTime);
+        CAmount nNeededFee = 0;
+
+        if (nTxnFee > nSubsidizedFee)
+            nNeededFee = nTxnFee - nSubsidizedFee;
+
         // If not enough fee paid or max outputs have changed requiring a new split and fee, run again
         if (nMinFee < nNeededFee || !outputsOk) {
             nMinFee = nNeededFee;
