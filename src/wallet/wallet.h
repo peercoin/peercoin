@@ -98,6 +98,10 @@ static const bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
 static const bool DEFAULT_SPLIT_COINS = true;
 //! Default for -checkgithub
 static const bool DEFAULT_CHECK_GITHUB = true;
+static const int MAX_COINSTAKE_INPUTS = 4;
+static const CAmount MIN_TARGET_OUTPUT_AMOUNT = 10*COIN;
+static const int RECOMBINE_DIVISOR = 3;
+static const int MAX_MINTING_UTXOS = 1000;
 //! Default for -walletrejectlongchains
 static const bool DEFAULT_WALLET_REJECT_LONG_CHAINS{true};
 //! -txconfirmtarget default

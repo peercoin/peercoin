@@ -299,18 +299,16 @@ RPCHelpMan optimizeutxoset()
     LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked(*pwallet);
-    CAmount availableCoins;
+    CAmount availableCoins = 0;
 
     mapValue_t mapValue;
     CCoinControl coin_control;
     const std::string address = request.params[0].get_str();
     std::vector<CRecipient> recipients;
     const bool transmit{request.params[2].isNull() ? false : request.params[2].get_bool()};
-    CAmount nFeeRequired = 0;
     int nChangePosRet = -1;
     bilingual_str error;
     CTransactionRef tx;
-    CAmount fee_calc_out;
 
     if (request.params[3].isNull() == false) {
         std::vector<COutput> vAvailableCoins;
@@ -325,7 +323,6 @@ RPCHelpMan optimizeutxoset()
                 availableCoins += out.txout.nValue;
             }
         }
-        //coin_control.m_add_inputs = false;
         coin_control.m_allow_other_inputs = false;
     } else {
         availableCoins = AvailableCoins(*pwallet).GetTotalAmount();
@@ -337,7 +334,6 @@ RPCHelpMan optimizeutxoset()
     }
 
     LogPrintf("optimizing outputs %d satoshis\n", availableCoins);
-
 
     CTxDestination dest = DecodeDestination(address);
     if (!IsValidDestination(dest)) {

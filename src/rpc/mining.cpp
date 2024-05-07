@@ -1009,7 +1009,12 @@ static RPCHelpMan submitheader()
 
     BlockValidationState state;
     int tmpTemp;
-    chainman.ProcessNewBlockHeaders(tmpTemp, chainman.ActiveChain().Tip()->GetBlockHash(), {h}, /*min_pow_checked=*/true, state, Params());
+    CBlockIndex* tip;
+    {
+        LOCK(cs_main);
+        tip = chainman.ActiveChain().Tip();
+    }
+    chainman.ProcessNewBlockHeaders(tmpTemp, tip->GetBlockHash(), {h}, /*min_pow_checked=*/true, state, Params());
     if (state.IsValid()) return NullUniValue;
     if (state.IsError()) {
         throw JSONRPCError(RPC_VERIFY_ERROR, state.ToString());

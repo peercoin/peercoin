@@ -7,7 +7,7 @@ define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2024)
 define(_PEERCOIN_VERSION_MAJOR, 0)
 define(_PEERCOIN_VERSION_MINOR, 14)
-define(_PEERCOIN_VERSION_REVISION, 1)
+define(_PEERCOIN_VERSION_REVISION, 2)
 define(_PEERCOIN_VERSION_BUILD, 0)
 define(_PEERCOIN_VERSION_RC, 0)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
@@ -478,6 +478,7 @@ if test "$CXXFLAGS_overridden" = "no"; then
   dnl set the -Wno-foo case if it works.
   AX_CHECK_COMPILE_FLAG([-Wunused-parameter], [NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-unused-parameter"], [], [$CXXFLAG_WERROR])
   AX_CHECK_COMPILE_FLAG([-Wself-assign], [NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-self-assign"], [], [$CXXFLAG_WERROR])
+  AX_CHECK_COMPILE_FLAG([-Wsuggest-override], [NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-suggest-override"], [], [$CXXFLAG_WERROR])
   if test "$suppress_external_warnings" != "yes" ; then
     AX_CHECK_COMPILE_FLAG([-Wdeprecated-copy], [NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-deprecated-copy"], [], [$CXXFLAG_WERROR])
   fi

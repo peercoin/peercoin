@@ -53,6 +53,7 @@ static const char* SettingName(OptionsModel::OptionID option)
     case OptionsModel::ProxyPortTor: return "onion";
     case OptionsModel::ProxyUseTor: return "onion";
     case OptionsModel::Language: return "lang";
+    case OptionsModel::MaxMintingUtxos: return "maxmintingutxos";
     default: throw std::logic_error(strprintf("GUI option %i has no corresponding node setting.", option));
     }
 }
@@ -181,8 +182,8 @@ bool OptionsModel::Init(bilingual_str& error)
 
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
-    for (OptionID option : {DatabaseCache, ThreadsScriptVerif, SpendZeroConfChange, ExternalSignerPath, MapPortUPnP,
-                            MapPortNatpmp, Listen, Server, ProxyUse, ProxyUseTor, Language}) {
+    for (OptionID option : {DatabaseCache, ThreadsScriptVerif, SpendZeroConfChange, ExternalSignerPath, MaxMintingUtxos,
+                            MapPortUPnP, MapPortNatpmp, Listen, Server, ProxyUse, ProxyUseTor, Language}) {
         std::string setting = SettingName(option);
         if (node().isSettingIgnored(setting)) addOverriddenOption("-" + setting);
         try {
@@ -216,6 +217,8 @@ bool OptionsModel::Init(bilingual_str& error)
         settings.setValue("bCheckGithub", wallet::DEFAULT_CHECK_GITHUB);
     if (!gArgs.SoftSetBoolArg("-checkgithub", settings.value("bCheckGithub").toBool()))
         addOverriddenOption("-checkgithub");
+    if (!settings.contains("nMaxMintingUtxos"))
+        settings.setValue("nMaxMintingUtxos", wallet::MAX_MINTING_UTXOS);
 #endif
 
     // Display
@@ -398,6 +401,12 @@ QVariant OptionsModel::getOption(OptionID option, const std::string& suffix) con
         return QString::fromStdString(SettingToString(setting(), ""));
     case SubFeeFromAmount:
         return m_sub_fee_from_amount;
+    case SplitCoins:
+        return settings.value("bSplitCoins");
+    case CheckGithub:
+        return settings.value("bCheckGithub");
+    case MaxMintingUtxos:
+        return qlonglong(SettingToInt(setting(), wallet::MAX_MINTING_UTXOS));
 #endif
     case DisplayUnit:
         return QVariant::fromValue(m_display_bitcoin_unit);
@@ -540,6 +549,12 @@ bool OptionsModel::setOption(OptionID option, const QVariant& value, const std::
     case SubFeeFromAmount:
         m_sub_fee_from_amount = value.toBool();
         settings.setValue("SubFeeFromAmount", m_sub_fee_from_amount);
+        break;
+    case MaxMintingUtxos:
+        if (changed()) {
+            update(static_cast<int64_t>(value.toLongLong()));
+            setRestartRequired(true);
+        }
         break;
 #endif
     case DisplayUnit:

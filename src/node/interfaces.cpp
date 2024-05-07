@@ -383,7 +383,7 @@ public:
         m_context = context;
     }
     ArgsManager& args() { return *Assert(Assert(m_context)->args); }
-    ChainstateManager& chainman() { return *Assert(m_context->chainman); }
+    ChainstateManager& chainman() override { return *Assert(m_context->chainman); }
     NodeContext* m_context{nullptr};
 };
 
@@ -776,7 +776,7 @@ public:
 
     NodeContext* context() override { return &m_node; }
     ArgsManager& args() { return *Assert(m_node.args); }
-    ChainstateManager& chainman() { return *Assert(m_node.chainman); }
+    ChainstateManager& chainman() override { return *Assert(m_node.chainman); }
     NodeContext& m_node;
 };
 } // namespace

@@ -293,6 +293,7 @@ static void MaybePushAddress(UniValue & entry, const CTxDestination &dest)
 
 static void PushCoinStakeCategory(UniValue & entry, const CWalletTx &wtx, const CWallet& wallet)
 {
+    LOCK(wallet.cs_wallet);
     if (wallet.GetTxDepthInMainChain(wtx) < 1)
         entry.pushKV("category", "stake-orphan");
     else if (wallet.GetTxBlocksToMaturity(wtx) > 0)

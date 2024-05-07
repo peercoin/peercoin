@@ -81,13 +81,6 @@ static RPCHelpMan sendrawtransaction()
 
             CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 
-            const CFeeRate max_raw_tx_fee_rate = request.params[1].isNull() ?
-                                                     DEFAULT_MAX_RAW_TX_FEE_RATE :
-                                                     CFeeRate(AmountFromValue(request.params[1]));
-
-            int64_t virtual_size = GetVirtualTransactionSize(*tx);
-            //CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
-
             std::string err_string;
             AssertLockNotHeld(cs_main);
             NodeContext& node = EnsureAnyNodeContext(request.context);
@@ -161,11 +154,6 @@ static RPCHelpMan testmempoolaccept()
                 throw JSONRPCError(RPC_INVALID_PARAMETER,
                                    "Array must contain between 1 and " + ToString(MAX_PACKAGE_COUNT) + " transactions.");
             }
-
-            const CFeeRate max_raw_tx_fee_rate = request.params[1].isNull() ?
-                                                     DEFAULT_MAX_RAW_TX_FEE_RATE :
-                                                     CFeeRate(AmountFromValue(request.params[1]));
-
             std::vector<CTransactionRef> txns;
             txns.reserve(raw_transactions.size());
             for (const auto& rawtx : raw_transactions.getValues()) {
@@ -211,31 +199,6 @@ static RPCHelpMan testmempoolaccept()
                 // Package testmempoolaccept doesn't allow transactions to already be in the mempool.
                 CHECK_NONFATAL(tx_result.m_result_type != MempoolAcceptResult::ResultType::MEMPOOL_ENTRY);
                 if (tx_result.m_result_type == MempoolAcceptResult::ResultType::VALID) {
-                    const CAmount fee = tx_result.m_base_fees.value();
-                    // Check that fee does not exceed maximum fee
-                    const int64_t virtual_size = tx_result.m_vsize.value();
-/*
-                    const CAmount max_raw_tx_fee = max_raw_tx_fee_rate.GetFee(virtual_size);
-                    if (max_raw_tx_fee && fee > max_raw_tx_fee) {
-                        result_inner.pushKV("allowed", false);
-                        result_inner.pushKV("reject-reason", "max-fee-exceeded");
-                        exit_early = true;
-                    } else {
-                        // Only return the fee and vsize if the transaction would pass ATMP.
-                        // These can be used to calculate the feerate.
-                        result_inner.pushKV("allowed", true);
-                        result_inner.pushKV("vsize", virtual_size);
-                        UniValue fees(UniValue::VOBJ);
-                        fees.pushKV("base", ValueFromAmount(fee));
-                        fees.pushKV("effective-feerate", 0.01); 
-                        UniValue effective_includes_res(UniValue::VARR);
-                        for (const auto& wtxid : tx_result.m_wtxids_fee_calculations.value()) {
-                            effective_includes_res.push_back(wtxid.ToString());
-                        }
-                        fees.pushKV("effective-includes", effective_includes_res);
-                        result_inner.pushKV("fees", fees);
-                    }
-*/
                 } else {
                     result_inner.pushKV("allowed", false);
                     const TxValidationState state = tx_result.m_state;
