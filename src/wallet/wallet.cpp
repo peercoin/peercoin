@@ -3876,7 +3876,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
             double ratio = current / nTargetOutputAmount;
             // Obtain the optimal number of outputs and clamp it to maxOutputs to ensure the fee is not exceeded
             int desiredOutputs = std::min(
-                int(std::floor((std::sqrt(4 * std::pow(ratio, 2) + 1) + 1) / 2)),
+                std::max(int(ratio), 1),
                 maxOutputs
             );
 
