@@ -3794,13 +3794,19 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     if (nTargetOutputAmount < MIN_TARGET_OUTPUT_AMOUNT)
         nTargetOutputAmount = MIN_TARGET_OUTPUT_AMOUNT;
 
+    // If the available balance split by target amount would exceed max minting
+    // utxos, reset the target amount and nCombineThreshold to evenly split
+    // available balance
+    bool constrainToMaxUtxos = (nAllowedBalance / nTargetOutputAmount) > maxMintingUtxos;
     CAmount nCombineThreshold;
-    // if available balance split by target amount would exceed max minting utxos
-    // reset target amount and nCombineThreshold to evenly split available balance
-    if ((nAllowedBalance / nTargetOutputAmount) > maxMintingUtxos) {
+    if (constrainToMaxUtxos) {
         nTargetOutputAmount = nAllowedBalance / maxMintingUtxos;
+        // Combine all utxos under the target amount when attempting to optimise
+        // for max minting utxos
         nCombineThreshold = nTargetOutputAmount;
     } else
+        // Otherwise do not combine utxos near the target to avoid consuming
+        // coinage and to prevent combining recently split utxos
         nCombineThreshold = nTargetOutputAmount / RECOMBINE_DIVISOR;
 
     for (const auto& pcoin : result->GetInputSet())
@@ -3866,17 +3872,19 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     {
         // Clear outputs
         txNew.vout.erase(txNew.vout.begin() + 1u+bMinterKey, txNew.vout.end());
-
         // Assume success
         bool outputsOk = true;
-
         // split and set amounts based on rfc28
         if (pwallet->m_split_coins) {
             CAmount current = nCredit - nMinFee;
             double ratio = current / nTargetOutputAmount;
             // Obtain the optimal number of outputs and clamp it to maxOutputs to ensure the fee is not exceeded
             int desiredOutputs = std::min(
-                int(std::floor((std::sqrt(4 * std::pow(ratio, 2) + 1) + 1) / 2)),
+                constrainToMaxUtxos
+                // When constraining to the max utxos, ensure the output amount is no less than the target
+                ? std::max(int(ratio), 1)
+                // Otherwise minimise the log-distance from the target
+                : int(std::floor((std::sqrt(4 * std::pow(ratio, 2) + 1) + 1) / 2)),
                 maxOutputs
             );
 
