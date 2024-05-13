@@ -3872,16 +3872,12 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     {
         // Clear outputs
         txNew.vout.erase(txNew.vout.begin() + 1u+bMinterKey, txNew.vout.end());
-
         // Assume success
         bool outputsOk = true;
-
         // split and set amounts based on rfc28
         if (pwallet->m_split_coins) {
-
             CAmount current = nCredit - nMinFee;
             double ratio = current / nTargetOutputAmount;
-
             // Obtain the optimal number of outputs and clamp it to maxOutputs to ensure the fee is not exceeded
             int desiredOutputs = std::min(
                 constrainToMaxUtxos
