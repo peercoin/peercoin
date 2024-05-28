@@ -234,6 +234,7 @@ void OptionsDialog::setMapper()
     /* Wallet */
     mapper->addMapping(ui->spendZeroConfChange, OptionsModel::SpendZeroConfChange);
     mapper->addMapping(ui->splitCoins, OptionsModel::SplitCoins);
+    mapper->addMapping(ui->combineCoins, OptionsModel::CombineCoins);
     mapper->addMapping(ui->checkGithub, OptionsModel::CheckGithub);
     mapper->addMapping(ui->maxMintingUtxos, OptionsModel::MaxMintingUtxos);
     mapper->addMapping(ui->coinControlFeatures, OptionsModel::CoinControlFeatures);
