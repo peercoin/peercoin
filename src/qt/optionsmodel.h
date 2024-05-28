@@ -59,6 +59,7 @@ public:
         ExternalSignerPath,     // QString
         SpendZeroConfChange,    // bool
         SplitCoins,             // bool
+        CombineCoins,           // bool
         CheckGithub,            // bool
         MaxMintingUtxos,        // int
         Listen,                 // bool

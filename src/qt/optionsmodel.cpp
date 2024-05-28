@@ -213,6 +213,8 @@ bool OptionsModel::Init(bilingual_str& error)
         settings.setValue("bSplitCoins", wallet::DEFAULT_SPLIT_COINS);
     if (!gArgs.SoftSetBoolArg("-splitcoins", settings.value("bSplitCoins").toBool()))
         addOverriddenOption("-splitcoins");
+    if (!gArgs.SoftSetBoolArg("-combinecoins", settings.value("bCombineCoins").toBool()))
+        addOverriddenOption("-combinecoins");
     if (!settings.contains("bCheckGithub"))
         settings.setValue("bCheckGithub", wallet::DEFAULT_CHECK_GITHUB);
     if (!gArgs.SoftSetBoolArg("-checkgithub", settings.value("bCheckGithub").toBool()))
@@ -403,6 +405,8 @@ QVariant OptionsModel::getOption(OptionID option, const std::string& suffix) con
         return m_sub_fee_from_amount;
     case SplitCoins:
         return settings.value("bSplitCoins");
+    case CombineCoins:
+        return settings.value("bCombineCoins");
     case CheckGithub:
         return settings.value("bCheckGithub");
     case MaxMintingUtxos:
