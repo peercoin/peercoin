@@ -3096,6 +3096,8 @@ std::shared_ptr<CWallet> CWallet::Create(WalletContext& context, const std::stri
     walletInstance->m_spend_zero_conf_change = args.GetBoolArg("-spendzeroconfchange", DEFAULT_SPEND_ZEROCONF_CHANGE);
     walletInstance->m_split_coins = args.GetBoolArg("-splitcoins", DEFAULT_SPLIT_COINS);
     walletInstance->WalletLogPrintf("Wallet will%s split coins during minting\n", walletInstance->m_split_coins? "" : " not");
+    walletInstance->m_combine_coins = args.GetBoolArg("-combinecoins", DEFAULT_COMBINE_COINS);
+    walletInstance->WalletLogPrintf("Wallet will%s combine coins during minting\n", walletInstance->m_combine_coins? "" : " not");
 
     walletInstance->m_check_github = args.GetBoolArg("-checkgithub", DEFAULT_CHECK_GITHUB);
     walletInstance->WalletLogPrintf("Wallet will%s check github for newer version on startup\n", walletInstance->m_check_github? "" : " not");
@@ -3830,7 +3832,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         // Attempt to add more inputs
         // Only add coins of the same key/address as kernel
         if (((pcoin->txout.scriptPubKey == scriptPubKeyKernel || pcoin->txout.scriptPubKey == txNew.vout[1].scriptPubKey))
-            && pcoin->outpoint.hash != txNew.vin[0].prevout.hash)
+            && (pcoin->outpoint.hash != txNew.vin[0].prevout.hash)
+            && pwallet->m_combine_coins)
         {
             // Stop adding more inputs if already too many inputs and we are above target or have minter key to add
             if ((txNew.vin.size() >= MAX_COINSTAKE_INPUTS) && (bMinterKey || nCredit > nTargetOutputAmount))
