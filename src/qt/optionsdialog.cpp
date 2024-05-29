@@ -201,6 +201,7 @@ void OptionsDialog::setModel(OptionsModel *_model)
     /* Wallet */
     connect(ui->spendZeroConfChange, &QCheckBox::clicked, this, &OptionsDialog::showRestartWarning);
     connect(ui->splitCoins, &QCheckBox::clicked, this, &OptionsDialog::showRestartWarning);
+    connect(ui->combineCoins, &QCheckBox::clicked, this, &OptionsDialog::showRestartWarning);
     connect(ui->checkGithub, &QCheckBox::clicked, this, &OptionsDialog::showRestartWarning);
     connect(ui->maxMintingUtxos, &QLineEdit::textChanged, [this]{ showRestartWarning(); });
     /* Network */
