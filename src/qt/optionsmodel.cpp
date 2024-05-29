@@ -53,6 +53,9 @@ static const char* SettingName(OptionsModel::OptionID option)
     case OptionsModel::ProxyPortTor: return "onion";
     case OptionsModel::ProxyUseTor: return "onion";
     case OptionsModel::Language: return "lang";
+    case OptionsModel::CheckGithub: return "checkgithub";
+    case OptionsModel::SplitCoins: return "splitcoins";
+    case OptionsModel::CombineCoins: return "combinecoins";
     case OptionsModel::MaxMintingUtxos: return "maxmintingutxos";
     default: throw std::logic_error(strprintf("GUI option %i has no corresponding node setting.", option));
     }
@@ -182,8 +185,9 @@ bool OptionsModel::Init(bilingual_str& error)
 
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
-    for (OptionID option : {DatabaseCache, ThreadsScriptVerif, SpendZeroConfChange, ExternalSignerPath, MaxMintingUtxos,
-                            MapPortUPnP, MapPortNatpmp, Listen, Server, ProxyUse, ProxyUseTor, Language}) {
+    for (OptionID option : {DatabaseCache, ThreadsScriptVerif, SpendZeroConfChange, ExternalSignerPath, CheckGithub,
+                            SplitCoins, CombineCoins, MaxMintingUtxos, MapPortUPnP, MapPortNatpmp, Listen, Server,
+                            ProxyUse, ProxyUseTor, Language}) {
         std::string setting = SettingName(option);
         if (node().isSettingIgnored(setting)) addOverriddenOption("-" + setting);
         try {
@@ -209,16 +213,16 @@ bool OptionsModel::Init(bilingual_str& error)
         settings.setValue("SubFeeFromAmount", false);
     }
     m_sub_fee_from_amount = settings.value("SubFeeFromAmount", false).toBool();
-    if (!settings.contains("bSplitCoins"))
-        settings.setValue("bSplitCoins", wallet::DEFAULT_SPLIT_COINS);
-    if (!gArgs.SoftSetBoolArg("-splitcoins", settings.value("bSplitCoins").toBool()))
-        addOverriddenOption("-splitcoins");
-    if (!gArgs.SoftSetBoolArg("-combinecoins", settings.value("bCombineCoins").toBool()))
-        addOverriddenOption("-combinecoins");
-    if (!settings.contains("bCheckGithub"))
-        settings.setValue("bCheckGithub", wallet::DEFAULT_CHECK_GITHUB);
-    if (!gArgs.SoftSetBoolArg("-checkgithub", settings.value("bCheckGithub").toBool()))
+    if (!settings.contains("CheckGithub"))
+        settings.setValue("CheckGithub", wallet::DEFAULT_CHECK_GITHUB);
+    if (!gArgs.SoftSetBoolArg("-checkgithub", settings.value("CheckGithub").toBool()))
         addOverriddenOption("-checkgithub");
+    if (!settings.contains("SplitCoins"))
+        settings.setValue("SplitCoins", wallet::DEFAULT_SPLIT_COINS);
+    if (!gArgs.SoftSetBoolArg("-splitcoins", settings.value("SplitCoins").toBool()))
+        addOverriddenOption("-splitcoins");
+    if (!gArgs.SoftSetBoolArg("-combinecoins", settings.value("CombineCoins").toBool()))
+        addOverriddenOption("-combinecoins");
     if (!settings.contains("nMaxMintingUtxos"))
         settings.setValue("nMaxMintingUtxos", wallet::MAX_MINTING_UTXOS);
 #endif
@@ -403,12 +407,12 @@ QVariant OptionsModel::getOption(OptionID option, const std::string& suffix) con
         return QString::fromStdString(SettingToString(setting(), ""));
     case SubFeeFromAmount:
         return m_sub_fee_from_amount;
-    case SplitCoins:
-        return settings.value("bSplitCoins");
-    case CombineCoins:
-        return settings.value("bCombineCoins");
     case CheckGithub:
-        return settings.value("bCheckGithub");
+        return SettingToBool(setting(), wallet::DEFAULT_CHECK_GITHUB);
+    case SplitCoins:
+        return SettingToBool(setting(), wallet::DEFAULT_SPLIT_COINS);
+    case CombineCoins:
+        return SettingToBool(setting(), wallet::DEFAULT_COMBINE_COINS);
     case MaxMintingUtxos:
         return qlonglong(SettingToInt(setting(), wallet::MAX_MINTING_UTXOS));
 #endif
@@ -553,6 +557,24 @@ bool OptionsModel::setOption(OptionID option, const QVariant& value, const std::
     case SubFeeFromAmount:
         m_sub_fee_from_amount = value.toBool();
         settings.setValue("SubFeeFromAmount", m_sub_fee_from_amount);
+        break;
+    case CheckGithub:
+        if (changed()) {
+            update(value.toBool());
+            setRestartRequired(true);
+        }
+        break;
+    case SplitCoins:
+        if (changed()) {
+            update(value.toBool());
+            setRestartRequired(true);
+        }
+        break;
+    case CombineCoins:
+        if (changed()) {
+            update(value.toBool());
+            setRestartRequired(true);
+        }
         break;
     case MaxMintingUtxos:
         if (changed()) {
@@ -702,6 +724,9 @@ void OptionsModel::checkAndMigrate()
 #ifdef ENABLE_WALLET
     migrate_setting(SpendZeroConfChange, "bSpendZeroConfChange");
     migrate_setting(ExternalSignerPath, "external_signer_path");
+    migrate_setting(CheckGithub, "bCheckGithub");
+    migrate_setting(SplitCoins, "bSplitCoins");
+    migrate_setting(CombineCoins, "bCombineCoins");
 #endif
     migrate_setting(MapPortUPnP, "fUseUPnP");
     migrate_setting(MapPortNatpmp, "fUseNatpmp");
