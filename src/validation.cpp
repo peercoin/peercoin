@@ -2458,9 +2458,6 @@ void Chainstate::UpdateTip(const CBlockIndex* pindexNew)
     }
 
     bilingual_str warning_messages;
-    if (!this->IsInitialBlockDownload()) {
-        const CBlockIndex* pindex = pindexNew;
-    }
 
     UpdateTipLog(coins_tip, pindexNew, params, __func__, "", warning_messages.original);
 }
