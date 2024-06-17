@@ -3567,7 +3567,7 @@ double SecurityToOptimalFraction(double security, bool isTestnet) {
 
 // peercoin: create coin stake transaction
 typedef std::vector<unsigned char> valtype;
-bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew)
+bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, CTxDestination destination)
 {
     bool bDebug = (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false));
 
@@ -3735,17 +3735,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                 else if (whichType == TxoutType::PUBKEY)
                     scriptPubKeyOut = scriptPubKeyKernel;
                 else if (whichType == TxoutType::WITNESS_V1_TAPROOT) {
-                    // prepare reserve destination in case we need to use it for handling non legacy inputs
-                    CTxDestination dest;
-                    ReserveDestination reservedest(const_cast<CWallet *>(pwallet), OutputType::LEGACY);
-                    auto op_dest = reservedest.GetReservedDestination(true);
-                    if (!op_dest) {
-                        LogPrintf("Error: Keypool ran out, please call keypoolrefill first.\n");
-                        break;
-                    }
-                    dest = *op_dest;
                     std::vector<valtype> vSolutionsTmp;
-                    CScript scriptPubKeyTmp = GetScriptForDestination(dest);
+                    CScript scriptPubKeyTmp = GetScriptForDestination(destination);
                     Solver(scriptPubKeyTmp, vSolutionsTmp);
                     std::unique_ptr<SigningProvider> provider = pwallet->GetSolvingProvider(scriptPubKeyTmp);
                     if (!provider) {
