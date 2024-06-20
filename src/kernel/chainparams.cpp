@@ -129,8 +129,8 @@ public:
 
         consensus.SegwitHeight = 455470;
 
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000516e58fb3669ea"); // 650000
-        consensus.defaultAssumeValid = uint256S("0x3125be5493e80431952593cce42b160019671108103735509238830939e1c9a3");  // 650000
+        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000006c0ada6e6d2117"); // 750000
+        consensus.defaultAssumeValid = uint256S("0xd5dce1eaccc3f4894ae235123ebea393d74c1ddd1aaa4d8c7a814a1ba0b69ad4");  // 750000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -200,12 +200,12 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0000000000000000bef29f005dc65af3950b14af7200998759ba8977561f9d95 (height 714688).
-            1700288376, // * UNIX timestamp of last known number of transactions
-            2315476,    // * total number of transactions between genesis and that timestamp
+            // Data as of block d5dce1eaccc3f4894ae235123ebea393d74c1ddd1aaa4d8c7a814a1ba0b69ad4 (height 750000).
+            1717342566, // * UNIX timestamp of last known number of transactions
+            2508647,    // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the ChainStateFlushed debug.log lines)
-            0.006524526 // * estimated number of transactions per second after that timestamp
-                        //   2315476/(1700288376-1345400356) = 0.006524526
+            0.006744723 // * estimated number of transactions per second after that timestamp
+                        //   2508647/(1717342566-1345400356) = 0.006744723
         };
     }
 };

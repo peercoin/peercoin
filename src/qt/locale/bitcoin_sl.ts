@@ -4654,7 +4654,7 @@ Opomba: Ker se provizija izračuna na bajt, bi provizija "100 satoshijev na kvB"
     </message>
     <message>
         <source>press q to shutdown</source>
-        <translation type="unfinished">pritisnite q za zaustavitev</translation>
+        <translation type="unfinished">Pritisnite q za zaustavitev.</translation>
     </message>
 </context>
 <context>
@@ -6460,6 +6460,10 @@ Obnovitev varnostne kopije denarnice ni bila mogoča.</translation>
     <message>
         <source>Unable to start HTTP server. See debug log for details.</source>
         <translation type="unfinished">Zagon HTTP strežnika neuspešen. Poglejte razhroščevalni dnevnik za podrobnosti (debug.log).</translation>
+    </message>
+    <message>
+        <source>Unable to unload the wallet before migrating</source>
+        <translation type="unfinished">Zapiranje denarnice pred migracijo ni uspelo</translation>
     </message>
     <message>
         <source>Unknown -blockfilterindex value %s.</source>

@@ -222,6 +222,10 @@
         <translation type="unfinished">지갑 암호가 성공적으로 변경되었습니다.</translation>
     </message>
     <message>
+        <source>Passphrase change failed</source>
+        <translation type="unfinished">암호 변경에 실패하였습니다.</translation>
+    </message>
+    <message>
         <source>Warning: The Caps Lock key is on!</source>
         <translation type="unfinished">경고: Caps Lock키가 켜져있습니다!</translation>
     </message>
@@ -3115,6 +3119,16 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
         <translation type="unfinished">지갑 정보</translation>
     </message>
     <message>
+        <source>Load Wallet Backup</source>
+        <extracomment>The title for Restore Wallet File Windows</extracomment>
+        <translation type="unfinished">백업된 지갑 불러오기</translation>
+    </message>
+    <message>
+        <source>Restore Wallet</source>
+        <extracomment>Title of pop-up window shown when the user is attempting to restore a wallet.</extracomment>
+        <translation type="unfinished">지갑 복원하기</translation>
+    </message>
+    <message>
         <source>Wallet Name</source>
         <extracomment>Label of the input field where the name of the wallet is entered.</extracomment>
         <translation type="unfinished">지갑 이름</translation>
@@ -3473,6 +3487,14 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
 </context>
 <context>
+    <name>RestoreWalletActivity</name>
+    <message>
+        <source>Restore Wallet</source>
+        <extracomment>Title of progress window which is displayed when wallets are being restored.</extracomment>
+        <translation type="unfinished">지갑 복원하기</translation>
+    </message>
+    </context>
+<context>
     <name>WalletController</name>
     <message>
         <source>Close wallet</source>
@@ -3654,7 +3676,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     <message numerus="yes">
         <source>%n GB of space available</source>
         <translation type="unfinished">
-            <numerusform />
+            <numerusform>%nGB의 가용 공간</numerusform>
         </translation>
     </message>
     <message numerus="yes">

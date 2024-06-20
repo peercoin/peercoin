@@ -126,7 +126,7 @@ void BlockAssembler::resetBlock()
 }
 
 // peercoin: if pwallet != NULL it will attempt to create coinstake
-std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node)
+std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node, CTxDestination destination)
 {
     const auto time_start{SteadyClock::now()};
 
@@ -174,7 +174,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         int64_t nSearchTime = txCoinStake.nTime; // search to current time
         if (nSearchTime > nLastCoinStakeSearchTime)
         {
-            if (pwallet->CreateCoinStake(*m_node->chainman, pwallet, pblock->nBits, nSearchTime-nLastCoinStakeSearchTime, txCoinStake))
+            if (pwallet->CreateCoinStake(*m_node->chainman, pwallet, pblock->nBits, nSearchTime-nLastCoinStakeSearchTime, txCoinStake, destination))
             {
                 if (txCoinStake.nTime >= std::max(pindexPrev->GetMedianTimePast()+1, pindexPrev->GetBlockTime() - (IsProtocolV09(pindexPrev->GetBlockTime()) ? MAX_FUTURE_BLOCK_TIME : MAX_FUTURE_BLOCK_TIME_PREV9)))
                 {   // make sure coinstake would meet timestamp protocol
@@ -555,19 +555,25 @@ void PoSMiner(NodeContext& m_node)
 
     unsigned int nExtraNonce = 0;
 
-    OutputType output_type = pwallet->m_default_change_type ? *pwallet->m_default_change_type : pwallet->m_default_address_type;
-    ReserveDestination reservedest(pwallet, output_type);
     CTxDestination dest;
     // Compute timeout for pos as sqrt(numUTXO)
     unsigned int pos_timio;
     {
         LOCK2(pwallet->cs_wallet, cs_main);
-        auto op_dest = reservedest.GetReservedDestination(true);
+        const std::string label = "mintkey";
+        pwallet->ForEachAddrBookEntry([&](const CTxDestination& _dest, const std::string& _label, bool _is_change, const std::optional<wallet::AddressPurpose>& _purpose) {
+            if (_is_change) return;
+            if (_label == label)
+                dest = _dest;
+        });
 
-        if (!op_dest)
-            throw std::runtime_error("Error: Keypool ran out, please call keypoolrefill first.");
-
-        dest = *op_dest;
+        if (std::get_if<CNoDestination>(&dest)) {
+            // create mintkey address
+            auto op_dest = pwallet->GetNewDestination(OutputType::LEGACY, label);
+            if (!op_dest)
+                throw std::runtime_error("Error: Keypool ran out, please call keypoolrefill first.");
+            dest = *op_dest;
+        }
 
         wallet::CoinsResult availableCoins;
         CCoinControl coincontrol;
@@ -625,14 +631,13 @@ void PoSMiner(NodeContext& m_node)
             // Create new block
             //
             bool fPoSCancel = false;
-            CScript scriptPubKey = GetScriptForDestination(dest);
             CBlock *pblock;
             std::unique_ptr<CBlockTemplate> pblocktemplate;
 
             {
                 LOCK2(pwallet->cs_wallet, cs_main);
                 try {
-                    pblocktemplate = BlockAssembler(m_node.chainman->ActiveChainstate(), m_node.mempool.get()).CreateNewBlock(scriptPubKey, pwallet, &fPoSCancel, &m_node);
+                    pblocktemplate = BlockAssembler(m_node.chainman->ActiveChainstate(), m_node.mempool.get()).CreateNewBlock(GetScriptForDestination(dest), pwallet, &fPoSCancel, &m_node, dest);
                 }
                 catch (const std::runtime_error &e)
                 {
@@ -680,7 +685,6 @@ void PoSMiner(NodeContext& m_node)
                     LogPrintf("PeercoinMiner runtime error: %s\n", e.what());
                     continue;
                 }
-                reservedest.KeepDestination();
                 // Rest for ~3 minutes after successful block to preserve close quick
                 if (!connman->interruptNet.sleep_for(std::chrono::seconds(60 + GetRand(4))))
                     return;
