@@ -7,8 +7,10 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <QNetworkReply>
 
 #include <atomic>
+#include <ctime>
 #include <memory>
 #include <sync.h>
 #include <uint256.h>
@@ -70,6 +72,8 @@ public:
     uint256 getBestBlockHash() EXCLUSIVE_LOCKS_REQUIRED(!m_cached_tip_mutex);
     int getHeaderTipHeight() const;
     int64_t getHeaderTipTime() const;
+    void checkGithub();
+    void onResult(QNetworkReply *reply);
 
     //! Returns the block source of the current importing/syncing state
     BlockSource getBlockSource() const;
@@ -109,6 +113,9 @@ private:
 
     //! A thread to interact with m_node asynchronously
     QThread* const m_thread;
+
+    //! Time we've checked github last
+    std::time_t last_checked_time;
 
     void TipChanged(SynchronizationState sync_state, interfaces::BlockTip tip, double verification_progress, SyncType synctype) EXCLUSIVE_LOCKS_REQUIRED(!m_cached_tip_mutex);
     void subscribeToCoreSignals();
