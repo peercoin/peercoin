@@ -15,19 +15,26 @@
 #include <interfaces/node.h>
 #include <net.h>
 #include <netbase.h>
+#include <regex>
 #include <util/system.h>
 #include <util/threadnames.h>
 #include <util/time.h>
 #include <validation.h>
+#include <warnings.h>
 
 #include <uint256.h>
 
 #include <stdint.h>
 
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QNetworkReply>
 #include <QMetaObject>
+#include <QSettings>
 #include <QThread>
 #include <QTimer>
+#include <QtNetwork/QNetworkAccessManager>
 
 static int64_t nLastHeaderTipUpdateNotification = 0;
 static int64_t nLastBlockTipUpdateNotification = 0;
@@ -297,89 +304,44 @@ bool ClientModel::getProxyInfo(std::string& ip_port) const
     }
     return false;
 }
-/*
-// Handlers for core signals
-static void NotifyNetworkActiveChanged(ClientModel *clientmodel, bool networkActive)
-{
-    bool invoked = QMetaObject::invokeMethod(clientmodel, "updateNetworkActive", Qt::QueuedConnection,
-                              Q_ARG(bool, networkActive));
-    assert(invoked);
-}
 
-static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, ChangeType status)
-{
-    qDebug() << "NotifyAlertChanged: " + QString::fromStdString(hash.GetHex()) + " status=" + QString::number(status);
-    bool invoked = QMetaObject::invokeMethod(clientmodel, "updateAlert", Qt::QueuedConnection,
-                              Q_ARG(QString, QString::fromStdString(hash.GetHex())),
-                              Q_ARG(int, status));
-    assert(invoked);
-}
+void ClientModel::checkGithub() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t current_time = std::chrono::system_clock::to_time_t(now);
+    std::tm current_date = *std::localtime(&current_time);
+    std::tm last_date = *std::localtime(&last_checked_time);
 
-static void BannedListChanged(ClientModel *clientmodel)
-{
-    qDebug() << QString("%1: Requesting update for peer banlist").arg(__func__);
-    bool invoked = QMetaObject::invokeMethod(clientmodel, "updateBanlist", Qt::QueuedConnection);
-    assert(invoked);
-}
-
-static void BlockTipChanged(ClientModel* clientmodel, SynchronizationState sync_state, interfaces::BlockTip tip, double verificationProgress, bool fHeader)
-{
-    if (synctype == SyncType::HEADER_SYNC) {
-        // cache best headers time and height to reduce future cs_main locks
-        cachedBestHeaderHeight = tip.block_height;
-        cachedBestHeaderTime = tip.block_time;
-    } else if (synctype == SyncType::BLOCK_SYNC) {
-        m_cached_num_blocks = tip.block_height;
-        WITH_LOCK(m_cached_tip_mutex, m_cached_tip_blocks = tip.block_hash;);
+    if (current_date.tm_yday != last_date.tm_yday) {
+        QNetworkAccessManager* nam = new QNetworkAccessManager(this);
+        connect(nam, &QNetworkAccessManager::finished, this, &ClientModel::onResult);
+        QUrl url("http://mirror.peercoin.net/latest_release.json");
+        nam->get(QNetworkRequest(url));
+        last_checked_time = current_time;
     }
+}
 
-    // Throttle GUI notifications about (a) blocks during initial sync, and (b) both blocks and headers during reindex.
-    const bool throttle = (sync_state != SynchronizationState::POST_INIT && synctype == SyncType::BLOCK_SYNC) || sync_state == SynchronizationState::INIT_REINDEX;
-    const int64_t now = throttle ? GetTimeMillis() : 0;
-    int64_t& nLastUpdateNotification = synctype != SyncType::BLOCK_SYNC ? nLastHeaderTipUpdateNotification : nLastBlockTipUpdateNotification;
-    if (throttle && now < nLastUpdateNotification + count_milliseconds(MODEL_UPDATE_DELAY)) {
-        return;
+void ClientModel::onResult(QNetworkReply *reply) {
+    if(reply->error() == QNetworkReply::NoError) {
+        std::regex versionRgx("v([0-9]+).([0-9]+).([0-9]+)ppc");
+        std::smatch matches;
+        int newVersion=0;
+        QByteArray result = reply->readAll();
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(result);
+        QJsonObject obj = jsonResponse.object();
+        std::string tag_name = obj["tag_name"].toString().toStdString();
+        if(std::regex_search(tag_name, matches, versionRgx) && matches.size()==4) {
+            newVersion = std::stoi(matches[1].str()) * 1000000 + std::stoi(matches[2]) * 10000 + std::stoi(matches[3]) * 100;
+            if (newVersion > PEERCOIN_VERSION) {
+                char versionInfo[200];
+                snprintf(versionInfo, 200, "This client is not the most recent version available, please update to release %s from github or disable this check in settings.", obj["tag_name"].toString().toUtf8().constData());
+                std::string strVersionInfo = versionInfo;
+                SetMiscWarning(Untranslated(strVersionInfo));
+                Q_EMIT alertsChanged(getStatusBarWarnings());
+            }
+        }
     }
-
-    Q_EMIT numBlocksChanged(tip.block_height, QDateTime::fromSecsSinceEpoch(tip.block_time), verification_progress, synctype, sync_state);
-    nLastUpdateNotification = now;
-}
-
-void ClientModel::subscribeToCoreSignals()
-{
-    m_handler_show_progress = m_node.handleShowProgress(
-        [this](const std::string& title, int progress, [[maybe_unused]] bool resume_possible) {
-            Q_EMIT showProgress(QString::fromStdString(title), progress);
-        });
-    m_handler_notify_num_connections_changed = m_node.handleNotifyNumConnectionsChanged(
-        [this](int new_num_connections) {
-            Q_EMIT numConnectionsChanged(new_num_connections);
-        });
-    m_handler_notify_network_active_changed = m_node.handleNotifyNetworkActiveChanged(std::bind(NotifyNetworkActiveChanged, this, std::placeholders::_1));
-    m_handler_notify_alert_changed = m_node.handleNotifyAlertChanged(std::bind(NotifyAlertChanged, this, std::placeholders::_1, std::placeholders::_2));
-    m_handler_banned_list_changed = m_node.handleBannedListChanged(std::bind(BannedListChanged, this));
-    m_handler_notify_block_tip = m_node.handleNotifyBlockTip(std::bind(BlockTipChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, false));
-    m_handler_notify_header_tip = m_node.handleNotifyHeaderTip(std::bind(BlockTipChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, true));
-}
-
-void ClientModel::unsubscribeFromCoreSignals()
-{
-    m_handler_show_progress->disconnect();
-    m_handler_notify_num_connections_changed->disconnect();
-    m_handler_notify_network_active_changed->disconnect();
-    m_handler_notify_alert_changed->disconnect();
-    m_handler_banned_list_changed->disconnect();
-    m_handler_notify_block_tip->disconnect();
-    m_handler_notify_header_tip->disconnect();
-}
-
-bool ClientModel::getProxyInfo(std::string& ip_port) const
-{
-    Proxy ipv4, ipv6;
-    if (m_node.getProxy((Network) 1, ipv4) && m_node.getProxy((Network) 2, ipv6)) {
-      ip_port = ipv4.proxy.ToStringAddrPort();
-      return true;
+    else {
+        LogPrintf("Network Error during latest github version fetch: %s\n", qPrintable(reply->errorString()));
     }
-    return false;
+    reply->deleteLater();
 }
-*/

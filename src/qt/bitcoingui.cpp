@@ -227,44 +227,11 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
 
     connect(labelBlocksIcon, &GUIUtil::ClickableLabel::clicked, this, &BitcoinGUI::showModalOverlay);
     connect(progressBar, &GUIUtil::ClickableProgressBar::clicked, this, &BitcoinGUI::showModalOverlay);
-
-    if(settings.value("CheckGithub").toBool()) {
-        QNetworkAccessManager* nam = new QNetworkAccessManager(this);
-        connect(nam, &QNetworkAccessManager::finished, this, &BitcoinGUI::onResult);
-        QUrl url("http://mirror.peercoin.net/latest_release.json");
-        nam->get(QNetworkRequest(url));
-    }
-
 #ifdef Q_OS_MAC
     m_app_nap_inhibitor = new CAppNapInhibitor;
 #endif
 
     GUIUtil::handleCloseWindowShortcut(this);
-}
-
-void BitcoinGUI::onResult(QNetworkReply *reply) {
-    if(reply->error() == QNetworkReply::NoError) {
-        std::regex versionRgx("v([0-9]+).([0-9]+).([0-9]+)ppc");
-        std::smatch matches;
-        int newVersion=0;
-        QByteArray result = reply->readAll();
-        QJsonDocument jsonResponse = QJsonDocument::fromJson(result);
-        QJsonObject obj = jsonResponse.object();
-        std::string tag_name = obj["tag_name"].toString().toStdString();
-        if(std::regex_search(tag_name, matches, versionRgx) && matches.size()==4) {
-            newVersion = std::stoi(matches[1].str()) * 1000000 + std::stoi(matches[2]) * 10000 + std::stoi(matches[3]) * 100;
-            if (newVersion > PEERCOIN_VERSION) {
-                char versionInfo[200];
-                snprintf(versionInfo, 200, "This client is not the most recent version available, please update to release %s from github or disable this check in settings.", obj["tag_name"].toString().toUtf8().constData());
-                std::string strVersionInfo = versionInfo;
-                SetMiscWarning(Untranslated(strVersionInfo));
-            }
-        }
-    }
-    else {
-        LogPrintf("Network Error during latest github version fetch: %s\n", qPrintable(reply->errorString()));
-    }
-    reply->deleteLater();
 }
 
 BitcoinGUI::~BitcoinGUI()
@@ -735,6 +702,10 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel, interfaces::BlockAndH
         }
 
         m_mask_values_action->setChecked(_clientModel->getOptionsModel()->getOption(OptionsModel::OptionID::MaskValues).toBool());
+        QSettings settings;
+        if(settings.value("CheckGithub").toBool()) {
+            clientModel->checkGithub();
+        }
     } else {
         if(trayIconMenu)
         {
