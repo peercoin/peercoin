@@ -1523,11 +1523,9 @@ bool Chainstate::IsInitialBlockDownload() const
     return false;
 }
 
-
-void AlertNotify(const std::string& strMessage, bool fUpdateUI)
+static void AlertNotify(const std::string& strMessage)
 {
-    if (fUpdateUI)
-        uiInterface.NotifyAlertChanged();
+    uiInterface.NotifyAlertChanged();
 #if HAVE_SYSTEM
     std::string strCmd = gArgs.GetArg("-alertnotify", "");
     if (strCmd.empty()) return;
@@ -2407,6 +2405,23 @@ void Chainstate::ForceFlushStateToDisk()
     }
 }
 
+static void DoWarning(const bilingual_str& warning)
+{
+    static bool fWarned = false;
+    SetMiscWarning(warning);
+    if (!fWarned) {
+        AlertNotify(warning.original);
+        fWarned = true;
+    }
+}
+
+/** Private helper function that concatenates warning messages. */
+static void AppendWarning(bilingual_str& res, const bilingual_str& warn)
+{
+    if (!res.empty()) res += Untranslated(", ");
+    res += warn;
+}
+
 static void UpdateTipLog(
     const CCoinsViewCache& coins_tip,
     const CBlockIndex* tip,
@@ -2458,7 +2473,26 @@ void Chainstate::UpdateTip(const CBlockIndex* pindexNew)
     }
 
     bilingual_str warning_messages;
-
+    if (!this->IsInitialBlockDownload()) {
+        int nUpgraded = 0;
+        const CBlockIndex* pindex = pindexNew;
+        // Check the version of the last 100 blocks to see if we need to upgrade:
+        for (int i = 0; i < 100 && pindex != nullptr; i++)
+        {
+            if ((pindex->nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE) &&
+                (pindex->nVersion > CBlockHeader::CURRENT_VERSION))
+                    ++nUpgraded;
+            pindex = pindex->pprev;
+        }
+        if (nUpgraded > 0)
+            AppendWarning(warning_messages, strprintf(_("%d of last 100 blocks have unexpected version"), nUpgraded));
+        if (nUpgraded > 100/2)
+        {
+            const bilingual_str strWarning = _("Warning: Unknown block versions being mined! It's possible unknown rules are in effect");
+            // notify GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
+            DoWarning(strWarning);
+        }
+    }
     UpdateTipLog(coins_tip, pindexNew, params, __func__, "", warning_messages.original);
 }
 
