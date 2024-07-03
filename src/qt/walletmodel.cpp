@@ -36,6 +36,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QSet>
+#include <QSettings>
 #include <QTimer>
 
 using wallet::CCoinControl;
@@ -141,6 +142,11 @@ interfaces::WalletBalances WalletModel::getCachedBalance() const
 
 void WalletModel::updateTransaction()
 {
+    QSettings settings;
+    if(settings.value("CheckGithub").toBool()) {
+        m_client_model->checkGithub();
+    }
+
     // Balance and number of transactions might have changed
     fForceCheckBalanceChanged = true;
 }
