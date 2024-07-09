@@ -72,6 +72,8 @@ ClientModel::ClientModel(interfaces::Node& node, OptionsModel *_optionsModel, QO
     });
 
     subscribeToCoreSignals();
+
+    last_checked_time = 0;
 }
 
 ClientModel::~ClientModel()
