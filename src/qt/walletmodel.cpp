@@ -63,6 +63,10 @@ WalletModel::WalletModel(std::unique_ptr<interfaces::Wallet> wallet, ClientModel
     recentRequestsTableModel = new RecentRequestsTableModel(this);
 
     subscribeToCoreSignals();
+
+    if (gArgs.GetBoolArg("-checkgithub", wallet::DEFAULT_CHECK_GITHUB)) {
+         m_client_model->checkGithub();
+     }
 }
 
 WalletModel::~WalletModel()
@@ -142,8 +146,7 @@ interfaces::WalletBalances WalletModel::getCachedBalance() const
 
 void WalletModel::updateTransaction()
 {
-    QSettings settings;
-    if(settings.value("CheckGithub").toBool()) {
+    if (gArgs.GetBoolArg("-checkgithub", wallet::DEFAULT_CHECK_GITHUB)) {
         m_client_model->checkGithub();
     }
 
