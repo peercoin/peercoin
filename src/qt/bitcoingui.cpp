@@ -702,10 +702,6 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel, interfaces::BlockAndH
         }
 
         m_mask_values_action->setChecked(_clientModel->getOptionsModel()->getOption(OptionsModel::OptionID::MaskValues).toBool());
-        QSettings settings;
-        if(settings.value("CheckGithub").toBool()) {
-            clientModel->checkGithub();
-        }
     } else {
         if(trayIconMenu)
         {
