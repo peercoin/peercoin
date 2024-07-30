@@ -98,7 +98,7 @@ public Q_SLOTS:
     /** Encrypt the wallet */
     void encryptWallet();
     /** Decrypt wallet for minting only */
-    void decryptForMinting(bool status);
+    void decryptForMinting(bool status, bool completely = false);
     /** Backup the wallet */
     void backupWallet();
     /** Change encrypted wallet passphrase */
