@@ -256,6 +256,13 @@ void WalletFrame::decryptForMinting(bool status)
         walletView->decryptForMinting(status);
 }
 
+void WalletFrame::decryptCompletely(bool status)
+{
+    WalletView *walletView = currentWalletView();
+    if (walletView)
+        walletView->decryptForMinting(status, true);
+}
+
 void WalletFrame::backupWallet()
 {
     WalletView *walletView = currentWalletView();

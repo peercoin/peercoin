@@ -231,31 +231,25 @@ void WalletView::encryptWallet()
     GUIUtil::ShowModalDialogAsynchronously(dlg);
 }
 
-void WalletView::decryptForMinting(bool status)
+void WalletView::decryptForMinting(bool status, bool completely)
 {
-    if(!walletModel)
+    if (!walletModel)
         return;
 
     if (status)
     {
-        if(walletModel->getEncryptionStatus() != WalletModel::Locked)
-            return;
-
         AskPassphraseDialog dlg(AskPassphraseDialog::Unlock, this);
         dlg.setModel(walletModel);
         dlg.exec();
 
-        if(walletModel->getEncryptionStatus() != WalletModel::Unlocked)
+        if (walletModel->getEncryptionStatus() != WalletModel::Unlocked)
             return;
 
-        wallet::fWalletUnlockMintOnly = true;
+        wallet::fWalletUnlockMintOnly = !completely;
     }
     else
     {
-        if(walletModel->getEncryptionStatus() != WalletModel::Unlocked)
-            return;
-
-        if (!wallet::fWalletUnlockMintOnly)
+        if (walletModel->getEncryptionStatus() != WalletModel::Unlocked)
             return;
 
         walletModel->setWalletLocked(true);

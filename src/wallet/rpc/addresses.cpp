@@ -52,6 +52,8 @@ RPCHelpMan getnewaddress()
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[1].get_str()));
         } else if (parsed.value() == OutputType::BECH32M && pwallet->GetLegacyScriptPubKeyMan()) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Legacy wallets cannot provide bech32m addresses");
+        } else if (parsed.value() == OutputType::P2SH_SEGWIT) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "P2SH_SEGWIT addresses are not welcome");
         }
         output_type = parsed.value();
     }

@@ -340,6 +340,9 @@ void BitcoinGUI::createActions()
     decryptForMintingAction = new QAction(tr("&Decrypt Wallet for Minting Only"), this);
     decryptForMintingAction->setStatusTip(tr("Decrypt wallet only for minting. Sending coins will still require the password."));
     decryptForMintingAction->setCheckable(true);
+    decryptCompletelyAction = new QAction(tr("&Decrypt Wallet Completely"), this);
+    decryptCompletelyAction->setStatusTip(tr("Decrypt wallet completely. No actions will require the password until wallet is relocked."));
+    decryptCompletelyAction->setCheckable(true);
     backupWalletAction->setStatusTip(tr("Backup wallet to another location"));
     changePassphraseAction = new QAction(tr("&Change Passphrase…"), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
@@ -427,6 +430,7 @@ void BitcoinGUI::createActions()
         connect(encryptWalletAction, &QAction::triggered, walletFrame, &WalletFrame::encryptWallet);
         connect(backupWalletAction, &QAction::triggered, walletFrame, &WalletFrame::backupWallet);
         connect(decryptForMintingAction, &QAction::triggered, walletFrame, &WalletFrame::decryptForMinting);
+        connect(decryptCompletelyAction, &QAction::triggered, walletFrame, &WalletFrame::decryptCompletely);
         connect(changePassphraseAction, &QAction::triggered, walletFrame, &WalletFrame::changePassphrase);
         connect(signMessageAction, &QAction::triggered, [this]{ showNormalIfMinimized(); });
         connect(signMessageAction, &QAction::triggered, [this]{ gotoSignMessageTab(); });
@@ -540,6 +544,7 @@ void BitcoinGUI::createMenuBar()
     {
         settings->addAction(encryptWalletAction);
         settings->addAction(decryptForMintingAction);
+        settings->addAction(decryptCompletelyAction);
         settings->addAction(changePassphraseAction);
         settings->addSeparator();
         settings->addAction(m_mask_values_action);
@@ -1469,6 +1474,8 @@ void BitcoinGUI::setEncryptionStatus(int status)
         encryptWalletAction->setEnabled(true);
         decryptForMintingAction->setEnabled(false);
         decryptForMintingAction->setChecked(false);
+        decryptCompletelyAction->setEnabled(false);
+        decryptCompletelyAction->setChecked(false);
         break;
     case WalletModel::Unlocked:
         labelWalletEncryptionIcon->show();
@@ -1479,6 +1486,8 @@ void BitcoinGUI::setEncryptionStatus(int status)
         encryptWalletAction->setEnabled(false);
         decryptForMintingAction->setEnabled(wallet::fWalletUnlockMintOnly);
         decryptForMintingAction->setChecked(wallet::fWalletUnlockMintOnly);
+        decryptCompletelyAction->setEnabled(true);
+        decryptCompletelyAction->setChecked(!wallet::fWalletUnlockMintOnly);
         break;
     case WalletModel::Locked:
         labelWalletEncryptionIcon->show();
@@ -1489,6 +1498,8 @@ void BitcoinGUI::setEncryptionStatus(int status)
         encryptWalletAction->setEnabled(false);
         decryptForMintingAction->setEnabled(true);
         decryptForMintingAction->setChecked(false);
+        decryptCompletelyAction->setEnabled(true);
+        decryptCompletelyAction->setChecked(false);
         break;
     }
 }
