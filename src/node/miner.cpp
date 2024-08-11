@@ -166,6 +166,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     // peercoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = pblock->nTime;  // only initialized at startup
 
+#ifdef ENABLE_WALLET
     if (pwallet)  // attemp to find a coinstake
     {
         *pfPoSCancel = true;
@@ -192,6 +193,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
             return nullptr; // peercoin: there is no point to continue if we failed to create coinstake
         pblock->nFlags = CBlockIndex::BLOCK_PROOF_OF_STAKE;
     }
+#endif
 
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
