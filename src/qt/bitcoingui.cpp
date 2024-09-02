@@ -40,10 +40,11 @@
 #include <util/translation.h>
 #include <validation.h>
 
+#ifdef ENABLE_WALLET
 #include <wallet/wallet.h>
 #include <warnings.h>
-
 #include <regex>
+#endif //ENABLE_WALLET
 
 #include <QAction>
 #include <QActionGroup>
@@ -1039,6 +1040,7 @@ void BitcoinGUI::gotoLoadPSBT(bool from_clipboard)
 {
     if (walletFrame) walletFrame->gotoLoadPSBT(from_clipboard);
 }
+#endif // ENABLE_WALLET
 
 void BitcoinGUI::openWeb() {
     QDesktopServices::openUrl(QUrl("https://peercoin.net"));
@@ -1055,8 +1057,6 @@ void BitcoinGUI::openChatroom() {
 void BitcoinGUI::openForum() {
     QDesktopServices::openUrl(QUrl("https://talk.peercoin.net"));
 }
-
-#endif // ENABLE_WALLET
 
 void BitcoinGUI::updateNetworkState()
 {

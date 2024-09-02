@@ -3780,7 +3780,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         return false;
 
     // rfc28 precalculation
-    int maxMintingUtxos = gArgs.GetIntArg("-maxmintingutxos", MAX_MINTING_UTXOS);
+    int maxMintingUtxos = gArgs.GetIntArg("-maxmintingutxos", MAX_MINTING_UTXOS)*10;
 
     double difficulty = GetDifficulty(GetLastBlockIndex(chainman.ActiveChain().Tip(), true), chainman.ActiveChain().Tip());
     CAmount supply = chainman.ActiveChain().Tip()->nMoneySupply;
