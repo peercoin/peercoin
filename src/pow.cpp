@@ -29,22 +29,6 @@ void ResetASERTAnchorBlockCache() noexcept {
     cachedAnchor = nullptr;
 }
 
-arith_uint256 CalculateASERT(const arith_uint256 &refTarget,
-                             const int64_t nPowTargetSpacing,
-                             const int64_t nTimeDiff, const int64_t nHeightDiff,
-                             const arith_uint256 &powLimit,
-                             const int64_t nHalfLife) noexcept;
-
-uint32_t GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
-                                  const CBlockIndex *pindex,
-                                  const Consensus::Params &params) noexcept;
-
-uint32_t
-GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
-                         const CBlockIndex *pindex,
-                         const Consensus::Params &params,
-                         const CBlockIndex *pindexAnchorBlock) noexcept;
-
 /**
  * Returns a pointer to the anchor block used for ASERT.
  * As anchor we use the last POW block for which IsProtocolV14() returns false.
