@@ -97,7 +97,7 @@ static const bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
 //! Default for -splitcoins
 static const bool DEFAULT_SPLIT_COINS = true;
 //! Default for -combinecoins
-static const bool DEFAULT_COMBINE_COINS = false;
+static const bool DEFAULT_COMBINE_COINS = true;
 //! Default for -checkgithub
 static const bool DEFAULT_CHECK_GITHUB = true;
 static const int MAX_COINSTAKE_INPUTS = 4;
