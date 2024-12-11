@@ -52,6 +52,9 @@ const unsigned int nProtocolV12TestSwitchTime = 1671060214; // Wed 14 Dec 11:23:
 // Protocol switch time for v14 kernel protocol
 const unsigned int nProtocolV14SwitchTime     = 1717416000; // Mon  3 Jun 12:00:00 UTC 2024
 const unsigned int nProtocolV14TestSwitchTime = 1710720000; // Mon 18 Mar 00:00:00 UTC 2024
+// Protocol switch time for v15 kernel protocol
+const unsigned int nProtocolV15SwitchTime     = 1741780800; // Wed 12 Mar 12:00:00 UTC 2025
+const unsigned int nProtocolV15TestSwitchTime = 1734004800; // Thu 12 Dec 12:00:00 UTC 2024
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
@@ -175,6 +178,22 @@ bool IsProtocolV14(const CBlockIndex* pindexPrev)
 
   if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(5, pindexPrev, 750, 1000)) ||
       (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(5, pindexPrev, 75, 100)))
+    return true;
+
+  return false;
+}
+
+// Whether a given block is subject to new v15 protocol
+bool IsProtocolV15(const CBlockIndex* pindexPrev)
+{
+  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+      return true;
+
+  if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV15TestSwitchTime : nProtocolV15SwitchTime))
+      return false;
+
+  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(6, pindexPrev, 750, 1000)) ||
+      (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(6, pindexPrev, 75, 100)))
     return true;
 
   return false;

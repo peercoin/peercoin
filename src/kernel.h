@@ -42,6 +42,8 @@ bool IsProtocolV10(unsigned int nTimeTx);
 bool IsProtocolV12(const CBlockIndex* pindexPrev);
 // Whether a given block is subject to new v14 protocol
 bool IsProtocolV14(const CBlockIndex* pindexPrev);
+// Whether a given block is subject to new v15 protocol
+bool IsProtocolV15(const CBlockIndex* pindexPrev);
 
 // Compute the hash modifier for proof-of-stake
 bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStakeModifier, bool& fGeneratedStakeModifier, Chainstate& chainstate);
