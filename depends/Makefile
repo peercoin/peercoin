@@ -302,3 +302,8 @@ $(foreach package,$(all_packages),$(eval $(call ext_add_stages,$(package))))
 .PHONY: install cached clean clean-all download-one download-osx download-linux download-win download check-packages check-sources
 .PHONY: FORCE
 $(V).SILENT:
+
+ifeq ($(canonical_host),aarch64-apple-darwin)
+    host_os := darwin
+    host_arch := aarch64
+endif

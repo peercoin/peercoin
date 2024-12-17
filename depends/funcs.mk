@@ -288,3 +288,11 @@ $(foreach package,$(all_packages),$(eval $(call int_add_cmds,$(package))))
 
 #special exception: if a toolchain package exists, all non-native packages depend on it
 $(foreach package,$(packages),$(eval $($(package)_extracted): |$($($(host_arch)_$(host_os)_native_toolchain)_cached) $($($(host_arch)_$(host_os)_native_binutils)_cached) ))
+
+define int_add_darwin_config
+ifeq ($($(1)_host),aarch64-apple-darwin)
+$(1)_config_opts += darwin64-arm64-cc
+endif
+endef
+
+$(foreach package,$(packages),$(eval $(call int_add_darwin_config,$(package))))
