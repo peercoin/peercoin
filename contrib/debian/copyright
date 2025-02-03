@@ -3,8 +3,8 @@ Upstream-Contact: Stichting Peercoin Foundation <foundation@peercoin.net>
 Source: https://github.com/peercoin/peercoin
 
 Files: *
-Copyright: 2011-2024 Peercoin Developers
-Copyright: 2009-2022, Bitcoin Core Developers
+Copyright: 2011-2025 Peercoin Developers
+Copyright: 2009-2025, Bitcoin Core Developers
 License: Expat
 Comment: The Peercoin Developers encompasses the current developers listed on https://github.com/peercoin/peercoin,
          as well as the numerous contributors to the project.

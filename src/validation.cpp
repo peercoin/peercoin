@@ -869,6 +869,10 @@ bool MemPoolAccept::PolicyScriptChecks(const ATMPArgs& args, Workspace& ws)
     //if (IsProtocolV12(tx.nTime))
     //    scriptVerifyFlags &= SCRIPT_VERIFY_TAPROOT;
 
+    // peercoin: verify anyprevout after fork
+    if (IsProtocolV15(m_active_chainstate.m_chain.Tip()))
+        scriptVerifyFlags &= SCRIPT_VERIFY_ANYPREVOUT;
+
     // Check input scripts and signatures.
     // This is done last to help prevent CPU exhaustion denial-of-service attacks.
     if (!CheckInputScripts(tx, state, m_view, scriptVerifyFlags, true, false, ws.m_precomputed_txdata)) {
