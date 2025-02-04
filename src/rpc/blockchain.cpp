@@ -1122,6 +1122,9 @@ static bool SoftForkMajorityDesc(int version, const CBlockIndex* pindex, const C
         case 14:
             activated = IsProtocolV14(pindex);
             break;
+        case 15:
+            activated = IsProtocolV15(pindex);
+            break;
     }
     return activated;
 }
@@ -1214,6 +1217,7 @@ UniValue DeploymentInfo(const CBlockIndex* blockindex, const ChainstateManager& 
     softforks.push_back(SoftForkDesc("bip65", 4, blockindex, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("v12", 12, blockindex, Params().GetConsensus()));
     softforks.push_back(SoftForkDesc("v14", 14, blockindex, Params().GetConsensus()));
+    softforks.push_back(SoftForkDesc("v15", 15, blockindex, Params().GetConsensus()));
     return softforks;
 }
 } // anon namespace

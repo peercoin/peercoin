@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2025 The Peercoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -192,6 +193,7 @@ public:
                 {504051, uint256S("0xff65454ebdf1d89174bec10a3c016db92f7b1d9a4759603472842f254be8d7b3")},
                 {589659, uint256S("0x967c14abf21214639aeff0a270c4543cd3b80fe53178384ac5aa3c277662f1d0")},
                 {714688, uint256S("0x0000000000000000bef29f005dc65af3950b14af7200998759ba8977561f9d95")},
+                {770396, uint256S("0x0fc7bf7f0e830eea0bc367c76f9dcfc70d42d5625d93b056354dc23049de6e29")},
             }
         };
 
@@ -200,12 +202,12 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block d5dce1eaccc3f4894ae235123ebea393d74c1ddd1aaa4d8c7a814a1ba0b69ad4 (height 750000).
-            1717342566, // * UNIX timestamp of last known number of transactions
-            2508647,    // * total number of transactions between genesis and that timestamp
+            // Data as of block 0fc7bf7f0e830eea0bc367c76f9dcfc70d42d5625d93b056354dc23049de6e29 (height 770396).
+            1727128008, // * UNIX timestamp of last known number of transactions
+            2551705,    // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the ChainStateFlushed debug.log lines)
-            0.006744723 // * estimated number of transactions per second after that timestamp
-                        //   2508647/(1717342566-1345400356) = 0.006744723
+            0.006684622 // * estimated number of transactions per second after that timestamp
+                        //   2551705/(1727128008-1345400356) = 0.006684622
         };
     }
 };
