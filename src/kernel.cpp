@@ -126,8 +126,8 @@ bool IsProtocolV06(const CBlockIndex* pindexPrev)
   // Soft-forking PoS can be dangerous if the super majority is too low
   // The stake majority will decrease after the fork
   // since only coindays of updated nodes will get destroyed.
-  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(2, pindexPrev, 900, 1000)) ||
-      (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(2, pindexPrev, 90, 100)))
+  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && pindexPrev->nHeight > 339678) ||
+      (Params().NetworkIDString() != CBaseChainParams::MAIN && pindexPrev->nHeight > 301251))
     return true;
 
   return false;
@@ -176,8 +176,8 @@ bool IsProtocolV14(const CBlockIndex* pindexPrev)
   if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV14TestSwitchTime : nProtocolV14SwitchTime))
       return false;
 
-  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && IsSuperMajority(5, pindexPrev, 750, 1000)) ||
-      (Params().NetworkIDString() != CBaseChainParams::MAIN && IsSuperMajority(5, pindexPrev, 75, 100)))
+  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && pindexPrev->nHeight > 770395) ||
+      (Params().NetworkIDString() != CBaseChainParams::MAIN && pindexPrev->nHeight > 573706))
     return true;
 
   return false;
