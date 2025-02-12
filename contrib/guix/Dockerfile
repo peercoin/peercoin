@@ -55,13 +55,6 @@ CMD ["/root/.config/guix/current/bin/guix-daemon","--build-users-group=guixbuild
 
 FROM guix AS guix-base
 
-COPY depends /depends/
-
-RUN make -C /depends -j"$(nproc)" download && mv /depends/sources /sources
-
-COPY contrib/guix/manifest.scm /manifest.scm
-COPY contrib/guix/patches /patches/
-
 ARG guix_dist_url="https://git.savannah.gnu.org/git/guix.git"
 ARG substitute_urls="https://ci.guix.gnu.org"
 ARG time_machine_commit=998eda3067c7d21e0d9bb3310d2f5a14b8f1c681
@@ -71,6 +64,8 @@ ENV TIME_MACHINE_COMMIT="${time_machine_commit}"
 ENV SUBSTITUTE_URLS="${substitute_urls}"
 
 RUN --security=insecure \
+    --mount=type=bind,src=contrib/guix/manifest.scm,dst=/manifest.scm \
+    --mount=type=bind,src=contrib/guix/patches,dst=/patches \
     guix-daemon --build-users-group=guixbuild & \
     HOST=nil \
     guix time-machine \
@@ -81,8 +76,7 @@ RUN --security=insecure \
         --substitute-urls="${SUBSTITUTE_URLS}" \
         --fallback \
         -- package --manifest=/manifest.scm \
-                   --profile="${GUIX_PROFILE}" && \
-    rm -rf /tmp/guix-build-* /tmp/guix-register-* /var/log/guix/drvs
+                   --profile="${GUIX_PROFILE}"
 
 FROM guix-base AS guix-host
 
@@ -90,6 +84,8 @@ ARG HOST
 ENV HOST="${HOST}"
 ENV HOSTS="${HOST}"
 RUN --security=insecure \
+    --mount=type=bind,src=contrib/guix/manifest.scm,dst=/manifest.scm \
+    --mount=type=bind,src=contrib/guix/patches,dst=/patches \
     guix-daemon --build-users-group=guixbuild & \
     guix time-machine \
         --url="${GUIX_DIST_URL}" \
@@ -99,8 +95,10 @@ RUN --security=insecure \
         --substitute-urls="${SUBSTITUTE_URLS}" \
         --fallback \
         -- package --manifest=/manifest.scm \
-                   --profile="${GUIX_PROFILE}" && \
-    rm -rf /tmp/guix-build-* /tmp/guix-register-* /var/log/guix/drvs
+                   --profile="${GUIX_PROFILE}"
+
+RUN --mount=type=bind,src=depends,dst=/depends,rw \
+    make -C /depends -j"$(nproc)" download && mv /depends/sources /sources
 
 ARG xcode_download_path="https://bitcoincore.org/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz"
 ARG xcode_checksum=df75d30ecafc429e905134333aeae56ac65fac67cb4182622398fd717df77619
@@ -111,3 +109,7 @@ RUN if [[ "${HOST}" == "x86_64-apple-darwin" || "${HOST}" == "arm64-apple-darwin
       tar -C /SDKs -xaf /tmp/xcode.tar.gz && \
       rm /tmp/xcode.tar.gz; \
     fi
+
+FROM guix-host AS guix-host-depends-cache
+
+COPY base_cache/ /base_cache/

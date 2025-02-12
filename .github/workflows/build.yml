@@ -11,24 +11,9 @@ on:
       - '**/*.md'
 
 jobs:
-  check-permission:
-    runs-on: ubuntu-24.04
-    outputs:
-      permission: ${{ steps.check-permission.outputs.permission }}
-    steps:
-      - name: Check Permissions
-        run: |
-          permission=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
-            -X GET https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission \
-            | jq -r .permission)
-          echo "Permission for ${{ github.actor }} is ${permission}"
-          echo permission="${permission}" >> $GITHUB_OUTPUT
-        id: check-permission
-
   guix-base:
     runs-on: ubuntu-24.04
-    needs: check-permission
-    if: ${{ needs.check-permission.outputs.permission == 'admin' || needs.check-permission.outputs.permission == 'write' }}
+    if: github.event_name != 'pull_request'
     outputs:
       tag-hash: ${{ steps.detect.outputs.tag-hash }}
     steps:
@@ -45,8 +30,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          driver: docker-container
-          install: true
           buildkitd-flags: --allow-insecure-entitlement=security.insecure
 
       - name: Login to GitHub Container Registry
@@ -79,7 +62,7 @@ jobs:
   guix-host:
     runs-on: ubuntu-24.04
     needs: guix-base
-    if: ${{ needs.check-permission.outputs.permission == 'admin' || needs.check-permission.outputs.permission == 'write' }}
+    if: github.event_name != 'pull_request'
     strategy:
       matrix:
         host:
@@ -101,8 +84,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          driver: docker-container
-          install: true
           buildkitd-flags: --allow-insecure-entitlement=security.insecure
 
       - name: Login to GitHub Container Registry
@@ -115,7 +96,7 @@ jobs:
       - name: Get Git commit timestamps
         run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
-      - name: Build and Push guix-host Docker Images
+      - name: Build and Push guix-host Docker image
         uses: docker/build-push-action@v6
         env:
           SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
@@ -139,7 +120,6 @@ jobs:
   binary:
     runs-on: ubuntu-24.04
     needs: [guix-base, guix-host]
-
     strategy:
       matrix:
         host:
@@ -153,11 +133,59 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Base Cache
-        uses: actions/cache@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          path: ~/.base_cache
-          key: base-${{ matrix.host }}-${{ hashFiles('depends/packages/*') }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - run: |
+          echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+          echo TARGET=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
+          echo TARGET_CACHE=ghcr.io/${{ github.repository }}/ci-tools/guix-host-depends-cache:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
+
+      - name: Build ${{ matrix.host }} Binaries
+        shell: bash
+        id: build
+        run: |
+          set -euo pipefail
+          cleanup() {
+            docker stop build-${{ matrix.host }} || true
+          }
+          trap cleanup EXIT
+
+          docker run --pull=always --rm -d --privileged --name=build-${{ matrix.host }} \
+            -v "${PWD}":/peercoin_aux \
+            -v ~/.base_cache:/base_cache_aux \
+            ${{ env.TARGET_CACHE }} \
+          && echo cache-image-used=true >> $GITHUB_OUTPUT \
+          || docker run --pull=always --rm -d --privileged --name=build-${{ matrix.host }} \
+            -v "${PWD}":/peercoin_aux \
+            -v ~/.base_cache:/base_cache_aux \
+            ${{ env.TARGET }}
+
+          docker exec -i build-${{ matrix.host }} bash -c "
+            source /root/.guix-profile/etc/profile
+            git config --global --add safe.directory /peercoin_aux/.git
+            git clone /peercoin_aux /peercoin
+            cd /peercoin
+            git checkout --progress --force ${{ github.sha }}
+            env
+            env BASE_CACHE=/base_cache SOURCES_PATH=/sources SDK_PATH=/SDKs ./contrib/guix/guix-build
+            rm -rf /base_cache_aux/* || true
+            mv /base_cache/* /base_cache_aux/ || true
+            source \"/peercoin/contrib/guix/libexec/prelude.bash\"
+            mv \${OUTDIR_BASE:-\${VERSION_BASE}/output}/${{ matrix.host }}/* /peercoin_aux/ || true
+          "
+          docker stop build-${{ matrix.host }}
+
+      - run: cp -r ~/.base_cache base_cache
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-flags: --allow-insecure-entitlement=security.insecure
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -166,36 +194,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Build ${{ matrix.host }} Binaries
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          cleanup() {
-            docker stop build-${{ matrix.host }} || true
-          }
-          trap cleanup EXIT
-
-          docker run --rm -d --privileged --name=build-${{ matrix.host }} \
-            -v "${PWD}":/peercoin_aux \
-            -v ~/.base_cache:/base_cache_aux \
-            ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }}
-
-          docker exec -i build-${{ matrix.host }} bash -c "
-            source /root/.guix-profile/etc/profile
-            mv /base_cache_aux/* /base_cache/ || true
-            git config --global --add safe.directory /peercoin_aux/.git
-            git clone /peercoin_aux /peercoin
-            cd /peercoin
-            git checkout --progress --force ${{ github.sha }}
-            env
-            env BASE_CACHE=/base_cache SOURCES_PATH=/sources SDK_PATH=/SDKs ./contrib/guix/guix-build
-            mv /base_cache/* /base_cache_aux/ || true
-            source "/peercoin/contrib/guix/libexec/prelude.bash"
-            mv \${OUTDIR_BASE:-\${VERSION_BASE}/output}/${{ matrix.host }}/* /peercoin_aux/ || true
-          "
-
-          docker stop build-${{ matrix.host }}
+      - name: Build and Push guix-host-depends-cache Docker image
+        uses: docker/build-push-action@v6
+        if: github.event_name != 'pull_request'
+        env:
+          SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
+        with:
+          context: .
+          file: contrib/guix/Dockerfile
+          push: true
+          allow: security.insecure
+          tags: ${{ env.TARGET_CACHE }}
+          target: guix-host-depends-cache
+          build-args: |
+            HOST=${{ matrix.host }}
+          cache-from: ${{ steps.build.outputs.cache-image-used == 'true' && env.TARGET_CACHE || env.TARGET }}
+          cache-to: type=inline
 
       - name: Get short SHA
         id: slug
@@ -304,7 +318,7 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     needs: [binary]
-    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-') }}
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-')
     steps:
       - name: Detect env
         id: detect
@@ -330,26 +344,26 @@ jobs:
           echo "sha8=$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_OUTPUT
 
       - name: Set up environment
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: steps.detect.outputs.tag-name != 'noop'
         run: sudo apt-get update && sudo apt-get install -y mktorrent gpg bash
 
       - uses: actions/checkout@v4
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: steps.detect.outputs.tag-name != 'noop'
 
       - uses: actions/download-artifact@v4
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: steps.detect.outputs.tag-name != 'noop'
         with:
           pattern: peercoin-*
 
       - name: Import GPG key
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: steps.detect.outputs.tag-name != 'noop'
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: GPG user IDs
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: steps.detect.outputs.tag-name != 'noop'
         run: |
           echo "fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}"
           echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
@@ -358,7 +372,7 @@ jobs:
           gpg --keyserver hkp://keyserver.ubuntu.com --send-key ${{ steps.import_gpg.outputs.keyid }}
 
       - name: Create torrent
-        if: ${{ steps.detect.outputs.tag-name != 'noop' }}
+        if: steps.detect.outputs.tag-name != 'noop'
         run: |
           rm -rf ${{ steps.detect.outputs.tag-name }}/*
           mkdir -p ${{ steps.detect.outputs.tag-name }}
@@ -381,7 +395,7 @@ jobs:
 
       - name: Check latest
         id: detect-publish-latest
-        if: ${{ steps.detect.outputs.tag-name != 'noop' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-')) }}
+        if: steps.detect.outputs.tag-name != 'noop' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-'))
         run: |
           PUBLISH=noop
           git fetch origin +refs/tags/latest:refs/tags/latest
@@ -391,13 +405,13 @@ jobs:
           echo "publish=$PUBLISH" >> $GITHUB_OUTPUT
 
       - name: Generate Changelog
-        if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
+        if: steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v')
         run: |
           git fetch --depth=1 origin +${{ github.ref }}:${{ github.ref }}
           git tag -l --format='%(contents)' ${GITHUB_REF/refs\/tags\//} > ${{ github.workspace }}-CHANGELOG.txt
 
       - uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-        if: ${{ steps.detect.outputs.tag-name != 'noop' && steps.detect-publish-latest.outputs.publish == 'op' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-')) }}
+        if: steps.detect.outputs.tag-name != 'noop' && steps.detect-publish-latest.outputs.publish == 'op' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-'))
         with:
           repo_token: ${{ github.token }}
           automatic_release_tag: ${{ steps.detect.outputs.tag-name }}
@@ -406,7 +420,7 @@ jobs:
           files: ${{ steps.detect.outputs.tag-name }}/*
 
       - uses: softprops/action-gh-release@6034af24fba4e5a8e975aaa6056554efe4c794d0
-        if: ${{ steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v') }}
+        if: steps.detect.outputs.tag-name != 'noop' && startsWith(github.ref, 'refs/tags/v')
         with:
           body_path: ${{ github.workspace }}-CHANGELOG.txt
           token: ${{ github.token }}
