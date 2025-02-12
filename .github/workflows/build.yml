@@ -141,10 +141,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - run: echo tag-hash="$(echo "${{ hashFiles('contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}" | cut -c 1-8)" >> $GITHUB_OUTPUT
+        id: detect
+
       - run: |
           echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-          echo TARGET=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
-          echo TARGET_CACHE=ghcr.io/${{ github.repository }}/ci-tools/guix-host-depends-cache:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
+          echo TARGET=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
+          echo TARGET_CACHE=ghcr.io/${{ github.repository }}/ci-tools/guix-host-depends-cache:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
 
       - name: Build ${{ matrix.host }} Binaries
         shell: bash
