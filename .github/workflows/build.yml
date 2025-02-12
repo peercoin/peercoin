@@ -120,6 +120,7 @@ jobs:
   binary:
     runs-on: ubuntu-24.04
     needs: [guix-base, guix-host]
+    if: always()
     strategy:
       matrix:
         host:
@@ -140,10 +141,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - run: echo tag-hash="$(echo "${{ hashFiles('contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}" | cut -c 1-8)" >> $GITHUB_OUTPUT
+        id: detect
+
       - run: |
           echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-          echo TARGET=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
-          echo TARGET_CACHE=ghcr.io/${{ github.repository }}/ci-tools/guix-host-depends-cache:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
+          echo TARGET=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
+          echo TARGET_CACHE=ghcr.io/${{ github.repository }}/ci-tools/guix-host-depends-cache:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
 
       - name: Build ${{ matrix.host }} Binaries
         shell: bash
@@ -230,7 +234,7 @@ jobs:
 
   docker:
     runs-on: ubuntu-24.04
-    needs: [binary]
+    needs: binary
     steps:
       - uses: actions/checkout@v4
         with:
@@ -317,7 +321,7 @@ jobs:
 
   release:
     runs-on: ubuntu-24.04
-    needs: [binary]
+    needs: binary
     if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-')
     steps:
       - name: Detect env
