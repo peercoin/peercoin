@@ -117,6 +117,7 @@ jobs:
             type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}
           cache-to: type=inline
 
+# will this work?
   binary:
     runs-on: ubuntu-24.04
     needs: [guix-base, guix-host]
