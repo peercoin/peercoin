@@ -120,7 +120,7 @@ jobs:
   binary:
     runs-on: ubuntu-24.04
     needs: [guix-base, guix-host]
-    if: always()
+    if: ${{ !cancelled() }}
     strategy:
       matrix:
         host:
