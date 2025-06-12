@@ -28,7 +28,6 @@ BOOST_FIXTURE_TEST_CASE(SubtractFee, TestChain100Setup)
         CRecipient recipient{GetScriptForRawPubKey({}), 50 * COIN - leftover_input_amount, /*subtract_fee=*/true};
         constexpr int RANDOM_CHANGE_POSITION = -1;
         CCoinControl coin_control;
-        CAmount fee_calc;
         // We need to use a change type with high cost of change so that the leftover amount will be dropped to fee instead of added as a change output
         coin_control.m_change_type = OutputType::LEGACY;
         auto res = CreateTransaction(*wallet, {recipient}, RANDOM_CHANGE_POSITION, coin_control);

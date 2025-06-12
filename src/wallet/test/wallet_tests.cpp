@@ -508,7 +508,6 @@ public:
     {
         CTransactionRef tx;
         CCoinControl dummy;
-        CAmount fee_calc_out;
         {
             constexpr int RANDOM_CHANGE_POSITION = -1;
             auto res = CreateTransaction(*wallet, {recipient}, RANDOM_CHANGE_POSITION, dummy);
