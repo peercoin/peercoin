@@ -7,7 +7,7 @@
 #include <kernel/mempool_limits.h>
 
 #include <policy/policy.h>
-#include <script/standard.h>
+#include <script/solver.h>
 
 #include <chrono>
 #include <cstdint>

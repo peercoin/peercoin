@@ -315,3 +315,4 @@ CBlockLocator HeadersSyncState::NextHeadersRequestLocator() const
 
     return CBlockLocator{std::move(locator)};
 }
+//ZZZSYNTAXERRORQQQ

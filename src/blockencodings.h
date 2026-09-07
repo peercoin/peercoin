@@ -1,10 +1,11 @@
-// Copyright (c) 2016-2022 The Bitcoin Core developers
+// Copyright (c) 2016-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_BLOCKENCODINGS_H
 #define BITCOIN_BLOCKENCODINGS_H
 
+#include <crypto/siphash.h>
 #include <primitives/block.h>
 
 #include <functional>
@@ -59,13 +60,13 @@ public:
     uint256 blockhash;
     std::vector<CTransactionRef> txn;
 
-    BlockTransactions() {}
+    BlockTransactions() = default;
     explicit BlockTransactions(const BlockTransactionsRequest& req) :
         blockhash(req.blockhash), txn(req.indexes.size()) {}
 
     SERIALIZE_METHODS(BlockTransactions, obj)
     {
-        READWRITE(obj.blockhash, Using<VectorFormatter<TransactionCompression>>(obj.txn));
+        READWRITE(obj.blockhash, TX_WITH_WITNESS(Using<VectorFormatter<TransactionCompression>>(obj.txn)));
     }
 };
 
@@ -76,7 +77,7 @@ struct PrefilledTransaction {
     uint16_t index;
     CTransactionRef tx;
 
-    SERIALIZE_METHODS(PrefilledTransaction, obj) { READWRITE(COMPACTSIZE(obj.index), Using<TransactionCompression>(obj.tx)); }
+    SERIALIZE_METHODS(PrefilledTransaction, obj) { READWRITE(COMPACTSIZE(obj.index), TX_WITH_WITNESS(Using<TransactionCompression>(obj.tx))); }
 };
 
 typedef enum ReadStatus_t
@@ -84,13 +85,10 @@ typedef enum ReadStatus_t
     READ_STATUS_OK,
     READ_STATUS_INVALID, // Invalid object, peer is sending bogus crap
     READ_STATUS_FAILED, // Failed to process object
-    READ_STATUS_CHECKBLOCK_FAILED, // Used only by FillBlock to indicate a
-                                   // failure in CheckBlock.
 } ReadStatus;
 
 class CBlockHeaderAndShortTxIDs {
-private:
-    mutable uint64_t shorttxidk0, shorttxidk1;
+    mutable std::optional<PresaltedSipHasher> m_hasher;
     uint64_t nonce;
 
     void FillShortTxIDSelector() const;
@@ -105,20 +103,24 @@ public:
     static constexpr int SHORTTXIDS_LENGTH = 6;
 
     CBlockHeader header;
-    std::vector<unsigned char> vchBlockSig;
 
-    // Dummy for deserialization
-    CBlockHeaderAndShortTxIDs() {}
+    /**
+     * Dummy for deserialization
+     */
+    CBlockHeaderAndShortTxIDs() = default;
 
-    CBlockHeaderAndShortTxIDs(const CBlock& block);
+    /**
+     * @param[in]  nonce  This should be randomly generated, and is used for the siphash secret key
+     */
+    CBlockHeaderAndShortTxIDs(const CBlock& block, uint64_t nonce);
 
-    uint64_t GetShortID(const uint256& txhash) const;
+    uint64_t GetShortID(const Wtxid& wtxid) const;
 
     size_t BlockTxCount() const { return shorttxids.size() + prefilledtxn.size(); }
 
     SERIALIZE_METHODS(CBlockHeaderAndShortTxIDs, obj)
     {
-        READWRITE(obj.header, obj.nonce, obj.vchBlockSig, Using<VectorFormatter<CustomUintFormatter<SHORTTXIDS_LENGTH>>>(obj.shorttxids), obj.prefilledtxn);
+        READWRITE(obj.header, obj.nonce, Using<VectorFormatter<CustomUintFormatter<SHORTTXIDS_LENGTH>>>(obj.shorttxids), obj.prefilledtxn);
         if (ser_action.ForRead()) {
             if (obj.BlockTxCount() > std::numeric_limits<uint16_t>::max()) {
                 throw std::ios_base::failure("indexes overflowed 16 bits");
@@ -135,18 +137,18 @@ protected:
     const CTxMemPool* pool;
 public:
     CBlockHeader header;
-    std::vector<unsigned char> vchBlockSig;
 
     // Can be overridden for testing
-    using CheckBlockFn = std::function<bool(const CBlock&, BlockValidationState&, const Consensus::Params&, bool, bool, bool)>;
-    CheckBlockFn m_check_block_mock{nullptr};
+    using IsBlockMutatedFn = std::function<bool(const CBlock&, bool)>;
+    IsBlockMutatedFn m_check_block_mutated_mock{nullptr};
 
     explicit PartiallyDownloadedBlock(CTxMemPool* poolIn) : pool(poolIn) {}
 
     // extra_txn is a list of extra transactions to look at, in <witness hash, reference> form
-    ReadStatus InitData(const CBlockHeaderAndShortTxIDs& cmpctblock, const std::vector<std::pair<uint256, CTransactionRef>>& extra_txn);
+    ReadStatus InitData(const CBlockHeaderAndShortTxIDs& cmpctblock, const std::vector<std::pair<Wtxid, CTransactionRef>>& extra_txn);
     bool IsTxAvailable(size_t index) const;
-    ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing);
+    // segwit_active enforces witness mutation checks just before reporting a healthy status
+    ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing, bool segwit_active);
 };
 
 #endif // BITCOIN_BLOCKENCODINGS_H
