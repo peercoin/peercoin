@@ -204,4 +204,11 @@ public:
     static const uint256 ONE;
 };
 
+// peercoin: legacy runtime hex helper still used by PPC-era chain/kernel
+// parameter code (v31 code uses consteval uint256{hex} literals).
+inline uint256 uint256S(std::string_view hex)
+{
+    return uint256::FromHex(hex).value_or(uint256{});
+};
+
 #endif // BITCOIN_UINT256_H

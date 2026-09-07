@@ -10,9 +10,9 @@
 
 uint256 CBlockHeader::GetHash() const
 {
-    CBlockHeader tmp(*this);
-    tmp.nFlags = 0;
-    return SerializeHash(tmp);
+    // peercoin: nFlags must not participate in the block hash (legacy PPC
+    // serialized with SER_GETHASH where the nFlags field is skipped).
+    return (HashWriter{} << NO_POSMARKER(*this)).GetHash();
 }
 
 std::string CBlock::ToString() const

@@ -9,6 +9,7 @@
 #include <consensus/params.h>
 
 #include <stdint.h>
+#include <optional>
 #include <arith_uint256.h>
 
 class CBlockHeader;
@@ -37,6 +38,9 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&);
+
+/** peercoin: grafted from upstream v31. */
+std::optional<arith_uint256> DeriveTarget(unsigned int nBits, const uint256 pow_limit);
 
 /**
  * Return false if the proof-of-work requirement specified by new_nbits at a

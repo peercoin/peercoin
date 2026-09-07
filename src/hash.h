@@ -143,6 +143,14 @@ public:
         ::Serialize(*this, obj);
         return *this;
     }
+
+    // peercoin: hashing streams never carry PoS header flags or witness.
+    template <typename P>
+    const P& GetParams() const
+    {
+        static const P params{};
+        return params;
+    }
 };
 
 /** Reads data from an underlying stream, while hashing the read data. */

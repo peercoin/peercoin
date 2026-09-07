@@ -185,12 +185,9 @@ public:
 
 struct CMutableTransaction;
 
-struct TransactionSerParams {
-    const bool allow_witness;
-    SER_PARAMS_OPFUNC
-};
-static constexpr TransactionSerParams TX_WITH_WITNESS{.allow_witness = true};
-static constexpr TransactionSerParams TX_NO_WITNESS{.allow_witness = false};
+// peercoin: TransactionSerParams / TX_WITH_WITNESS / TX_NO_WITNESS are
+// defined in serialize.h (so the compatibility streams there can bridge the
+// legacy SERIALIZE_TRANSACTION_NO_WITNESS version flag).
 
 /**
  * Basic transaction serialization format:

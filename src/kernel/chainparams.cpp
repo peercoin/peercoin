@@ -29,7 +29,7 @@
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTimeTx, uint32_t nTimeBlock, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     CMutableTransaction txNew;
-    txNew.nVersion = 1;
+    txNew.version = 1;
     txNew.vin.resize(1);
     txNew.vout.resize(1);
     txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(9999) << std::vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
@@ -72,7 +72,7 @@ static CBlock CreateGenesisBlock(uint32_t nTimeTx, uint32_t nTimeBlock, uint32_t
 class CMainParams : public CChainParams {
 public:
     CMainParams() {
-        strNetworkID = CBaseChainParams::MAIN;
+        m_chain_type = ChainType::MAIN;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
 /*
@@ -93,8 +93,6 @@ public:
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016
-        consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
@@ -125,8 +123,6 @@ public:
 
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016
-        consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
 
         consensus.SegwitHeight = 455470;
 
@@ -170,37 +166,8 @@ public:
         bech32_hrp = "pc";
 
         vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_main), std::end(chainparams_seed_main));
-
-        fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
-        fRequireStandard = true;
-        m_is_test_chain = false;
         m_is_mockable_chain = false;
-
-        checkpointData = {
-            {
-                {     0, uint256S("0x0000000032fe677166d54963b62a4677d8957e87c508eaa4fd7eb1c880cd27e3")},
-                { 19080, uint256S("0x000000000000bca54d9ac17881f94193fd6a270c1bb21c3bf0b37f588a40dbd7")},
-                { 30583, uint256S("0xd39d1481a7eecba48932ea5913be58ad3894c7ee6d5a8ba8abeb772c66a6696e")},
-                { 99999, uint256S("0x27fd5e1de16a4270eb8c68dee2754a64da6312c7c3a0e99a7e6776246be1ee3f")},
-                {219999, uint256S("0xab0dad4b10d2370f009ed6df6effca1ba42f01d5070d6b30afeedf6463fbe7a2")},
-                {336000, uint256S("0x4d261cef6e61a5ed8325e560f1d6e36f4698853a4c7134677f47a1d1d842bdf6")},
-                {371850, uint256S("0x6b18adcb0a6e080dae85b74eee2b83fabb157bbea64fab0ed2192b2f6d5b89f3")},
-                {407813, uint256S("0x00000000000000012730b0f48bed8afbeb08164c9d63597afb082e82ea05cec9")},
-                {443561, uint256S("0xf81cea8e4e40b2cfcc13a8bd82436399c35a55df951b95e7128601c1838029ed")},
-                {455470, uint256S("0xd1472c26229f90b8589d331aa47ba9023cb953b92dce342c753e7a6b3431bf1e")},
-                {479189, uint256S("0xc9c065028b20a23fbb9627bbca5946c7497f11e1f72433d4d215c79047cf06f2")},
-                {504051, uint256S("0xff65454ebdf1d89174bec10a3c016db92f7b1d9a4759603472842f254be8d7b3")},
-                {589659, uint256S("0x967c14abf21214639aeff0a270c4543cd3b80fe53178384ac5aa3c277662f1d0")},
-                {714688, uint256S("0x0000000000000000bef29f005dc65af3950b14af7200998759ba8977561f9d95")},
-                {770396, uint256S("0x0fc7bf7f0e830eea0bc367c76f9dcfc70d42d5625d93b056354dc23049de6e29")},
-                {801334, uint256S("0x4cf53c51bbefa0a4c30a73609ab115276e33e9e696ea056f46e9ead36d4209b1")},
-            }
-        };
-
-        m_assumeutxo_data = MapAssumeutxo{
-         // TODO to be specified in a future patch.
-        };
 
         chainTxData = ChainTxData{
             // Data as of block 4cf53c51bbefa0a4c30a73609ab115276e33e9e696ea056f46e9ead36d4209b1 (height 801334).
@@ -219,7 +186,7 @@ public:
 class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
-        strNetworkID = CBaseChainParams::TESTNET;
+        m_chain_type = ChainType::TESTNET;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
         consensus.BIP34Height = 293368;
@@ -238,8 +205,6 @@ public:
 
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
-        consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
 
         consensus.SegwitHeight = 394215;
 
@@ -276,36 +241,8 @@ public:
         bech32_hrp = "tpc";
 
         vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_test), std::end(chainparams_seed_test));
-
-        fMiningRequiresPeers = true;
         fDefaultConsistencyChecks = false;
-        fRequireStandard = false;
-        m_is_test_chain = true;
         m_is_mockable_chain = false;
-
-        checkpointData = {
-            {
-                {     0, uint256S("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06")},
-                { 19080, uint256S("0xb054d63d41852d71b611eaa8eca37d9fddca69b5013cf0966d453402ec8005ce")},
-                { 30583, uint256S("0x5179c0c496b5d25ab81ffe14273ea6928c6ff81c0a0d6a83b5d7d41d64886300")},
-                { 99999, uint256S("0xa7b03b14b8673683d972ab81775f3e85fea4fe689874b5956183466535dc651c")},
-                {219999, uint256S("0x0691bb86c92762c5c4c5a3723585ebeb7ec59310bbb0bdb6666551ab24ad919e")},
-                {336000, uint256S("0xf07adf61615c529f7c282b858d13d3e037b197324cb12e0669c461947494c4e3")},
-                {372751, uint256S("0x000000000000148db599b217c117b5104f5043c55f6ca2a8a065d9fab9f9bba1")},
-                {382019, uint256S("0x3ab75769d7957d9bf0857b5019d0a0e41044fa9ecf30b2f9c32aa457b0864ce5")},
-                {408500, uint256S("0x1636ac08b073d26b28fa40243d58dd5deb215752efe094c92c61998e4e9baf3f")},
-                {412691, uint256S("0x0e20318be88f07f521453435b37cfc516c3de07264a78ed7170985a1126126ab")},
-                {441299, uint256S("0x4091d0836a37c50ceee876000ac0cb251fd10031dab901d2c0677cd86283096e")},
-                {442735, uint256S("0x1b83b33894d51be0b8b323bfab093f638915236e0e40ba3b52bb33fdbc4053cd")},
-                {516308, uint256S("0x0000000ed333c5fa4be2c941f3c3a0680c3a7d582cbf74f4516f8503474e2585")},
-                {573702, uint256S("0xc41259778268fe3bba597c7707fe400d9a7d66b4d6d2a9593c898fd69fb56a5f")},
-                {612778, uint256S("0x00000003216118fab90ea268ce526e1fcce67dc97b74c5b62119cc3d244d8f71")},
-            }
-        };
-
-        m_assumeutxo_data = MapAssumeutxo{
-            // TODO to be specified in a future patch.
-        };
 
         chainTxData = ChainTxData{
             // Data as of block 00000003216118fab90ea268ce526e1fcce67dc97b74c5b62119cc3d244d8f71 (height 612778)
@@ -344,7 +281,7 @@ public:
             chainTxData = ChainTxData{
                 // Data from RPC: getchaintxstats 4096 000000d1a0e224fa4679d2fb2187ba55431c284fa1b74cbc8cfda866fd4d2c09
                 .nTime    = 1661702566,
-                .nTxCount = 1903567,
+                .tx_count = 1903567,
                 .dTxRate  = 0.02336701143027275,
             };
         } else {
@@ -358,14 +295,14 @@ public:
                 0,
                 0,
             };
-            LogPrintf("Signet with challenge %s\n", HexStr(bin));
+            LogInfo("Signet with challenge %s\n", HexStr(bin));
         }
 
         if (options.seeds) {
             vSeeds = *options.seeds;
         }
 
-        strNetworkID = CBaseChainParams::SIGNET;
+        m_chain_type = ChainType::SIGNET;
         consensus.signet_blocks = true;
         consensus.signet_challenge.assign(bin.begin(), bin.end());
         //consensus.nSubsidyHalvingInterval = 210000;
@@ -379,8 +316,6 @@ public:
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016
-        consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256S("00000377ae000000000000000000000000000000000000000000000000000000");
 /*
@@ -399,7 +334,7 @@ public:
         HashWriter h{};
         h << consensus.signet_challenge;
         uint256 hash = h.GetHash();
-        memcpy(pchMessageStart, hash.begin(), 4);
+        std::copy(hash.begin(), hash.begin() + 4, pchMessageStart.begin());
 
         nDefaultPort = 38333;
 
@@ -419,8 +354,6 @@ public:
         bech32_hrp = "tb";
 
         fDefaultConsistencyChecks = false;
-        fRequireStandard = true;
-        m_is_test_chain = true;
         m_is_mockable_chain = false;
     }
 };
@@ -434,7 +367,7 @@ class CRegTestParams : public CChainParams
 public:
     explicit CRegTestParams(const RegTestOptions& opts)
     {
-        strNetworkID =  CBaseChainParams::REGTEST;
+        m_chain_type = ChainType::REGTEST;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
         //consensus.nSubsidyHalvingInterval = 150;
@@ -460,8 +393,6 @@ public:
 
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
-        consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
-        consensus.nMinerConfirmationWindow = 144; // Faster than normal for regtest (144 instead of 2016)
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 0;
@@ -521,28 +452,7 @@ public:
         vSeeds.emplace_back("dummySeed.invalid.");
 
         fDefaultConsistencyChecks = true;
-        fRequireStandard = true;
-        m_is_test_chain = true;
         m_is_mockable_chain = true;
-
-        fMiningRequiresPeers = false;
-
-        checkpointData = {
-            {
-                {0, uint256S("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06")}
-            }
-        };
-
-        m_assumeutxo_data = MapAssumeutxo{
-            {
-                110,
-                {AssumeutxoHash{uint256S("0x1ebbf5850204c0bdb15bf030f47c7fe91d45c44c712697e4509ba67adb01c618")}, 110},
-            },
-            {
-                200,
-                {AssumeutxoHash{uint256S("0x51c8d11d8b5c1de51543c579736e786aa2736206d1e11e627568029ce092cf62")}, 200},
-            },
-        };
 
         chainTxData = ChainTxData{
             0,

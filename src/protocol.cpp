@@ -83,12 +83,6 @@ std::string CInv::ToString() const
     }
 }
 
-const std::vector<std::string> &getAllNetMessageTypes()
-{
-    return allNetMessageTypesVec;
-}
-
-const unsigned int POW_HEADER_COOLING = 70;
 /**
  * Convert a service flag (NODE_*) to a human readable string.
  * It supports unknown service flags which will be returned as "UNKNOWN[...]".

@@ -79,10 +79,72 @@ private:
 
 /** Minimal stream for reading from an existing byte array by std::span.
  */
+// peercoin: legacy OverrideStream; carries int type/version flags on top of
+// any stream and bridges them onto typed serialization parameters.
+template <typename Stream>
+class OverrideStream
+{
+    Stream* m_stream;
+    const int m_type;
+    const int m_version;
+    PosMarkerParams m_pos_marker;
+    TransactionSerParams m_tx_params;
+
+public:
+    OverrideStream(Stream* stream, int type_in, int version_in)
+        : m_stream{stream},
+          m_type{type_in},
+          m_version{version_in},
+          m_pos_marker{(type_in & SER_POSMARKER) != 0},
+          m_tx_params{!(version_in & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
+
+    void write(std::span<const std::byte> src) { m_stream->write(src); }
+    void read(std::span<std::byte> dst) { m_stream->read(dst); }
+    void ignore(size_t num) { m_stream->ignore(num); }
+    bool empty() const { return m_stream->empty(); }
+    size_t size() const { return m_stream->size(); }
+
+    template <typename T>
+    OverrideStream& operator<<(const T& obj)
+    {
+        ::Serialize(*this, obj);
+        return *this;
+    }
+
+    template <typename T>
+    OverrideStream& operator>>(T&& obj)
+    {
+        ::Unserialize(*this, obj);
+        return *this;
+    }
+
+    int GetVersion() const { return m_version; }
+    int GetType() const { return m_type; }
+
+    template <typename P>
+    const P& GetParams() const
+    {
+        if constexpr (std::is_same_v<P, PosMarkerParams>) {
+            return m_pos_marker;
+        } else if constexpr (std::is_same_v<P, TransactionSerParams>) {
+            return m_tx_params;
+        } else {
+            static const P params{};
+            return params;
+        }
+    }
+};
+
 class SpanReader
 {
 private:
     std::span<const std::byte> m_data;
+    // peercoin: legacy int serialization flags + bridged typed params
+    // (default: network, no PoS marker, witness allowed)
+    int m_type = SER_NETWORK;
+    int m_version = 0;
+    PosMarkerParams m_pos_marker;
+    TransactionSerParams m_tx_params{.allow_witness = true};
 
 public:
     /**
@@ -90,6 +152,37 @@ public:
      */
     explicit SpanReader(std::span<const unsigned char> data) : m_data{std::as_bytes(data)} {}
     explicit SpanReader(std::span<const std::byte> data) : m_data{data} {}
+
+    // peercoin: legacy constructor with int nType/nVersion flags (psbt/net).
+    SpanReader(int type_in, int version_in, std::span<const unsigned char> data)
+        : m_data{std::as_bytes(data)},
+          m_type{type_in},
+          m_version{version_in},
+          m_pos_marker{(type_in & SER_POSMARKER) != 0},
+          m_tx_params{!(version_in & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
+    SpanReader(int type_in, int version_in, std::span<const std::byte> data)
+        : m_data{data},
+          m_type{type_in},
+          m_version{version_in},
+          m_pos_marker{(type_in & SER_POSMARKER) != 0},
+          m_tx_params{!(version_in & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
+
+    int GetType() const { return m_type; }
+    int GetVersion() const { return m_version; }
+
+    // peercoin: bridge int flags onto typed serialization parameters.
+    template <typename P>
+    const P& GetParams() const
+    {
+        if constexpr (std::is_same_v<P, PosMarkerParams>) {
+            return m_pos_marker;
+        } else if constexpr (std::is_same_v<P, TransactionSerParams>) {
+            return m_tx_params;
+        } else {
+            static const P params{};
+            return params;
+        }
+    }
 
     template<typename T>
     SpanReader& operator>>(T&& obj)
@@ -150,6 +243,15 @@ public:
     explicit DataStream() = default;
     explicit DataStream(std::span<const uint8_t> sp) : DataStream{std::as_bytes(sp)} {}
     explicit DataStream(std::span<const value_type> sp) : vch(sp.data(), sp.data() + sp.size()) {}
+
+    // peercoin: default serialization parameters when none are attached:
+    // no PoS header flags, no witness (hash/disk style streams).
+    template <typename P>
+    const P& GetParams() const
+    {
+        static const P params{};
+        return params;
+    }
 
     std::string str() const
     {
@@ -255,6 +357,140 @@ public:
 
     /** Compute total memory usage of this object (own memory + any dynamic memory). */
     size_t GetMemoryUsage() const noexcept;
+};
+
+/**
+ * peercoin: legacy PPC-era DataStream carrying int nType/nVersion flags
+ * (SER_NETWORK/SER_DISK/SER_GETHASH/SER_POSMARKER and the
+ * SERIALIZE_TRANSACTION_NO_WITNESS version toggle). It bridges those int
+ * flags onto the v31 typed serialization parameters, so PPC-era call sites
+ * (net.cpp, blockencodings, rpc, psbt, wallet) keep their exact wire
+ * semantics without touching every site.
+ */
+class CDataStream : public DataStream
+{
+private:
+    int nType;
+    int nVersion;
+    PosMarkerParams m_pos_marker;
+    TransactionSerParams m_tx_params;
+
+public:
+    explicit CDataStream(int nTypeIn, int nVersionIn)
+        : nType{nTypeIn},
+          nVersion{nVersionIn},
+          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
+
+    explicit CDataStream(std::span<const uint8_t> sp, int nTypeIn, int nVersionIn)
+        : DataStream{sp},
+          nType{nTypeIn},
+          nVersion{nVersionIn},
+          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
+    explicit CDataStream(std::span<const value_type> sp, int nTypeIn, int nVersionIn)
+        : DataStream{sp},
+          nType{nTypeIn},
+          nVersion{nVersionIn},
+          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
+
+    int GetType() const    { return nType; }
+    void SetType(int n)    { nType = n; m_pos_marker.pos_marker = (n & SER_POSMARKER) != 0; }
+    void SetVersion(int n) { nVersion = n; m_tx_params.allow_witness = !(n & SERIALIZE_TRANSACTION_NO_WITNESS); }
+    int GetVersion() const { return nVersion; }
+
+    // peercoin: bridge int flags onto typed serialization parameters.
+    template <typename P>
+    const P& GetParams() const
+    {
+        if constexpr (std::is_same_v<P, PosMarkerParams>) {
+            return m_pos_marker;
+        } else if constexpr (std::is_same_v<P, TransactionSerParams>) {
+            return m_tx_params;
+        } else {
+            static const P params{};
+            return params;
+        }
+    }
+
+    template <typename T>
+    CDataStream& operator<<(const T& obj)
+    {
+        ::Serialize(*this, obj);
+        return *this;
+    }
+
+    template <typename T>
+    CDataStream& operator>>(T&& obj)
+    {
+        ::Unserialize(*this, obj);
+        return *this;
+    }
+};
+
+/** peercoin: legacy PPC-era vector writer carrying int nType/nVersion flags. */
+class CVectorWriter
+{
+public:
+    CVectorWriter(int nTypeIn, int nVersionIn, std::vector<unsigned char>& vchDataIn, size_t nPosIn)
+        : nType{nTypeIn}, nVersion{nVersionIn}, vchData{vchDataIn}, nPos{nPosIn}
+    {
+        if (nPos > vchData.size())
+            vchData.resize(nPos);
+    }
+
+    template <typename... Args>
+    CVectorWriter(int nTypeIn, int nVersionIn, std::vector<unsigned char>& vchDataIn, size_t nPosIn, Args&&... args)
+        : CVectorWriter{nTypeIn, nVersionIn, vchDataIn, nPosIn}
+    {
+        ::SerializeMany(*this, std::forward<Args>(args)...);
+    }
+
+    void write(std::span<const std::byte> src)
+    {
+        assert(nPos <= vchData.size());
+        size_t nOverwrite = std::min(src.size(), vchData.size() - nPos);
+        if (nOverwrite) {
+            memcpy(vchData.data() + nPos, src.data(), nOverwrite);
+        }
+        if (nOverwrite < src.size()) {
+            vchData.insert(vchData.end(), UCharCast(src.data()) + nOverwrite, UCharCast(src.data() + src.size()));
+        }
+        nPos += src.size();
+    }
+
+    template <typename T>
+    CVectorWriter& operator<<(const T& obj)
+    {
+        ::Serialize(*this, obj);
+        return *this;
+    }
+
+    int GetVersion() const { return nVersion; }
+    int GetType() const    { return nType; }
+
+    // peercoin: bridge int flags onto typed serialization parameters.
+    template <typename P>
+    const P& GetParams() const
+    {
+        if constexpr (std::is_same_v<P, PosMarkerParams>) {
+            return m_pos_marker;
+        } else if constexpr (std::is_same_v<P, TransactionSerParams>) {
+            return m_tx_params;
+        } else {
+            static const P params{};
+            return params;
+        }
+    }
+
+private:
+    const int nType;
+    const int nVersion;
+    PosMarkerParams m_pos_marker;
+    TransactionSerParams m_tx_params;
+    std::vector<unsigned char>& vchData;
+    size_t nPos;
 };
 
 template <typename IStream>
@@ -466,6 +702,68 @@ public:
     template <typename T>
     AutoFile& operator>>(T&& obj)
     {
+        ::Unserialize(*this, obj);
+        return *this;
+    }
+
+    // peercoin: default serialization parameters (no PoS header flags;
+    // witness allowed, matching legacy PPC disk serialization semantics).
+    template <typename P>
+    const P& GetParams() const
+    {
+        static const P params{};
+        return params;
+    }
+};
+
+// peercoin: legacy PPC-era AutoFile carrying int nType/nVersion flags,
+// bridged onto typed serialization parameters.
+class CAutoFile : public AutoFile
+{
+private:
+    const int nType;
+    const int nVersion;
+    PosMarkerParams m_pos_marker;
+    TransactionSerParams m_tx_params;
+
+public:
+    CAutoFile(std::FILE* filenew, int nTypeIn, int nVersionIn)
+        : AutoFile{filenew},
+          nType{nTypeIn},
+          nVersion{nVersionIn},
+          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
+
+    int GetType() const    { return nType; }
+    int GetVersion() const { return nVersion; }
+
+    template <typename P>
+    const P& GetParams() const
+    {
+        if constexpr (std::is_same_v<P, PosMarkerParams>) {
+            return m_pos_marker;
+        } else if constexpr (std::is_same_v<P, TransactionSerParams>) {
+            return m_tx_params;
+        } else {
+            static const P params{};
+            return params;
+        }
+    }
+
+    template <typename T>
+    CAutoFile& operator<<(const T& obj)
+    {
+        if (IsNull())
+            throw std::ios_base::failure("CAutoFile::operator<<: file handle is nullptr");
+        ::Serialize(*this, obj);
+        return *this;
+    }
+
+    template <typename T>
+    CAutoFile& operator>>(T&& obj)
+    {
+        if (IsNull())
+            throw std::ios_base::failure("CAutoFile::operator>>: file handle is nullptr");
         ::Unserialize(*this, obj);
         return *this;
     }

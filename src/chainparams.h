@@ -7,6 +7,7 @@
 #define BITCOIN_CHAINPARAMS_H
 
 #include <kernel/chainparams.h> // IWYU pragma: export
+#include <util/chaintype.h> // IWYU pragma: export
 
 #include <memory>
 

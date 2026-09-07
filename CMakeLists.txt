@@ -355,6 +355,9 @@ target_link_libraries(core_interface INTERFACE
   Threads::Threads
 )
 
+# peercoin: OpenSSL bignum (CBigNum) is used by PoS kernel weight / PoS retargeting.
+find_package(OpenSSL REQUIRED)
+
 # Define sanitize_interface with -fsanitize flags intended to apply to all
 # libraries and executables.
 add_library(sanitize_interface INTERFACE)

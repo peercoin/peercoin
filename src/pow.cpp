@@ -290,7 +290,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     // peercoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
-    if (Params().NetworkIDString() != CBaseChainParams::REGTEST) {
+    if (Params().GetChainType() != ChainType::REGTEST) {
         int64_t nTargetSpacing;
 
         if (fProofOfStake) {
@@ -331,4 +331,20 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
         return false;
 
     return true;
+}
+
+// peercoin: grafted from upstream v31 pow.cpp (used by rpc GetTarget / v31 helpers).
+std::optional<arith_uint256> DeriveTarget(unsigned int nBits, const uint256 pow_limit)
+{
+    bool fNegative;
+    bool fOverflow;
+    arith_uint256 bnTarget;
+
+    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+    // Check range
+    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(pow_limit))
+        return {};
+
+    return bnTarget;
 }

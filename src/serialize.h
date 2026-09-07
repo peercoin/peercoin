@@ -1074,6 +1074,15 @@ public:
         return *this;
     }
 
+    // peercoin: streams used for size computation never (un)serialize the
+    // PoS header flags, so default the parameter to the omitted variant.
+    template <typename P>
+    const P& GetParams() const
+    {
+        static const P params{};
+        return params;
+    }
+
     uint64_t size() const
     {
         return m_size;
@@ -1096,6 +1105,9 @@ uint64_t GetSerializeSize(const T& t)
 {
     return (SizeComputer() << t).size();
 }
+
+// peercoin: legacy overloads (int nType/nVersion flags) defined further
+// below, after the typed serialization parameters they bridge onto.
 
 //! Check if type contains a stream by seeing if has a GetStream() method.
 template<typename T>
@@ -1220,5 +1232,71 @@ public:
     {                                                                                    \
         return ParamsWrapper{*this, t};                                                  \
     }
+
+// peercoin: legacy int serialization-type/version flags. Kept so PPC-era
+// code and streams keep compiling; the legacy streams in streams.h bridge
+// these flags onto the typed serialization parameters below.
+enum
+{
+    // primary actions
+    SER_NETWORK   = (1 << 0),
+    SER_DISK      = (1 << 1),
+    SER_GETHASH   = (1 << 2),
+
+    SER_POSMARKER = (1 << 18), // peercoin: PoS marker for headers-first sync
+};
+
+static const int SERIALIZE_TRANSACTION_NO_WITNESS = 0x40000000; // peercoin: legacy witness toggle
+
+/**
+ * Peercoin: serialization parameter to (un)serialize the extra CBlockHeader
+ * nFlags field. This field carries CBlockIndex::nFlags on the wire during
+ * headers-first synchronization, must appear on network message streams
+ * (WITH_POSMARKER) and must never participate in block hashing or be
+ * written to disk block files (NO_POSMARKER, the default). This is the
+ * typed-SerParams equivalent of legacy PPC's SER_POSMARKER flag.
+ */
+struct PosMarkerParams
+{
+    bool pos_marker = false; // peercoin: mutable so legacy CDataStream::SetType() stays functional
+    SER_PARAMS_OPFUNC
+};
+static constexpr PosMarkerParams WITH_POSMARKER{.pos_marker = true};
+static constexpr PosMarkerParams NO_POSMARKER{.pos_marker = false};
+
+// peercoin: defined here (instead of primitives/transaction.h) so the legacy
+// CDataStream compatibility stream in streams.h can bridge int nType flags
+// onto typed serialization parameters.
+struct TransactionSerParams
+{
+    bool allow_witness = true; // peercoin: mutable so legacy stream setters stay functional
+    SER_PARAMS_OPFUNC
+};
+static constexpr TransactionSerParams TX_WITH_WITNESS{.allow_witness = true};
+static constexpr TransactionSerParams TX_NO_WITNESS{.allow_witness = false};
+
+// peercoin: legacy overload accepting int nType/nVersion flags, bridged onto
+// typed serialization parameters (SER_POSMARKER / SERIALIZE_TRANSACTION_NO_WITNESS).
+template<typename T>
+size_t GetSerializeSize(const T& t, int nType, int nVersion = 0)
+{
+    SizeComputer sc;
+    ParamsStream{sc,
+                PosMarkerParams{(nType & SER_POSMARKER) != 0},
+                TransactionSerParams{!(nVersion & SERIALIZE_TRANSACTION_NO_WITNESS)}}
+        << t;
+    return sc.size();
+}
+
+// peercoin: legacy variadic size computation (used by psbt.h).
+template<typename... Args>
+size_t GetSerializeSizeMany(int nVersion, const Args&... t)
+{
+    SizeComputer sc;
+    ParamsStream wrapper{sc, PosMarkerParams{false},
+                        TransactionSerParams{!(nVersion & SERIALIZE_TRANSACTION_NO_WITNESS)}};
+    (void)((wrapper << t), ...);
+    return sc.size();
+}
 
 #endif // BITCOIN_SERIALIZE_H

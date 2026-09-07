@@ -11,6 +11,11 @@
 #include <uint256.h>
 #include <util/time.h>
 
+// peercoin: PosMarkerParams/WITH_POSMARKER/NO_POSMARKER (governs whether the
+// extra nFlags field is (un)serialized; network streams include it, hash/disk
+// streams must not — the typed equivalent of legacy SER_POSMARKER) live in
+// serialize.h so the compatibility CDataStream can bridge int nType flags.
+
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work
  * requirements.  When they solve the proof-of-work, they broadcast the block
@@ -43,8 +48,10 @@ public:
     SERIALIZE_METHODS(CBlockHeader, obj)
     {
         READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot, obj.nTime, obj.nBits, obj.nNonce);
-        // peercoin: do not serialize nFlags when computing hash
-        if (!(s.GetType() & SER_GETHASH) && s.GetType() & SER_POSMARKER)
+        // peercoin: nFlags travels only on network streams that negotiate the
+        // PoS headers-first marker; hash/disk streams omit it (legacy
+        // SER_GETHASH/SER_POSMARKER semantics via typed SerParams).
+        if (SER_PARAMS(PosMarkerParams).pos_marker)
             READWRITE(obj.nFlags);
     }
 
@@ -105,7 +112,7 @@ public:
 
     SERIALIZE_METHODS(CBlock, obj)
     {
-        READWRITEAS(CBlockHeader, obj);
+        READWRITE(AsBase<CBlockHeader>(obj));
         READWRITE(obj.vtx);
         READWRITE(obj.vchBlockSig);
     }
@@ -175,11 +182,13 @@ struct CBlockLocator
 
     explicit CBlockLocator(std::vector<uint256>&& have) : vHave(std::move(have)) {}
 
+    /** Historically the version field was written as the negotiated protocol
+     * version on network streams (Peercoin: PROTOCOL_VERSION) and never read
+     * back; hard-code it like upstream does. */
     SERIALIZE_METHODS(CBlockLocator, obj)
     {
-        int nVersion = s.GetVersion();
-        if (!(s.GetType() & SER_GETHASH))
-            READWRITE(nVersion);
+        int nVersion = PROTOCOL_VERSION;
+        READWRITE(nVersion);
         READWRITE(obj.vHave);
     }
 
