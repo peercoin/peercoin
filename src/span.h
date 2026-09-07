@@ -112,3 +112,10 @@ template <typename V> constexpr auto MakeUCharSpan(const V& v) -> decltype(UChar
 template <typename V> constexpr auto MakeWritableUCharSpan(V&& v) -> decltype(UCharSpanCast(std::span{std::forward<V>(v)})) { return UCharSpanCast(std::span{std::forward<V>(v)}); }
 
 #endif // BITCOIN_SPAN_H
+
+// peercoin-compat: pre-C++20 plumbing in older Peercoin-era files uses Span<>
+// and the free AsBytes()/MakeByteSpan() helpers; bridge them to std::span.
+template <typename T>
+using Span = std::span<T>;
+
+
