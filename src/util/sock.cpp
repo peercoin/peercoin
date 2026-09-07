@@ -1,24 +1,21 @@
-// Copyright (c) 2020-2022 The Bitcoin Core developers
+// Copyright (c) 2020-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <compat/compat.h>
-#include <logging.h>
-#include <tinyformat.h>
 #include <util/sock.h>
+
+#include <common/system.h>
+#include <compat/compat.h>
+#include <span.h>
+#include <tinyformat.h>
+#include <util/log.h>
 #include <util/syserror.h>
-#include <util/system.h>
 #include <util/threadinterrupt.h>
 #include <util/time.h>
 
 #include <memory>
 #include <stdexcept>
 #include <string>
-
-#ifdef WIN32
-#include <codecvt>
-#include <locale>
-#endif
 
 #ifdef USE_POLL
 #include <poll.h>
@@ -28,8 +25,6 @@ static inline bool IOErrorIsPermanent(int err)
 {
     return err != WSAEAGAIN && err != WSAEINTR && err != WSAEWOULDBLOCK && err != WSAEINPROGRESS;
 }
-
-Sock::Sock() : m_socket(INVALID_SOCKET) {}
 
 Sock::Sock(SOCKET s) : m_socket(s) {}
 
@@ -48,8 +43,6 @@ Sock& Sock::operator=(Sock&& other)
     other.m_socket = INVALID_SOCKET;
     return *this;
 }
-
-SOCKET Sock::Get() const { return m_socket; }
 
 ssize_t Sock::Send(const void* data, size_t len, int flags) const
 {
@@ -147,10 +140,12 @@ bool Sock::IsSelectable() const
 
 bool Sock::Wait(std::chrono::milliseconds timeout, Event requested, Event* occurred) const
 {
-    // We need a `shared_ptr` owning `this` for `WaitMany()`, but don't want
+    // We need a `shared_ptr` holding `this` for `WaitMany()`, but don't want
     // `this` to be destroyed when the `shared_ptr` goes out of scope at the
-    // end of this function. Create it with a custom noop deleter.
-    std::shared_ptr<const Sock> shared{this, [](const Sock*) {}};
+    // end of this function.
+    // Create it with an aliasing shared_ptr that points to `this` without
+    // owning it.
+    std::shared_ptr<const Sock> shared{std::shared_ptr<const Sock>{}, this};
 
     EventsPerSock events_per_sock{std::make_pair(shared, Events{requested})};
 
@@ -251,7 +246,7 @@ bool Sock::WaitMany(std::chrono::milliseconds timeout, EventsPerSock& events_per
 #endif /* USE_POLL */
 }
 
-void Sock::SendComplete(const std::string& data,
+void Sock::SendComplete(std::span<const unsigned char> data,
                         std::chrono::milliseconds timeout,
                         CThreadInterrupt& interrupt) const
 {
@@ -290,6 +285,13 @@ void Sock::SendComplete(const std::string& data,
         const auto wait_time = std::min(deadline - now, std::chrono::milliseconds{MAX_WAIT_FOR_IO});
         (void)Wait(wait_time, SEND);
     }
+}
+
+void Sock::SendComplete(std::span<const char> data,
+                        std::chrono::milliseconds timeout,
+                        CThreadInterrupt& interrupt) const
+{
+    SendComplete(MakeUCharSpan(data), timeout, interrupt);
 }
 
 std::string Sock::RecvUntilTerminator(uint8_t terminator,
@@ -411,31 +413,22 @@ void Sock::Close()
     int ret = close(m_socket);
 #endif
     if (ret) {
-        LogPrintf("Error closing socket %d: %s\n", m_socket, NetworkErrorString(WSAGetLastError()));
+        LogWarning("Error closing socket %d: %s", m_socket, NetworkErrorString(WSAGetLastError()));
     }
     m_socket = INVALID_SOCKET;
 }
 
-#ifdef WIN32
+bool Sock::operator==(SOCKET s) const
+{
+    return m_socket == s;
+};
+
 std::string NetworkErrorString(int err)
 {
-    wchar_t buf[256];
-    buf[0] = 0;
-    if(FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
-            nullptr, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            buf, ARRAYSIZE(buf), nullptr))
-    {
-        return strprintf("%s (%d)", std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>,wchar_t>().to_bytes(buf), err);
-    }
-    else
-    {
-        return strprintf("Unknown error (%d)", err);
-    }
-}
+#if defined(WIN32)
+    return Win32ErrorString(err);
 #else
-std::string NetworkErrorString(int err)
-{
     // On BSD sockets implementations, NetworkErrorString is the same as SysErrorString.
     return SysErrorString(err);
-}
 #endif
+}

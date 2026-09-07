@@ -1,11 +1,12 @@
-// Copyright (c) 2018-2022 The Bitcoin Core developers
+// Copyright (c) 2018-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <common/args.h>
 #include <univalue.h>
+#include <util/chaintype.h>
 #include <util/check.h>
 #include <util/fs.h>
-#include <util/system.h>
 
 #include <fstream>
 #include <string>
@@ -13,7 +14,7 @@
 #include <wallet/test/init_test_fixture.h>
 
 namespace wallet {
-InitWalletDirTestingSetup::InitWalletDirTestingSetup(const std::string& chainName) : BasicTestingSetup(chainName)
+InitWalletDirTestingSetup::InitWalletDirTestingSetup(const ChainType chainType) : BasicTestingSetup(chainType)
 {
     m_wallet_loader = MakeWalletLoader(*m_node.chain, m_args);
 
@@ -35,7 +36,7 @@ InitWalletDirTestingSetup::InitWalletDirTestingSetup(const std::string& chainNam
     fs::create_directories(m_walletdir_path_cases["default"]);
     fs::create_directories(m_walletdir_path_cases["custom"]);
     fs::create_directories(m_walletdir_path_cases["relative"]);
-    std::ofstream f{m_walletdir_path_cases["file"]};
+    std::ofstream f{m_walletdir_path_cases["file"].std_path()};
     f.close();
 }
 

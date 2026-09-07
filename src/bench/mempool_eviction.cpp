@@ -1,23 +1,34 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <bench/bench.h>
-#include <kernel/mempool_entry.h>
+#include <consensus/amount.h>
+#include <kernel/cs_main.h>
 #include <policy/policy.h>
+#include <primitives/transaction.h>
+#include <script/script.h>
+#include <sync.h>
 #include <test/util/setup_common.h>
+#include <test/util/txmempool.h>
 #include <txmempool.h>
+#include <util/check.h>
+
+#include <cstdint>
+#include <memory>
+#include <vector>
 
 
 static void AddTx(const CTransactionRef& tx, const CAmount& nFee, CTxMemPool& pool) EXCLUSIVE_LOCKS_REQUIRED(cs_main, pool.cs)
 {
     int64_t nTime = 0;
     unsigned int nHeight = 1;
+    uint64_t sequence = 0;
     bool spendsCoinbase = false;
     unsigned int sigOpCost = 4;
     LockPoints lp;
-    pool.addUnchecked(CTxMemPoolEntry(
-        tx, nFee, nTime, nHeight,
+    TryAddToMempool(pool, CTxMemPoolEntry(
+        tx, nFee, nTime, nHeight, sequence,
         spendsCoinbase, sigOpCost, lp));
 }
 
@@ -133,4 +144,4 @@ static void MempoolEviction(benchmark::Bench& bench)
     });
 }
 
-BENCHMARK(MempoolEviction, benchmark::PriorityLevel::HIGH);
+BENCHMARK(MempoolEviction);

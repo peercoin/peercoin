@@ -1,12 +1,25 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
 #include <bench/bench.h>
-#include <bench/data.h>
+#include <bench/data/block413567.raw.h>
 #include <chainparams.h>
+#include <flatfile.h>
+#include <node/blockstorage.h>
+#include <span.h>
+#include <streams.h>
 #include <test/util/setup_common.h>
+#include <uint256.h>
+#include <util/fs.h>
 #include <validation.h>
+
+#include <cstdint>
+#include <cstdio>
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <vector>
 
 /**
  * The LoadExternalBlockFile() function is used during -reindex and -loadblock.
@@ -22,7 +35,7 @@
  */
 static void LoadExternalBlockFile(benchmark::Bench& bench)
 {
-    const auto testing_setup{MakeNoLogFileContext<const TestingSetup>(CBaseChainParams::MAIN)};
+    const auto testing_setup{MakeNoLogFileContext<const TestingSetup>(ChainType::MAIN)};
 
     // Create a single block as in the blocks files (magic bytes, block size,
     // block data) as a stream object.
@@ -31,9 +44,8 @@ static void LoadExternalBlockFile(benchmark::Bench& bench)
     auto params{testing_setup->m_node.chainman->GetParams()};
     ss << params.MessageStart();
     ss << static_cast<uint32_t>(benchmark::data::block413567.size());
-    // We can't use the streaming serialization (ss << benchmark::data::block413567)
-    // because that first writes a compact size.
-    ss << Span{benchmark::data::block413567};
+    // Use span-serialization to avoid writing the size first.
+    ss << std::span{benchmark::data::block413567};
 
     // Create the test file.
     {
@@ -48,16 +60,15 @@ static void LoadExternalBlockFile(benchmark::Bench& bench)
         fclose(file);
     }
 
-    Chainstate& chainstate{testing_setup->m_node.chainman->ActiveChainstate()};
     std::multimap<uint256, FlatFilePos> blocks_with_unknown_parent;
     FlatFilePos pos;
     bench.run([&] {
         // "rb" is "binary, O_RDONLY", positioned to the start of the file.
         // The file will be closed by LoadExternalBlockFile().
-        FILE* file{fsbridge::fopen(blkfile, "rb")};
-        chainstate.LoadExternalBlockFile(file, &pos, &blocks_with_unknown_parent);
+        AutoFile file{fsbridge::fopen(blkfile, "rb")};
+        testing_setup->m_node.chainman->LoadExternalBlockFile(file, &pos, &blocks_with_unknown_parent);
     });
     fs::remove(blkfile);
 }
 
-BENCHMARK(LoadExternalBlockFile, benchmark::PriorityLevel::HIGH);
+BENCHMARK(LoadExternalBlockFile);

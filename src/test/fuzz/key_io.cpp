@@ -1,10 +1,11 @@
-// Copyright (c) 2020-2021 The Bitcoin Core developers
+// Copyright (c) 2020-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <chainparams.h>
 #include <key_io.h>
 #include <test/fuzz/fuzz.h>
+#include <util/chaintype.h>
 
 #include <cassert>
 #include <cstdint>
@@ -13,11 +14,11 @@
 
 void initialize_key_io()
 {
-    ECC_Start();
-    SelectParams(CBaseChainParams::MAIN);
+    static ECC_Context ecc_context{};
+    SelectParams(ChainType::MAIN);
 }
 
-FUZZ_TARGET_INIT(key_io, initialize_key_io)
+FUZZ_TARGET(key_io, .init = initialize_key_io)
 {
     const std::string random_string(buffer.begin(), buffer.end());
 

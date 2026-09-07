@@ -139,7 +139,7 @@ class SpecialEnv : public EnvWrapper {
      public:
       DataFile(SpecialEnv* env, WritableFile* base) : env_(env), base_(base) {}
       ~DataFile() { delete base_; }
-      Status Append(const Slice& data) {
+      Status Append(const Slice& data) override {
         if (env_->no_space_.load(std::memory_order_acquire)) {
           // Drop writes on the floor
           return Status::OK();
@@ -147,9 +147,9 @@ class SpecialEnv : public EnvWrapper {
           return base_->Append(data);
         }
       }
-      Status Close() { return base_->Close(); }
-      Status Flush() { return base_->Flush(); }
-      Status Sync() {
+      Status Close() override { return base_->Close(); }
+      Status Flush() override { return base_->Flush(); }
+      Status Sync() override {
         if (env_->data_sync_error_.load(std::memory_order_acquire)) {
           return Status::IOError("simulated data sync error");
         }
@@ -168,16 +168,16 @@ class SpecialEnv : public EnvWrapper {
      public:
       ManifestFile(SpecialEnv* env, WritableFile* b) : env_(env), base_(b) {}
       ~ManifestFile() { delete base_; }
-      Status Append(const Slice& data) {
+      Status Append(const Slice& data) override {
         if (env_->manifest_write_error_.load(std::memory_order_acquire)) {
           return Status::IOError("simulated writer error");
         } else {
           return base_->Append(data);
         }
       }
-      Status Close() { return base_->Close(); }
-      Status Flush() { return base_->Flush(); }
-      Status Sync() {
+      Status Close() override { return base_->Close(); }
+      Status Flush() override { return base_->Flush(); }
+      Status Sync() override {
         if (env_->manifest_sync_error_.load(std::memory_order_acquire)) {
           return Status::IOError("simulated sync error");
         } else {
@@ -735,15 +735,14 @@ TEST(DBTest, GetPicksCorrectFile) {
   } while (ChangeOptions());
 }
 
-TEST(DBTest, GetEncountersEmptyLevel) {
+TEST(DBTest, GetDoesNotTriggerSeekCompaction) {
   do {
     // Arrange for the following to happen:
     //   * sstable A in level 0
     //   * nothing in level 1
     //   * sstable B in level 2
-    // Then do enough Get() calls to arrange for an automatic compaction
-    // of sstable A.  A bug would cause the compaction to be marked as
-    // occurring at level 1 (instead of the correct level 0).
+    // Seek compaction is disabled in this fork, so repeated reads must
+    // not change the level layout. A manual compaction must still work.
 
     // Step 1: First place sstables in levels 0 and 2
     int compaction_count = 0;
@@ -761,14 +760,17 @@ TEST(DBTest, GetEncountersEmptyLevel) {
     ASSERT_EQ(NumTableFilesAtLevel(1), 0);
     ASSERT_EQ(NumTableFilesAtLevel(2), 1);
 
-    // Step 3: read a bunch of times
+    // Step 3: many read misses must not schedule any compaction.
     for (int i = 0; i < 1000; i++) {
       ASSERT_EQ("NOT_FOUND", Get("missing"));
     }
-
-    // Step 4: Wait for compaction to finish
     DelayMilliseconds(1000);
+    ASSERT_EQ(NumTableFilesAtLevel(0), 1);
+    ASSERT_EQ(NumTableFilesAtLevel(1), 0);
+    ASSERT_EQ(NumTableFilesAtLevel(2), 1);
 
+    // Step 4: a manual compaction still moves the L0 file down.
+    dbfull()->TEST_CompactRange(0, nullptr, nullptr);
     ASSERT_EQ(NumTableFilesAtLevel(0), 0);
   } while (ChangeOptions());
 }
@@ -2194,7 +2196,7 @@ TEST(DBTest, Randomized) {
           if (i == 0 || !rnd.OneIn(10)) {
             k = RandomKey(&rnd);
           } else {
-            // Periodically re-use the same key from the previous iter, so
+            // Periodically reuse the same key from the previous iter, so
             // we have multiple entries in the write batch for the same key
           }
           if (rnd.OneIn(2)) {

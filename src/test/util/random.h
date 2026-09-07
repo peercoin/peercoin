@@ -1,4 +1,4 @@
-// Copyright (c) 2023 The Bitcoin Core developers
+// Copyright (c) 2023-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,39 +7,34 @@
 
 #include <consensus/amount.h>
 #include <random.h>
-#include <test/util/setup_common.h>
 #include <uint256.h>
 
+#include <atomic>
 #include <cstdint>
 
-static inline uint32_t InsecureRand32()
-{
-    return g_insecure_rand_ctx.rand32();
-}
+enum class SeedRand {
+    /**
+     * Seed with a compile time constant of zeros.
+     */
+    ZEROS,
+    /**
+     * Seed with a fixed value that never changes over the lifetime of this
+     * process. The seed is read from the RANDOM_CTX_SEED environment variable
+     * if set, otherwise generated randomly once, saved, and reused.
+     */
+    FIXED_SEED,
+};
 
-static inline uint256 InsecureRand256()
-{
-    return g_insecure_rand_ctx.rand256();
-}
+/** Seed the global RNG state for testing and log the seed value. This affects all randomness, except GetStrongRandBytes(). */
+void SeedRandomStateForTest(SeedRand seed);
 
-static inline uint64_t InsecureRandBits(int bits)
-{
-    return g_insecure_rand_ctx.randbits(bits);
-}
+extern std::atomic<bool> g_seeded_g_prng_zero;
+extern std::atomic<bool> g_used_g_prng;
 
-static inline uint64_t InsecureRandRange(uint64_t range)
+template <RandomNumberGenerator Rng>
+inline CAmount RandMoney(Rng&& rng)
 {
-    return g_insecure_rand_ctx.randrange(range);
-}
-
-static inline bool InsecureRandBool()
-{
-    return g_insecure_rand_ctx.randbool();
-}
-
-static inline CAmount InsecureRandMoneyAmount()
-{
-    return static_cast<CAmount>(InsecureRandRange(MAX_MONEY + 1));
+    return CAmount{rng.randrange(MAX_MONEY + 1)};
 }
 
 #endif // BITCOIN_TEST_UTIL_RANDOM_H

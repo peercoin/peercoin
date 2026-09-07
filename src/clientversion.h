@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,25 +7,18 @@
 
 #include <util/macros.h>
 
-#if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
-#endif //HAVE_CONFIG_H
+#include <bitcoin-build-config.h> // IWYU pragma: keep
 
 // Check that required client information is defined
-#if !defined(PEERCOIN_VERSION_MAJOR) || !defined(PEERCOIN_VERSION_MINOR) || !defined(PEERCOIN_VERSION_REVISION) || !defined(PEERCOIN_VERSION_BUILD)
-#error Client version information missing: version is not defined by bitcoin-config.h or in any other way
+#if !defined(CLIENT_VERSION_MAJOR) || !defined(CLIENT_VERSION_MINOR) || !defined(CLIENT_VERSION_BUILD) || !defined(CLIENT_VERSION_IS_RELEASE) || !defined(COPYRIGHT_YEAR)
+#error Client version information missing: version is not defined by bitcoin-build-config.h or in any other way
 #endif
 
 //! Copyright string used in Windows .rc files
 #define COPYRIGHT_STR "2009-" STRINGIZE(COPYRIGHT_YEAR) " " COPYRIGHT_HOLDERS_FINAL
 
-/**
- * bitcoind-res.rc includes this file, but it cannot cope with real c++ code.
- * WINDRES_PREPROC is defined to indicate that its pre-processor is running.
- * Anything other than a define should be guarded below.
- */
-
-#if !defined(WINDRES_PREPROC)
+// Windows .rc files include this header, but they cannot cope with real C++ code.
+#if !defined(RC_INVOKED)
 
 #include <string>
 #include <vector>
@@ -35,14 +28,7 @@ static const int CLIENT_VERSION =
                          +     100 * CLIENT_VERSION_MINOR
                          +       1 * CLIENT_VERSION_BUILD;
 
-// note: peercoin version is used for display purpose AND to accept alerts
-static const int PEERCOIN_VERSION =
-                           1000000 * PEERCOIN_VERSION_MAJOR
-                         +   10000 * PEERCOIN_VERSION_MINOR
-                         +     100 * PEERCOIN_VERSION_REVISION
-                         +       1 * PEERCOIN_VERSION_BUILD;
-
-extern const std::string CLIENT_NAME;
+extern const std::string UA_NAME;
 
 
 std::string FormatFullVersion();
@@ -53,6 +39,6 @@ std::string CopyrightHolders(const std::string& strPrefix);
 /** Returns licensing information (for -version) */
 std::string LicenseInfo();
 
-#endif // WINDRES_PREPROC
+#endif // RC_INVOKED
 
 #endif // BITCOIN_CLIENTVERSION_H

@@ -1,14 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_COMPAT_COMPAT_H
 #define BITCOIN_COMPAT_COMPAT_H
-
-#if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
-#endif
 
 // Windows defines FD_SETSIZE to 64 (see _fd_types.h in mingw-w64),
 // which is too small for our usage, but allows us to redefine it safely.
@@ -22,19 +18,36 @@
 #include <ws2tcpip.h>
 #include <cstdint>
 #else
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <ifaddrs.h>
-#include <limits.h>
-#include <netdb.h>
-#include <unistd.h>
+#include <arpa/inet.h>   // IWYU pragma: export
+#include <fcntl.h>       // IWYU pragma: export
+#include <net/if.h>      // IWYU pragma: export
+#include <netdb.h>       // IWYU pragma: export
+#include <netinet/in.h>  // IWYU pragma: export
+#include <netinet/tcp.h> // IWYU pragma: export
+#include <sys/mman.h>    // IWYU pragma: export
+#include <sys/select.h>  // IWYU pragma: export
+#include <sys/socket.h>  // IWYU pragma: export
+#include <sys/types.h>   // IWYU pragma: export
+#include <unistd.h>      // IWYU pragma: export
+#endif
+
+// Windows does not have `sa_family_t` - it defines `sockaddr::sa_family` as `u_short`.
+// Thus define `sa_family_t` on Windows too so that the rest of the code can use `sa_family_t`.
+// See https://learn.microsoft.com/en-us/windows/win32/api/winsock/ns-winsock-sockaddr#syntax
+#ifdef WIN32
+typedef u_short sa_family_t;
+#endif
+
+// Brace style in the IN6ADDR_*_INIT macros differs across platforms.
+#if defined(__illumos__)
+#define COMPAT_IN6ADDR_ANY_INIT {{IN6ADDR_ANY_INIT}}
+#else
+#define COMPAT_IN6ADDR_ANY_INIT IN6ADDR_ANY_INIT
+#endif
+#if defined(__illumos__) || defined(_MSC_VER)
+#define COMPAT_IN6ADDR_LOOPBACK_INIT {{IN6ADDR_LOOPBACK_INIT}}
+#else
+#define COMPAT_IN6ADDR_LOOPBACK_INIT IN6ADDR_LOOPBACK_INIT
 #endif
 
 // We map Linux / BSD error functions and codes, to the equivalent
@@ -72,14 +85,6 @@ typedef unsigned int SOCKET;
 #ifdef _MSC_VER
 #include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
-#endif
-
-// The type of the option value passed to getsockopt & setsockopt
-// differs between Windows and non-Windows.
-#ifndef WIN32
-typedef void* sockopt_arg_type;
-#else
-typedef char* sockopt_arg_type;
 #endif
 
 #ifdef WIN32

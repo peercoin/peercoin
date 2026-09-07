@@ -1,3 +1,7 @@
+// Copyright (c) 2022-present The Bitcoin Core developers
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or https://opensource.org/license/mit.
+
 #include <arith_uint256.h>
 #include <chain.h>
 #include <chainparams.h>
@@ -6,6 +10,7 @@
 #include <test/fuzz/util.h>
 #include <test/util/setup_common.h>
 #include <uint256.h>
+#include <util/chaintype.h>
 #include <util/time.h>
 #include <validation.h>
 
@@ -15,7 +20,7 @@
 static void initialize_headers_sync_state_fuzz()
 {
     static const auto testing_setup = MakeNoLogFileContext<>(
-        /*chain_name=*/CBaseChainParams::MAIN);
+        /*chain_type=*/ChainType::MAIN);
 }
 
 void MakeHeadersContinuous(
@@ -38,31 +43,36 @@ void MakeHeadersContinuous(
 class FuzzedHeadersSyncState : public HeadersSyncState
 {
 public:
-    FuzzedHeadersSyncState(const unsigned commit_offset, const CBlockIndex* chain_start, const arith_uint256& minimum_required_work)
-        : HeadersSyncState(/*id=*/0, Params().GetConsensus(), chain_start, minimum_required_work)
+    FuzzedHeadersSyncState(const HeadersSyncParams& sync_params, const size_t commit_offset,
+                           const CBlockIndex& chain_start, const arith_uint256& minimum_required_work)
+        : HeadersSyncState(/*id=*/0, Params().GetConsensus(), sync_params, chain_start, minimum_required_work)
     {
-        const_cast<unsigned&>(m_commit_offset) = commit_offset;
+        const_cast<size_t&>(m_commit_offset) = commit_offset;
     }
 };
 
-FUZZ_TARGET_INIT(headers_sync_state, initialize_headers_sync_state_fuzz)
+FUZZ_TARGET(headers_sync_state, .init = initialize_headers_sync_state_fuzz)
 {
+    SeedRandomStateForTest(SeedRand::ZEROS);
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
-    auto mock_time{ConsumeTime(fuzzed_data_provider)};
 
     CBlockHeader genesis_header{Params().GenesisBlock()};
     CBlockIndex start_index(genesis_header);
 
-    if (mock_time < start_index.GetMedianTimePast()) return;
-    SetMockTime(mock_time);
+    SetMockTime(ConsumeTime(fuzzed_data_provider, /*min=*/start_index.GetMedianTimePast()));
 
     const uint256 genesis_hash = genesis_header.GetHash();
     start_index.phashBlock = &genesis_hash;
 
+    const HeadersSyncParams params{
+        .commitment_period = fuzzed_data_provider.ConsumeIntegralInRange<size_t>(1, Params().HeadersSync().commitment_period * 2),
+        .redownload_buffer_size = fuzzed_data_provider.ConsumeIntegralInRange<size_t>(0, Params().HeadersSync().redownload_buffer_size * 2),
+    };
     arith_uint256 min_work{UintToArith256(ConsumeUInt256(fuzzed_data_provider))};
     FuzzedHeadersSyncState headers_sync(
-        /*commit_offset=*/fuzzed_data_provider.ConsumeIntegralInRange<unsigned>(1, 1024),
-        /*chain_start=*/&start_index,
+        params,
+        /*commit_offset=*/fuzzed_data_provider.ConsumeIntegralInRange<size_t>(0, params.commitment_period - 1),
+        /*chain_start=*/start_index,
         /*minimum_required_work=*/min_work);
 
     // Store headers for potential redownload phase.
@@ -107,7 +117,7 @@ FUZZ_TARGET_INIT(headers_sync_state, initialize_headers_sync_state_fuzz)
 
                     // If we get to redownloading, the presynced headers need
                     // to have the min amount of work on them.
-                    assert(CalculateHeadersWork(all_headers) >= min_work);
+                    assert(CalculateClaimedHeadersWork(all_headers) >= min_work);
                 }
             }
 

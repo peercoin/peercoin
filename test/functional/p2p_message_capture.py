@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2020-2022 The Bitcoin Core developers
+# Copyright (c) 2020-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test per-peer message capture capability.
@@ -19,7 +19,7 @@ TIME_SIZE = 8
 LENGTH_SIZE = 4
 MSGTYPE_SIZE = 12
 
-def mini_parser(dat_file):
+def mini_parser(dat_file: str) -> None:
     """Parse a data file created by CaptureMessageToFile.
 
     From the data file we'll only check the structure.
@@ -58,7 +58,7 @@ class MessageCaptureTest(BitcoinTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
-        capturedir = os.path.join(self.nodes[0].datadir, "regtest/message_capture")
+        capturedir = self.nodes[0].chain_path / "message_capture"
         # Connect a node so that the handshake occurs
         self.nodes[0].add_p2p_connection(P2PDataStore())
         self.nodes[0].disconnect_p2ps()
@@ -69,4 +69,4 @@ class MessageCaptureTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    MessageCaptureTest().main()
+    MessageCaptureTest(__file__).main()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2022 The Bitcoin Core developers
+# Copyright (c) 2022-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test that unsupported utxo db causes an init error.
@@ -40,9 +40,9 @@ class UnsupportedUtxoDbTest(BitcoinTestFramework):
 
         self.log.info("Check init error")
         legacy_utxos_dir = self.nodes[0].chain_path / "chainstate"
-        legacy_blocks_dir = self.nodes[0].chain_path / "blocks"
+        legacy_blocks_dir = self.nodes[0].blocks_path
         recent_utxos_dir = self.nodes[1].chain_path / "chainstate"
-        recent_blocks_dir = self.nodes[1].chain_path / "blocks"
+        recent_blocks_dir = self.nodes[1].blocks_path
         shutil.copytree(legacy_utxos_dir, recent_utxos_dir)
         shutil.copytree(legacy_blocks_dir, recent_blocks_dir)
         self.nodes[1].assert_start_raises_init_error(
@@ -58,4 +58,4 @@ class UnsupportedUtxoDbTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    UnsupportedUtxoDbTest().main()
+    UnsupportedUtxoDbTest(__file__).main()

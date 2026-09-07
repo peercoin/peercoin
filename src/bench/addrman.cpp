@@ -1,14 +1,21 @@
-// Copyright (c) 2020-2022 The Bitcoin Core developers
+// Copyright (c) 2020-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <addrman.h>
 #include <bench/bench.h>
+#include <compat/compat.h>
+#include <netaddress.h>
+#include <netbase.h>
 #include <netgroup.h>
+#include <protocol.h>
 #include <random.h>
+#include <span.h>
+#include <uint256.h>
 #include <util/check.h>
 #include <util/time.h>
 
+#include <cstring>
 #include <optional>
 #include <vector>
 
@@ -17,7 +24,7 @@
 static constexpr size_t NUM_SOURCES = 64;
 static constexpr size_t NUM_ADDRESSES_PER_SOURCE = 256;
 
-static NetGroupManager EMPTY_NETGROUPMAN{std::vector<bool>()};
+static auto EMPTY_NETGROUPMAN{NetGroupManager::NoAsmap()};
 static constexpr uint32_t ADDRMAN_CONSISTENCY_CHECK_RATIO{0};
 
 static std::vector<CAddress> g_sources;
@@ -95,6 +102,41 @@ static void AddrManSelect(benchmark::Bench& bench)
     });
 }
 
+// The worst case performance of the Select() function is when there is only
+// one address on the table, because it linearly searches every position of
+// several buckets before identifying the correct bucket
+static void AddrManSelectFromAlmostEmpty(benchmark::Bench& bench)
+{
+    AddrMan addrman{EMPTY_NETGROUPMAN, /*deterministic=*/false, ADDRMAN_CONSISTENCY_CHECK_RATIO};
+
+    // Add one address to the new table
+    CService addr = Lookup("250.3.1.1", 8333, false).value();
+    addrman.Add({CAddress(addr, NODE_NONE)}, addr);
+
+    bench.run([&] {
+        (void)addrman.Select();
+    });
+}
+
+static void AddrManSelectByNetwork(benchmark::Bench& bench)
+{
+    AddrMan addrman{EMPTY_NETGROUPMAN, /*deterministic=*/false, ADDRMAN_CONSISTENCY_CHECK_RATIO};
+
+    // add single I2P address to new table
+    CService i2p_service;
+    i2p_service.SetSpecial("udhdrtrcetjm5sxzskjyr5ztpeszydbh4dpl3pl4utgqqw2v4jna.b32.i2p");
+    CAddress i2p_address(i2p_service, NODE_NONE);
+    i2p_address.nTime = Now<NodeSeconds>();
+    const CNetAddr source{LookupHost("252.2.2.2", false).value()};
+    addrman.Add({i2p_address}, source);
+
+    FillAddrMan(addrman);
+
+    bench.run([&] {
+        (void)addrman.Select(/*new_only=*/false, {NET_I2P});
+    });
+}
+
 static void AddrManGetAddr(benchmark::Bench& bench)
 {
     AddrMan addrman{EMPTY_NETGROUPMAN, /*deterministic=*/false, ADDRMAN_CONSISTENCY_CHECK_RATIO};
@@ -133,7 +175,9 @@ static void AddrManAddThenGood(benchmark::Bench& bench)
     });
 }
 
-BENCHMARK(AddrManAdd, benchmark::PriorityLevel::HIGH);
-BENCHMARK(AddrManSelect, benchmark::PriorityLevel::HIGH);
-BENCHMARK(AddrManGetAddr, benchmark::PriorityLevel::HIGH);
-BENCHMARK(AddrManAddThenGood, benchmark::PriorityLevel::HIGH);
+BENCHMARK(AddrManAdd);
+BENCHMARK(AddrManSelect);
+BENCHMARK(AddrManSelectFromAlmostEmpty);
+BENCHMARK(AddrManSelectByNetwork);
+BENCHMARK(AddrManGetAddr);
+BENCHMARK(AddrManAddThenGood);

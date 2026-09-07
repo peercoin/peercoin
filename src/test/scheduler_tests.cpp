@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2022 The Bitcoin Core developers
+// Copyright (c) 2012-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,7 +23,7 @@ static void microTask(CScheduler& s, std::mutex& mutex, int& counter, int delta,
     }
     auto noTime = std::chrono::steady_clock::time_point::min();
     if (rescheduleTime != noTime) {
-        CScheduler::Function f = std::bind(&microTask, std::ref(s), std::ref(mutex), std::ref(counter), -delta + 1, noTime);
+        CScheduler::Function f = std::bind_front(&microTask, std::ref(s), std::ref(mutex), std::ref(counter), -delta + 1, noTime);
         s.schedule(f, rescheduleTime);
     }
 }
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(manythreads)
         auto t = now + std::chrono::microseconds(randomMsec(rng));
         auto tReschedule = now + std::chrono::microseconds(500 + randomMsec(rng));
         int whichCounter = zeroToNine(rng);
-        CScheduler::Function f = std::bind(&microTask, std::ref(microTasks),
+        CScheduler::Function f = std::bind_front(&microTask, std::ref(microTasks),
                                              std::ref(counterMutex[whichCounter]), std::ref(counter[whichCounter]),
                                              randomDelta(rng), tReschedule);
         microTasks.schedule(f, t);
@@ -73,19 +73,19 @@ BOOST_AUTO_TEST_CASE(manythreads)
     std::vector<std::thread> microThreads;
     microThreads.reserve(10);
     for (int i = 0; i < 5; i++)
-        microThreads.emplace_back(std::bind(&CScheduler::serviceQueue, &microTasks));
+        microThreads.emplace_back(std::bind_front(&CScheduler::serviceQueue, &microTasks));
 
     UninterruptibleSleep(std::chrono::microseconds{600});
     now = std::chrono::steady_clock::now();
 
     // More threads and more tasks:
     for (int i = 0; i < 5; i++)
-        microThreads.emplace_back(std::bind(&CScheduler::serviceQueue, &microTasks));
+        microThreads.emplace_back(std::bind_front(&CScheduler::serviceQueue, &microTasks));
     for (int i = 0; i < 100; i++) {
         auto t = now + std::chrono::microseconds(randomMsec(rng));
         auto tReschedule = now + std::chrono::microseconds(500 + randomMsec(rng));
         int whichCounter = zeroToNine(rng);
-        CScheduler::Function f = std::bind(&microTask, std::ref(microTasks),
+        CScheduler::Function f = std::bind_front(&microTask, std::ref(microTasks),
                                              std::ref(counterMutex[whichCounter]), std::ref(counter[whichCounter]),
                                              randomDelta(rng), tReschedule);
         microTasks.schedule(f, t);
@@ -129,8 +129,8 @@ BOOST_AUTO_TEST_CASE(singlethreadedscheduler_ordered)
     CScheduler scheduler;
 
     // each queue should be well ordered with respect to itself but not other queues
-    SingleThreadedSchedulerClient queue1(scheduler);
-    SingleThreadedSchedulerClient queue2(scheduler);
+    SerialTaskRunner queue1(scheduler);
+    SerialTaskRunner queue2(scheduler);
 
     // create more threads than queues
     // if the queues only permit execution of one task at once then
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(singlethreadedscheduler_ordered)
         threads.emplace_back([&] { scheduler.serviceQueue(); });
     }
 
-    // these are not atomic, if SinglethreadedSchedulerClient prevents
+    // these are not atomic, if SerialTaskRunner prevents
     // parallel execution at the queue level no synchronization should be required here
     int counter1 = 0;
     int counter2 = 0;
@@ -150,12 +150,12 @@ BOOST_AUTO_TEST_CASE(singlethreadedscheduler_ordered)
     // just simply count up on each queue - if execution is properly ordered then
     // the callbacks should run in exactly the order in which they were enqueued
     for (int i = 0; i < 100; ++i) {
-        queue1.AddToProcessQueue([i, &counter1]() {
+        queue1.insert([i, &counter1]() {
             bool expectation = i == counter1++;
             assert(expectation);
         });
 
-        queue2.AddToProcessQueue([i, &counter2]() {
+        queue2.insert([i, &counter2]() {
             bool expectation = i == counter2++;
             assert(expectation);
         });

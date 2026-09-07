@@ -7,15 +7,18 @@
 #define BITCOIN_UNIVALUE_INCLUDE_UNIVALUE_H
 
 #include <charconv>
+#include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
+// NOLINTNEXTLINE(misc-no-recursion)
 class UniValue {
 public:
     enum VType { VNULL, VOBJ, VARR, VSTR, VNUM, VBOOL, };
@@ -67,6 +70,8 @@ public:
 
     size_t size() const { return values.size(); }
 
+    void reserve(size_t new_cap);
+
     void getObjMap(std::map<std::string,UniValue>& kv) const;
     bool checkObject(const std::map<std::string,UniValue::VType>& memberTypes) const;
     const UniValue& operator[](const std::string& key) const;
@@ -87,16 +92,14 @@ public:
     template <class It>
     void push_backV(It first, It last);
 
-    void __pushKV(std::string key, UniValue val);
+    void pushKVEnd(std::string key, UniValue val);
     void pushKV(std::string key, UniValue val);
     void pushKVs(UniValue obj);
 
     std::string write(unsigned int prettyIndent = 0,
                       unsigned int indentLevel = 0) const;
 
-    bool read(const char *raw, size_t len);
-    bool read(const char *raw) { return read(raw, strlen(raw)); }
-    bool read(std::string_view raw) { return read(raw.data(), raw.size()); }
+    bool read(std::string_view raw);
 
 private:
     UniValue::VType typ;
@@ -123,7 +126,7 @@ public:
     const UniValue& get_array() const;
 
     enum VType type() const { return getType(); }
-    friend const UniValue& find_value( const UniValue& obj, const std::string& name);
+    const UniValue& find_value(std::string_view key) const;
 };
 
 template <class It>
@@ -136,7 +139,7 @@ void UniValue::push_backV(It first, It last)
 template <typename Int>
 Int UniValue::getInt() const
 {
-    static_assert(std::is_integral<Int>::value);
+    static_assert(std::is_integral_v<Int>);
     checkType(VNUM);
     Int result;
     const auto [first_nonmatching, error_condition] = std::from_chars(val.data(), val.data() + val.size(), result);
@@ -200,7 +203,5 @@ static inline bool json_isspace(int ch)
 }
 
 extern const UniValue NullUniValue;
-
-const UniValue& find_value( const UniValue& obj, const std::string& name);
 
 #endif // BITCOIN_UNIVALUE_INCLUDE_UNIVALUE_H

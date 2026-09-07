@@ -1,13 +1,13 @@
-// Copyright (c) 2019-2022 The Bitcoin Core developers
+// Copyright (c) 2019-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_QT_TEST_OPTIONTESTS_H
 #define BITCOIN_QT_TEST_OPTIONTESTS_H
 
+#include <common/settings.h>
 #include <qt/optionsmodel.h>
 #include <univalue.h>
-#include <util/settings.h>
 
 #include <QObject>
 
@@ -26,7 +26,7 @@ private Q_SLOTS:
 
 private:
     interfaces::Node& m_node;
-    util::Settings m_previous_settings;
+    common::Settings m_previous_settings;
 };
 
 #endif // BITCOIN_QT_TEST_OPTIONTESTS_H

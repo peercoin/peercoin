@@ -1,60 +1,45 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
-#endif
+#include <bitcoin-build-config.h> // IWYU pragma: keep
 
 #include <common/run_command.h>
 
 #include <tinyformat.h>
 #include <univalue.h>
+#include <util/string.h>
 
 #ifdef ENABLE_EXTERNAL_SIGNER
-#if defined(__GNUC__)
-// Boost 1.78 requires the following workaround.
-// See: https://github.com/boostorg/process/issues/235
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnarrowing"
-#endif
-#include <boost/process.hpp>
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
+#include <util/subprocess.h>
 #endif // ENABLE_EXTERNAL_SIGNER
 
-UniValue RunCommandParseJSON(const std::string& str_command, const std::string& str_std_in)
+UniValue RunCommandParseJSON(const std::vector<std::string>& cmd_args, const std::string& str_std_in)
 {
 #ifdef ENABLE_EXTERNAL_SIGNER
-    namespace bp = boost::process;
+    namespace sp = subprocess;
 
     UniValue result_json;
-    bp::opstream stdin_stream;
-    bp::ipstream stdout_stream;
-    bp::ipstream stderr_stream;
+    std::istringstream stdout_stream;
+    std::istringstream stderr_stream;
 
-    if (str_command.empty()) return UniValue::VNULL;
+    if (cmd_args.empty()) return UniValue::VNULL;
 
-    bp::child c(
-        str_command,
-        bp::std_out > stdout_stream,
-        bp::std_err > stderr_stream,
-        bp::std_in < stdin_stream
-    );
+    auto c = sp::Popen(cmd_args, sp::input{sp::PIPE}, sp::output{sp::PIPE}, sp::error{sp::PIPE});
     if (!str_std_in.empty()) {
-        stdin_stream << str_std_in << std::endl;
+        c.send(str_std_in);
     }
-    stdin_stream.pipe().close();
+    auto [out_res, err_res] = c.communicate();
+    stdout_stream.str(std::string{out_res.buf.begin(), out_res.buf.end()});
+    stderr_stream.str(std::string{err_res.buf.begin(), err_res.buf.end()});
 
     std::string result;
     std::string error;
     std::getline(stdout_stream, result);
     std::getline(stderr_stream, error);
 
-    c.wait();
-    const int n_error = c.exit_code();
-    if (n_error) throw std::runtime_error(strprintf("RunCommandParseJSON error: process(%s) returned %d: %s\n", str_command, n_error, error));
+    const int n_error = c.retcode();
+    if (n_error) throw std::runtime_error(strprintf("RunCommandParseJSON error: process(%s) returned %d: %s\n", util::Join(cmd_args, " "), n_error, error));
     if (!result_json.read(result)) throw std::runtime_error("Unable to parse JSON: " + result);
 
     return result_json;

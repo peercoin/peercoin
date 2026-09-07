@@ -9,16 +9,16 @@ started with I2P terminology.
 
 ## Run Bitcoin Core with an I2P router (proxy)
 
-A running I2P router (proxy) with [SAM](https://geti2p.net/en/docs/api/samv3)
-enabled is required. Options include:
+A running I2P router (proxy) is required with the [SAM](https://geti2p.net/en/docs/api/samv3)
+application bridge enabled. The following routers are recommended for use with Bitcoin Core:
 
 - [i2prouter (I2P Router)](https://geti2p.net), the official implementation in
-  Java
+  Java. The SAM bridge is not enabled by default; it must be started manually,
+  or configured to start automatically, in the Clients page in the
+  router console (`http://127.0.0.1:7657/configclients`) or in the `clients.config` file.
 - [i2pd (I2P Daemon)](https://github.com/PurpleI2P/i2pd)
   ([documentation](https://i2pd.readthedocs.io/en/latest)), a lighter
-  alternative in C++
-- [i2p-zero](https://github.com/i2p-zero/i2p-zero)
-- [other alternatives](https://en.wikipedia.org/wiki/I2P#Routers)
+  alternative in C++. It enables the SAM bridge by default.
 
 Note the IP address and port the SAM proxy is listening to; usually, it is
 `127.0.0.1:7656`.
@@ -79,8 +79,8 @@ one of the networks has issues.
 ## Persistent vs transient I2P addresses
 
 The first time Bitcoin Core connects to the I2P router, it automatically
-generates a persistent I2P address and its corresponding private key by default
-or if `-i2pacceptincoming=1` is set.  The private key is saved in a file named
+generates a persistent I2P address and its corresponding private key by default,
+unless `-i2pacceptincoming=0` is set.  The private key is saved in a file named
 `i2p_private_key` in the Bitcoin Core data directory.  The persistent I2P
 address is used for making outbound connections and accepting inbound
 connections.
@@ -109,8 +109,7 @@ incoming I2P connections (`-i2pacceptincoming`):
 To see which I2P peers your node is connected to, use `bitcoin-cli -netinfo 4`
 or the `getpeerinfo` RPC (e.g. `bitcoin-cli getpeerinfo`).
 
-To see which I2P addresses your node knows, use the `getnodeaddresses 0 i2p`
-RPC.
+You can use the `getnodeaddresses` RPC to fetch a number of I2P peers known to your node; run `bitcoin-cli help getnodeaddresses` for details.
 
 ## Compatibility
 
@@ -119,8 +118,7 @@ to connect to the I2P network. Any I2P router that supports it can be used.
 
 ## Ports in I2P and Bitcoin Core
 
-Bitcoin Core uses the [SAM v3.1](https://geti2p.net/en/docs/api/samv3)
-protocol. One particularity of SAM v3.1 is that it does not support ports,
+One particularity of SAM v3.1 is that it does not support ports,
 unlike newer versions of SAM (v3.2 and up) that do support them and default the
 port numbers to 0. From the point of view of peers that use newer versions of
 SAM or other protocols that support ports, a SAM v3.1 peer is connecting to them
@@ -168,3 +166,13 @@ In most cases, the default router settings should work fine.
 
 Please see the "General Guidance for Developers" section in https://geti2p.net/en/docs/api/samv3
 if you are developing a downstream application that may be bundling I2P with Bitcoin.
+
+## Privacy recommendations
+
+- Operating a node that listens on multiple networks (e.g. IPv4 and I2P) can help
+  strengthen the Bitcoin network, as nodes in this configuration (i.e. bridge nodes) increase
+  the cost and complexity of launching eclipse and partition attacks. However, under certain
+  conditions, an adversary that can connect to your node on multiple networks may be
+  able to correlate those identities by observing shared runtime characteristics. It
+  is not recommended to expose your node over multiple networks if you require
+  unlinkability across those identities.

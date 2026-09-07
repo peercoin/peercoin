@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 The Bitcoin Core developers
+// Copyright (c) 2018-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -106,12 +106,25 @@ struct Descriptor {
     virtual bool IsSolvable() const = 0;
 
     /** Convert the descriptor back to a string, undoing parsing. */
-    virtual std::string ToString() const = 0;
+    virtual std::string ToString(bool compat_format=false) const = 0;
 
     /** Whether this descriptor will return one scriptPubKey or multiple (aka is or is not combo) */
     virtual bool IsSingleType() const = 0;
 
-    /** Convert the descriptor to a private string. This fails if the provided provider does not have the relevant private keys. */
+    /** Whether the given provider has all private keys required by this descriptor.
+     * @return `false` if the descriptor doesn't have any keys or subdescriptors,
+     *         or if the provider does not have all private keys required by
+     *         the descriptor.
+     */
+    virtual bool HavePrivateKeys(const SigningProvider& provider) const = 0;
+
+    /** Convert the descriptor to a private string. This uses public keys if the relevant private keys are not in the SigningProvider.
+     *  If none of the relevant private keys are available, the output string in the "out" parameter will not contain any private key information,
+     *  and this function will return "false".
+     *  @param[in] provider The SigningProvider to query for private keys.
+     *  @param[out] out The resulting descriptor string, containing private keys if available.
+     *  @returns true if at least one private key available.
+     */
     virtual bool ToPrivateString(const SigningProvider& provider, std::string& out) const = 0;
 
     /** Convert the descriptor to a normalized string. Normalized descriptors have the xpub at the last hardened step. This fails if the provided provider does not have the private keys to derive that xpub. */
@@ -146,6 +159,34 @@ struct Descriptor {
 
     /** @return The OutputType of the scriptPubKey(s) produced by this descriptor. Or nullopt if indeterminate (multiple or none) */
     virtual std::optional<OutputType> GetOutputType() const = 0;
+
+    /** Get the size of the scriptPubKey for this descriptor. */
+    virtual std::optional<int64_t> ScriptSize() const = 0;
+
+    /** Get the maximum size of a satisfaction for this descriptor, in weight units.
+     *
+     * @param use_max_sig Whether to assume ECDSA signatures will have a high-r.
+     */
+    virtual std::optional<int64_t> MaxSatisfactionWeight(bool use_max_sig) const = 0;
+
+    /** Get the maximum size number of stack elements for satisfying this descriptor. */
+    virtual std::optional<int64_t> MaxSatisfactionElems() const = 0;
+
+    /** Return all (extended) public keys for this descriptor, including any from subdescriptors.
+     *
+     * @param[out] pubkeys Any public keys
+     * @param[out] ext_pubs Any extended public keys
+     */
+    virtual void GetPubKeys(std::set<CPubKey>& pubkeys, std::set<CExtPubKey>& ext_pubs) const = 0;
+
+    /** Semantic/safety warnings (includes subdescriptors). */
+    virtual std::vector<std::string> Warnings() const = 0;
+
+    /** Get the maximum key expression index. Used only for tests */
+    virtual uint32_t GetMaxKeyExpr() const = 0;
+
+    /** Get the number of key expressions in this descriptor. Used only for tests */
+    virtual size_t GetKeyCount() const = 0;
 };
 
 /** Parse a `descriptor` string. Included private keys are put in `out`.
@@ -154,9 +195,9 @@ struct Descriptor {
  * is set, the checksum is mandatory - otherwise it is optional.
  *
  * If a parse error occurs, or the checksum is missing/invalid, or anything
- * else is wrong, `nullptr` is returned.
+ * else is wrong, an empty vector is returned.
  */
-std::unique_ptr<Descriptor> Parse(const std::string& descriptor, FlatSigningProvider& out, std::string& error, bool require_checksum = false);
+std::vector<std::unique_ptr<Descriptor>> Parse(std::string_view descriptor, FlatSigningProvider& out, std::string& error, bool require_checksum = false);
 
 /** Get the checksum for a `descriptor`.
  *
@@ -181,5 +222,10 @@ std::string GetDescriptorChecksum(const std::string& descriptor);
  * - Failing that, a "raw()" descriptor is returned.
  */
 std::unique_ptr<Descriptor> InferDescriptor(const CScript& script, const SigningProvider& provider);
+
+/** Unique identifier that may not change over time, unless explicitly marked as not backwards compatible.
+*   This is not part of BIP 380, not guaranteed to be interoperable and should not be exposed to the user.
+*/
+uint256 DescriptorID(const Descriptor& desc);
 
 #endif // BITCOIN_SCRIPT_DESCRIPTOR_H

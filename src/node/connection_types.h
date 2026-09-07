@@ -1,10 +1,11 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_NODE_CONNECTION_TYPES_H
 #define BITCOIN_NODE_CONNECTION_TYPES_H
 
+#include <cstdint>
 #include <string>
 
 /** Different types of connections to a peer. This enum encapsulates the
@@ -74,9 +75,26 @@ enum class ConnectionType {
      * AddrMan is empty.
      */
     ADDR_FETCH,
+
+    /**
+     * Private broadcast connections are short-lived and only opened to
+     * privacy networks (Tor, I2P) for relaying privacy-sensitive data (like
+     * our own transactions) and closed afterwards.
+     */
+    PRIVATE_BROADCAST,
 };
 
 /** Convert ConnectionType enum to a string value */
 std::string ConnectionTypeAsString(ConnectionType conn_type);
+
+/** Transport layer version */
+enum class TransportProtocolType : uint8_t {
+    DETECTING, //!< Peer could be v1 or v2
+    V1, //!< Unencrypted, plaintext protocol
+    V2, //!< BIP324 protocol
+};
+
+/** Convert TransportProtocolType enum to a string value */
+std::string TransportTypeAsString(TransportProtocolType transport_type);
 
 #endif // BITCOIN_NODE_CONNECTION_TYPES_H

@@ -1,11 +1,11 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <node/coins_view_args.h>
 
+#include <common/args.h>
 #include <txdb.h>
-#include <util/system.h>
 
 namespace node {
 void ReadCoinsViewArgs(const ArgsManager& args, CoinsViewOptions& options)

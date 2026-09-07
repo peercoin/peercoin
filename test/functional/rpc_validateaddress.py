@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2023 The Bitcoin Core developers
+# Copyright (c) 2023-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test validateaddress for main chain"""
@@ -33,7 +33,7 @@ INVALID_DATA = [
     ),
     (
         "BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P",
-        "Invalid Bech32 v0 address program size (16 byte), per BIP141",
+        "Invalid Bech32 v0 address program size (16 bytes), per BIP141",
         [],
     ),
     (
@@ -101,12 +101,12 @@ INVALID_DATA = [
     ("bc1pw5dgrnzv", "Invalid Bech32 address program size (1 byte)", []),
     (
         "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav",
-        "Invalid Bech32 address program size (41 byte)",
+        "Invalid Bech32 address program size (41 bytes)",
         [],
     ),
     (
         "BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P",
-        "Invalid Bech32 v0 address program size (16 byte), per BIP141",
+        "Invalid Bech32 v0 address program size (16 bytes), per BIP141",
         [],
     ),
     (
@@ -166,6 +166,11 @@ VALID_DATA = [
         "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0",
         "512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
     ),
+    # PayToAnchor(P2A)
+    (
+        "bc1pfeessrawgf",
+        "51024e73",
+    ),
 ]
 
 
@@ -200,4 +205,4 @@ class ValidateAddressMainTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    ValidateAddressMainTest().main()
+    ValidateAddressMainTest(__file__).main()

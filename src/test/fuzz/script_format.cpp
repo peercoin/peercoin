@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2022 The Bitcoin Core developers
+// Copyright (c) 2019-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,13 +11,14 @@
 #include <test/fuzz/fuzz.h>
 #include <test/fuzz/util.h>
 #include <univalue.h>
+#include <util/chaintype.h>
 
 void initialize_script_format()
 {
-    SelectParams(CBaseChainParams::REGTEST);
+    SelectParams(ChainType::REGTEST);
 }
 
-FUZZ_TARGET_INIT(script_format, initialize_script_format)
+FUZZ_TARGET(script_format, .init = initialize_script_format)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     const CScript script{ConsumeScript(fuzzed_data_provider)};
@@ -29,5 +30,7 @@ FUZZ_TARGET_INIT(script_format, initialize_script_format)
     (void)ScriptToAsmStr(script, /*fAttemptSighashDecode=*/fuzzed_data_provider.ConsumeBool());
 
     UniValue o1(UniValue::VOBJ);
-    ScriptToUniv(script, /*out=*/o1, /*include_hex=*/fuzzed_data_provider.ConsumeBool(), /*include_address=*/fuzzed_data_provider.ConsumeBool());
+    auto include_hex = fuzzed_data_provider.ConsumeBool();
+    auto include_address = fuzzed_data_provider.ConsumeBool();
+    ScriptToUniv(script, /*out=*/o1, include_hex, include_address);
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2017-2022 The Bitcoin Core developers
+# Copyright (c) 2017-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test recovery from a crash during chainstate writing.
@@ -36,6 +36,7 @@ from test_framework.messages import (
 )
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
+    assert_not_equal,
     assert_equal,
 )
 from test_framework.wallet import (
@@ -52,7 +53,6 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
 
         # Set -maxmempool=0 to turn off mempool memory sharing with dbcache
         self.base_args = [
-            "-limitdescendantsize=0",
             "-maxmempool=0",
             "-dbbatchsize=200000",
         ]
@@ -76,16 +76,16 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
     def restart_node(self, node_index, expected_tip):
         """Start up a given node id, wait for the tip to reach the given block hash, and calculate the utxo hash.
 
-        Exceptions on startup should indicate node crash (due to -dbcrashratio), in which case we try again. Give up
-        after 60 seconds. Returns the utxo hash of the given node."""
+        Exceptions during startup or subsequent RPC calls should indicate a node crash (due to -dbcrashratio), in which case we try again. Give up
+        after a timeout. Returns the utxo hash of the given node."""
 
         time_start = time.time()
-        while time.time() - time_start < 120:
+        while time.time() - time_start < 120 * self.options.timeout_factor:
             try:
                 # Any of these RPC calls could throw due to node crash
                 self.start_node(node_index)
                 self.nodes[node_index].waitforblock(expected_tip)
-                utxo_hash = self.nodes[node_index].gettxoutsetinfo()['hash_serialized_2']
+                utxo_hash = self.nodes[node_index].gettxoutsetinfo()['hash_serialized_3']
                 return utxo_hash
             except Exception:
                 # An exception here should mean the node is about to crash.
@@ -93,12 +93,11 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
                 # should raise an exception if bitcoind doesn't exit.
                 self.wait_for_node_exit(node_index, timeout=10)
             self.crashed_on_restart += 1
-            time.sleep(1)
 
         # If we got here, bitcoind isn't coming back up on restart.  Could be a
         # bug in bitcoind, or we've gotten unlucky with our dbcrash ratio --
         # perhaps we generated a test case that blew up our cache?
-        # TODO: If this happens a lot, we should try to restart without -dbcrashratio
+        # If this happens, the test should try to restart without -dbcrashratio
         # and make sure that recovery happens.
         raise AssertionError(f"Unable to successfully restart node {node_index} in allotted time")
 
@@ -130,7 +129,7 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
         If any nodes crash while updating, we'll compare utxo hashes to
         ensure recovery was successful."""
 
-        node3_utxo_hash = self.nodes[3].gettxoutsetinfo()['hash_serialized_2']
+        node3_utxo_hash = self.nodes[3].gettxoutsetinfo()['hash_serialized_3']
 
         # Retrieve all the blocks from node3
         blocks = []
@@ -172,19 +171,19 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
         """Verify that the utxo hash of each node matches node3.
 
         Restart any nodes that crash while querying."""
-        node3_utxo_hash = self.nodes[3].gettxoutsetinfo()['hash_serialized_2']
+        node3_utxo_hash = self.nodes[3].gettxoutsetinfo()['hash_serialized_3']
         self.log.info("Verifying utxo hash matches for all nodes")
 
         for i in range(3):
             try:
-                nodei_utxo_hash = self.nodes[i].gettxoutsetinfo()['hash_serialized_2']
+                nodei_utxo_hash = self.nodes[i].gettxoutsetinfo()['hash_serialized_3']
             except OSError:
                 # probably a crash on db flushing
                 nodei_utxo_hash = self.restart_node(i, self.nodes[3].getbestblockhash())
             assert_equal(nodei_utxo_hash, node3_utxo_hash)
 
     def generate_small_transactions(self, node, count, utxo_list):
-        FEE = 1000  # TODO: replace this with node relay fee based calculation
+        FEE = 1000
         num_transactions = 0
         random.shuffle(utxo_list)
         while len(utxo_list) >= 2 and num_transactions < count:
@@ -274,7 +273,7 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
         self.log.info(f"Restarted nodes: {self.restart_counts}; crashes on restart: {self.crashed_on_restart}")
 
         # If no nodes were restarted, we didn't test anything.
-        assert self.restart_counts != [0, 0, 0]
+        assert_not_equal(self.restart_counts, [0, 0, 0])
 
         # Make sure we tested the case of crash-during-recovery.
         assert self.crashed_on_restart > 0
@@ -286,4 +285,4 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    ChainstateWriteCrashTest().main()
+    ChainstateWriteCrashTest(__file__).main()

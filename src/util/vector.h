@@ -1,11 +1,13 @@
-// Copyright (c) 2019-2022 The Bitcoin Core developers
+// Copyright (c) 2019-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_UTIL_VECTOR_H
 #define BITCOIN_UTIL_VECTOR_H
 
+#include <functional>
 #include <initializer_list>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -18,9 +20,9 @@
  *   (list initialization always copies).
  */
 template<typename... Args>
-inline std::vector<typename std::common_type<Args...>::type> Vector(Args&&... args)
+inline std::vector<std::common_type_t<Args...>> Vector(Args&&... args)
 {
-    std::vector<typename std::common_type<Args...>::type> ret;
+    std::vector<std::common_type_t<Args...>> ret;
     ret.reserve(sizeof...(args));
     // The line below uses the trick from https://www.experts-exchange.com/articles/32502/None-recursive-variadic-templates-with-std-initializer-list.html
     (void)std::initializer_list<int>{(ret.emplace_back(std::forward<Args>(args)), 0)...};
@@ -65,6 +67,17 @@ inline void ClearShrink(V& v) noexcept
     // request. Therefore, we use method (1).
 
     V{}.swap(v);
+}
+
+template<typename V, typename L>
+inline std::optional<V> FindFirst(const std::vector<V>& vec, const L fnc)
+{
+    for (const auto& el : vec) {
+        if (fnc(el)) {
+            return el;
+        }
+    }
+    return std::nullopt;
 }
 
 #endif // BITCOIN_UTIL_VECTOR_H

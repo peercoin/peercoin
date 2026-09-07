@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2021-2022 The Bitcoin Core developers
+# Copyright (c) 2021-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the scanblocks RPC call."""
@@ -49,6 +49,7 @@ class ScanblocksTest(BitcoinTestFramework):
         assert blockhash in out['relevant_blocks']
         assert_equal(height, out['to_height'])
         assert_equal(0, out['from_height'])
+        assert_equal(True, out['completed'])
 
         # mine another block
         blockhash_new = self.generate(node, 1)[0]
@@ -135,4 +136,4 @@ class ScanblocksTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    ScanblocksTest().main()
+    ScanblocksTest(__file__).main()

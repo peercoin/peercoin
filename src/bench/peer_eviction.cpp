@@ -1,15 +1,14 @@
-// Copyright (c) 2021-2022 The Bitcoin Core developers
+// Copyright (c) 2021-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <bench/bench.h>
-#include <net.h>
 #include <netaddress.h>
+#include <node/eviction.h>
 #include <random.h>
 #include <test/util/net.h>
-#include <test/util/setup_common.h>
 
-#include <algorithm>
+#include <chrono>
 #include <functional>
 #include <vector>
 
@@ -141,15 +140,15 @@ static void EvictionProtection3Networks250Candidates(benchmark::Bench& bench)
 // - 250 candidates is the number of peers reported by operators of busy nodes
 
 // No disadvantaged networks, with 250 eviction candidates.
-BENCHMARK(EvictionProtection0Networks250Candidates, benchmark::PriorityLevel::HIGH);
+BENCHMARK(EvictionProtection0Networks250Candidates);
 
 // 1 disadvantaged network (Tor) with 250 eviction candidates.
-BENCHMARK(EvictionProtection1Networks250Candidates, benchmark::PriorityLevel::HIGH);
+BENCHMARK(EvictionProtection1Networks250Candidates);
 
 // 2 disadvantaged networks (I2P, Tor) with 250 eviction candidates.
-BENCHMARK(EvictionProtection2Networks250Candidates, benchmark::PriorityLevel::HIGH);
+BENCHMARK(EvictionProtection2Networks250Candidates);
 
 // 3 disadvantaged networks (I2P/localhost/Tor) with 50/100/250 eviction candidates.
-BENCHMARK(EvictionProtection3Networks050Candidates, benchmark::PriorityLevel::HIGH);
-BENCHMARK(EvictionProtection3Networks100Candidates, benchmark::PriorityLevel::HIGH);
-BENCHMARK(EvictionProtection3Networks250Candidates, benchmark::PriorityLevel::HIGH);
+BENCHMARK(EvictionProtection3Networks050Candidates);
+BENCHMARK(EvictionProtection3Networks100Candidates);
+BENCHMARK(EvictionProtection3Networks250Candidates);
