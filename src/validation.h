@@ -69,6 +69,9 @@ struct AssumeutxoData;
 namespace kernel {
 struct ChainstateRole;
 } // namespace kernel
+static constexpr int32_t SEQ_ID_BEST_CHAIN_FROM_DISK = 0; // peercoin compat
+static constexpr int32_t SEQ_ID_INIT_FROM_DISK = 1;
+
 namespace node {
 class SnapshotMetadata;
 } // namespace node

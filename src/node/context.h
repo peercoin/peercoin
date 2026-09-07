@@ -10,6 +10,8 @@
 #include <cassert>
 #include <functional>
 #include <memory>
+#include <node/warnings.h>
+#include <validationinterface.h>
 #include <vector>
 /*
 #include <interfaces/init.h>
@@ -65,6 +67,11 @@ struct NodeContext {
     interfaces::WalletLoader* wallet_loader{nullptr};
     std::unique_ptr<CScheduler> scheduler;
     std::function<void()> rpc_interruption_point = [] {};
+    std::function<bool()> shutdown_request = [] { return false; };
+    std::unique_ptr<ValidationSignals> validation_signals;
+    std::atomic<int> exit_status{EXIT_SUCCESS};
+    //! Manages all the node warnings
+    std::unique_ptr<node::Warnings> warnings;
 
     //! Declare default constructor and destructor that are not inline, so code
     //! instantiating the NodeContext struct doesn't need to #include class

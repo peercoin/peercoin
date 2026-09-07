@@ -32,7 +32,7 @@
 #include <txmempool.h>
 #include <util/bip32.h>
 #include <util/check.h>
-#include <util/error.h>
+#include <util/result.h>
 #include <util/fs.h>
 #include <util/fs_helpers.h>
 #include <util/moneystr.h>

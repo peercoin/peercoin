@@ -18,7 +18,7 @@
 #include <primitives/transaction.h>
 #include <protocol.h>
 #include <script/script.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <util/exception.h>
 #include <util/fs.h>
 #include <util/fs_helpers.h>

@@ -12,7 +12,7 @@
 #include <miner.h>
 #include <policy/policy.h>
 #include <pubkey.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <txmempool.h>
 #include <uint256.h>
 #include <util.h>

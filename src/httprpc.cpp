@@ -4,6 +4,8 @@
 
 #include <httprpc.h>
 
+static constexpr int HTTP_NO_CONTENT = 204;
+
 #include <common/args.h>
 #include <crypto/hmac_sha256.h>
 #include <httpserver.h>

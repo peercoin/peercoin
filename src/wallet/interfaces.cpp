@@ -9,7 +9,7 @@
 #include <interfaces/handler.h>
 #include <primitives/transaction.h>
 #include <rpc/server.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <support/allocators/secure.h>
 #include <sync.h>
 #include <uint256.h>

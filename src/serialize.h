@@ -1299,4 +1299,10 @@ size_t GetSerializeSizeMany(int nVersion, const Args&... t)
     return sc.size();
 }
 
+
+// peercoin legacy helpers for master-era net stack
+#ifndef READWRITEAS
+#define READWRITEAS(C, obj) READWRITE(AsBase<C>(obj))
+#endif
+
 #endif // BITCOIN_SERIALIZE_H

@@ -474,4 +474,24 @@ inline uint256 GetRandHash() noexcept
  */
 bool Random_SanityCheck();
 
+
+// peercoin legacy free helper (master-era callers)
+template <typename T>
+inline T GetRand()
+{
+    return FastRandomContext{}.rand<T>();
+}
+
+template <typename I>
+inline I GetRand(I range)
+{
+    return FastRandomContext{}.randrange(range);
+}
+
+template <typename I>
+inline I GetRand(I min, I max)
+{
+    return min + FastRandomContext{}.randrange(max - min);
+}
+
 #endif // BITCOIN_RANDOM_H

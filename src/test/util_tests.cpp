@@ -13,7 +13,7 @@
 #include <util/fs.h>
 #include <util/fs_helpers.h>
 #include <util/getuniquepath.h>
-#include <util/message.h> // For MessageSign(), MessageVerify(), MESSAGE_MAGIC
+#include <common/signmessage.h> // For MessageSign(), MessageVerify(), MESSAGE_MAGIC
 #include <util/moneystr.h>
 #include <util/overflow.h>
 #include <util/readwritefile.h>

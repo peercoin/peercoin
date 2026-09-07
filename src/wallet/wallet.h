@@ -18,7 +18,7 @@
 #include <tinyformat.h>
 #include <util/fs.h>
 #include <util/hasher.h>
-#include <util/message.h>
+#include <common/signmessage.h>
 #include <util/result.h>
 #include <util/strencodings.h>
 #include <util/string.h>

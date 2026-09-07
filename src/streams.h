@@ -427,6 +427,8 @@ public:
         ::Unserialize(*this, obj);
         return *this;
     }
+    bool eof() const { return m_read_pos >= size(); }
+
 };
 
 /** peercoin: legacy PPC-era vector writer carrying int nType/nVersion flags. */
@@ -973,6 +975,9 @@ class BufferedWriter
     size_t m_buf_pos{0};
 
 public:
+    template <typename P>
+    const auto& GetParams() const { return m_dst.template GetParams<P>(); }
+
     explicit BufferedWriter(S& stream LIFETIMEBOUND, size_t size = 1 << 16) : m_dst{stream}, m_buf(size) {}
 
     ~BufferedWriter() { flush(); }

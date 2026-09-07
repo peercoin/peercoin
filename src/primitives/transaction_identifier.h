@@ -25,7 +25,8 @@ class transaction_identifier
 {
     uint256 m_wrapped;
 
-    // Note: Use FromUint256 externally instead.
+    // peercoin compat: implicit conversions to/from uint256 keep PPC-era
+    // (master-generation) consumers compiling alongside v31 typed ids.
     transaction_identifier(const uint256& wrapped) : m_wrapped{wrapped} {}
 
     constexpr int Compare(const transaction_identifier<has_witness>& other) const { return m_wrapped.Compare(other.m_wrapped); }
@@ -37,6 +38,10 @@ class transaction_identifier
     }
 
 public:
+    operator const uint256&() const LIFETIMEBOUND { return m_wrapped; }
+
+    constexpr int Compare(const uint256& other) const { return m_wrapped.Compare(other); }
+
     transaction_identifier() : m_wrapped{} {}
     consteval explicit transaction_identifier(std::string_view hex_str) : m_wrapped{uint256{hex_str}} {}
 

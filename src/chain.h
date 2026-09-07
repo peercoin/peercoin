@@ -13,6 +13,7 @@
 #include <primitives/block.h>
 #include <sync.h>
 #include <uint256.h>
+#include <version.h>
 #include <util/time.h>
 
 #include <util/moneystr.h>
@@ -500,8 +501,10 @@ public:
     SERIALIZE_METHODS(CDiskBlockIndex, obj)
     {
         LOCK(::cs_main);
-        int _nVersion = s.GetVersion();
-        if (!(s.GetType() & SER_GETHASH)) READWRITE(VARINT_MODE(_nVersion, VarIntMode::NONNEGATIVE_SIGNED));
+        // peercoin: serialize the embedded version like the legacy stream did;
+        // all disk/hash paths use the constant protocol version here.
+        int _nVersion = PROTOCOL_VERSION;
+        READWRITE(VARINT_MODE(_nVersion, VarIntMode::NONNEGATIVE_SIGNED));
 
         READWRITE(VARINT_MODE(obj.nHeight, VarIntMode::NONNEGATIVE_SIGNED));
         READWRITE(VARINT(obj.nStatus));

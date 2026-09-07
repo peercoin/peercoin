@@ -288,4 +288,104 @@ inline MutexType* MaybeCheckNotHeld(MutexType* m) LOCKS_EXCLUDED(m) LOCK_RETURNE
 //! gcc and the -Wreturn-stack-address flag in clang, both enabled by default.
 #define WITH_LOCK(cs, code) (MaybeCheckNotHeld(cs), [&]() -> decltype(auto) { LOCK(cs); code; }())
 
+//! The above is detectable at compile-time with the -Wreturn-local-addr flag in
+//! gcc and the -Wreturn-stack-address flag in clang, both enabled by default.
+#define WITH_LOCK(cs, code) (MaybeCheckNotHeld(cs), [&]() -> decltype(auto) { LOCK(cs); code; }())
+
+class CSemaphore
+{
+private:
+    std::condition_variable condition;
+    std::mutex mutex;
+    int value;
+
+public:
+    explicit CSemaphore(int init) : value(init) {}
+
+    void wait()
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        condition.wait(lock, [&]() { return value >= 1; });
+        value--;
+    }
+
+    bool try_wait()
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        if (value < 1)
+            return false;
+        value--;
+        return true;
+    }
+
+    void post()
+    {
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            value++;
+        }
+        condition.notify_one();
+    }
+};
+
+/** RAII-style semaphore lock */
+class CSemaphoreGrant
+{
+private:
+    CSemaphore* sem;
+    bool fHaveGrant;
+
+public:
+    void Acquire()
+    {
+        if (fHaveGrant)
+            return;
+        sem->wait();
+        fHaveGrant = true;
+    }
+
+    void Release()
+    {
+        if (!fHaveGrant)
+            return;
+        sem->post();
+        fHaveGrant = false;
+    }
+
+    bool TryAcquire()
+    {
+        if (!fHaveGrant && sem->try_wait())
+            fHaveGrant = true;
+        return fHaveGrant;
+    }
+
+    void MoveTo(CSemaphoreGrant& grant)
+    {
+        grant.Release();
+        grant.sem = sem;
+        grant.fHaveGrant = fHaveGrant;
+        fHaveGrant = false;
+    }
+
+    CSemaphoreGrant() : sem(nullptr), fHaveGrant(false) {}
+
+    explicit CSemaphoreGrant(CSemaphore& sema, bool fTry = false) : sem(&sema), fHaveGrant(false)
+    {
+        if (fTry)
+            TryAcquire();
+        else
+            Acquire();
+    }
+
+    ~CSemaphoreGrant()
+    {
+        Release();
+    }
+
+    operator bool() const
+    {
+        return fHaveGrant;
+    }
+};
+
 #endif // BITCOIN_SYNC_H

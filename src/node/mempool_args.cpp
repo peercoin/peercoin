@@ -12,9 +12,9 @@
 #include <logging.h>
 #include <policy/feerate.h>
 #include <policy/policy.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <tinyformat.h>
-#include <util/error.h>
+#include <util/result.h>
 #include <util/moneystr.h>
 #include <util/system.h>
 #include <util/translation.h>

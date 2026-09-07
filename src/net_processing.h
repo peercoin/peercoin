@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+static constexpr bool DEFAULT_PRIVATE_BROADCAST = false; // peercoin: private broadcast not implemented yet
+
 class AddrMan;
 class CTxMemPool;
 class ChainstateManager;

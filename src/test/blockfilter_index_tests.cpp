@@ -10,7 +10,7 @@
 #include <interfaces/chain.h>
 #include <node/miner.h>
 #include <pow.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <test/util/blockfilter.h>
 #include <test/util/setup_common.h>
 #include <util/time.h>

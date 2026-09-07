@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2022 The Bitcoin Core developers
+// Copyright (c) 2017-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,8 +6,15 @@
 #define BITCOIN_INDEX_TXINDEX_H
 
 #include <index/base.h>
-#include <index/disktxpos.h>
-#include <primitives/block.h>
+#include <primitives/transaction.h>
+
+#include <cstddef>
+#include <memory>
+
+class uint256;
+namespace interfaces {
+class Chain;
+}
 
 static constexpr bool DEFAULT_TXINDEX{false};
 
@@ -44,10 +51,7 @@ public:
     /// @param[out]  block_hash  The hash of the block the transaction is found in.
     /// @param[out]  tx  The transaction itself.
     /// @return  true if transaction is found, false otherwise
-    bool FindTx(const uint256& tx_hash, uint256& block_hash, CTransactionRef& tx) const;
-
-    bool FindTxPosition(const uint256& txid, CDiskTxPos& pos) const;
-    std::map<uint256,std::pair<CBlockHeader,CTransactionRef>> cachedTxs;
+    bool FindTx(const Txid& tx_hash, uint256& block_hash, CTransactionRef& tx) const;
 };
 
 /// The global transaction index, used in GetTransaction. May be null.

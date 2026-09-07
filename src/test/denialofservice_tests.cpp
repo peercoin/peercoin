@@ -11,7 +11,7 @@
 #include <pubkey.h>
 #include <script/sign.h>
 #include <script/signingprovider.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <serialize.h>
 #include <test/util/net.h>
 #include <test/util/setup_common.h>

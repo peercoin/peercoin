@@ -3,7 +3,7 @@
 
 #include <validation.h>
 #include <chainparams.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <base58.h>
 #include <wallet/wallet.h>
 

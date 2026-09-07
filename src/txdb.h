@@ -8,6 +8,8 @@
 
 #include <coins.h>
 #include <dbwrapper.h>
+#include <chain.h>
+#include <consensus/params.h>
 #include <kernel/caches.h>
 #include <kernel/cs_main.h>
 #include <sync.h>
@@ -65,6 +67,25 @@ public:
 
     //! Return an underlying LevelDB property value, if available.
     std::optional<std::string> GetDBProperty(const std::string& property);
+};
+
+
+/** Access to the block database (blocks/index/) */
+class CBlockTreeDB : public CDBWrapper
+{
+public:
+    // peercoin: restored from peercoin/master to back node::BlockManager
+    explicit CBlockTreeDB(const DBParams& params) : CDBWrapper(params) {}
+
+    bool WriteBatchSync(const std::vector<std::pair<int, const CBlockFileInfo*> >& fileInfo, int nLastFile, const std::vector<const CBlockIndex*>& blockinfo);
+    bool ReadBlockFileInfo(int nFile, CBlockFileInfo &info);
+    bool ReadLastBlockFile(int &nFile);
+    bool WriteReindexing(bool fReindexing);
+    void ReadReindexing(bool &fReindexing);
+    bool WriteFlag(const std::string &name, bool fValue);
+    bool ReadFlag(const std::string &name, bool &fValue);
+    bool LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&)> insertBlockIndex)
+        EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
 };
 
 #endif // BITCOIN_TXDB_H

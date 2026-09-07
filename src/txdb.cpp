@@ -279,3 +279,186 @@ void CCoinsViewDBCursor::Next()
         keyTmp.first = entry.key;
     }
 }
+
+// peercoin: CBlockTreeDB implementation restored from peercoin/master
+static constexpr uint8_t DB_BLOCK_FILES{'f'};
+static constexpr uint8_t DB_BLOCK_INDEX{'b'};
+static constexpr uint8_t DB_FLAG{'F'};
+static constexpr uint8_t DB_REINDEX_FLAG{'R'};
+static constexpr uint8_t DB_LAST_BLOCK{'l'};
+
+bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo &info) {
+    return Read(std::make_pair(DB_BLOCK_FILES, nFile), info);
+}
+
+bool CBlockTreeDB::WriteReindexing(bool fReindexing) {
+    if (fReindexing)
+        return Write(DB_REINDEX_FLAG, uint8_t{'1'});
+    else
+        return Erase(DB_REINDEX_FLAG);
+}
+
+void CBlockTreeDB::ReadReindexing(bool &fReindexing) {
+    fReindexing = Exists(DB_REINDEX_FLAG);
+}
+
+bool CBlockTreeDB::ReadLastBlockFile(int &nFile) {
+    return Read(DB_LAST_BLOCK, nFile);
+}
+
+/** Specialization of CCoinsViewCursor to iterate over a CCoinsViewDB */
+class CCoinsViewDBCursor: public CCoinsViewCursor
+{
+public:
+    // Prefer using CCoinsViewDB::Cursor() since we want to perform some
+    // cache warmup on instantiation.
+    CCoinsViewDBCursor(CDBIterator* pcursorIn, const uint256&hashBlockIn):
+        CCoinsViewCursor(hashBlockIn), pcursor(pcursorIn) {}
+    ~CCoinsViewDBCursor() = default;
+
+    bool GetKey(COutPoint &key) const override;
+    bool GetValue(Coin &coin) const override;
+
+    bool Valid() const override;
+    void Next() override;
+
+private:
+    std::unique_ptr<CDBIterator> pcursor;
+    std::pair<char, COutPoint> keyTmp;
+
+    friend class CCoinsViewDB;
+};
+
+std::unique_ptr<CCoinsViewCursor> CCoinsViewDB::Cursor() const
+{
+    auto i = std::make_unique<CCoinsViewDBCursor>(
+        const_cast<CDBWrapper&>(*m_db).NewIterator(), GetBestBlock());
+    /* It seems that there are no "const iterators" for LevelDB.  Since we
+       only need read operations on it, use a const-cast to get around
+       that restriction.  */
+    i->pcursor->Seek(DB_COIN);
+    // Cache key of first record
+    if (i->pcursor->Valid()) {
+        CoinEntry entry(&i->keyTmp.second);
+        i->pcursor->GetKey(entry);
+        i->keyTmp.first = entry.key;
+    } else {
+        i->keyTmp.first = 0; // Make sure Valid() and GetKey() return false
+    }
+    return i;
+}
+
+bool CCoinsViewDBCursor::GetKey(COutPoint &key) const
+{
+    // Return cached key
+    if (keyTmp.first == DB_COIN) {
+        key = keyTmp.second;
+        return true;
+    }
+    return false;
+}
+
+bool CCoinsViewDBCursor::GetValue(Coin &coin) const
+{
+    return pcursor->GetValue(coin);
+}
+
+bool CCoinsViewDBCursor::Valid() const
+{
+    return keyTmp.first == DB_COIN;
+}
+
+void CCoinsViewDBCursor::Next()
+{
+    pcursor->Next();
+    CoinEntry entry(&keyTmp.second);
+    if (!pcursor->Valid() || !pcursor->GetKey(entry)) {
+        keyTmp.first = 0; // Invalidate cached key after last record so that Valid() and GetKey() return false
+    } else {
+        keyTmp.first = entry.key;
+    }
+}
+
+bool CBlockTreeDB::WriteBatchSync(const std::vector<std::pair<int, const CBlockFileInfo*> >& fileInfo, int nLastFile, const std::vector<const CBlockIndex*>& blockinfo) {
+    CDBBatch batch(*this);
+    for (std::vector<std::pair<int, const CBlockFileInfo*> >::const_iterator it=fileInfo.begin(); it != fileInfo.end(); it++) {
+        batch.Write(std::make_pair(DB_BLOCK_FILES, it->first), *it->second);
+    }
+    batch.Write(DB_LAST_BLOCK, nLastFile);
+    for (std::vector<const CBlockIndex*>::const_iterator it=blockinfo.begin(); it != blockinfo.end(); it++) {
+        batch.Write(std::make_pair(DB_BLOCK_INDEX, (*it)->GetBlockHash()), CDiskBlockIndex(*it));
+    }
+    return WriteBatch(batch, true);
+}
+
+bool CBlockTreeDB::WriteFlag(const std::string &name, bool fValue) {
+    return Write(std::make_pair(DB_FLAG, name), fValue ? uint8_t{'1'} : uint8_t{'0'});
+}
+
+bool CBlockTreeDB::ReadFlag(const std::string &name, bool &fValue) {
+    uint8_t ch;
+    if (!Read(std::make_pair(DB_FLAG, name), ch))
+        return false;
+    fValue = ch == uint8_t{'1'};
+    return true;
+}
+
+bool CBlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&)> insertBlockIndex)
+{
+    AssertLockHeld(::cs_main);
+    std::unique_ptr<CDBIterator> pcursor(NewIterator());
+    pcursor->Seek(std::make_pair(DB_BLOCK_INDEX, uint256()));
+
+    // Load m_block_index
+    while (pcursor->Valid()) {
+        if (ShutdownRequested()) return false;
+        std::pair<uint8_t, uint256> key;
+        if (pcursor->GetKey(key) && key.first == DB_BLOCK_INDEX) {
+            CDiskBlockIndex diskindex;
+            if (pcursor->GetValue(diskindex)) {
+                // Construct block index object
+                CBlockIndex* pindexNew = insertBlockIndex(diskindex.ConstructBlockHash());
+                pindexNew->pprev          = insertBlockIndex(diskindex.hashPrev);
+                pindexNew->nHeight        = diskindex.nHeight;
+                pindexNew->nFile          = diskindex.nFile;
+                pindexNew->nDataPos       = diskindex.nDataPos;
+                pindexNew->nUndoPos       = diskindex.nUndoPos;
+                pindexNew->nVersion       = diskindex.nVersion;
+                pindexNew->hashMerkleRoot = diskindex.hashMerkleRoot;
+                pindexNew->nTime          = diskindex.nTime;
+                pindexNew->nBits          = diskindex.nBits;
+                pindexNew->nNonce         = diskindex.nNonce;
+                pindexNew->nStatus        = diskindex.nStatus;
+                pindexNew->nTx            = diskindex.nTx;
+
+                 // peercoin related block index fields
+                pindexNew->nMint          = diskindex.nMint;
+                pindexNew->nMoneySupply   = diskindex.nMoneySupply;
+                pindexNew->nFlags         = diskindex.nFlags;
+                pindexNew->nHeightStake   = diskindex.nHeightStake;
+                pindexNew->nStakeModifier = diskindex.nStakeModifier;
+                pindexNew->prevoutStake   = diskindex.prevoutStake;
+                pindexNew->nStakeTime     = diskindex.nStakeTime;
+                pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
+
+                // peercoin: calculate stake modifier checksum
+                pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
+                if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum)) {
+                    return error("%s: Failed stake modifier checkpoint height=%d, modifier=0x%016llx", __func__, pindexNew->nHeight, pindexNew->nStakeModifier);
+                }
+
+                if (pindexNew->IsProofOfWork() && !CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
+                    return error("%s: CheckProofOfWork failed: %s", __func__, pindexNew->ToString());
+                }
+
+                pcursor->Next();
+            } else {
+                return error("%s: failed to read value", __func__);
+            }
+        } else {
+            break;
+        }
+    }
+
+    return true;
+}

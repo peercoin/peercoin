@@ -299,4 +299,9 @@ static inline bool LogAcceptCategory(BCLog::LogFlags category, BCLog::Level leve
 /** Return true if str parses as a log category and set the flag */
 bool GetLogCategory(BCLog::LogFlags& flag, std::string_view str);
 
+// peercoin legacy logging aliases (category/level ignored for now)
+#define LogPrintf(...) LogInfo(__VA_ARGS__)
+#define LogPrint(category, ...) LogInfo(__VA_ARGS__)
+#define LogPrintLevel(category, level, ...) LogInfo(__VA_ARGS__)
+
 #endif // BITCOIN_LOGGING_H

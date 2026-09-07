@@ -11,7 +11,7 @@
 
 #include <chain.h>
 #include <key.h>
-#include <script/standard.h>
+#include <script/solver.h>
 
 #include <qt/walletmodeltransaction.h>
 

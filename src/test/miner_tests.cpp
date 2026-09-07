@@ -9,7 +9,7 @@
 #include <node/miner.h>
 #include <policy/policy.h>
 #include <pow.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <test/util/random.h>
 #include <test/util/txmempool.h>
 #include <timedata.h>

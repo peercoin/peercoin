@@ -11,7 +11,7 @@
 #include <qt/walletmodel.h>
 
 #include <key_io.h>
-#include <util/message.h> // For MessageSign(), MessageVerify()
+#include <common/signmessage.h> // For MessageSign(), MessageVerify()
 #include <wallet/wallet.h>
 
 #include <vector>

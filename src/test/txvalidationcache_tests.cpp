@@ -6,7 +6,7 @@
 #include <key.h>
 #include <script/sign.h>
 #include <script/signingprovider.h>
-#include <script/standard.h>
+#include <script/solver.h>
 #include <test/util/setup_common.h>
 #include <txmempool.h>
 #include <validation.h>
