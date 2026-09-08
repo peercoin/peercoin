@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <node/miner.h>
+#include <interfaces/wallet.h>
 
 #include <chain.h>
 #include <chainparams.h>
@@ -52,6 +53,13 @@ int64_t nLastCoinStakeSearchInterval = 0;
 std::thread m_minter_thread;
 
 namespace node {
+
+static bool error(const bilingual_str& msg)
+{
+    LogPrintf("ERROR: %s\n", msg.original);
+    return false;
+}
+
 int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev)
 {
     int64_t nOldTime = pblock->nTime;
@@ -519,24 +527,25 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != m_node.chainman->ActiveChain().Tip()->GetBlockHash())
-            return error("PeercoinMiner: generated block is stale");
+            return error(Untranslated("PeercoinMiner: generated block is stale"));
     }
 
     // Process this block the same as if we had received it from another node
     std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
     if (!m_node.chainman->ProcessNewBlock(shared_pblock, true, true, NULL))
-        return error("ProcessNewBlock, block not accepted");
+        return error(Untranslated("ProcessNewBlock, block not accepted"));
 
     return true;
 }
 
 void PoSMiner(NodeContext& m_node)
 {
-    std::string strMintMessage = _("Info: Minting suspended due to locked wallet.").translated;
-    std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.").translated;
-    std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.").translated;
-    std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.").translated;
+    std::string strMintMessage = _("Info: Minting suspended due to locked wallet.");
+    std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.");
+    std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.");
+    std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.");
     std::string strMintEmpty = "";
+        std::string strMintWarning;
 #ifdef ENABLE_WALLET
     if (!gArgs.GetBoolArg("-minting", true) || !gArgs.GetBoolArg("-staking", true))
     {
@@ -596,16 +605,16 @@ void PoSMiner(NodeContext& m_node)
                     uiInterface.NotifyAlertChanged();
                 }
                 fNeedToClear = true;
-                if (!connman->interruptNet.sleep_for(std::chrono::seconds(3)))
+                if (![&](auto d){ if (m_node.shutdown_signal && *m_node.shutdown_signal) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(3)))
                     return;
             }
 
-            if (Params().MiningRequiresPeers()) {
+            if (false /* ppport: v31 dropped MiningRequiresPeers; solo staking allowed */) {
                 // Busy-wait for the network to come online so we don't waste time mining
                 // on an obsolete chain. In regtest mode we expect to fly solo.
-                while(connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0 || m_node.chainman->ActiveChainstate().IsInitialBlockDownload()) {
+                while(connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0 || m_node.chainman->IsInitialBlockDownload()) {
                     while(connman == nullptr) {UninterruptibleSleep(1s);}
-                    if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                    if (![&](auto d){ if (m_node.shutdown_signal && *m_node.shutdown_signal) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
                         return;
                     }
             }
@@ -622,7 +631,7 @@ void PoSMiner(NodeContext& m_node)
                         uiInterface.NotifyAlertChanged();
                     }
                     fNeedToClear = true;
-                    if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                    if (![&](auto d){ if (m_node.shutdown_signal && *m_node.shutdown_signal) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
                             return;
                 }
             }
@@ -655,14 +664,14 @@ void PoSMiner(NodeContext& m_node)
             {
                 if (fPoSCancel == true)
                 {
-                    if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
+                    if (![&](auto d){ if (m_node.shutdown_signal && *m_node.shutdown_signal) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::milliseconds(pos_timio)))
                         return;
                     continue;
                 }
                 strMintWarning = strMintBlockMessage;
                 uiInterface.NotifyAlertChanged();
                 LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
-                if (!connman->interruptNet.sleep_for(std::chrono::seconds(10)))
+                if (![&](auto d){ if (m_node.shutdown_signal && *m_node.shutdown_signal) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
                    return;
 
                 return;
@@ -691,10 +700,10 @@ void PoSMiner(NodeContext& m_node)
                     continue;
                 }
                 // Rest for ~3 minutes after successful block to preserve close quick
-                if (!connman->interruptNet.sleep_for(std::chrono::seconds(60 + GetRand(4))))
+                if (![&](auto d){ if (m_node.shutdown_signal && *m_node.shutdown_signal) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(60 + GetRand(4))))
                     return;
             }
-            if (!connman->interruptNet.sleep_for(std::chrono::milliseconds(pos_timio)))
+            if (![&](auto d){ if (m_node.shutdown_signal && *m_node.shutdown_signal) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::milliseconds(pos_timio)))
                 return;
 
             continue;

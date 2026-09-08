@@ -236,4 +236,6 @@ inline uint160 RIPEMD160(std::span<const unsigned char> data)
     return result;
 }
 
+extern int32_t peercoinRandseed; // peercoin
+
 #endif // BITCOIN_HASH_H

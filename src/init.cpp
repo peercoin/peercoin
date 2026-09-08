@@ -135,6 +135,7 @@ using node::ApplyArgsManOptions;
 using node::BlockManager;
 using node::CalculateCacheSizes;
 using node::ChainstateLoadResult;
+using node::DEFAULT_PRINT_MODIFIED_FEE;
 using node::ChainstateLoadStatus;
 using node::DEFAULT_PERSIST_MEMPOOL;
 using node::DEFAULT_STOPATHEIGHT;
@@ -1112,7 +1113,6 @@ bool AppInitParameterInteraction(const ArgsManager& args)
             return InitError(strprintf(_("Specified -blockreservedweight (%d) is lower than minimum safety value of (%d)"), block_reserved_weight, MINIMUM_BLOCK_RESERVED_WEIGHT));
         }
     }
-*/
     nBytesPerSigOp = args.GetIntArg("-bytespersigop", nBytesPerSigOp);
 
     if (!g_wallet_init_interface.ParameterInteraction()) return false;

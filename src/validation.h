@@ -104,6 +104,10 @@ enum class SynchronizationState {
     INIT_REINDEX,
     INIT_DOWNLOAD,
     POST_INIT
+    //! Prune blockfiles from the disk if necessary and then flush chainstate changes
+    //! if we pruned.
+    void PruneAndFlush();
+
 };
 
 extern GlobalMutex g_best_block_mutex;

@@ -6155,7 +6155,7 @@ bool PeerManagerImpl::SendMessages(CNode& node)
                 if (fSendTrickle && tx_relay->m_send_mempool) {
                     auto vtxinfo = m_mempool.infoAll();
                     tx_relay->m_send_mempool = false;
-                    CAmount filterrate = 0;
+                    const CFeeRate filterrate{tx_relay->m_fee_filter_received.load()};
 
                     LOCK(tx_relay->m_bloom_filter_mutex);
 

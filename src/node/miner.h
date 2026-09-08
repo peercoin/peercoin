@@ -33,9 +33,9 @@ struct CompareTxMemPoolEntryByAncestorFee {
     }
 };
 
+class Chainstate;
 class ChainstateManager;
 
-class ChainstateManager;
 class CBlockIndex;
 class CChainParams;
 class CScript;
@@ -43,6 +43,8 @@ class CScript;
 namespace Consensus { struct Params; };
 
 namespace node {
+
+static const bool DEFAULT_PRINT_MODIFIED_FEE = false;
 static const bool DEFAULT_PRINTPRIORITY = false;
 
 struct CBlockTemplate
