@@ -212,7 +212,7 @@ static void RemovePidFile(const ArgsManager& args)
     }
 }
 
-static std::optional<util::SignalInterrupt> g_shutdown;
+std::optional<util::SignalInterrupt> g_shutdown; // peercoin: non-static for txdb
 
 void InitContext(NodeContext& node)
 {

@@ -18,6 +18,8 @@
 #include <node/context.h>
 #include <node/miner.h>
 #include <pow.h>
+#include <rpc/request.h>
+#include <clientversion.h>
 #include <rpc/blockchain.h>
 #include <rpc/mining.h>
 #include <rpc/server.h>
@@ -36,7 +38,7 @@
 #include <util/translation.h>
 #include <validation.h>
 #include <validationinterface.h>
-#include <warnings.h>
+#include <node/warnings.h>
 
 #include <wallet/rpc/util.h>
 #include <wallet/rpc/wallet.h>
@@ -160,7 +162,7 @@ static RPCHelpMan getnetworkghps()
         }
         pindex = chainman.ActiveChain().Next(pindex);
     }
-    double dNetworkGhps = GetDifficulty(pindex, chainman.ActiveChain().Tip()) * 4.294967296 / nTargetSpacingWork;
+    double dNetworkGhps = (pindex ? GetDifficulty(*pindex) : 0.0) * 4.294967296 / nTargetSpacingWork;
     return dNetworkGhps;
 },
     };
@@ -218,8 +220,10 @@ static UniValue generateBlocks(ChainstateManager& chainman, const CTxMemPool& me
 static bool getScriptFromDescriptor(const std::string& descriptor, CScript& script, std::string& error)
 {
     FlatSigningProvider key_provider;
-    const auto desc = Parse(descriptor, key_provider, error, /* require_checksum = */ false);
-    if (desc) {
+    const auto descs = Parse(descriptor, key_provider, error, /* require_checksum = */ false);
+    if (!descs.empty()) {
+        if (descs.size() > 1) throw JSONRPCError(RPC_INVALID_PARAMETER, "Multipath descriptor not accepted");
+        const auto& desc = descs.at(0);
         if (desc->IsRange()) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Ranged descriptor not accepted. Maybe pass through deriveaddresses first?");
         }
@@ -311,7 +315,7 @@ static RPCHelpMan generatetoaddress()
          RPCExamples{
             "\nGenerate 11 blocks to myaddress\n"
             + HelpExampleCli("generatetoaddress", "11 \"myaddress\"")
-            + "If you are using the " PACKAGE_NAME " wallet, you can get a new address to send the newly generated peercoin to with:\n"
+            + "If you are using the " CLIENT_NAME " wallet, you can get a new address to send the newly generated peercoin to with:\n"
             + HelpExampleCli("getnewaddress", "")
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
@@ -384,10 +388,9 @@ static RPCHelpMan generateblock()
     for (size_t i = 0; i < raw_txs_or_txids.size(); i++) {
         const auto str(raw_txs_or_txids[i].get_str());
 
-        uint256 hash;
         CMutableTransaction mtx;
-        if (ParseHashStr(str, hash)) {
-
+        if (str.size() == 64 && IsHex(str)) {
+            const Txid hash{Txid::FromUint256(uint256S(str))};
             const auto tx = mempool.get(hash);
             if (!tx) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Transaction %s not in mempool.", str));
@@ -426,8 +429,8 @@ static RPCHelpMan generateblock()
     {
         LOCK(cs_main);
 
-        BlockValidationState state;
-        if (!TestBlockValidity(state, chainman.GetParams(), chainman.ActiveChainstate(), block, chainman.m_blockman.LookupBlockIndex(block.hashPrevBlock), GetAdjustedTime, false, false)) {
+        BlockValidationState state{TestBlockValidity(chainman.ActiveChainstate(), block, /*check_pow=*/false, /*check_merkle_root=*/false)};
+        if (!state.IsValid()) {
             throw JSONRPCError(RPC_VERIFY_ERROR, strprintf("TestBlockValidity failed: %s", state.ToString()));
         }
     }
@@ -485,12 +488,12 @@ static RPCHelpMan getmininginfo()
     obj.pushKV("blocks",           active_chain.Height());
     if (BlockAssembler::m_last_block_weight) obj.pushKV("currentblockweight", *BlockAssembler::m_last_block_weight);
     if (BlockAssembler::m_last_block_num_txs) obj.pushKV("currentblocktx", *BlockAssembler::m_last_block_num_txs);
-    obj.pushKV("difficulty",       (double)GetDifficulty(active_chain.Tip(), active_chain.Tip()));
+    obj.pushKV("difficulty",       GetDifficulty(*active_chain.Tip()));
     obj.pushKV("networkhashps",    getnetworkhashps().HandleRequest(request));
     obj.pushKV("networkghps",      getnetworkghps().HandleRequest(request));
     obj.pushKV("pooledtx",         (uint64_t)mempool.size());
-    obj.pushKV("chain", chainman.GetParams().NetworkIDString());
-    obj.pushKV("warnings",         GetWarnings(false).original);
+    obj.pushKV("chain", chainman.GetParams().GetChainTypeString());
+    obj.pushKV("warnings",         node::GetWarningsForRpc(*CHECK_NONFATAL(node.warnings), IsDeprecatedRPCEnabled("warnings")));
     return obj;
 },
     };
@@ -615,7 +618,7 @@ static RPCHelpMan getblocktemplate()
     if (!request.params[0].isNull())
     {
         const UniValue& oparam = request.params[0].get_obj();
-        const UniValue& modeval = find_value(oparam, "mode");
+        const UniValue& modeval = oparam.find_value("mode");
         if (modeval.isStr())
             strMode = modeval.get_str();
         else if (modeval.isNull())
@@ -624,11 +627,11 @@ static RPCHelpMan getblocktemplate()
         }
         else
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
-        lpval = find_value(oparam, "longpollid");
+        lpval = oparam.find_value("longpollid");
 
         if (strMode == "proposal")
         {
-            const UniValue& dataval = find_value(oparam, "data");
+            const UniValue& dataval = oparam.find_value("data");
             if (!dataval.isStr())
                 throw JSONRPCError(RPC_TYPE_ERROR, "Missing data String key for proposal");
 
@@ -650,12 +653,11 @@ static RPCHelpMan getblocktemplate()
             // TestBlockValidity only supports blocks built on the current Tip
             if (block.hashPrevBlock != pindexPrev->GetBlockHash())
                 return "inconclusive-not-best-prevblk";
-            BlockValidationState state;
-            TestBlockValidity(state, chainman.GetParams(), active_chainstate, block, pindexPrev, GetAdjustedTime, false, true);
+            BlockValidationState state{TestBlockValidity(active_chainstate, block, /*check_pow=*/false, /*check_merkle_root=*/true)};
             return BIP22ValidationResult(state);
         }
 
-        const UniValue& aClientRules = find_value(oparam, "rules");
+        const UniValue& aClientRules = oparam.find_value("rules");
         if (aClientRules.isArray()) {
             for (unsigned int i = 0; i < aClientRules.size(); ++i) {
                 const UniValue& v = aClientRules[i];
@@ -670,11 +672,11 @@ static RPCHelpMan getblocktemplate()
     if (!chainman.GetParams().IsTestChain()) {
         const CConnman& connman = EnsureConnman(node);
         if (connman.GetNodeCount(ConnectionDirection::Both) == 0) {
-            throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, PACKAGE_NAME " is not connected!");
+            throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, CLIENT_NAME " is not connected!");
         }
 
-        if (active_chainstate.IsInitialBlockDownload()) {
-            throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, PACKAGE_NAME " is in initial sync and waiting for blocks...");
+        if (chainman.IsInitialBlockDownload()) {
+            throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, CLIENT_NAME " is in initial sync and waiting for blocks...");
         }
     }
 
@@ -703,8 +705,9 @@ static RPCHelpMan getblocktemplate()
             nTransactionsUpdatedLastLP = nTransactionsUpdatedLast;
         }
 
+#if 0 // peercoin: legacy longpoll blocking wait; modern template polling replaces this
         // Release lock while waiting
-        LEAVE_CRITICAL_SECTION(cs_main);
+        LEAVE_LOCK(cs_main);
         {
             checktxtime = std::chrono::steady_clock::now() + std::chrono::minutes(1);
 
@@ -721,7 +724,9 @@ static RPCHelpMan getblocktemplate()
                 }
             }
         }
-        ENTER_CRITICAL_SECTION(cs_main);
+        ENTER_LOCK(cs_main);
+
+#endif
 
         if (!IsRPCRunning())
             throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Shutting down");
@@ -850,7 +855,7 @@ static RPCHelpMan getblocktemplate()
     result.pushKV("transactions", transactions);
     result.pushKV("coinbaseaux", aux);
     result.pushKV("coinbasevalue", (int64_t)pblock->vtx[0]->vout[0].nValue);
-    result.pushKV("longpollid", active_chain.Tip()->GetBlockHash().GetHex() + ToString(nTransactionsUpdatedLast));
+    result.pushKV("longpollid", active_chain.Tip()->GetBlockHash().GetHex() + std::to_string(nTransactionsUpdatedLast));
     result.pushKV("target", hashTarget.GetHex());
     result.pushKV("mintime", (int64_t)pindexPrev->GetMedianTimePast()+1);
     result.pushKV("mutable", aMutable);
@@ -895,8 +900,8 @@ public:
     explicit submitblock_StateCatcher(const uint256 &hashIn) : hash(hashIn), state() {}
 
 protected:
-    void BlockChecked(const CBlock& block, const BlockValidationState& stateIn) override {
-        if (block.GetHash() != hash)
+    void BlockChecked(const std::shared_ptr<const CBlock>& block, const BlockValidationState& stateIn) override {
+        if (block->GetHash() != hash)
             return;
         found = true;
         state = stateIn;
@@ -964,10 +969,11 @@ static RPCHelpMan submitblock()
     }
 
     bool new_block;
+    NodeContext& node{EnsureAnyNodeContext(request.context)};
     auto sc = std::make_shared<submitblock_StateCatcher>(block.GetHash());
-    RegisterSharedValidationInterface(sc);
+    CHECK_NONFATAL(node.validation_signals)->RegisterValidationInterface(sc.get());
     bool accepted = chainman.ProcessNewBlock(blockptr, /*force_processing=*/true, /*min_pow_checked=*/true, /*new_block=*/&new_block);
-    UnregisterSharedValidationInterface(sc);
+    CHECK_NONFATAL(node.validation_signals)->UnregisterValidationInterface(sc.get());
     if (!new_block && accepted) {
         return "duplicate";
     }
@@ -1014,7 +1020,8 @@ static RPCHelpMan submitheader()
         LOCK(cs_main);
         tip = chainman.ActiveChain().Tip();
     }
-    chainman.ProcessNewBlockHeaders(tmpTemp, tip->GetBlockHash(), {h}, /*min_pow_checked=*/true, state, Params());
+    int32_t nPoSTemperature{0};
+    chainman.ProcessNewBlockHeaders(nPoSTemperature, tip ? tip->GetBlockHash() : uint256{}, std::span<const CBlockHeader>{&h, 1}, /*min_pow_checked=*/true, state);
     if (state.IsValid()) return NullUniValue;
     if (state.IsError()) {
         throw JSONRPCError(RPC_VERIFY_ERROR, state.ToString());

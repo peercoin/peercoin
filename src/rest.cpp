@@ -17,6 +17,7 @@
 #include <node/context.h>
 #include <primitives/block.h>
 #include <primitives/transaction.h>
+#include <arith_uint256.h>
 #include <rpc/blockchain.h>
 #include <rpc/mempool.h>
 #include <rpc/protocol.h>
@@ -259,7 +260,7 @@ static bool rest_headers(const std::any& context,
     case RESTResponseFormat::JSON: {
         UniValue jsonHeaders(UniValue::VARR);
         for (const CBlockIndex *pindex : headers) {
-            jsonHeaders.push_back(blockheaderToJSON(*tip, *pindex, chainman.GetConsensus().powLimit));
+            jsonHeaders.push_back(blockheaderToJSON(*tip, *pindex, UintToArith256(chainman.GetConsensus().powLimit)));
         }
         std::string strJSON = jsonHeaders.write() + "\n";
         req->WriteHeader("Content-Type", "application/json");
@@ -452,7 +453,7 @@ static bool rest_block(const std::any& context,
         if (tx_verbosity) {
             CBlock block{};
             SpanReader{*block_data} >> TX_WITH_WITNESS(block);
-            UniValue objBlock = blockToJSON(chainman.m_blockman, block, *tip, *pblockindex, *tx_verbosity, chainman.GetConsensus().powLimit);
+            UniValue objBlock = blockToJSON(chainman.m_blockman, block, *tip, *pblockindex, *tx_verbosity, UintToArith256(chainman.GetConsensus().powLimit));
             std::string strJSON = objBlock.write() + "\n";
             req->WriteHeader("Content-Type", "application/json");
             req->WriteReply(HTTP_OK, strJSON);

@@ -529,4 +529,6 @@ std::vector<RPCResult> ScriptPubKeyDoc();
  */
 uint256 GetTarget(const CBlockIndex& blockindex, uint256 pow_limit);
 
+static inline int RPCSerializationFlags() { return 0; } // peercoin bridge
+
 #endif // BITCOIN_RPC_UTIL_H

@@ -307,6 +307,9 @@ protected:
     std::vector<CBlockFileInfo> m_blockfile_info;
 
     /** Dirty block index entries. */
+public: // peercoin bridge: allow PPC-era ConnectBlock paths to mark index dirty
+    void MarkDirtyBlockIndex(CBlockIndex* pindex) { m_dirty_blockindex.insert(pindex); }
+protected:
     std::set<CBlockIndex*> m_dirty_blockindex;
 
     /** Dirty block file entries. */

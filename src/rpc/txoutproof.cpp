@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,6 +10,7 @@
 #include <merkleblock.h>
 #include <node/blockstorage.h>
 #include <primitives/transaction.h>
+#include <rpc/blockchain.h>
 #include <rpc/server.h>
 #include <rpc/server_util.h>
 #include <rpc/util.h>
@@ -18,12 +19,12 @@
 #include <validation.h>
 
 using node::GetTransaction;
-using node::ReadBlockFromDisk;
 
 static RPCHelpMan gettxoutproof()
 {
-    return RPCHelpMan{"gettxoutproof",
-        "\nReturns a hex-encoded proof that \"txid\" was included in a block.\n"
+    return RPCHelpMan{
+        "gettxoutproof",
+        "Returns a hex-encoded proof that \"txid\" was included in a block.\n"
         "\nNOTE: By default this function only works sometimes. This is when there is an\n"
         "unspent output in the utxo for this transaction. To make it always work,\n"
         "you need to maintain a transaction index, using the -txindex command line option or\n"
@@ -42,13 +43,13 @@ static RPCHelpMan gettxoutproof()
         RPCExamples{""},
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
         {
-            std::set<uint256> setTxids;
+            std::set<Txid> setTxids;
             UniValue txids = request.params[0].get_array();
             if (txids.empty()) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Parameter 'txids' cannot be empty");
             }
             for (unsigned int idx = 0; idx < txids.size(); idx++) {
-                auto ret = setTxids.insert(ParseHashV(txids[idx], "txid"));
+                auto ret{setTxids.insert(Txid::FromUint256(ParseHashV(txids[idx], "txid")))};
                 if (!ret.second) {
                     throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated txid: ") + txids[idx].get_str());
                 }
@@ -70,7 +71,7 @@ static RPCHelpMan gettxoutproof()
 
                 // Loop through txids and try to find which block they're in. Exit loop once a block is found.
                 for (const auto& tx : setTxids) {
-                    const Coin& coin = AccessByTxid(active_chainstate.CoinsTip(), tx);
+                    const Coin& coin{AccessByTxid(active_chainstate.CoinsTip(), tx)};
                     if (!coin.IsSpent()) {
                         pblockindex = active_chainstate.m_chain[coin.nHeight];
                         break;
@@ -85,7 +86,7 @@ static RPCHelpMan gettxoutproof()
             }
 
             if (pblockindex == nullptr) {
-                const CTransactionRef tx = GetTransaction(/*block_index=*/nullptr, /*mempool=*/nullptr, *setTxids.begin(), chainman.GetConsensus(), hashBlock);
+                const CTransactionRef tx = GetTransaction(/*block_index=*/nullptr, /*mempool=*/nullptr, *setTxids.begin(), chainman.m_blockman, hashBlock);
                 if (!tx || hashBlock.IsNull()) {
                     throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not yet in block");
                 }
@@ -97,14 +98,18 @@ static RPCHelpMan gettxoutproof()
                 }
             }
 
+            {
+                LOCK(cs_main);
+                CheckBlockDataAvailability(chainman.m_blockman, *pblockindex, /*check_for_undo=*/false);
+            }
             CBlock block;
-            if (!ReadBlockFromDisk(block, pblockindex, chainman.GetConsensus())) {
+            if (!chainman.m_blockman.ReadBlock(block, *pblockindex)) {
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "Can't read block from disk");
             }
 
             unsigned int ntxFound = 0;
             for (const auto& tx : block.vtx) {
-                if (setTxids.count(tx->GetHash())) {
+                if (setTxids.contains(tx->GetHash())) {
                     ntxFound++;
                 }
             }
@@ -112,7 +117,7 @@ static RPCHelpMan gettxoutproof()
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Not all transactions found in specified or retrieved block");
             }
 
-            CDataStream ssMB(SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
+            DataStream ssMB{};
             CMerkleBlock mb(block, setTxids);
             ssMB << mb;
             std::string strHex = HexStr(ssMB);
@@ -123,8 +128,9 @@ static RPCHelpMan gettxoutproof()
 
 static RPCHelpMan verifytxoutproof()
 {
-    return RPCHelpMan{"verifytxoutproof",
-        "\nVerifies that a proof points to a transaction in a block, returning the transaction it commits to\n"
+    return RPCHelpMan{
+        "verifytxoutproof",
+        "Verifies that a proof points to a transaction in a block, returning the transaction it commits to\n"
         "and throwing an RPC error if the block is not in our best chain\n",
         {
             {"proof", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The hex-encoded proof generated by gettxoutproof"},
@@ -138,13 +144,12 @@ static RPCHelpMan verifytxoutproof()
         RPCExamples{""},
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
         {
-            CDataStream ssMB(ParseHexV(request.params[0], "proof"), SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
             CMerkleBlock merkleBlock;
-            ssMB >> merkleBlock;
+            SpanReader{ParseHexV(request.params[0], "proof")} >> merkleBlock;
 
             UniValue res(UniValue::VARR);
 
-            std::vector<uint256> vMatch;
+            std::vector<Txid> vMatch;
             std::vector<unsigned int> vIndex;
             if (merkleBlock.txn.ExtractMatches(vMatch, vIndex) != merkleBlock.header.hashMerkleRoot)
                 return res;
@@ -159,8 +164,8 @@ static RPCHelpMan verifytxoutproof()
 
             // Check if proof is valid, only add results if so
             if (pindex->nTx == merkleBlock.txn.GetNumTransactions()) {
-                for (const uint256& hash : vMatch) {
-                    res.push_back(hash.GetHex());
+                for (const auto& txid : vMatch) {
+                    res.push_back(txid.GetHex());
                 }
             }
 

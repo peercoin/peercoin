@@ -56,4 +56,6 @@ std::optional<arith_uint256> DeriveTarget(unsigned int nBits, const uint256 pow_
  */
 bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits);
 
+inline unsigned int GetNextWorkRequired(const CBlockIndex* pindexPrev, const CBlockHeader* pblock, const Consensus::Params& params) { return GetNextTargetRequired(pindexPrev, /*fProofOfStake=*/pindexPrev && pindexPrev->IsProofOfWork(), params); } // peercoin bridge
+
 #endif // BITCOIN_POW_H

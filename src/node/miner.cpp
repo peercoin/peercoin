@@ -4,9 +4,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <node/miner.h>
-#include <util/threadinterrupt.h>
+#include <util/signalinterrupt.h>
 #include <interfaces/types.h>
-#include <kernel/kernel_notifications.h>
+#include <node/kernel_notifications.h>
 #include <interfaces/wallet.h>
 
 #include <chain.h>
@@ -259,9 +259,6 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     }
     const auto time_2{SteadyClock::now()};
 
-             Ticks<MillisecondsDouble>(time_1 - time_start),
-             Ticks<MillisecondsDouble>(time_2 - time_1),
-             Ticks<MillisecondsDouble>(time_2 - time_start));
 
     return std::move(pblocktemplate);
 }
@@ -683,7 +680,7 @@ std::unique_ptr<CBlockTemplate> WaitAndCreateNewBlock(ChainstateManager& chainma
                 chainman.ActiveChainstate(),
                 mempool,
                 assemble_options}
-                              .CreateNewBlock()};
+                              .CreateNewBlock(CScript(), nullptr, nullptr, nullptr)};
 
             // If the tip changed, return the new template regardless of its fees.
             if (tip_changed) return new_tmpl;

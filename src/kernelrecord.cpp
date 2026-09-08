@@ -28,7 +28,7 @@ vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, c
 {
     vector<KernelRecord> parts;
     int64_t nTime = (wtx.tx->nTime ? wtx.tx->nTime : wtx.time);
-    uint256 hash = wtx.tx->GetHash();
+    Txid hash = wtx.tx->GetHash();
     std::map<std::string, std::string> mapValue = wtx.value_map;
 
     int numBlocks;
@@ -53,7 +53,7 @@ vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, c
                 }
                 std::vector<interfaces::WalletTxOut> coins = wallet.getCoins({COutPoint(hash, nOut)});
                 bool isSpent = coins.size() >= 1 ? coins[0].is_spent : true;
-                parts.push_back(KernelRecord(hash, nTime, addrStr, txOut.nValue, nOut, isSpent));
+                parts.push_back(KernelRecord(hash.ToUint256(), nTime, addrStr, txOut.nValue, nOut, isSpent));
             }
         }
     }

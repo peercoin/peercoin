@@ -6,6 +6,7 @@
 #ifndef BITCOIN_NODE_MINER_H
 #define BITCOIN_NODE_MINER_H
 
+#include <interfaces/types.h>
 #include <node/types.h>
 #include <primitives/block.h>
 #include <txmempool.h>
@@ -133,7 +134,9 @@ void ApplyArgsManOptions(const ArgsManager& gArgs, BlockAssembler::Options& opti
 
 // peercoin: v31 mining helpers
 using interfaces::BlockRef;
-struct CoinbaseTx;
+class KernelNotifications;
+std::optional<BlockRef> GetTip(ChainstateManager& chainman);
+std::optional<BlockRef> WaitTipChanged(ChainstateManager& chainman, KernelNotifications& kernel_notifications, const uint256& current_tip, MillisecondsDouble& timeout, bool& interrupt);
 std::unique_ptr<CBlockTemplate> WaitAndCreateNewBlock(ChainstateManager& chainman, KernelNotifications& kernel_notifications, CTxMemPool* mempool, const std::unique_ptr<CBlockTemplate>& block_template, const BlockWaitOptions& options, const BlockAssembler::Options& assemble_options, bool& interrupt_wait);
 void InterruptWait(KernelNotifications& kernel_notifications, bool& interrupt_wait);
 bool CooldownIfHeadersAhead(ChainstateManager& chainman, KernelNotifications& kernel_notifications, const BlockRef& last_tip, bool& interrupt_mining);

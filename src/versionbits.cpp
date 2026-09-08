@@ -310,7 +310,7 @@ public:
     : m_params{chainparams.GetConsensus()}, m_caches{caches}, m_bit(bit)
     {
         if (chainparams.IsTestChain()) {
-            period = chainparams.GetConsensus().DifficultyAdjustmentInterval();
+            period = chainparams.GetConsensus().nTargetTimespan / chainparams.GetConsensus().nPowTargetSpacing;
             threshold = period * 3 / 4; // 75% for test nets per BIP9 suggestion
         }
     }

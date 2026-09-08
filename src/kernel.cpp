@@ -99,37 +99,37 @@ static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
 // Whether the given coinstake is subject to new v0.3 protocol
 bool IsProtocolV03(unsigned int nTimeCoinStake)
 {
-    return (nTimeCoinStake >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV03TestSwitchTime : nProtocolV03SwitchTime));
+    return (nTimeCoinStake >= (Params().GetChainTypeString() != "main" ? nProtocolV03TestSwitchTime : nProtocolV03SwitchTime));
 }
 
 // Whether the given block is subject to new v0.4 protocol
 bool IsProtocolV04(unsigned int nTimeBlock)
 {
-    return (nTimeBlock >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV04TestSwitchTime : nProtocolV04SwitchTime));
+    return (nTimeBlock >= (Params().GetChainTypeString() != "main" ? nProtocolV04TestSwitchTime : nProtocolV04SwitchTime));
 }
 
 // Whether the given transaction is subject to new v0.5 protocol
 bool IsProtocolV05(unsigned int nTimeTx)
 {
-    return (nTimeTx >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV05TestSwitchTime : nProtocolV05SwitchTime));
+    return (nTimeTx >= (Params().GetChainTypeString() != "main" ? nProtocolV05TestSwitchTime : nProtocolV05SwitchTime));
 }
 
 // Whether a given block is subject to new v0.6 protocol
 // Test against previous block index! (always available)
 bool IsProtocolV06(const CBlockIndex* pindexPrev)
 {
-  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+  if (Params().GetChainTypeString() == "regtest")
       return true;
 
-  if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime))
+  if (pindexPrev->nTime < (Params().GetChainTypeString() != "main" ? nProtocolV06TestSwitchTime : nProtocolV06SwitchTime))
     return false;
 
   // if 900 of the last 1,000 blocks are version 2 or greater (90/100 if testnet):
   // Soft-forking PoS can be dangerous if the super majority is too low
   // The stake majority will decrease after the fork
   // since only coindays of updated nodes will get destroyed.
-  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && pindexPrev->nHeight > 339678) ||
-      (Params().NetworkIDString() != CBaseChainParams::MAIN && pindexPrev->nHeight > 301251))
+  if ((Params().GetChainTypeString() == "main" && pindexPrev->nHeight > 339678) ||
+      (Params().GetChainTypeString() != "main" && pindexPrev->nHeight > 301251))
     return true;
 
   return false;
@@ -138,48 +138,48 @@ bool IsProtocolV06(const CBlockIndex* pindexPrev)
 // Whether a given transaction is subject to new v0.7 protocol
 bool IsProtocolV07(unsigned int nTimeTx)
 {
-    bool fTestNet = Params().NetworkIDString() != CBaseChainParams::MAIN;
+    bool fTestNet = Params().GetChainTypeString() != "main";
     return (nTimeTx >= (fTestNet? nProtocolV07TestSwitchTime : nProtocolV07SwitchTime));
 }
 
 bool IsBTC16BIPsEnabled(uint32_t nTimeTx)
 {
-    bool fTestNet = Params().NetworkIDString() != CBaseChainParams::MAIN;
+    bool fTestNet = Params().GetChainTypeString() != "main";
     return (nTimeTx >= (fTestNet? nBTC16BIPsTestSwitchTime : nBTC16BIPsSwitchTime));
 }
 
 // Whether a given timestamp is subject to new v0.9 protocol
 bool IsProtocolV09(unsigned int nTime)
 {
-  return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV09TestSwitchTime : nProtocolV09SwitchTime));
+  return (nTime >= (Params().GetChainTypeString() != "main" ? nProtocolV09TestSwitchTime : nProtocolV09SwitchTime));
 }
 
 // Whether a given timestamp is subject to new v10 protocol
 bool IsProtocolV10(unsigned int nTime)
 {
-  return (nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV10TestSwitchTime : nProtocolV10SwitchTime));
+  return (nTime >= (Params().GetChainTypeString() != "main" ? nProtocolV10TestSwitchTime : nProtocolV10SwitchTime));
 }
 
 // Whether a given block is subject to new v12 protocol
 bool IsProtocolV12(const CBlockIndex* pindexPrev)
 {
-  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+  if (Params().GetChainTypeString() == "regtest")
       return true;
 
-  return (pindexPrev->nTime >= (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime));
+  return (pindexPrev->nTime >= (Params().GetChainTypeString() != "main" ? nProtocolV12TestSwitchTime : nProtocolV12SwitchTime));
 }
 
 // Whether a given block is subject to new v14 protocol
 bool IsProtocolV14(const CBlockIndex* pindexPrev)
 {
-  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+  if (Params().GetChainTypeString() == "regtest")
       return true;
 
-  if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV14TestSwitchTime : nProtocolV14SwitchTime))
+  if (pindexPrev->nTime < (Params().GetChainTypeString() != "main" ? nProtocolV14TestSwitchTime : nProtocolV14SwitchTime))
       return false;
 
-  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && pindexPrev->nHeight > 770395) ||
-      (Params().NetworkIDString() != CBaseChainParams::MAIN && pindexPrev->nHeight > 573706))
+  if ((Params().GetChainTypeString() == "main" && pindexPrev->nHeight > 770395) ||
+      (Params().GetChainTypeString() != "main" && pindexPrev->nHeight > 573706))
     return true;
 
   return false;
@@ -188,20 +188,23 @@ bool IsProtocolV14(const CBlockIndex* pindexPrev)
 // Whether a given block is subject to new v15 protocol
 bool IsProtocolV15(const CBlockIndex* pindexPrev)
 {
-  if (Params().NetworkIDString() == CBaseChainParams::REGTEST)
+  if (Params().GetChainTypeString() == "regtest")
       return true;
 
-  if (pindexPrev->nTime < (Params().NetworkIDString() != CBaseChainParams::MAIN ? nProtocolV15TestSwitchTime : nProtocolV15SwitchTime))
+  if (pindexPrev->nTime < (Params().GetChainTypeString() != "main" ? nProtocolV15TestSwitchTime : nProtocolV15SwitchTime))
       return false;
 
-  if ((Params().NetworkIDString() == CBaseChainParams::MAIN && pindexPrev->nHeight > 801330) ||
-      (Params().NetworkIDString() != CBaseChainParams::MAIN && pindexPrev->nHeight > 612775))
+  if ((Params().GetChainTypeString() == "main" && pindexPrev->nHeight > 801330) ||
+      (Params().GetChainTypeString() != "main" && pindexPrev->nHeight > 612775))
     return true;
 
   return false;
 }
 
 // Get the last stake modifier and its generation time from a given block
+#include <logging.h>
+#define error(...) (LogPrintf(__VA_ARGS__), false) // peercoin bridge
+
 static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime)
 {
     if (!pindex)
@@ -656,27 +659,38 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
         return error("CheckProofOfStake() : transaction index not available");
 
     // Get transaction index for the previous transaction
-    CDiskTxPos postx;
-    if (!g_txindex->FindTxPosition(txin.prevout.hash, postx))
+    uint256 block_hash_prev;
+    CTransactionRef txPrev;
+    if (!g_txindex->FindTx(txin.prevout.hash, block_hash_prev, txPrev))
         return error("CheckProofOfStake() : tx index not found");  // tx index not found
 
-    // Read txPrev and header of its block
-    CBlockHeader header;
-    CTransactionRef txPrev;
-    auto it = g_txindex->cachedTxs.find(txin.prevout.hash);
-    if (it != g_txindex->cachedTxs.end()) {
-        header = it->second.first;
-        txPrev = it->second.second;
-    } else {
-        CAutoFile file(node::OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
-        try {
-            file >> header;
-            fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
-            file >> txPrev;
-        } catch (std::exception &e) {
-            return error("%s() : deserialize or I/O error in CheckProofOfStake()", __PRETTY_FUNCTION__);
+    // peercoin: fetch kernel block header from block index instead of disk scan
+    CBlockIndex* pindexFrom{nullptr};
+    {
+        LOCK(cs_main);
+        pindexFrom = chainstate.m_blockman.LookupBlockIndex(block_hash_prev);
+    }
+    if (!pindexFrom)
+        return error("CheckProofOfStake() : block index not found for kernel input");
+    CBlockHeader header = pindexFrom->GetBlockHeader();
+    const int64_t nTimeBlockFrom = header.GetBlockTime();
+    // peercoin: compute kernel offset on v31 disk layout (header + varint count + preceding txs)
+    uint64_t nTxPrevOffset = 0;
+    {
+        CBlock blockFrom;
+        if (!chainstate.m_blockman.ReadBlock(blockFrom, *pindexFrom))
+            return error("CheckProofOfStake() : unable to read kernel block from disk");
+        uint64_t nCount = blockFrom.vtx.size();
+        size_t varint_size = nCount < 253 ? 1 : nCount <= 0xffff ? 3 : nCount <= 0xffffffff ? 5 : 9;
+        nTxPrevOffset = pindexFrom->nDataPos + CBlockHeader::NORMAL_SERIALIZE_SIZE + varint_size;
+        for (const auto& txo : blockFrom.vtx) {
+            bool found = false;
+            for (size_t o = 0; o < txo->vout.size(); ++o) {
+                if (COutPoint(txo->GetHash(), o) == txin.prevout) { found = true; break; }
+            }
+            if (found) break;
+            nTxPrevOffset += GetSerializeSize(*txo);
         }
-        //g_txindex->cachedTxs[txin.prevout.hash] = std::pair(header,txPrev);
     }
 
     if (txPrev->GetHash() != txin.prevout.hash)
@@ -692,7 +706,7 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
             return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "invalid-pos-script", strprintf("%s: VerifyScript failed on coinstake %s", __func__, tx->GetHash().ToString()));
     }
 
-    if (!CheckStakeKernelHash(nBits, pindexPrev, header, postx.nTxOffset + CBlockHeader::NORMAL_SERIALIZE_SIZE, txPrev, txin.prevout, nTimeTx, hashProofOfStake, gArgs.GetBoolArg("-debug", false), chainstate))
+    if (!CheckStakeKernelHash(nBits, pindexPrev, header, nTxPrevOffset, txPrev, txin.prevout, nTimeTx, hashProofOfStake, gArgs.GetBoolArg("-debug", false), chainstate))
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "check-kernel-failed", strprintf("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s", tx->GetHash().ToString(), hashProofOfStake.ToString())); // may occur during initial download or if behind on block chain sync
 
     return true;
@@ -724,7 +738,7 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum)
 {
-    bool fTestNet = Params().NetworkIDString() == CBaseChainParams::TESTNET;
+    bool fTestNet = Params().GetChainTypeString() == "test";
     if (fTestNet && mapStakeModifierTestnetCheckpoints.count(nHeight))
         return nStakeModifierChecksum == mapStakeModifierTestnetCheckpoints[nHeight];
 
