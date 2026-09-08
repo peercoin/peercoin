@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
@@ -6,6 +6,7 @@
 
 #include <wallet/coinselection.h>
 #include <wallet/spend.h>
+#include <wallet/test/util.h>
 #include <wallet/wallet.h>
 
 #include <boost/test/unit_test.hpp>
@@ -17,8 +18,7 @@ static int nextLockTime = 0;
 
 static std::shared_ptr<CWallet> NewWallet(const node::NodeContext& m_node)
 {
-    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockWalletDatabase());
-    wallet->LoadWallet();
+    std::unique_ptr<CWallet> wallet = std::make_unique<CWallet>(m_node.chain.get(), "", CreateMockableWalletDatabase());
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
     wallet->SetupDescriptorScriptPubKeyMans();
@@ -30,7 +30,7 @@ static void addCoin(CoinsResult& coins,
                      const CTxDestination& dest,
                      const CAmount& nValue,
                      bool is_from_me,
-                     CAmount fee_rate = 0,
+                     CFeeRate fee_rate = CFeeRate(0),
                      int depth = 6)
 {
     CMutableTransaction tx;
@@ -39,7 +39,7 @@ static void addCoin(CoinsResult& coins,
     tx.vout[0].nValue = nValue;
     tx.vout[0].scriptPubKey = GetScriptForDestination(dest);
 
-    const uint256& txid = tx.GetHash();
+    const auto txid{tx.GetHash()};
     LOCK(wallet.cs_wallet);
     auto ret = wallet.mapWallet.emplace(std::piecewise_construct, std::forward_as_tuple(txid), std::forward_as_tuple(MakeTransactionRef(std::move(tx)), TxStateInactive{}));
     assert(ret.second);
@@ -50,7 +50,6 @@ static void addCoin(CoinsResult& coins,
                    txout,
                    depth,
                    CalculateMaximumSignedInputSize(txout, &wallet, /*coin_control=*/nullptr),
-                   /*spendable=*/ true,
                    /*solvable=*/ true,
                    /*safe=*/ true,
                    wtx.GetTxTime(),
@@ -64,6 +63,10 @@ static void addCoin(CoinsResult& coins,
             rand,
             /*change_output_size=*/ 0,
             /*change_spend_size=*/ 0,
+            /*min_change_target=*/ CENT,
+            /*effective_feerate=*/ CFeeRate(0),
+            /*long_term_feerate=*/ CFeeRate(0),
+            /*discard_feerate=*/ CFeeRate(0),
             /*tx_noinputs_size=*/ 0,
             /*avoid_partial=*/ avoid_partial_spends,
     };
@@ -148,7 +151,7 @@ BOOST_AUTO_TEST_CASE(outputs_grouping_tests)
     // ################################################################################
 
     const CTxDestination dest3 = *Assert(wallet->GetNewDestination(OutputType::BECH32, ""));
-    addCoin(group_verifier.coins_pool, *wallet, dest3, 1, true, 100);
+    addCoin(group_verifier.coins_pool, *wallet, dest3, 1, true, CFeeRate(100));
     BOOST_CHECK(group_verifier.coins_pool.coins[OutputType::BECH32].back().GetEffectiveValue() <= 0);
 
     // First expect no changes with "positive_only" enabled
@@ -173,7 +176,7 @@ BOOST_AUTO_TEST_CASE(outputs_grouping_tests)
 
     const CTxDestination dest4 = *Assert(wallet->GetNewDestination(OutputType::BECH32, ""));
     addCoin(group_verifier.coins_pool, *wallet, dest4, 6 * COIN,
-            /*is_from_me=*/false, 0, /*depth=*/5);
+            /*is_from_me=*/false, CFeeRate(0), /*depth=*/5);
 
     // Expect no changes from this round and the previous one (point 4)
     group_verifier.GroupAndVerify(OutputType::BECH32,
@@ -190,7 +193,7 @@ BOOST_AUTO_TEST_CASE(outputs_grouping_tests)
 
     const CTxDestination dest5 = *Assert(wallet->GetNewDestination(OutputType::BECH32, ""));
     addCoin(group_verifier.coins_pool, *wallet, dest5, 6 * COIN,
-            /*is_from_me=*/true, 0, /*depth=*/0);
+            /*is_from_me=*/true, CFeeRate(0), /*depth=*/0);
 
     // Expect no changes from this round and the previous one (point 5)
     group_verifier.GroupAndVerify(OutputType::BECH32,

@@ -34,7 +34,7 @@
 #include <validation.h>
 #include <wallet/wallet.h>
 #include <wallet/coincontrol.h>
-#include <warnings.h>
+#include <node/warnings.h>
 #include <wallet/spend.h>
 #include <wallet/wallet.h>
 

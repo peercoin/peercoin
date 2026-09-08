@@ -186,7 +186,8 @@ struct LocalServiceInfo {
 extern GlobalMutex g_maplocalhost_mutex;
 
 // peercoin: Number of consecutive PoS headers allowed from a single peer (DoS guard)
-static const int64_t MAX_CONSECUTIVE_POSHEADERS = 20;
+static const int32_t MAX_CONSECUTIVE_POS_HEADERS = 1000; // peercoin: PoS spam guard
+static const unsigned int POW_HEADER_COOLING = 70;
 extern std::map<CNetAddr, int32_t> mapPoSTemperature;
 extern std::set<std::pair<COutPoint, unsigned int>> setStakeSeen;
 extern std::map<CNetAddr, LocalServiceInfo> mapLocalHost GUARDED_BY(g_maplocalhost_mutex);

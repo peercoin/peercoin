@@ -1,15 +1,13 @@
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <coins.h>
 #include <consensus/amount.h>
 #include <consensus/tx_verify.h>
-#include <kernel.h>
 #include <node/psbt.h>
 #include <policy/policy.h>
 #include <policy/settings.h>
-#include <timedata.h>
 #include <tinyformat.h>
 
 #include <numeric>
@@ -66,7 +64,7 @@ PSBTAnalysis AnalyzePSBT(PartiallySignedTransaction psbtx)
 
             // Figure out what is missing
             SignatureData outdata;
-            bool complete = SignPSBTInput(DUMMY_SIGNING_PROVIDER, psbtx, i, &txdata, 1, &outdata);
+            bool complete = SignPSBTInput(DUMMY_SIGNING_PROVIDER, psbtx, i, &txdata, std::nullopt, &outdata) == PSBTError::OK;
 
             // Things are missing
             if (!complete) {
@@ -126,14 +124,14 @@ PSBTAnalysis AnalyzePSBT(PartiallySignedTransaction psbtx)
             PSBTInput& input = psbtx.inputs[i];
             Coin newcoin;
 
-            if (!SignPSBTInput(DUMMY_SIGNING_PROVIDER, psbtx, i, nullptr, 1) || !psbtx.GetInputUTXO(newcoin.out, i)) {
+            if (SignPSBTInput(DUMMY_SIGNING_PROVIDER, psbtx, i, nullptr, std::nullopt) != PSBTError::OK || !psbtx.GetInputUTXO(newcoin.out, i)) {
                 success = false;
                 break;
             } else {
                 mtx.vin[i].scriptSig = input.final_script_sig;
                 mtx.vin[i].scriptWitness = input.final_script_witness;
                 newcoin.nHeight = 1;
-                view.AddCoin(psbtx.tx->vin[i].prevout, std::move(newcoin), true, true);
+                view.AddCoin(psbtx.tx->vin[i].prevout, std::move(newcoin), true);
             }
         }
 
@@ -141,6 +139,9 @@ PSBTAnalysis AnalyzePSBT(PartiallySignedTransaction psbtx)
             CTransaction ctx = CTransaction(mtx);
             size_t size(GetVirtualTransactionSize(ctx, GetTransactionSigOpCost(ctx, view, STANDARD_SCRIPT_VERIFY_FLAGS), ::nBytesPerSigOp));
             result.estimated_vsize = size;
+            // Estimate fee rate
+            CFeeRate feerate(fee, size);
+            result.estimated_feerate = feerate;
         }
 
     }

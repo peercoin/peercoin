@@ -72,6 +72,22 @@ public:
         return (*this);
     }
 
+    // peercoin: typed serialization params bridge (network semantics)
+    template <typename P>
+    const P& GetParams() const
+    {
+        if constexpr (std::is_same_v<P, PosMarkerParams>) {
+            static constexpr PosMarkerParams params{.pos_marker = true};
+            return params;
+        } else if constexpr (std::is_same_v<P, TransactionSerParams>) {
+            static constexpr TransactionSerParams params{.allow_witness = true};
+            return params;
+        } else {
+            static const P params{};
+            return params;
+        }
+    }
+
 private:
     std::vector<unsigned char>& vchData;
     size_t nPos;

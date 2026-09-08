@@ -21,6 +21,18 @@
 extern int64_t nLastCoinStakeSearchInterval;
 extern std::thread m_minter_thread;
 
+// peercoin: legacy LP selection bridge tags/comparators
+struct ancestor_score;
+struct CompareTxMemPoolEntryByAncestorFee {
+    bool operator()(const CTxMemPoolEntry& a, const CTxMemPoolEntry& b) const
+    {
+        auto fa = (double)a.GetModFeesWithAncestors() / (double)a.GetSizeWithAncestors();
+        auto fb = (double)b.GetModFeesWithAncestors() / (double)b.GetSizeWithAncestors();
+        if (fa != fb) return fa > fb;
+        return a.GetTime() < b.GetTime();
+    }
+};
+
 class ChainstateManager;
 
 class ChainstateManager;
@@ -165,7 +177,7 @@ public:
     explicit BlockAssembler(Chainstate& chainstate, const CTxMemPool* mempool, const Options& options);
 
     /** Construct a new block template with coinbase to scriptPubKeyIn */
-    std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet=nullptr, bool* pfPoSCancel=nullptr, NodeContext* m_node=nullptr, CTxDestination destination=CNoDestination());
+    std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, wallet::CWallet* pwallet=nullptr, bool* pfPoSCancel=nullptr, NodeContext* m_node=nullptr, CTxDestination destination=CNoDestination());
     //std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn);
 
     inline static std::optional<int64_t> m_last_block_num_txs{};

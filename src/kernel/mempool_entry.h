@@ -118,6 +118,12 @@ public:
     uint64_t GetSequence() const { return entry_sequence; }
     int64_t GetSigOpCost() const { return sigOpCost; }
     CAmount GetModifiedFee() const { return m_modified_fee; }
+
+    // peercoin: legacy mining-selection aggregate accessors (LP tracking bridge)
+    uint64_t GetSizeWithAncestors() const { return GetTxSize(); }
+    int64_t GetCountWithAncestors() const { return 1; }
+    int64_t GetSigOpCostWithAncestors() const { return GetSigOpCost(); }
+    CAmount GetModFeesWithAncestors() const { return GetModifiedFee(); }
     size_t DynamicMemoryUsage() const { return nUsageSize; }
     const LockPoints& GetLockPoints() const { return lockPoints; }
 

@@ -244,7 +244,7 @@ CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block, CBlockInde
         pindexNew->BuildSkip();
     }
     pindexNew->nTimeMax = (pindexNew->pprev ? std::max(pindexNew->pprev->nTimeMax, pindexNew->nTime) : pindexNew->nTime);
-    pindexNew->nChainTrust = (pindexNew->pprev ? pindexNew->pprev->nChainTrust : 0) + GetBlockTrust(CBlockIndex(*pindexNew));
+    pindexNew->nChainTrust = (pindexNew->pprev ? pindexNew->pprev->nChainTrust : 0) + GetBlockTrust(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (best_header == nullptr || best_header->nChainTrust < pindexNew->nChainTrust) {
         best_header = pindexNew;
@@ -464,7 +464,7 @@ bool BlockManager::LoadBlockIndex(const std::optional<uint256>& snapshot_blockha
             return false;
         }
         previous_index = pindex;
-        pindex->nChainTrust = (pindex->pprev ? pindex->pprev->nChainTrust : 0) + GetBlockTrust(CBlockIndex(*pindex));
+        pindex->nChainTrust = (pindex->pprev ? pindex->pprev->nChainTrust : 0) + GetBlockTrust(*pindex);
         pindex->nTimeMax = (pindex->pprev ? std::max(pindex->pprev->nTimeMax, pindex->nTime) : pindex->nTime);
 
         // We can link the chain of blocks for which we've received transactions at some point, or

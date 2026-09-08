@@ -59,7 +59,6 @@
 #include <node/mempool_persist.h>
 #include <node/mempool_persist_args.h>
 #include <node/txreconciliation.h>
-#include <node/validation_cache_args.h>
 #include <node/miner.h>
 #include <node/peerman_args.h>
 #include <policy/feerate.h>
@@ -138,7 +137,6 @@ using node::CalculateCacheSizes;
 using node::ChainstateLoadResult;
 using node::ChainstateLoadStatus;
 using node::DEFAULT_PERSIST_MEMPOOL;
-using node::DEFAULT_PRINT_MODIFIED_FEE;
 using node::DEFAULT_STOPATHEIGHT;
 using node::DumpMempool;
 using node::ImportBlocks;
@@ -149,7 +147,6 @@ using node::MempoolPath;
 using node::NodeContext;
 using node::ShouldPersistMempool;
 using node::VerifyLoadedChainstate;
-using node::fReindex;
 using interfaces::WalletLoader;
 using util::Join;
 using util::ReplaceAll;

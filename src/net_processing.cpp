@@ -586,6 +586,13 @@ private:
      *  address discouraged. */
     void Misbehaving(Peer& peer, const std::string& message);
 
+    void Misbehaving(CNode& node, const std::string& message)
+    {
+        PeerRef peer{GetPeerRef(node.GetId())};
+        if (!peer) return;
+        Misbehaving(*peer, message);
+    }
+
     /**
      * Potentially mark a node discouraged based on the contents of a BlockValidationState object
      *
@@ -2497,7 +2504,7 @@ void PeerManagerImpl::ProcessGetBlockData(CNode& pfrom, Peer& peer, const CInv& 
             // block might be rejected by stake connection check)
             std::vector<CInv> vInv;
             vInv.push_back(CInv(MSG_BLOCK, GetLastBlockIndex(m_chainman.ActiveChain().Tip(), false)->GetBlockHash()));
-            m_connman.PushMessage(&pfrom, msgMaker.Make(NetMsgType::INV, vInv));
+            MakeAndPushMessage(pfrom, NetMsgType::INV, vInv);
             peer.m_continuation_block.SetNull();
         }
     }
@@ -2612,7 +2619,7 @@ void PeerManagerImpl::SendBlockTransactions(CNode& pfrom, Peer& peer, const CBlo
     BlockTransactions resp(req);
     for (size_t i = 0; i < req.indexes.size(); i++) {
         if (req.indexes[i] >= block.vtx.size()) {
-            Misbehaving(peer, "getblocktxn with out-of-bounds tx indices");
+            Misbehaving(pfrom, "getblocktxn with out-of-bounds tx indices");
             return;
         }
         resp.txn[i] = block.vtx[req.indexes[i]];
@@ -3106,7 +3113,7 @@ void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, Peer& peer,
     }
     assert(pindexLast);
 
-    if (processed && received_new_header) {
+    if (received_new_header) {
         LogBlockHeader(*pindexLast, pfrom, /*via_compact_block=*/false);
     }
 
@@ -3485,7 +3492,7 @@ void PeerManagerImpl::ProcessCompactBlockTxns(CNode& pfrom, Peer& peer, const Bl
             // the PartiallyDownloadedBlock pointer around (i.e. did not call RemoveBlockRequest). In this case, we
             // should not call LookupBlockIndex below.
             RemoveBlockRequest(block_transactions.blockhash, pfrom.GetId());
-            Misbehaving(peer, "previous compact block reconstruction attempt failed");
+            Misbehaving(pfrom, "previous compact block reconstruction attempt failed");
             LogDebug(BCLog::NET, "Peer %d sent compact block transactions multiple times", pfrom.GetId());
             return;
         }
@@ -3496,7 +3503,7 @@ void PeerManagerImpl::ProcessCompactBlockTxns(CNode& pfrom, Peer& peer, const Bl
                                                    /*segwit_active=*/DeploymentActiveAfter(prev_block, m_chainman, Consensus::DEPLOYMENT_SEGWIT));
         if (status == READ_STATUS_INVALID) {
             RemoveBlockRequest(block_transactions.blockhash, pfrom.GetId()); // Reset in-flight state in case Misbehaving does not result in a disconnect
-            Misbehaving(peer, "invalid compact block/non-matching block transactions");
+            Misbehaving(pfrom, "invalid compact block/non-matching block transactions");
             return;
         } else if (status == READ_STATUS_FAILED) {
             if (first_in_flight) {
@@ -3592,7 +3599,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
 
 
     // set deserialization mode to read PoS flag in headers
-    vRecv.SetType(vRecv.GetType() | SER_POSMARKER);
+    // peercoin: pos-marker applied at header deserialization sites below
 
     if (msg_type == NetMsgType::VERSION) {
         auto it = mapPoSTemperature.find(pfrom.addr);
@@ -4060,7 +4067,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
 
         if (vAddr.size() > MAX_ADDR_TO_SEND)
         {
-            Misbehaving(peer, strprintf("%s message size = %u", msg_type, vAddr.size()));
+            Misbehaving(pfrom, strprintf("%s message size = %u", msg_type, vAddr.size()));
             return;
         }
 
@@ -4142,7 +4149,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         vRecv >> vInv;
         if (vInv.size() > MAX_INV_SZ)
         {
-            Misbehaving(peer, strprintf("inv message size = %u", vInv.size()));
+            Misbehaving(pfrom, strprintf("inv message size = %u", vInv.size()));
             return;
         }
 
@@ -4233,7 +4240,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         vRecv >> vInv;
         if (vInv.size() > MAX_INV_SZ)
         {
-            Misbehaving(peer, strprintf("getdata message size = %u", vInv.size()));
+            Misbehaving(pfrom, strprintf("getdata message size = %u", vInv.size()));
             return;
         }
 
@@ -4326,8 +4333,9 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
                 LogDebug(BCLog::NET, "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
                 // peercoin: tell downloading node about the latest block if it's
                 // without risk being rejected due to stake connection check
-                if (hashStop != tip->GetBlockHash() && pindex->GetBlockTime() + m_chainparams.GetConsensus().nStakeMinAge > tip->GetBlockTime())
-                    WITH_LOCK(peer->m_block_inv_mutex, peer->m_blocks_for_inv_relay.push_back(pindex->GetBlockHash()));
+                const CBlockIndex* tip = m_chainman.ActiveChain().Tip();
+                if (hashStop != tip->GetBlockHash() && pindex->GetBlockTime() + m_chainman.GetConsensus().nStakeMinAge > tip->GetBlockTime())
+                    WITH_LOCK(peer.m_block_inv_mutex, peer.m_blocks_for_inv_relay.push_back(pindex->GetBlockHash()));
                 break;
             }
             // If pruning, don't inv blocks unless we have on disk and are likely to still have
@@ -4579,7 +4587,8 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         }
 
         CBlockHeaderAndShortTxIDs cmpctblock;
-        vRecv >> cmpctblock;
+        OverrideStream<DataStream> vRecv_pos{&vRecv, SER_NETWORK | SER_POSMARKER, PROTOCOL_VERSION};
+        vRecv_pos >> cmpctblock;
 
         bool received_new_header = false;
         const auto blockhash = cmpctblock.header.GetHash();
@@ -4596,7 +4605,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
                 MaybeSendGetHeaders(pfrom, GetLocator(m_chainman.m_best_header), peer);
             }
             return;
-        } else if (prev_block->nChainTrust + GetBlockProof(cmpctblock.header) < GetAntiDoSWorkThreshold()) {
+        } else if (prev_block->nChainTrust + GetBlockTrust(CBlockIndex(cmpctblock.header)) < GetAntiDoSWorkThreshold()) {
             // If we get a low-work header in a compact block, we can ignore it.
             LogDebug(BCLog::NET, "Ignoring low-work compact block from peer %d\n", pfrom.GetId());
             return;
@@ -4610,7 +4619,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
         const CBlockIndex *pindex = nullptr;
         BlockValidationState state;
-        if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, tip->GetBlockHash(), {cmpctblock.header}, /*min_pow_checked=*/true, state, &pindex)) {
+        if (!m_chainman.ProcessNewBlockHeaders(nPoSTemperature, tip->GetBlockHash(), std::vector<CBlockHeader>{cmpctblock.header}, /*min_pow_checked=*/true, state, &pindex)) {
             if (state.IsInvalid()) {
                 MaybePunishNodeForBlock(pfrom.GetId(), state, /*via_compact_block=*/true, "invalid header via cmpctblock");
                 return;
@@ -4618,8 +4627,8 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         }
         if (nPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
             nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
-            if (!chainparams.IsTestChain()) {
-                Misbehaving(peer, 100, "too many consecutive pos headers");
+            if (!m_chainman.GetParams().IsTestChain()) {
+                Misbehaving(pfrom, "too many consecutive pos headers");
                 return;
             }
         }
@@ -4714,7 +4723,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
                 ReadStatus status = partialBlock.InitData(cmpctblock, vExtraTxnForCompact);
                 if (status == READ_STATUS_INVALID) {
                     RemoveBlockRequest(pindex->GetBlockHash(), pfrom.GetId()); // Reset in-flight state in case Misbehaving does not result in a disconnect
-                    Misbehaving(peer, "invalid compact block");
+                    Misbehaving(pfrom, "invalid compact block");
                     return;
                 } else if (status == READ_STATUS_FAILED) {
                     if (first_in_flight)  {
@@ -4861,7 +4870,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         // Bypass the normal CBlock deserialization, as we don't want to risk deserializing 2000 full blocks.
         unsigned int nCount = ReadCompactSize(vRecv);
         if (nCount > m_opts.max_headers_result) {
-            Misbehaving(peer, strprintf("headers message size = %u", nCount));
+            Misbehaving(pfrom, strprintf("headers message size = %u", nCount));
             return;
         }
         headers.resize(nCount);
@@ -4885,8 +4894,8 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
                 nTmpPoSTemperature = std::max(nTmpPoSTemperature, 0);
                 if (nTmpPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
                     nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
-                    if (Params().NetworkIDString() != "test") {
-                        Misbehaving(*peer, 100, "too many consecutive pos headers");
+                    if (!m_chainman.GetParams().IsTestChain()) {
+                        Misbehaving(peer, "too many consecutive pos headers");
                         return;
                     }
                 }
@@ -4932,7 +4941,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         if (prev_block && IsBlockMutated(/*block=*/*pblock,
                            /*check_witness_root=*/DeploymentActiveAfter(prev_block, m_chainman, Consensus::DEPLOYMENT_SEGWIT))) {
             LogDebug(BCLog::NET, "Received mutated block from peer=%d\n", peer.m_id);
-            Misbehaving(peer, "mutated block");
+            Misbehaving(pfrom, "mutated block");
             WITH_LOCK(cs_main, RemoveBlockRequest(pblock->GetHash(), peer.m_id));
             return;
         }
@@ -4944,7 +4953,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
             bool fRequested = mapBlocksInFlight.count(hash2);
 
             // Check claimed work on this block against our anti-dos thresholds.
-            if (prev_block && prev_block->nChainTrust + GetBlockProof(*pblock) >= GetAntiDoSWorkThreshold()) {
+            if (prev_block && prev_block->nChainTrust + GetBlockTrust(*prev_block) >= GetAntiDoSWorkThreshold()) {
                 min_pow_checked = true;
             }
 
@@ -4952,13 +4961,13 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
                 int32_t& nPoSTemperature = mapPoSTemperature[pfrom.addr];
                 if (nPoSTemperature >= MAX_CONSECUTIVE_POS_HEADERS) {
                     nPoSTemperature = (MAX_CONSECUTIVE_POS_HEADERS*3)/4;
-                    if (Params().NetworkIDString() != "test") {
-                        Misbehaving(*peer, 100, "too many consecutive pos headers");
+                    if (!m_chainman.GetParams().IsTestChain()) {
+                        Misbehaving(peer, "too many consecutive pos headers");
                         return;
                     }
                 }
 
-                if (pblock->IsProofOfStake() && !m_chainman.ActiveChainstate().IsInitialBlockDownload())
+                if (pblock->IsProofOfStake() && !m_chainman.IsInitialBlockDownload())
                     nPoSTemperature += 1;
 
                 if (!prev_block->IsValid(BLOCK_VALID_TRANSACTIONS)) {
@@ -5202,7 +5211,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         if (!filter.IsWithinSizeConstraints())
         {
             // There is no excuse for sending a too-large filter
-            Misbehaving(peer, "too-large bloom filter");
+            Misbehaving(pfrom, "too-large bloom filter");
         } else if (auto tx_relay = peer.GetTxRelay(); tx_relay != nullptr) {
             {
                 LOCK(tx_relay->m_bloom_filter_mutex);
@@ -5238,7 +5247,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
             }
         }
         if (bad) {
-            Misbehaving(peer, "bad filteradd message");
+            Misbehaving(pfrom, "bad filteradd message");
         }
         return;
     }
@@ -5290,7 +5299,7 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
     }
 
     if (msg_type == NetMsgType::GETCFCHECKPT) {
-        ProcessGetCFCheckPt(pfrom, *peer, vRecv);
+        ProcessGetCFCheckPt(pfrom, peer, vRecv);
         return;
     }
 

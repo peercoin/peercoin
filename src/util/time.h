@@ -80,11 +80,23 @@ constexpr int64_t TicksSeconds(Duration d)
 {
     return int64_t{Ticks<std::chrono::seconds>(d)};
 }
-template <typename Duration, typename Timepoint>
-constexpr auto TicksSinceEpoch(Timepoint t)
+namespace detail {
+template <typename T> struct IsDuration : std::false_type {};
+template <typename R, typename P> struct IsDuration<std::chrono::duration<R, P>> : std::true_type {};
+} // namespace detail
+
+template <typename Duration, typename T>
+constexpr auto TicksSinceEpoch(T t)
 {
-    return Ticks<Duration>(t.time_since_epoch());
+    if constexpr (std::is_integral_v<T>) {
+        return Ticks<Duration>(std::chrono::seconds{t});
+    } else if constexpr (detail::IsDuration<std::remove_cvref_t<T>>::value) {
+        return Ticks<Duration>(t);
+    } else {
+        return Ticks<Duration>(t.time_since_epoch());
+    }
 }
+
 constexpr int64_t count_seconds(std::chrono::seconds t) { return t.count(); }
 constexpr int64_t count_milliseconds(std::chrono::milliseconds t) { return t.count(); }
 constexpr int64_t count_microseconds(std::chrono::microseconds t) { return t.count(); }
