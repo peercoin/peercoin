@@ -104,9 +104,6 @@ enum class SynchronizationState {
     INIT_REINDEX,
     INIT_DOWNLOAD,
     POST_INIT
-    //! Prune blockfiles from the disk if necessary and then flush chainstate changes
-    //! if we pruned.
-    void PruneAndFlush();
 
 };
 
@@ -925,6 +922,9 @@ protected:
     [[nodiscard]] util::Result<void> InvalidateCoinsDBOnDisk() EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
 
     friend ChainstateManager;
+    //! Prune blockfiles from the disk if necessary and then flush chainstate changes
+    //! if we pruned.
+    void PruneAndFlush();
 };
 
 enum class SnapshotCompletionResult {
