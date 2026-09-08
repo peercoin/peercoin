@@ -124,6 +124,14 @@ constexpr CAmount HIGH_APS_FEE{COIN / 10000};
 static const CAmount WALLET_INCREMENTAL_RELAY_FEE = 5000;
 //! Default for -spendzeroconfchange
 static const bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
+
+// peercoin: rfc28 staking defaults
+static const bool DEFAULT_SPLIT_COINS = true;
+static const bool DEFAULT_COMBINE_COINS = true;
+static const int MAX_COINSTAKE_INPUTS = 4;
+static const CAmount MIN_TARGET_OUTPUT_AMOUNT = 10*COIN;
+static const int RECOMBINE_DIVISOR = 3;
+static const int MAX_MINTING_UTXOS = 500;
 //! Default for -walletrejectlongchains
 static const bool DEFAULT_WALLET_REJECT_LONG_CHAINS{true};
 //! -txconfirmtarget default
@@ -695,6 +703,9 @@ public:
      * @param[in] orderForm BIP 70 / BIP 21 order form details to be set on the transaction.
      */
     void CommitTransaction(CTransactionRef tx, mapValue_t mapValue, std::vector<std::pair<std::string, std::string>> orderForm);
+    // peercoin: pre-signed coinstakes (importcoinstake) and minting
+    std::map<uint32_t, CTransactionRef> m_coinstakes GUARDED_BY(cs_wallet);
+    bool CreateCoinStake(ChainstateManager& chainman, const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, CTxDestination destination);
 
     /** Pass this transaction to node for optional mempool insertion and relay to peers. */
     bool SubmitTxMemoryPoolAndRelay(CWalletTx& wtx, std::string& err_string, node::TxBroadcast broadcast_method) const
@@ -707,6 +718,8 @@ public:
     /** Allow Coin Selection to pick unconfirmed UTXOs that were sent from our own wallet if it
      * cannot fund the transaction otherwise. */
     bool m_spend_zero_conf_change{DEFAULT_SPEND_ZEROCONF_CHANGE};
+    bool m_split_coins{DEFAULT_SPLIT_COINS};   // peercoin rfc28
+    bool m_combine_coins{DEFAULT_COMBINE_COINS}; // peercoin rfc28
     bool m_signal_rbf{DEFAULT_WALLET_RBF};
     bool m_allow_fallback_fee{true}; //!< will be false if -fallbackfee=0
     CFeeRate m_min_fee{DEFAULT_TRANSACTION_MINFEE};

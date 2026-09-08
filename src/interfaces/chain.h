@@ -66,6 +66,9 @@ public:
     //! Read block data from disk. If the block exists but doesn't have data
     //! (for example due to pruning), the CBlock variable will be set to null.
     FoundBlock& data(CBlock& data) { m_data = &data; return *this; }
+    // peercoin: disk location of block record (for kernel offset hashing)
+    FoundBlock& fileNumber(int& file_number) { m_file_number = &file_number; return *this; }
+    FoundBlock& dataPos(unsigned int& data_pos) { m_data_pos = &data_pos; return *this; }
 
     uint256* m_hash = nullptr;
     int* m_height = nullptr;
@@ -76,6 +79,8 @@ public:
     CBlockLocator* m_locator = nullptr;
     const FoundBlock* m_next_block = nullptr;
     CBlock* m_data = nullptr;
+    int* m_file_number = nullptr;   // peercoin
+    unsigned int* m_data_pos = nullptr; // peercoin
     mutable bool found = false;
 };
 
