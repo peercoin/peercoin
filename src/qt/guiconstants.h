@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -25,7 +25,7 @@ static const int STATUSBAR_ICONSIZE = 16;
 static const bool DEFAULT_SPLASHSCREEN = true;
 
 /* Invalid field background style */
-#define STYLE_INVALID "background:#FF8080"
+#define STYLE_INVALID "border: 3px solid #FF8080"
 
 /* Transaction list -- unconfirmed transaction */
 #define COLOR_UNCONFIRMED QColor(140, 140, 140)
@@ -54,13 +54,16 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 #define QAPP_ORG_DOMAIN "peercoin.net"
 #define QAPP_APP_NAME_DEFAULT "Peercoin-Qt"
 #define QAPP_APP_NAME_TESTNET "Peercoin-Qt-testnet"
-#define QAPP_APP_NAME_REGTEST "Peercoin-Qt-regtest"
+#define QAPP_APP_NAME_TESTNET4 "Peercoin-Qt-testnet4"
 #define QAPP_APP_NAME_SIGNET "Peercoin-Qt-signet"
+#define QAPP_APP_NAME_REGTEST "Peercoin-Qt-regtest"
 
 /* Colors for minting tab for each coin age group */
 #define COLOR_MINT_YOUNG QColor(255, 224, 226)
 #define COLOR_MINT_MATURE QColor(204, 255, 207)
 #define COLOR_MINT_OLD QColor(111, 252, 141)
+
+static constexpr int DEFAULT_PRUNE_TARGET_GB{2};
 
 /* One gigabyte (GB) in bytes */
 static constexpr uint64_t GB_BYTES{1000000000};

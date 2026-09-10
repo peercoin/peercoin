@@ -86,7 +86,7 @@ public:
     explicit ScriptPubKeyMan(WalletStorage& storage) : m_storage(storage) {}
     virtual ~ScriptPubKeyMan() = default;
     virtual util::Result<CTxDestination> GetNewDestination(const OutputType type) { return util::Error{Untranslated("Not supported")}; }
-    virtual bool IsMine(const CScript& script) const { return false; }
+    virtual isminetype IsMine(const CScript& script) const { return ISMINE_NO; }
 
     //! Check that the given decryption key is valid for this ScriptPubKeyMan, i.e. it decrypts all of the keys handled by it.
     virtual bool CheckDecryptionKey(const CKeyingMaterial& master_key) { return false; }
@@ -157,6 +157,7 @@ public:
 
     /** Keypool has new keys */
     boost::signals2::signal<void ()> NotifyCanGetAddressesChanged;
+    boost::signals2::signal<void (bool fHaveWatchOnly)> NotifyWatchonlyChanged; // peercoin
 
     /** Birth time changed */
     boost::signals2::signal<void (const ScriptPubKeyMan* spkm, int64_t new_birth_time)> NotifyFirstKeyTimeChanged;
@@ -198,7 +199,7 @@ private:
     // Used only in migration.
     std::unordered_set<CScript, SaltedSipHasher> GetCandidateScriptPubKeys() const;
 
-    bool IsMine(const CScript& script) const override;
+    isminetype IsMine(const CScript& script) const override;
     bool CanProvide(const CScript& script, SignatureData& sigdata) override;
 public:
     using ScriptPubKeyMan::ScriptPubKeyMan;
@@ -343,7 +344,7 @@ public:
     mutable RecursiveMutex cs_desc_man;
 
     util::Result<CTxDestination> GetNewDestination(OutputType type) override;
-    bool IsMine(const CScript& script) const override;
+    isminetype IsMine(const CScript& script) const override;
 
     bool CheckDecryptionKey(const CKeyingMaterial& master_key) override;
     bool Encrypt(const CKeyingMaterial& master_key, WalletBatch* batch) override;
@@ -397,6 +398,7 @@ public:
     bool AddCryptedKey(const CKeyID& key_id, const CPubKey& pubkey, const std::vector<unsigned char>& crypted_key);
 
     bool HasWalletDescriptor(const WalletDescriptor& desc) const;
+    bool DescriptorIsWatchOnly() const { LOCK(cs_desc_man); return !m_wallet_descriptor.descriptor->IsSolvable(); } // peercoin
     util::Result<void> UpdateWalletDescriptor(WalletDescriptor& descriptor);
     bool CanUpdateToWalletDescriptor(const WalletDescriptor& descriptor, std::string& error);
     void AddDescriptorKey(const CKey& key, const CPubKey &pubkey);

@@ -169,6 +169,12 @@ if(ENABLE_WALLET)
       coincontroldialog.h
       coincontroltreewidget.cpp
       coincontroltreewidget.h
+      mintingfilterproxy.cpp
+      mintingfilterproxy.h
+      mintingtablemodel.cpp
+      mintingtablemodel.h
+      mintingview.cpp
+      mintingview.h
       createwalletdialog.cpp
       createwalletdialog.h
       editaddressdialog.cpp
@@ -270,6 +276,7 @@ target_link_libraries(bitcoin-qt
 )
 
 import_plugins(bitcoin-qt)
+set_target_properties(bitcoin-qt PROPERTIES OUTPUT_NAME peercoin-qt)  # peercoin branding
 install_binary_component(bitcoin-qt HAS_MANPAGE)
 if(WIN32)
   set_target_properties(bitcoin-qt PROPERTIES WIN32_EXECUTABLE TRUE)

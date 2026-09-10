@@ -1,13 +1,15 @@
-// Copyright (c) 2020-2021 The Bitcoin Core developers
+// Copyright (c) 2020-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <common/messages.h>
 #include <merkleblock.h>
+#include <node/types.h>
+#include <policy/fees/block_policy_estimator.h>
 #include <rpc/util.h>
 #include <test/fuzz/FuzzedDataProvider.h>
 #include <test/fuzz/fuzz.h>
 #include <test/fuzz/util.h>
-#include <util/result.h>
 #include <util/translation.h>
 
 #include <array>
@@ -15,17 +17,16 @@
 #include <optional>
 #include <vector>
 
+using common::TransactionErrorString;
+using node::TransactionError;
+
 namespace {
 constexpr TransactionError ALL_TRANSACTION_ERROR[] = {
-    TransactionError::OK,
     TransactionError::MISSING_INPUTS,
-    TransactionError::ALREADY_IN_CHAIN,
-    TransactionError::P2P_DISABLED,
+    TransactionError::ALREADY_IN_UTXO_SET,
     TransactionError::MEMPOOL_REJECTED,
     TransactionError::MEMPOOL_ERROR,
-    TransactionError::INVALID_PSBT,
-    TransactionError::PSBT_MISMATCH,
-    TransactionError::SIGHASH_MISMATCH,
+    TransactionError::MAX_FEE_EXCEEDED,
 };
 }; // namespace
 
@@ -40,6 +41,8 @@ FUZZ_TARGET(kitchen_sink)
     (void)JSONRPCTransactionError(transaction_error);
     (void)RPCErrorFromTransactionError(transaction_error);
     (void)TransactionErrorString(transaction_error);
+
+    (void)StringForFeeEstimateHorizon(fuzzed_data_provider.PickValueInArray(ALL_FEE_ESTIMATE_HORIZONS));
 
     const OutputType output_type = fuzzed_data_provider.PickValueInArray(OUTPUT_TYPES);
     const std::string& output_type_string = FormatOutputType(output_type);

@@ -13,6 +13,10 @@
 #if !defined(CLIENT_VERSION_MAJOR) || !defined(CLIENT_VERSION_MINOR) || !defined(CLIENT_VERSION_BUILD) || !defined(CLIENT_VERSION_IS_RELEASE) || !defined(COPYRIGHT_YEAR)
 #error Client version information missing: version is not defined by bitcoin-build-config.h or in any other way
 #endif
+// peercoin branding: canonical PEERCOIN version macros (master clientversion.h).
+#if !defined(PEERCOIN_VERSION_MAJOR) || !defined(PEERCOIN_VERSION_MINOR) || !defined(PEERCOIN_VERSION_REVISION) || !defined(PEERCOIN_VERSION_BUILD)
+#error Peercoin version information missing: version is not defined by bitcoin-build-config.h or in any other way
+#endif
 
 //! Copyright string used in Windows .rc files
 #define COPYRIGHT_STR "2009-" STRINGIZE(COPYRIGHT_YEAR) " " COPYRIGHT_HOLDERS_FINAL
@@ -27,6 +31,13 @@ static const int CLIENT_VERSION =
                              10000 * CLIENT_VERSION_MAJOR
                          +     100 * CLIENT_VERSION_MINOR
                          +       1 * CLIENT_VERSION_BUILD;
+
+// note: peercoin version is used for display purpose AND to accept alerts
+static const int PEERCOIN_VERSION =
+                           1000000 * PEERCOIN_VERSION_MAJOR
+                         +   10000 * PEERCOIN_VERSION_MINOR
+                         +     100 * PEERCOIN_VERSION_REVISION
+                         +       1 * PEERCOIN_VERSION_BUILD;
 
 extern const std::string UA_NAME;
 

@@ -260,7 +260,7 @@ public:
                                   Q_ARG(int, status));
     }
 private:
-    uint256 hash;
+    uint256 hash{};
     ChangeType status;
 };
 
@@ -310,8 +310,7 @@ MintingTableModel::~MintingTableModel()
 
 void MintingTableModel::updateTransaction(const QString &hash, int status)
 {
-    uint256 updated;
-    updated.SetHex(hash.toStdString());
+    uint256 updated = uint256::FromHex(hash.toStdString()).value_or(uint256{});
 
     priv->updateWallet(updated, status);
     mintingProxyModel->invalidate(); // Force deletion of empty rows
@@ -410,7 +409,7 @@ QVariant MintingTableModel::data(const QModelIndex &index, int role) const
             return getDayToMint(rec);
         }
         break;
-      case Qt::BackgroundColorRole:
+      case Qt::BackgroundRole:
         int minAge = params.nStakeMinAge / 60 / 60 / 24;
         int maxAge = params.nStakeMaxAge / 60 / 60 / 24;
         if(rec->getAge() < minAge)

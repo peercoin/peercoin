@@ -570,7 +570,8 @@ bool ECC_InitSanityCheck() {
 
 /** Initialize the elliptic curve support. May not be called twice without calling ECC_Stop first. */
 static void ECC_Start() {
-    assert(secp256k1_context_sign == nullptr);
+    // peercoin: idempotent start (test fixtures and app init both call this)
+    if (secp256k1_context_sign != nullptr) return;
 
     secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY); // peercoin bridge: legacy libsecp needs precomputed ecmult_gen tables
     assert(ctx != nullptr);

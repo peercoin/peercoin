@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifdef HAVE_CONFIG_H
-#include <config/bitcoin-config.h>
+#include <bitcoin-build-config.h>
 #endif
 
 #include <qt/transactiondesc.h>
@@ -147,13 +147,12 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
             CTxDestination address = DecodeDestination(rec->address);
             if (IsValidDestination(address)) {
                 std::string name;
-                isminetype ismine;
-                if (wallet.getAddress(address, &name, &ismine, /* purpose= */ nullptr))
+                if (wallet.getAddress(address, &name, /* purpose= */ nullptr))
                 {
                     strHTML += "<b>" + tr("From") + ":</b> " + tr("unknown") + "<br>";
                     strHTML += "<b>" + tr("To") + ":</b> ";
                     strHTML += GUIUtil::HtmlEscape(rec->address);
-                    QString addressOwned = ismine == ISMINE_SPENDABLE ? tr("own address") : tr("watch-only");
+                    QString addressOwned = tr("own address");
                     if (!name.empty())
                         strHTML += " (" + addressOwned + ", " + tr("label") + ": " + GUIUtil::HtmlEscape(name) + ")";
                     else
@@ -175,7 +174,7 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
         CTxDestination dest = DecodeDestination(strAddress);
         std::string name;
         if (wallet.getAddress(
-                dest, &name, /* is_mine= */ nullptr, /* purpose= */ nullptr) && !name.empty())
+                dest, &name, /* purpose= */ nullptr) && !name.empty())
             strHTML += GUIUtil::HtmlEscape(name) + " ";
         strHTML += GUIUtil::HtmlEscape(strAddress) + "<br>";
     }
@@ -244,7 +243,7 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
                         strHTML += "<b>" + tr("To") + ":</b> ";
                         std::string name;
                         if (wallet.getAddress(
-                                address, &name, /* is_mine= */ nullptr, /* purpose= */ nullptr) && !name.empty())
+                                address, &name, /* purpose= */ nullptr) && !name.empty())
                             strHTML += GUIUtil::HtmlEscape(name) + " ";
                         strHTML += GUIUtil::HtmlEscape(EncodeDestination(address));
                         if(toSelf == ISMINE_SPENDABLE)
@@ -304,7 +303,7 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
         strHTML += "<br><b>" + tr("Comment") + ":</b><br>" + GUIUtil::HtmlEscape(wtx.value_map["comment"], true) + "<br>";
 
     strHTML += "<b>" + tr("Transaction ID") + ":</b> " + rec->getTxHash() + "<br>";
-    strHTML += "<b>" + tr("Transaction total size") + ":</b> " + QString::number(wtx.tx->GetTotalSize()) + " bytes<br>";
+    strHTML += "<b>" + tr("Transaction total size") + ":</b> " + QString::number(wtx.tx->ComputeTotalSize()) + " bytes<br>";
     strHTML += "<b>" + tr("Transaction virtual size") + ":</b> " + QString::number(GetVirtualTransactionSize(*wtx.tx)) + " bytes<br>";
     strHTML += "<b>" + tr("Output index") + ":</b> " + QString::number(rec->getOutputIndex()) + "<br>";
 
@@ -359,9 +358,10 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
         {
             COutPoint prevout = txin.prevout;
 
-            Coin prev;
-            if(node.getUnspentOutput(prevout, prev))
+            std::optional<Coin> prev_coin = node.getUnspentOutput(prevout);
+            if(prev_coin)
             {
+                Coin prev = *prev_coin;
                 {
                     strHTML += "<li>";
                     const CTxOut &vout = prev.out;
@@ -369,7 +369,7 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
                     if (ExtractDestination(vout.scriptPubKey, address))
                     {
                         std::string name;
-                        if (wallet.getAddress(address, &name, /* is_mine= */ nullptr, /* purpose= */ nullptr) && !name.empty())
+                        if (wallet.getAddress(address, &name, /* purpose= */ nullptr) && !name.empty())
                             strHTML += GUIUtil::HtmlEscape(name) + " ";
                         strHTML += QString::fromStdString(EncodeDestination(address));
                     }

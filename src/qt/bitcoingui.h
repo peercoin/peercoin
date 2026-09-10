@@ -6,7 +6,7 @@
 #define BITCOIN_QT_BITCOINGUI_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <bitcoin-build-config.h>
 #endif
 
 #include <qt/bitcoinunits.h>
@@ -87,7 +87,7 @@ public:
     */
     void setClientModel(ClientModel *clientModel = nullptr, interfaces::BlockAndHeaderTipInfo* tip_info = nullptr);
 #ifdef ENABLE_WALLET
-    void setWalletController(WalletController* wallet_controller);
+    void setWalletController(WalletController* wallet_controller, bool show_loading_minimized = false);
     WalletController* getWalletController();
 #endif
 

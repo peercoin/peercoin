@@ -9,7 +9,8 @@
 #include <key_io.h>
 #include <node/context.h>
 #include <pow.h>
-#include <script/solver.h>
+#include <script/script.h>
+#include <script/descriptor.h>
 #include <test/util/script.h>
 #include <util/check.h>
 #include <validation.h>

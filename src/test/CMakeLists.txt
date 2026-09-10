@@ -17,7 +17,6 @@ add_executable(test_bitcoin
   base64_tests.cpp
   bech32_tests.cpp
   bip32_tests.cpp
-  bip324_tests.cpp
   blockchain_tests.cpp
   blockencodings_tests.cpp
   blockfilter_index_tests.cpp
@@ -46,6 +45,7 @@ add_executable(test_bitcoin
   feerounder_tests.cpp
   flatfile_tests.cpp
   fs_tests.cpp
+  compilerbug_tests.cpp
   getarg_tests.cpp
   hash_tests.cpp
   headers_sync_chainwork_tests.cpp
@@ -94,6 +94,7 @@ add_executable(test_bitcoin
   script_parse_tests.cpp
   script_segwit_tests.cpp
   script_standard_tests.cpp
+  policy_fee_tests.cpp
   script_tests.cpp
   scriptnum_tests.cpp
   serfloat_tests.cpp
@@ -124,6 +125,7 @@ add_executable(test_bitcoin
   txvalidation_tests.cpp
   txvalidationcache_tests.cpp
   uint256_tests.cpp
+  xoroshiro128plusplus_tests.cpp
   util_check_tests.cpp
   util_expected_tests.cpp
   util_string_tests.cpp
@@ -131,8 +133,6 @@ add_executable(test_bitcoin
   util_threadnames_tests.cpp
   util_trace_tests.cpp
   validation_block_tests.cpp
-  validation_chainstate_tests.cpp
-  validation_chainstatemanager_tests.cpp
   validation_flush_tests.cpp
   validation_tests.cpp
   validationinterface_tests.cpp

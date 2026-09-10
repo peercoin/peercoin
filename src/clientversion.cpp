@@ -5,6 +5,7 @@
 #include <bitcoin-build-config.h> // IWYU pragma: keep
 
 #include <clientversion.h>
+#include <util/macros.h>
 
 #include <util/string.h>
 #include <util/translation.h>
@@ -39,7 +40,9 @@ const std::string UA_NAME("Satoshi");
     #define BUILD_DESC BUILD_GIT_TAG
     #define BUILD_SUFFIX ""
 #else
-    #define BUILD_DESC "v" CLIENT_VERSION_STRING
+    #define BUILD_DESC "v" STRINGIZE(PEERCOIN_VERSION_MAJOR) "." STRINGIZE(PEERCOIN_VERSION_MINOR) \
+                       "." STRINGIZE(PEERCOIN_VERSION_REVISION) \
+                       "." STRINGIZE(PEERCOIN_VERSION_BUILD)
     #if CLIENT_VERSION_IS_RELEASE
         #define BUILD_SUFFIX ""
     #elif defined(BUILD_GIT_COMMIT)
@@ -67,9 +70,11 @@ std::string FormatFullVersion()
  */
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)
 {
+    // peercoin branding: canonical master format /Satoshi:x.y.z/(comments)/Peercoin:a.b.c(full)/
     std::string comments_str;
     if (!comments.empty()) comments_str = strprintf("(%s)", Join(comments, "; "));
-    return strprintf("/%s:%s%s/", name, FormatVersion(nClientVersion), comments_str);
+    return strprintf("/%s:%s%s/Peercoin:%s(%s)/", name, FormatVersion(nClientVersion), comments_str,
+                     FormatVersion(PEERCOIN_VERSION), FormatFullVersion());
 }
 
 std::string CopyrightHolders(const std::string& strPrefix)

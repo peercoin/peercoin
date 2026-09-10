@@ -197,15 +197,16 @@ IsMineResult LegacyWalletIsMineInnerDONOTUSE(const LegacyDataSPKM& keystore, con
 
 } // namespace
 
-bool LegacyDataSPKM::IsMine(const CScript& script) const
+isminetype LegacyDataSPKM::IsMine(const CScript& script) const
 {
     switch (LegacyWalletIsMineInnerDONOTUSE(*this, script, IsMineSigVersion::TOP)) {
     case IsMineResult::INVALID:
     case IsMineResult::NO:
-        return false;
+        return ISMINE_NO;
     case IsMineResult::WATCH_ONLY:
+        return ISMINE_WATCH_ONLY;
     case IsMineResult::SPENDABLE:
-        return true;
+        return ISMINE_SPENDABLE;
     }
     assert(false);
 }
@@ -363,6 +364,7 @@ bool LegacyDataSPKM::AddWatchOnlyInMem(const CScript &dest)
         mapWatchKeys[pubKey.GetID()] = pubKey;
         ImplicitlyLearnRelatedKeyScripts(pubKey);
     }
+    NotifyWatchonlyChanged(true); // peercoin
     return true;
 }
 
@@ -860,10 +862,12 @@ util::Result<CTxDestination> DescriptorScriptPubKeyMan::GetNewDestination(const 
     }
 }
 
-bool DescriptorScriptPubKeyMan::IsMine(const CScript& script) const
+isminetype DescriptorScriptPubKeyMan::IsMine(const CScript& script) const
 {
     LOCK(cs_desc_man);
-    return m_map_script_pub_keys.contains(script);
+    if (!m_map_script_pub_keys.contains(script)) return ISMINE_NO;
+    // peercoin: spendable when the descriptor is not watch-only or keys are available
+    return m_wallet_descriptor.descriptor->IsSolvable() ? ISMINE_SPENDABLE : ISMINE_WATCH_ONLY;
 }
 
 bool DescriptorScriptPubKeyMan::CheckDecryptionKey(const CKeyingMaterial& master_key)

@@ -10,14 +10,14 @@
 #include <wallet/wallet.h>
 
 namespace wallet {
-bool InputIsMine(const CWallet& wallet, const CTxIn& txin)
+isminetype InputIsMine(const CWallet& wallet, const CTxIn& txin)
 {
     AssertLockHeld(wallet.cs_wallet);
     const CWalletTx* prev = wallet.GetWalletTx(txin.prevout.hash);
     if (prev && txin.prevout.n < prev->tx->vout.size()) {
         return wallet.IsMine(prev->tx->vout[txin.prevout.n]);
     }
-    return false;
+    return ISMINE_NO;
 }
 
 bool AllInputsMine(const CWallet& wallet, const CTransaction& tx)
@@ -35,6 +35,14 @@ CAmount OutputGetCredit(const CWallet& wallet, const CTxOut& txout)
         throw std::runtime_error(std::string(__func__) + ": value out of range");
     LOCK(wallet.cs_wallet);
     return (wallet.IsMine(txout) ? txout.nValue : 0);
+}
+
+CAmount OutputGetCredit(const CWallet& wallet, const CTxOut& txout, isminefilter filter)
+{
+    if (!MoneyRange(txout.nValue))
+        throw std::runtime_error(std::string(__func__) + ": value out of range");
+    LOCK(wallet.cs_wallet);
+    return ((wallet.IsMine(txout) & filter) ? txout.nValue : 0);
 }
 
 CAmount TxGetCredit(const CWallet& wallet, const CTransaction& tx)
@@ -245,7 +253,7 @@ bool CachedTxIsTrusted(const CWallet& wallet, const CWalletTx& wtx)
 Balance GetBalance(const CWallet& wallet, const int min_depth, bool avoid_reuse)
 {
     Balance ret;
-    bool allow_used_addresses = !avoid_reuse || !wallet.IsWalletFlagSet(WALLET_FLAG_AVOID_REUSE);
+    isminefilter reuse_filter = avoid_reuse ? ISMINE_NO : ISMINE_USED;
     {
         LOCK(wallet.cs_wallet);
         std::set<Txid> trusted_parents;
@@ -254,19 +262,27 @@ Balance GetBalance(const CWallet& wallet, const int min_depth, bool avoid_reuse)
 
             const bool is_trusted{CachedTxIsTrusted(wallet, wtx, trusted_parents)};
             const int tx_depth{wallet.GetTxDepthInMainChain(wtx)};
+            const CTxOut& txout = txo.GetTxOut();
 
-            if (!wallet.IsSpent(outpoint) && (allow_used_addresses || !wallet.IsSpentKey(txo.GetTxOut().scriptPubKey))) {
-                // Get the amounts for mine
-                CAmount credit_mine = txo.GetTxOut().nValue;
+            if (wallet.IsSpent(outpoint)) continue;
+            isminetype mine = wallet.IsMine(txout);
+            if (!(mine & (ISMINE_SPENDABLE | ISMINE_WATCH_ONLY))) continue;
 
-                // Set the amounts in the return object
-                if (wallet.IsTxImmatureCoinBase(wtx) && wtx.isConfirmed()) {
-                    ret.m_mine_immature += credit_mine;
-                } else if (is_trusted && tx_depth >= min_depth) {
-                    ret.m_mine_trusted += credit_mine;
-                } else if (!is_trusted && wtx.InMempool()) {
-                    ret.m_mine_untrusted_pending += credit_mine;
-                }
+            // Get the amounts for mine/watchonly, bucket by trust, depth and maturity
+            const bool is_immature{wallet.IsTxImmatureCoinBase(wtx) && wtx.isConfirmed()};
+            const bool immature_stake{wtx.IsCoinStake() && wtx.isConfirmed() && !CachedTxIsTrusted(wallet, wtx)};
+
+            if (is_immature) {
+                if (mine & ISMINE_SPENDABLE) ret.m_mine_immature += txout.nValue;
+                if (mine & ISMINE_WATCH_ONLY) ret.m_watchonly_immature += txout.nValue;
+            } else if (immature_stake) {
+                if (mine & ISMINE_SPENDABLE) ret.m_mine_stake += txout.nValue;
+            } else if (is_trusted && tx_depth >= min_depth) {
+                if (mine & ISMINE_SPENDABLE) ret.m_mine_trusted += txout.nValue;
+                if (mine & ISMINE_WATCH_ONLY) ret.m_watchonly_trusted += txout.nValue;
+            } else if (!is_trusted && wtx.InMempool()) {
+                if (mine & ISMINE_SPENDABLE) ret.m_mine_untrusted_pending += txout.nValue;
+                if (mine & ISMINE_WATCH_ONLY) ret.m_watchonly_untrusted_pending += txout.nValue;
             }
         }
     }

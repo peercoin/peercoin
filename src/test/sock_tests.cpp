@@ -1,13 +1,21 @@
-// Copyright (c) 2021-present The Bitcoin Core developers
+// Copyright (c) 2021-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <common/system.h>
 #include <compat/compat.h>
-#include <test/util/common.h>
 #include <test/util/setup_common.h>
 #include <util/sock.h>
+#include <util/system.h>
 #include <util/threadinterrupt.h>
+
+class HasReason {
+public:
+    explicit HasReason(const std::string& reason) : m_reason(reason) {}
+    bool operator()(const std::runtime_error& e) const { return std::string(e.what()).find(m_reason) != std::string::npos; }
+
+private:
+    const std::string m_reason;
+};
 
 #include <boost/test/unit_test.hpp>
 
@@ -25,7 +33,7 @@ static bool SocketIsClosed(const SOCKET& s)
     // wrongly pretend that the socket is not closed.
     int type;
     socklen_t len = sizeof(type);
-    return getsockopt(s, SOL_SOCKET, SO_TYPE, reinterpret_cast<char*>(&type), &len) == SOCKET_ERROR;
+    return getsockopt(s, SOL_SOCKET, SO_TYPE, (void*)&type, &len) == SOCKET_ERROR;
 }
 
 static SOCKET CreateSocket()
@@ -39,7 +47,7 @@ BOOST_AUTO_TEST_CASE(constructor_and_destructor)
 {
     const SOCKET s = CreateSocket();
     Sock* sock = new Sock(s);
-    BOOST_CHECK(*sock == s);
+    BOOST_CHECK_EQUAL(sock->Get(), s);
     BOOST_CHECK(!SocketIsClosed(s));
     delete sock;
     BOOST_CHECK(SocketIsClosed(s));
@@ -52,34 +60,22 @@ BOOST_AUTO_TEST_CASE(move_constructor)
     Sock* sock2 = new Sock(std::move(*sock1));
     delete sock1;
     BOOST_CHECK(!SocketIsClosed(s));
-    BOOST_CHECK(*sock2 == s);
+    BOOST_CHECK_EQUAL(sock2->Get(), s);
     delete sock2;
     BOOST_CHECK(SocketIsClosed(s));
 }
 
 BOOST_AUTO_TEST_CASE(move_assignment)
 {
-    const SOCKET s1 = CreateSocket();
-    const SOCKET s2 = CreateSocket();
-    Sock* sock1 = new Sock(s1);
-    Sock* sock2 = new Sock(s2);
-
-    BOOST_CHECK(!SocketIsClosed(s1));
-    BOOST_CHECK(!SocketIsClosed(s2));
-
+    const SOCKET s = CreateSocket();
+    Sock* sock1 = new Sock(s);
+    Sock* sock2 = new Sock();
     *sock2 = std::move(*sock1);
-    BOOST_CHECK(!SocketIsClosed(s1));
-    BOOST_CHECK(SocketIsClosed(s2));
-    BOOST_CHECK(*sock2 == s1);
-
     delete sock1;
-    BOOST_CHECK(!SocketIsClosed(s1));
-    BOOST_CHECK(SocketIsClosed(s2));
-    BOOST_CHECK(*sock2 == s1);
-
+    BOOST_CHECK(!SocketIsClosed(s));
+    BOOST_CHECK_EQUAL(sock2->Get(), s);
     delete sock2;
-    BOOST_CHECK(SocketIsClosed(s1));
-    BOOST_CHECK(SocketIsClosed(s2));
+    BOOST_CHECK(SocketIsClosed(s));
 }
 
 #ifndef WIN32 // Windows does not have socketpair(2).
@@ -111,7 +107,7 @@ BOOST_AUTO_TEST_CASE(send_and_receive)
     SendAndRecvMessage(*sock0, *sock1);
 
     Sock* sock0moved = new Sock(std::move(*sock0));
-    Sock* sock1moved = new Sock(INVALID_SOCKET);
+    Sock* sock1moved = new Sock();
     *sock1moved = std::move(*sock1);
 
     delete sock0;

@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Bitcoin Core developers
+// Copyright (c) 2021-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,22 +7,21 @@
 
 #include <interfaces/chain.h>
 #include <interfaces/echo.h>
+#include <interfaces/mining.h>
 #include <interfaces/node.h>
 #include <interfaces/wallet.h>
 
 #include <memory>
-#include <interfaces/wallet.h>
-
-using interfaces::WalletLoader;
 
 namespace node {
 struct NodeContext;
 } // namespace node
 
 namespace interfaces {
+
+class WalletLoader;
+
 class Ipc;
-class Node;
-//class WalletLoader;
 
 //! Initial interface created when a process is first started, and used to give
 //! and get access to other interfaces (Node, Chain, Wallet, etc).
@@ -37,9 +36,13 @@ public:
     virtual ~Init() = default;
     virtual std::unique_ptr<Node> makeNode() { return nullptr; }
     virtual std::unique_ptr<Chain> makeChain() { return nullptr; }
+    virtual std::unique_ptr<Mining> makeMining() { return nullptr; }
     virtual std::unique_ptr<WalletLoader> makeWalletLoader(Chain& chain) { return nullptr; }
     virtual std::unique_ptr<Echo> makeEcho() { return nullptr; }
     virtual Ipc* ipc() { return nullptr; }
+    virtual bool canListenIpc() { return false; }
+    virtual const char* exeName() { return nullptr; }
+    virtual void makeMiningOld2() { throw std::runtime_error("Old mining interface (@2) not supported. Please update your client!"); }
 };
 
 //! Return implementation of Init interface for the node process. If the argv

@@ -1,9 +1,13 @@
-// Copyright (c) 2020-2022 The Bitcoin Core developers
+// Copyright (c) 2020-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <blockfilter.h>
 #include <clientversion.h>
+#include <common/args.h>
+#include <common/messages.h>
+#include <common/settings.h>
+#include <common/system.h>
 #include <common/url.h>
 #include <netbase.h>
 #include <outputtype.h>
@@ -18,12 +22,9 @@
 #include <test/fuzz/FuzzedDataProvider.h>
 #include <test/fuzz/fuzz.h>
 #include <test/fuzz/util.h>
-#include <util/result.h>
 #include <util/fees.h>
-#include <util/settings.h>
 #include <util/strencodings.h>
 #include <util/string.h>
-#include <util/system.h>
 #include <util/translation.h>
 
 #include <cassert>
@@ -34,7 +35,15 @@
 #include <string>
 #include <vector>
 
-enum class FeeEstimateMode;
+using common::AmountErrMsg;
+using common::AmountHighWarn;
+using common::FeeModeFromString;
+using common::ResolveErrMsg;
+using util::ContainsNoNUL;
+using util::Join;
+using util::RemovePrefix;
+using util::SplitString;
+using util::TrimString;
 
 FUZZ_TARGET(string)
 {
@@ -50,6 +59,7 @@ FUZZ_TARGET(string)
     (void)Capitalize(random_string_1);
     (void)CopyrightHolders(random_string_1);
     FeeEstimateMode fee_estimate_mode;
+    (void)FeeModeFromString(random_string_1, fee_estimate_mode);
     const auto width{fuzzed_data_provider.ConsumeIntegralInRange<size_t>(1, 1000)};
     (void)FormatParagraph(random_string_1, width, fuzzed_data_provider.ConsumeIntegralInRange<size_t>(0, width));
     (void)FormatSubVersion(random_string_1, fuzzed_data_provider.ConsumeIntegral<int>(), random_string_vector);
@@ -61,13 +71,9 @@ FUZZ_TARGET(string)
     (void)IsDeprecatedRPCEnabled(random_string_1);
     (void)Join(random_string_vector, random_string_1);
     (void)JSONRPCError(fuzzed_data_provider.ConsumeIntegral<int>(), random_string_1);
-    const util::Settings settings;
+    const common::Settings settings;
     (void)OnlyHasDefaultSectionSetting(settings, random_string_1, random_string_2);
     (void)ParseNetwork(random_string_1);
-    try {
-        (void)ParseNonRFCJSONValue(random_string_1);
-    } catch (const std::runtime_error&) {
-    }
     (void)ParseOutputType(random_string_1);
     (void)RemovePrefix(random_string_1, random_string_2);
     (void)ResolveErrMsg(random_string_1, random_string_2);
@@ -92,9 +98,8 @@ FUZZ_TARGET(string)
     (void)ToUpper(random_string_1);
     (void)TrimString(random_string_1);
     (void)TrimString(random_string_1, random_string_2);
-    (void)urlDecode(random_string_1);
+    (void)UrlDecode(random_string_1);
     (void)ContainsNoNUL(random_string_1);
-    (void)_(random_string_1.c_str());
     try {
         throw scriptnum_error{random_string_1};
     } catch (const std::runtime_error&) {
@@ -140,5 +145,20 @@ FUZZ_TARGET(string)
         const bilingual_str bs1{random_string_1, random_string_2};
         const bilingual_str bs2{random_string_2, random_string_1};
         (void)(bs1 + bs2);
+    }
+    {
+        const ByteUnit all_units[] = {
+            ByteUnit::NOOP,
+            ByteUnit::k,
+            ByteUnit::K,
+            ByteUnit::m,
+            ByteUnit::M,
+            ByteUnit::g,
+            ByteUnit::G,
+            ByteUnit::t,
+            ByteUnit::T
+        };
+        ByteUnit default_multiplier = fuzzed_data_provider.PickValueInArray(all_units);
+        (void)ParseByteUnits(random_string_1, default_multiplier);
     }
 }

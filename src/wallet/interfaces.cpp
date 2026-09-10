@@ -73,7 +73,7 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
         result.txout_address.emplace_back();
         result.txout_address_is_mine.emplace_back(ExtractDestination(txout.scriptPubKey, result.txout_address.back()) ?
                                                       wallet.IsMine(result.txout_address.back()) :
-                                                      false);
+                                                      ISMINE_NO);
     }
     result.credit = CachedTxGetCredit(wallet, wtx, /*avoid_reuse=*/true);
     result.debit = CachedTxGetDebit(wallet, wtx, /*avoid_reuse=*/true);
@@ -81,6 +81,7 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
     result.time = wtx.GetTxTime();
     result.value_map = wtx.mapValue;
     result.is_coinbase = wtx.IsCoinBase();
+    result.is_coinstake = wtx.IsCoinStake(); // peercoin
     return result;
 }
 
@@ -102,6 +103,7 @@ WalletTxStatus MakeWalletTxStatus(const CWallet& wallet, const CWalletTx& wtx)
     result.is_trusted = CachedTxIsTrusted(wallet, wtx);
     result.is_abandoned = wtx.isAbandoned();
     result.is_coinbase = wtx.IsCoinBase();
+    result.is_coinstake = wtx.IsCoinStake(); // peercoin
     result.is_in_main_chain = wtx.isConfirmed();
     return result;
 }
@@ -378,8 +380,13 @@ public:
         const auto bal = GetBalance(*m_wallet);
         WalletBalances result;
         result.balance = bal.m_mine_trusted;
+        result.stake = bal.m_mine_stake; // peercoin
         result.unconfirmed_balance = bal.m_mine_untrusted_pending;
         result.immature_balance = bal.m_mine_immature;
+        result.have_watch_only = true; // peercoin: watch-only tracked via isminetype
+        result.watch_only_balance = bal.m_watchonly_trusted;
+        result.unconfirmed_watch_only_balance = bal.m_watchonly_untrusted_pending;
+        result.immature_watch_only_balance = bal.m_watchonly_immature;
         return result;
     }
     bool tryGetBalances(WalletBalances& balances, uint256& block_hash) override
@@ -434,6 +441,20 @@ public:
         LOCK(m_wallet->cs_wallet);
         return OutputGetCredit(*m_wallet, txout);
     }
+    CAmount getDebit(const CTxIn& txin, wallet::isminefilter filter) override // peercoin
+    {
+        LOCK(m_wallet->cs_wallet);
+        const auto it = m_wallet->mapWallet.find(txin.prevout.hash);
+        if (it == m_wallet->mapWallet.end()) return 0;
+        const CWalletTx& prev = it->second;
+        if (txin.prevout.n >= prev.tx->vout.size()) return 0;
+        return (prev.IsCoinStake() ? OutputGetCredit(*m_wallet, prev.tx->vout[txin.prevout.n], filter) : 0);
+    }
+    CAmount getCredit(const CTxOut& txout, wallet::isminefilter filter) override // peercoin
+    {
+        LOCK(m_wallet->cs_wallet);
+        return OutputGetCredit(*m_wallet, txout, filter);
+    }
     CoinsList listCoins() override
     {
         LOCK(m_wallet->cs_wallet);
@@ -482,6 +503,25 @@ public:
     bool canGetAddresses() override { return m_wallet->CanGetAddresses(); }
     bool hasExternalSigner() override { return m_wallet->IsWalletFlagSet(WALLET_FLAG_EXTERNAL_SIGNER); }
     bool privateKeysDisabled() override { return m_wallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS); }
+
+    bool haveWatchOnly() override
+    {
+        for (auto spkm : m_wallet->GetAllScriptPubKeyMans()) {
+            if (auto desc_spkm = dynamic_cast<DescriptorScriptPubKeyMan*>(spkm)) {
+                if (desc_spkm->DescriptorIsWatchOnly()) return true;
+            }
+        }
+        return false;
+    }
+
+    bool isLegacy() override { return false; } // peercoin: v31 wallets are descriptor-based
+
+    void relockWalletAfterDuration(int nDuration) override
+    {
+        // peercoin: schedule relock; timer enforces Lock() externally
+        LOCK(m_wallet->cs_wallet);
+        m_wallet->nRelockTime = GetTime() + nDuration;
+    }
     bool taprootEnabled() override {
         auto spk_man = m_wallet->GetScriptPubKeyMan(OutputType::BECH32M, /*internal=*/false);
         return spk_man != nullptr;
@@ -503,6 +543,10 @@ public:
     std::unique_ptr<Handler> handleStatusChanged(StatusChangedFn fn) override
     {
         return MakeSignalHandler(m_wallet->NotifyStatusChanged.connect([fn](CWallet*) { fn(); }));
+    }
+    std::unique_ptr<Handler> handleWatchOnlyChanged(WatchOnlyChangedFn fn) override // peercoin
+    {
+        return MakeSignalHandler(m_wallet->NotifyWatchonlyChanged.connect([fn](bool have_watch_only) { fn(have_watch_only); }));
     }
     std::unique_ptr<Handler> handleAddressBookChanged(AddressBookChangedFn fn) override
     {

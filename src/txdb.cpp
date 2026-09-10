@@ -6,7 +6,7 @@
 #include <util/signalinterrupt.h>
 #include <txdb.h>
 
-extern std::optional<util::SignalInterrupt> g_shutdown; // peercoin
+extern util::SignalInterrupt* g_shutdown; // peercoin: unified shutdown hub (shutdown.cpp)
 
 #include <coins.h>
 #include <kernel.h> // peercoin

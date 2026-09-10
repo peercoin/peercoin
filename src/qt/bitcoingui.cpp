@@ -5,6 +5,8 @@
 #include <qt/bitcoingui.h>
 
 #include <qt/bitcoinunits.h>
+
+#include <QFile>
 #include <qt/clientmodel.h>
 #include <qt/createwalletdialog.h>
 #include <qt/guiconstants.h>
@@ -322,15 +324,15 @@ void BitcoinGUI::createActions()
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(tr("Ctrl+Q")));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(tr("&About %1").arg(PACKAGE_NAME), this);
-    aboutAction->setStatusTip(tr("Show information about %1").arg(PACKAGE_NAME));
+    aboutAction = new QAction(tr("&About %1").arg(CLIENT_NAME), this);
+    aboutAction->setStatusTip(tr("Show information about %1").arg(CLIENT_NAME));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutAction->setEnabled(false);
     aboutQtAction = new QAction(tr("About &Qt"), this);
     aboutQtAction->setStatusTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(tr("&Options…"), this);
-    optionsAction->setStatusTip(tr("Modify configuration options for %1").arg(PACKAGE_NAME));
+    optionsAction->setStatusTip(tr("Modify configuration options for %1").arg(CLIENT_NAME));
     optionsAction->setMenuRole(QAction::PreferencesRole);
     optionsAction->setEnabled(false);
 
@@ -392,7 +394,7 @@ void BitcoinGUI::createActions()
 
     m_close_all_wallets_action = new QAction(tr("Close All Wallets…"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
-    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible Peercoin command-line options").arg(PACKAGE_NAME));
+    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible Peercoin command-line options").arg(CLIENT_NAME));
 
     openWebAction = new QAction(tr("&Website"), this);
     openWebAction->setStatusTip(tr("Open the Peercoin website in a web browser."));
@@ -444,7 +446,7 @@ void BitcoinGUI::createActions()
         connect(openAction, &QAction::triggered, this, &BitcoinGUI::openClicked);
         connect(m_open_wallet_menu, &QMenu::aboutToShow, [this] {
             m_open_wallet_menu->clear();
-            for (const std::pair<const std::string, bool>& i : m_wallet_controller->listWalletDir()) {
+            for (const std::pair<const std::string, std::pair<bool, std::string>>& i : m_wallet_controller->listWalletDir()) {
                 const std::string& path = i.first;
                 QString name = path.empty() ? QString("["+tr("default wallet")+"]") : QString::fromStdString(path);
                 // Menu items remove single &. Single & are shown when && is in
@@ -453,7 +455,7 @@ void BitcoinGUI::createActions()
                 name.replace(name.indexOf(QChar('&')), 1, QString("&&"));
                 QAction* action = m_open_wallet_menu->addAction(name);
 
-                if (i.second) {
+                if (i.second.first) {
                     // This wallet is already loaded
                     action->setEnabled(false);
                     continue;
@@ -733,7 +735,7 @@ void BitcoinGUI::enableHistoryAction(bool privacy)
     if (historyAction->isChecked()) gotoOverviewPage();
 }
 
-void BitcoinGUI::setWalletController(WalletController* wallet_controller)
+void BitcoinGUI::setWalletController(WalletController* wallet_controller, bool show_loading_minimized)
 {
     assert(!m_wallet_controller);
     assert(wallet_controller);
@@ -753,7 +755,7 @@ void BitcoinGUI::setWalletController(WalletController* wallet_controller)
     });
 
     auto activity = new LoadWalletsActivity(m_wallet_controller, this);
-    activity->load();
+    activity->load(show_loading_minimized);
 }
 
 WalletController* BitcoinGUI::getWalletController()
@@ -867,7 +869,7 @@ void BitcoinGUI::createTrayIcon()
 #ifndef Q_OS_MACOS
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
         trayIcon = new QSystemTrayIcon(m_network_style->getTrayAndWindowIcon(), this);
-        QString toolTip = tr("%1 client").arg(PACKAGE_NAME) + " " + m_network_style->getTitleAddText();
+        QString toolTip = tr("%1 client").arg(CLIENT_NAME) + " " + m_network_style->getTitleAddText();
         trayIcon->setToolTip(toolTip);
     }
 #endif
@@ -1266,7 +1268,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 void BitcoinGUI::message(const QString& title, QString message, unsigned int style, bool* ret, const QString& detailed_message)
 {
     // Default title. On macOS, the window title is ignored (as required by the macOS Guidelines).
-    QString strTitle{PACKAGE_NAME};
+    QString strTitle{CLIENT_NAME};
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -1538,7 +1540,7 @@ void BitcoinGUI::updateProxyIcon()
 
 void BitcoinGUI::updateWindowTitle()
 {
-    QString window_title = PACKAGE_NAME;
+    QString window_title = CLIENT_NAME;
 #ifdef ENABLE_WALLET
     if (walletFrame) {
         WalletModel* const wallet_model = walletFrame->currentWalletModel();
@@ -1633,8 +1635,8 @@ static bool ThreadSafeMessageBox(BitcoinGUI* gui, const bilingual_str& message, 
 void BitcoinGUI::subscribeToCoreSignals()
 {
     // Connect signals to client
-    m_handler_message_box = m_node.handleMessageBox(std::bind(ThreadSafeMessageBox, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    m_handler_question = m_node.handleQuestion(std::bind(ThreadSafeMessageBox, this, std::placeholders::_1, std::placeholders::_3, std::placeholders::_4));
+    m_handler_message_box = m_node.handleMessageBox([this](const bilingual_str& message, unsigned int style) { return ThreadSafeMessageBox(this, message, "", style); });
+    m_handler_question = m_node.handleQuestion([this](const bilingual_str& message, const std::string& detail, unsigned int style) { return ThreadSafeMessageBox(this, message, detail, style); });
 }
 
 void BitcoinGUI::unsubscribeFromCoreSignals()

@@ -8,6 +8,7 @@
 // peercoin: no-op sandbox shim (seccomp not implemented on this port yet)
 enum class SyscallSandboxPolicy {
     DEFAULT,
+    VALIDATION_SCRIPT_CHECK, // peercoin v0.16 name
     INITIALIZATION_LOAD_BLOCK_INDEX,
     INITIALIZATION_IMPORT_BLOCKS,
     INITIALIZATION_LOAD_BLOCKFILE_DIR,

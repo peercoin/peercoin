@@ -25,6 +25,25 @@ namespace wallet {
  * interfaces and saved for new addresses. It is basically redundant with an
  * address's IsMine() result.
  */
+/* peercoin: restored isminetype ownership granularity (watch-only support)
+ *
+ * ISMINE_NO: the scriptPubKey is not in the wallet;
+ * ISMINE_WATCH_ONLY: the scriptPubKey has a watch-only counterpart;
+ * ISMINE_SPENDABLE: the scriptPubKey matches a spendable script in the wallet;
+ * ISMINE_USED: the scriptPubKey corresponds to a used address owned by the wallet user.
+ */
+enum isminetype : unsigned int {
+    ISMINE_NO         = 0,
+    ISMINE_WATCH_ONLY = 1 << 0,
+    ISMINE_SPENDABLE  = 1 << 1,
+    ISMINE_USED       = 1 << 2,
+    ISMINE_ALL        = ISMINE_WATCH_ONLY | ISMINE_SPENDABLE,
+    ISMINE_ALL_USED   = ISMINE_ALL | ISMINE_USED,
+    ISMINE_ENUM_ELEMENTS,
+};
+/** used for bitflags of isminetype */
+using isminefilter = std::underlying_type<isminetype>::type;
+
 enum class AddressPurpose {
     RECEIVE,
     SEND,

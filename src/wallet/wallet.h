@@ -67,6 +67,8 @@ namespace interfaces {
 class Wallet;
 }
 namespace wallet {
+
+static const bool DEFAULT_CHECK_GITHUB = true;
 class CWallet;
 class WalletBatch;
 enum class DBErrors : int;
@@ -720,6 +722,7 @@ public:
     bool m_spend_zero_conf_change{DEFAULT_SPEND_ZEROCONF_CHANGE};
     bool m_split_coins{DEFAULT_SPLIT_COINS};   // peercoin rfc28
     bool m_combine_coins{DEFAULT_COMBINE_COINS}; // peercoin rfc28
+    bool m_check_github{DEFAULT_CHECK_GITHUB};    // peercoin: check for new releases on github
     bool m_signal_rbf{DEFAULT_WALLET_RBF};
     bool m_allow_fallback_fee{true}; //!< will be false if -fallbackfee=0
     CFeeRate m_min_fee{DEFAULT_TRANSACTION_MINFEE};
@@ -796,12 +799,12 @@ public:
     util::Result<CTxDestination> GetNewDestination(OutputType type, const std::string& label);
     util::Result<CTxDestination> GetNewChangeDestination(OutputType type);
 
-    bool IsMine(const CTxDestination& dest) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
-    bool IsMine(const CScript& script) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
+    isminetype IsMine(const CTxDestination& dest) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
+    isminetype IsMine(const CScript& script) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     /** Returns amount of debit, i.e. the amount leaving this wallet due to this input */
     CAmount GetDebit(const CTxIn& txin) const;
-    bool IsMine(const CTxOut& txout) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
-    bool IsMine(const CTransaction& tx) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
+    isminetype IsMine(const CTxOut& txout) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
+    isminetype IsMine(const CTransaction& tx) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     bool IsMine(const COutPoint& outpoint) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     /** should probably be renamed to IsRelevantToMe */
     bool IsFromMe(const CTransaction& tx) const;
@@ -859,6 +862,7 @@ public:
 
     /** Keypool has new keys */
     boost::signals2::signal<void ()> NotifyCanGetAddressesChanged;
+    boost::signals2::signal<void (bool fHaveWatchOnly)> NotifyWatchonlyChanged; // peercoin
 
     /**
      * Wallet status (encrypted, locked) changed.
@@ -1160,6 +1164,10 @@ struct MigrationResult {
 [[nodiscard]] util::Result<MigrationResult> MigrateLegacyToDescriptor(const std::string& wallet_name, const SecureString& passphrase, WalletContext& context);
 //! Requirement: The wallet provided to this function must be isolated, with no attachment to the node's context.
 [[nodiscard]] util::Result<MigrationResult> MigrateLegacyToDescriptor(std::shared_ptr<CWallet> local_wallet, const SecureString& passphrase, WalletContext& context);
+// peercoin: optional setting to unlock wallet for block minting only;
+//         serves to disable the trivial sendmoney when OS account compromised
+extern bool fWalletUnlockMintOnly;
+
 } // namespace wallet
 
 #endif // BITCOIN_WALLET_WALLET_H

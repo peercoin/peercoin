@@ -26,11 +26,18 @@ get_directory_property(precious_variables CACHE_VARIABLES)
 #=============================
 # Project / Package metadata
 #=============================
-set(CLIENT_NAME "Peercoin Core")
-set(CLIENT_VERSION_MAJOR 0)
-set(CLIENT_VERSION_MINOR 16)
+# peercoin branding: canonical PACKAGE_NAME from master configure.ac AC_INIT([Peercoin]).
+set(CLIENT_NAME "Peercoin")
+# CLIENT_VERSION = Bitcoin base version (subversion "/Satoshi:x.y.z/" portion).
+set(CLIENT_VERSION_MAJOR 31)
+set(CLIENT_VERSION_MINOR 1)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_RC 0)
+# PEERCOIN_VERSION = Peercoin's own version (subversion "/Peercoin:x.y.z/" portion).
+set(PEERCOIN_VERSION_MAJOR 0)
+set(PEERCOIN_VERSION_MINOR 16)
+set(PEERCOIN_VERSION_REVISION 0)
+set(PEERCOIN_VERSION_BUILD 0)
 set(CLIENT_VERSION_IS_RELEASE "true")
 set(COPYRIGHT_YEAR "2026")
 
@@ -53,9 +60,12 @@ set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
 project(BitcoinCore
   VERSION ${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VERSION_BUILD}
   DESCRIPTION "Bitcoin client software"
-  HOMEPAGE_URL "https://bitcoincore.org/"
+  HOMEPAGE_URL "https://peercoin.net/"
   LANGUAGES NONE
 )
+
+# peercoin: v0.16-era sources gate build config behind HAVE_CONFIG_H
+add_compile_definitions(HAVE_CONFIG_H)
 
 set(CLIENT_VERSION_STRING ${PROJECT_VERSION})
 if(CLIENT_VERSION_RC GREATER 0)

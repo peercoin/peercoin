@@ -1,14 +1,16 @@
-// Copyright (c) 2018-2022 The Bitcoin Core developers
+// Copyright (c) 2018-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <test/data/blockfilters.json.h>
-#include <test/util/setup_common.h>
+#include <test/util/common.h>
 
 #include <blockfilter.h>
 #include <core_io.h>
+#include <primitives/block.h>
 #include <serialize.h>
 #include <streams.h>
+#include <undo.h>
 #include <univalue.h>
 #include <util/strencodings.h>
 
@@ -57,21 +59,21 @@ BOOST_AUTO_TEST_CASE(blockfilter_basic_test)
     CScript included_scripts[5], excluded_scripts[4];
 
     // First two are outputs on a single transaction.
-    included_scripts[0] << std::vector<unsigned char>(0, 65) << OP_CHECKSIG;
-    included_scripts[1] << OP_DUP << OP_HASH160 << std::vector<unsigned char>(1, 20) << OP_EQUALVERIFY << OP_CHECKSIG;
+    included_scripts[0] << std::vector<unsigned char>(65, 0) << OP_CHECKSIG;
+    included_scripts[1] << OP_DUP << OP_HASH160 << std::vector<unsigned char>(20, 1) << OP_EQUALVERIFY << OP_CHECKSIG;
 
     // Third is an output on in a second transaction.
-    included_scripts[2] << OP_1 << std::vector<unsigned char>(2, 33) << OP_1 << OP_CHECKMULTISIG;
+    included_scripts[2] << OP_1 << std::vector<unsigned char>(33, 2) << OP_1 << OP_CHECKMULTISIG;
 
     // Last two are spent by a single transaction.
-    included_scripts[3] << OP_0 << std::vector<unsigned char>(3, 32);
+    included_scripts[3] << OP_0 << std::vector<unsigned char>(32, 3);
     included_scripts[4] << OP_4 << OP_ADD << OP_8 << OP_EQUAL;
 
     // OP_RETURN output is an output on the second transaction.
-    excluded_scripts[0] << OP_RETURN << std::vector<unsigned char>(4, 40);
+    excluded_scripts[0] << OP_RETURN << std::vector<unsigned char>(40, 4);
 
     // This script is not related to the block at all.
-    excluded_scripts[1] << std::vector<unsigned char>(5, 33) << OP_CHECKSIG;
+    excluded_scripts[1] << std::vector<unsigned char>(33, 5) << OP_CHECKSIG;
 
     // OP_RETURN is non-standard since it's not followed by a data push, but is still excluded from
     // filter.
@@ -93,10 +95,9 @@ BOOST_AUTO_TEST_CASE(blockfilter_basic_test)
 
     CBlockUndo block_undo;
     block_undo.vtxundo.emplace_back();
-    block_undo.vtxundo.back().vprevout.emplace_back(CTxOut(500, included_scripts[3]), 1000, true, false, 1599487287);
-
-    block_undo.vtxundo.back().vprevout.emplace_back(CTxOut(600, included_scripts[4]), 10000, false, false, 1599487287);
-    block_undo.vtxundo.back().vprevout.emplace_back(CTxOut(700, excluded_scripts[3]), 100000, false, false, 1599487287);
+    block_undo.vtxundo.back().vprevout.emplace_back(CTxOut(500, included_scripts[3]), 1000, true);
+    block_undo.vtxundo.back().vprevout.emplace_back(CTxOut(600, included_scripts[4]), 10000, false);
+    block_undo.vtxundo.back().vprevout.emplace_back(CTxOut(700, excluded_scripts[3]), 100000, false);
 
     BlockFilter block_filter(BlockFilterType::BASIC, block, block_undo);
     const GCSFilter& filter = block_filter.GetFilter();
@@ -129,9 +130,7 @@ BOOST_AUTO_TEST_CASE(blockfilter_basic_test)
 BOOST_AUTO_TEST_CASE(blockfilters_json_test)
 {
     UniValue json;
-    std::string json_data(json_tests::blockfilters,
-                          json_tests::blockfilters + sizeof(json_tests::blockfilters));
-    if (!json.read(json_data) || !json.isArray()) {
+    if (!json.read(json_tests::blockfilters) || !json.isArray()) {
         BOOST_ERROR("Parse error.");
         return;
     }
@@ -150,8 +149,7 @@ BOOST_AUTO_TEST_CASE(blockfilters_json_test)
 
         unsigned int pos = 0;
         /*int block_height =*/ test[pos++].getInt<int>();
-        uint256 block_hash;
-        BOOST_CHECK(ParseHashStr(test[pos++].get_str(), block_hash));
+        BOOST_CHECK(uint256::FromHex(test[pos++].get_str()));
 
         CBlock block;
         BOOST_REQUIRE(DecodeHexBlk(block, test[pos++].get_str()));
@@ -163,14 +161,12 @@ BOOST_AUTO_TEST_CASE(blockfilters_json_test)
         for (unsigned int ii = 0; ii < prev_scripts.size(); ii++) {
             std::vector<unsigned char> raw_script = ParseHex(prev_scripts[ii].get_str());
             CTxOut txout(0, CScript(raw_script.begin(), raw_script.end()));
-            tx_undo.vprevout.emplace_back(txout, 0, false, false, 1599487287);
+            tx_undo.vprevout.emplace_back(txout, 0, false);
         }
 
-        uint256 prev_filter_header_basic;
-        BOOST_CHECK(ParseHashStr(test[pos++].get_str(), prev_filter_header_basic));
+        uint256 prev_filter_header_basic{*Assert(uint256::FromHex(test[pos++].get_str()))};
         std::vector<unsigned char> filter_basic = ParseHex(test[pos++].get_str());
-        uint256 filter_header_basic;
-        BOOST_CHECK(ParseHashStr(test[pos++].get_str(), filter_header_basic));
+        uint256 filter_header_basic{*Assert(uint256::FromHex(test[pos++].get_str()))};
 
         BlockFilter computed_filter_basic(BlockFilterType::BASIC, block, block_undo);
         BOOST_CHECK(computed_filter_basic.GetFilter().GetEncoded() == filter_basic);

@@ -107,7 +107,7 @@ void MultisigInputEntry::on_transactionId_textChanged(const QString &transaction
         return;
 
     // Make list of transaction outputs
-    txHash.SetHex(transactionId.toStdString().c_str());
+    txHash = uint256::FromHex(transactionId.toStdString()).value_or(uint256());
     CTransactionRef tx;
     uint256 blockHash = uint256();
     if(!GetTransaction(txHash, tx, Params().GetConsensus(), blockHash))

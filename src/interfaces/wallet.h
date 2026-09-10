@@ -16,6 +16,7 @@
 #include <util/fs.h>
 #include <util/result.h>
 #include <util/ui_change_type.h>
+#include <wallet/types.h>
 
 #include <cstdint>
 #include <functional>
@@ -229,9 +230,11 @@ public:
 
     //! Return debit amount if transaction input belongs to wallet.
     virtual CAmount getDebit(const CTxIn& txin) = 0;
+    virtual CAmount getDebit(const CTxIn& txin, wallet::isminefilter filter) = 0; // peercoin
 
     //! Return credit amount if transaction input belongs to wallet.
     virtual CAmount getCredit(const CTxOut& txout) = 0;
+    virtual CAmount getCredit(const CTxOut& txout, wallet::isminefilter filter) = 0; // peercoin
 
     //! Return AvailableCoins + LockedCoins grouped by wallet address.
     //! (put change in one group with wallet address)
@@ -262,6 +265,15 @@ public:
     // Return whether private keys enabled.
     virtual bool privateKeysDisabled() = 0;
 
+    //! peercoin: whether the wallet tracks watch-only scripts
+    virtual bool haveWatchOnly() = 0;
+
+    //! peercoin: whether the wallet uses legacy (non-descriptor) key storage
+    virtual bool isLegacy() = 0;
+
+    //! peercoin: unlock only for minting, relock after nDuration seconds
+    virtual void relockWalletAfterDuration(int nDuration) = 0;
+
     // Return whether the wallet contains a Taproot scriptPubKeyMan
     virtual bool taprootEnabled() = 0;
 
@@ -288,6 +300,10 @@ public:
     //! Register handler for status changed messages.
     using StatusChangedFn = std::function<void()>;
     virtual std::unique_ptr<Handler> handleStatusChanged(StatusChangedFn fn) = 0;
+
+    //! Register handler for watch-only changed messages.
+    using WatchOnlyChangedFn = std::function<void(bool have_balance)>;
+    virtual std::unique_ptr<Handler> handleWatchOnlyChanged(WatchOnlyChangedFn fn) = 0; // peercoin
 
     //! Register handler for address book changed messages.
     using AddressBookChangedFn = std::function<void(const CTxDestination& address,
@@ -367,13 +383,20 @@ struct WalletAddress
 struct WalletBalances
 {
     CAmount balance = 0;
+    CAmount stake = 0; // peercoin
     CAmount unconfirmed_balance = 0;
     CAmount immature_balance = 0;
+    bool have_watch_only = false;
+    CAmount watch_only_balance = 0;
+    CAmount unconfirmed_watch_only_balance = 0;
+    CAmount immature_watch_only_balance = 0;
 
     bool balanceChanged(const WalletBalances& prev) const
     {
-        return balance != prev.balance || unconfirmed_balance != prev.unconfirmed_balance ||
-               immature_balance != prev.immature_balance;
+        return balance != prev.balance || stake != prev.stake || unconfirmed_balance != prev.unconfirmed_balance ||
+               immature_balance != prev.immature_balance || watch_only_balance != prev.watch_only_balance ||
+               unconfirmed_watch_only_balance != prev.unconfirmed_watch_only_balance ||
+               immature_watch_only_balance != prev.immature_watch_only_balance;
     }
 };
 
@@ -381,8 +404,8 @@ struct WalletBalances
 struct WalletTx
 {
     CTransactionRef tx;
-    std::vector<bool> txin_is_mine;
-    std::vector<bool> txout_is_mine;
+    std::vector<wallet::isminetype> txin_is_mine;
+    std::vector<wallet::isminetype> txout_is_mine;
     std::vector<bool> txout_is_change;
     std::vector<CTxDestination> txout_address;
     std::vector<bool> txout_address_is_mine;
@@ -392,6 +415,7 @@ struct WalletTx
     int64_t time;
     std::map<std::string, std::string> value_map;
     bool is_coinbase;
+    bool is_coinstake; // peercoin
 
     bool operator<(const WalletTx& a) const { return tx->GetHash() < a.tx->GetHash(); }
 };
@@ -408,6 +432,7 @@ struct WalletTxStatus
     bool is_abandoned;
     bool is_coinbase;
     bool is_in_main_chain;
+    bool is_coinstake; // peercoin
 };
 
 //! Wallet transaction output.

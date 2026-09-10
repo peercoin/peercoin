@@ -77,7 +77,7 @@ public:
         assert(invoked);
     }
 private:
-    uint256 hash;
+    uint256 hash{};
     ChangeType status;
     bool showTransaction;
 };
@@ -275,8 +275,7 @@ void TransactionTableModel::updateAmountColumnTitle()
 
 void TransactionTableModel::updateTransaction(const QString &hash, int status, bool showTransaction)
 {
-    uint256 updated;
-    updated.SetHex(hash.toStdString());
+    uint256 updated = uint256::FromHex(hash.toStdString()).value_or(uint256{});
 
     priv->updateWallet(walletModel->wallet(), updated, status, showTransaction);
 }

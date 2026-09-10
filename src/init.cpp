@@ -216,15 +216,16 @@ static void RemovePidFile(const ArgsManager& args)
     }
 }
 
-std::optional<util::SignalInterrupt> g_shutdown; // peercoin: non-static for txdb
+// peercoin: unified shutdown hub lives in shutdown.cpp (g_shutdown_interrupt).
+extern util::SignalInterrupt g_shutdown_interrupt;
+util::SignalInterrupt* g_shutdown{&g_shutdown_interrupt};
 
 void InitContext(NodeContext& node)
 {
-    assert(!g_shutdown);
-    g_shutdown.emplace();
+    // peercoin: hub already constructed (shutdown.cpp).
 
     node.args = &gArgs;
-    node.shutdown_signal = &*g_shutdown;
+    node.shutdown_signal = g_shutdown;
     // peercoin bridge: legacy v0.16 bitcoind main waits on shutdown.cpp's self-pipe,
     // so the v31 stop RPC must also trigger the legacy shutdown token.
     node.shutdown_request = [&node] {
@@ -440,7 +441,7 @@ static void HandleSIGTERM(int)
 {
     // Return value is intentionally ignored because there is not a better way
     // of handling this failure in a signal handler.
-    (void)(*Assert(g_shutdown))();
+    (void)(*g_shutdown)();
 }
 
 static void HandleSIGHUP(int)
@@ -450,7 +451,7 @@ static void HandleSIGHUP(int)
 #else
 static BOOL WINAPI consoleCtrlHandler(DWORD dwCtrlType)
 {
-    if (!(*Assert(g_shutdown))()) {
+    if (!(*g_shutdown)()) {
         LogError("Failed to send shutdown signal on Ctrl-C\n");
         return false;
     }

@@ -156,13 +156,6 @@ bool BlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, s
                 pindexNew->nStakeTime     = diskindex.nStakeTime;
                 pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
 
-                // peercoin: calculate stake modifier checksum
-                pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
-                if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum)) {
-                    LogError("%s: Rejected by stake modifier checkpoint height=%d, modifier=0x%016llx\n", __func__, pindexNew->nHeight, (unsigned long long)diskindex.nStakeModifier);
-                    return false;
-                }
-
                 if (pindexNew->IsProofOfWork() && !CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
                     LogError("%s: CheckProofOfWork failed: %s\n", __func__, pindexNew->ToString());
                     return false;
@@ -538,6 +531,15 @@ bool BlockManager::LoadBlockIndex(const std::optional<uint256>& snapshot_blockha
         if (pindex->pprev) {
             pindex->BuildSkip();
         }
+        // peercoin: calculate stake modifier checksum
+        pindex->nStakeModifierChecksum = GetStakeModifierChecksum(pindex);
+        //if (chainman.ActiveChain().Contains(pindex))
+        if (pindex->nStatus & BLOCK_HAVE_DATA) {
+            if (!CheckStakeModifierCheckpoints(pindex->nHeight, pindex->nStakeModifierChecksum)) {
+                LogError("LoadBlockIndex() : Failed stake modifier checkpoint height=%d, modifier=0x%016llx\n", pindex->nHeight, (unsigned long long)pindex->nStakeModifier);
+                return false;
+            }
+        }
     }
 
     return true;
@@ -555,6 +557,9 @@ void BlockManager::WriteBlockIndexDB()
     std::vector<const CBlockIndex*> vBlocks;
     vBlocks.reserve(m_dirty_blockindex.size());
     for (std::set<CBlockIndex*>::iterator it = m_dirty_blockindex.begin(); it != m_dirty_blockindex.end();) {
+        if ((*it)->nHeight >= 30582 && (*it)->nHeight <= 30585)
+            LogError("DBGFLUSH: h=%d modifier=0x%016llx checksum=%08x hpos=%s\n", (*it)->nHeight,
+                (unsigned long long)(*it)->nStakeModifier, (*it)->nStakeModifierChecksum, (*it)->hashProofOfStake.ToString());
         vBlocks.push_back(*it);
         m_dirty_blockindex.erase(it++);
     }

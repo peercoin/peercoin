@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <bitcoin-build-config.h>
 #endif
 
 #include <chainparams.h>
@@ -119,16 +119,16 @@ Intro::Intro(QWidget *parent, int64_t blockchain_size_gb) :
     m_blockchain_size_gb(blockchain_size_gb)
 {
     ui->setupUi(this);
-    ui->welcomeLabel->setText(ui->welcomeLabel->text().arg(PACKAGE_NAME));
-    ui->storageLabel->setText(ui->storageLabel->text().arg(PACKAGE_NAME));
+    ui->welcomeLabel->setText(ui->welcomeLabel->text().arg(CLIENT_NAME));
+    ui->storageLabel->setText(ui->storageLabel->text().arg(CLIENT_NAME));
 
     ui->lblExplanation1->setText(ui->lblExplanation1->text()
-        .arg(PACKAGE_NAME)
+        .arg(CLIENT_NAME)
         .arg(m_blockchain_size_gb)
         .arg(2012)
         .arg(tr("Peercoin"))
     );
-    ui->lblExplanation2->setText(ui->lblExplanation2->text().arg(PACKAGE_NAME));
+    ui->lblExplanation2->setText(ui->lblExplanation2->text().arg(CLIENT_NAME));
 
 
     startThread();
@@ -180,7 +180,7 @@ bool Intro::showIfNeeded(bool& did_show_intro)
     {
         /* Use selectParams here to guarantee Params() can be used by node interface */
         try {
-            SelectParams(gArgs.GetChainName());
+            SelectParams(gArgs.GetChainType());
         } catch (const std::exception&) {
             return false;
         }
@@ -206,7 +206,7 @@ bool Intro::showIfNeeded(bool& did_show_intro)
                 }
                 break;
             } catch (const fs::filesystem_error&) {
-                QMessageBox::critical(nullptr, PACKAGE_NAME,
+                QMessageBox::critical(nullptr, CLIENT_NAME,
                     tr("Error: Specified data directory \"%1\" cannot be created.").arg(dataDir));
                 /* fall through, back to choosing screen */
             }

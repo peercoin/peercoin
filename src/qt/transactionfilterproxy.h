@@ -1,4 +1,4 @@
-// Copyright (c) 2011-present The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -25,6 +25,13 @@ public:
 
     static quint32 TYPE(int type) { return 1<<type; }
 
+    enum WatchOnlyFilter
+    {
+        WatchOnlyFilter_All,
+        WatchOnlyFilter_Yes,
+        WatchOnlyFilter_No
+    };
+
     /** Filter transactions between date range. Use std::nullopt for open range. */
     void setDateRange(const std::optional<QDateTime>& from, const std::optional<QDateTime>& to);
     void setSearchString(const QString &);
@@ -33,6 +40,7 @@ public:
      */
     void setTypeFilter(quint32 modes);
     void setMinAmount(const CAmount& minimum);
+    void setWatchOnlyFilter(WatchOnlyFilter filter);
 
     /** Set whether to show conflicted transactions. */
     void setShowInactive(bool showInactive);
@@ -44,7 +52,8 @@ private:
     std::optional<QDateTime> dateFrom;
     std::optional<QDateTime> dateTo;
     QString m_search_string;
-    quint32 typeFilter{ALL_TYPES};
+    quint32 typeFilter;
+    WatchOnlyFilter watchOnlyFilter{WatchOnlyFilter_All};
     CAmount minAmount{0};
     bool showInactive{true};
 };

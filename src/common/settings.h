@@ -16,6 +16,15 @@ class UniValue;
 
 namespace common {
 
+static constexpr int64_t GB_BYTES = 1000 * 1000 * 1000;
+
+// peercoin: v31 prune setting helpers
+static inline int PruneMiBtoGB(int64_t mib) { return (mib * 1024 * 1024 + GB_BYTES - 1) / GB_BYTES; }
+
+static inline int64_t PruneGBtoMiB(int gb) { return gb * GB_BYTES / 1024 / 1024; }
+
+
+
 //! Settings value type (string/integer/boolean/null variant).
 //!
 //! @note UniValue is used here for convenience and because it can be easily

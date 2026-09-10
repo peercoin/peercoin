@@ -2570,3 +2570,4 @@ void CheckBlockDataAvailability(node::BlockManager& blockman, const CBlockIndex&
         throw JSONRPCError(RPC_MISC_ERROR, check_for_undo ? "Block or undo data not available" : "Block not available");
     }
 }
+

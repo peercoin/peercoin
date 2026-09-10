@@ -40,6 +40,8 @@ namespace wallet {
 class CCoinControl;
 } // namespace wallet
 
+class CBlockIndex;
+
 namespace interfaces {
 class Handler;
 class WalletLoader;
@@ -206,6 +208,9 @@ public:
 
     //! Get unspent output associated with a transaction.
     virtual std::optional<Coin> getUnspentOutput(const COutPoint& output) = 0;
+
+    //! peercoin: active chain tip block index (minting UI walks the chain).
+    virtual CBlockIndex* tipBlock() = 0;
 
     //! Broadcast transaction.
     virtual node::TransactionError broadcastTransaction(CTransactionRef tx, CAmount max_tx_fee, std::string& err_string) = 0;

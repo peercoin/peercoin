@@ -1635,43 +1635,43 @@ CAmount CWallet::GetDebit(const CTxIn &txin) const
     return 0;
 }
 
-bool CWallet::IsMine(const CTxOut& txout) const
+isminetype CWallet::IsMine(const CTxOut& txout) const
 {
     AssertLockHeld(cs_wallet);
     return IsMine(txout.scriptPubKey);
 }
 
-bool CWallet::IsMine(const CTxDestination& dest) const
+isminetype CWallet::IsMine(const CTxDestination& dest) const
 {
     AssertLockHeld(cs_wallet);
     return IsMine(GetScriptForDestination(dest));
 }
 
-bool CWallet::IsMine(const CScript& script) const
+isminetype CWallet::IsMine(const CScript& script) const
 {
     AssertLockHeld(cs_wallet);
 
     // Search the cache so that IsMine is called only on the relevant SPKMs instead of on everything in m_spk_managers
     const auto& it = m_cached_spks.find(script);
     if (it != m_cached_spks.end()) {
-        bool res = false;
+        isminetype res = ISMINE_NO;
         for (const auto& spkm : it->second) {
-            res = res || spkm->IsMine(script);
+            res = static_cast<isminetype>(res | spkm->IsMine(script));
         }
-        Assume(res);
+        Assume(res != ISMINE_NO);
         return res;
     }
 
-    return false;
+    return ISMINE_NO;
 }
 
-bool CWallet::IsMine(const CTransaction& tx) const
+isminetype CWallet::IsMine(const CTransaction& tx) const
 {
     AssertLockHeld(cs_wallet);
+    isminetype res = ISMINE_NO;
     for (const CTxOut& txout : tx.vout)
-        if (IsMine(txout))
-            return true;
-    return false;
+        res = static_cast<isminetype>(res | IsMine(txout));
+    return res;
 }
 
 bool CWallet::IsMine(const COutPoint& outpoint) const
@@ -3070,6 +3070,7 @@ bool CWallet::LoadWalletArgs(std::shared_ptr<CWallet> wallet, const WalletContex
 
     wallet->m_confirm_target = args.GetIntArg("-txconfirmtarget", DEFAULT_TX_CONFIRM_TARGET);
     wallet->m_spend_zero_conf_change = args.GetBoolArg("-spendzeroconfchange", DEFAULT_SPEND_ZEROCONF_CHANGE);
+    wallet->m_check_github = args.GetBoolArg("-checkgithub", DEFAULT_CHECK_GITHUB);
     wallet->m_signal_rbf = args.GetBoolArg("-walletrbf", DEFAULT_WALLET_RBF);
 
     wallet->m_keypool_size = std::max(args.GetIntArg("-keypool", DEFAULT_KEYPOOL_SIZE), int64_t{1});
@@ -3563,6 +3564,7 @@ void CWallet::ConnectScriptPubKeyManNotifiers()
 {
     for (const auto& spk_man : GetActiveScriptPubKeyMans()) {
         spk_man->NotifyCanGetAddressesChanged.connect(NotifyCanGetAddressesChanged);
+        spk_man->NotifyWatchonlyChanged.connect(NotifyWatchonlyChanged); // peercoin
         spk_man->NotifyFirstKeyTimeChanged.connect([this](const ScriptPubKeyMan*, int64_t time) {
             MaybeUpdateBirthTime(time);
         });
@@ -5029,5 +5031,9 @@ void CWallet::DisconnectChainNotifications()
         m_chain_notifications_handler.reset();
     }
 }
+
+// peercoin: optional setting to unlock wallet for block minting only;
+//         serves to disable the trivial sendmoney when OS account compromised
+bool fWalletUnlockMintOnly = false;
 
 } // namespace wallet

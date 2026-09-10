@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 The Bitcoin Core developers
+// Copyright (c) 2020-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,6 +9,7 @@
 #include <test/fuzz/FuzzedDataProvider.h>
 #include <test/fuzz/fuzz.h>
 #include <test/fuzz/util.h>
+#include <util/chaintype.h>
 #include <util/check.h>
 #include <util/overflow.h>
 
@@ -19,10 +20,10 @@
 
 void initialize_pow()
 {
-    SelectParams(CBaseChainParams::MAIN);
+    SelectParams(ChainType::MAIN);
 }
 
-FUZZ_TARGET_INIT(pow, initialize_pow)
+FUZZ_TARGET(pow, .init = initialize_pow)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     const Consensus::Params& consensus_params = Params().GetConsensus();
@@ -55,13 +56,13 @@ FUZZ_TARGET_INIT(pow, initialize_pow)
                 current_block.nBits = fixed_bits;
             }
             if (fuzzed_data_provider.ConsumeBool()) {
-                current_block.nChainTrust = previous_block != nullptr ? previous_block->nChainTrust + GetBlockTrust(*previous_block) : arith_uint256{0};
+                current_block.nChainWork = previous_block != nullptr ? previous_block->nChainWork + GetBlockProof(*previous_block) : arith_uint256{0};
             } else {
-                current_block.nChainTrust = ConsumeArithUInt256(fuzzed_data_provider);
+                current_block.nChainWork = ConsumeArithUInt256(fuzzed_data_provider);
             }
         }
         {
-            (void)GetBlockTrust(current_block);
+            (void)GetBlockProof(current_block);
             (void)CalculateNextWorkRequired(&current_block, fuzzed_data_provider.ConsumeIntegralInRange<int64_t>(0, std::numeric_limits<int64_t>::max()), consensus_params);
             if (current_block.nHeight != std::numeric_limits<int>::max() && current_block.nHeight - (consensus_params.DifficultyAdjustmentInterval() - 1) >= 0) {
                 (void)GetNextWorkRequired(&current_block, &(*block_header), consensus_params);
@@ -79,14 +80,14 @@ FUZZ_TARGET_INIT(pow, initialize_pow)
         {
             const std::optional<uint256> hash = ConsumeDeserializable<uint256>(fuzzed_data_provider);
             if (hash) {
-                (void)CheckProofOfWork(*hash, fuzzed_data_provider.ConsumeIntegral<unsigned int>(), consensus_params);
+                (void)CheckProofOfWorkImpl(*hash, fuzzed_data_provider.ConsumeIntegral<unsigned int>(), consensus_params);
             }
         }
     }
 }
 
 
-FUZZ_TARGET_INIT(pow_transition, initialize_pow)
+FUZZ_TARGET(pow_transition, .init = initialize_pow)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     const Consensus::Params& consensus_params{Params().GetConsensus()};
@@ -119,5 +120,5 @@ FUZZ_TARGET_INIT(pow_transition, initialize_pow)
     }
     auto last_block{blocks.back().get()};
     unsigned int new_nbits{GetNextWorkRequired(last_block, nullptr, consensus_params)};
-    //Assert(PermittedDifficultyTransition(consensus_params, last_block->nHeight + 1, last_block->nBits, new_nbits));
+    Assert(PermittedDifficultyTransition(consensus_params, last_block->nHeight + 1, last_block->nBits, new_nbits));
 }

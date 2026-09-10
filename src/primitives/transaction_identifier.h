@@ -25,6 +25,7 @@ class transaction_identifier
 {
     uint256 m_wrapped;
 
+public:
     // peercoin compat: implicit conversions to/from uint256 keep PPC-era
     // (master-generation) consumers compiling alongside v31 typed ids.
     transaction_identifier(const uint256& wrapped) : m_wrapped{wrapped} {}

@@ -171,6 +171,7 @@ if(ENABLE_WALLET)
       bitcoin_util
       Boost::headers
     )
+    set_target_properties(bitcoin-wallet PROPERTIES OUTPUT_NAME peercoin-wallet)  # peercoin branding
     install_binary_component(bitcoin-wallet HAS_MANPAGE)
   endif()
 endif()
@@ -239,6 +240,7 @@ add_library(bitcoin_node STATIC EXCLUDE_FROM_ALL
   node/txreconciliation.cpp
   node/utxo_snapshot.cpp
   node/warnings.cpp
+  warnings.cpp
   noui.cpp
   policy/ephemeral_policy.cpp
   policy/fees/block_policy_estimator.cpp
@@ -322,7 +324,8 @@ if(BUILD_DAEMON)
     bitcoin_node
     $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
   )
-  install_binary_component(bitcoind HAS_MANPAGE)
+  set_target_properties(bitcoind PROPERTIES OUTPUT_NAME peercoind)  # peercoin branding
+    install_binary_component(bitcoind HAS_MANPAGE)
 endif()
 if(ENABLE_IPC AND BUILD_DAEMON)
   add_executable(bitcoin-node
@@ -335,7 +338,8 @@ if(ENABLE_IPC AND BUILD_DAEMON)
     bitcoin_ipc
     $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
   )
-  install_binary_component(bitcoin-node INTERNAL)
+  set_target_properties(bitcoin-node PROPERTIES OUTPUT_NAME peercoin-node)  # peercoin branding
+    install_binary_component(bitcoin-node INTERNAL)
 endif()
 
 
@@ -363,7 +367,8 @@ if(BUILD_CLI)
     libevent::core
     libevent::extra
   )
-  install_binary_component(bitcoin-cli HAS_MANPAGE)
+  set_target_properties(bitcoin-cli PROPERTIES OUTPUT_NAME peercoin-cli)  # peercoin branding
+    install_binary_component(bitcoin-cli HAS_MANPAGE)
 endif()
 
 
@@ -377,7 +382,8 @@ if(BUILD_TX)
     bitcoin_util
     univalue
   )
-  install_binary_component(bitcoin-tx HAS_MANPAGE)
+  set_target_properties(bitcoin-tx PROPERTIES OUTPUT_NAME peercoin-tx)  # peercoin branding
+    install_binary_component(bitcoin-tx HAS_MANPAGE)
 endif()
 
 
@@ -390,7 +396,8 @@ if(BUILD_UTIL)
     bitcoin_common
     bitcoin_util
   )
-  install_binary_component(bitcoin-util HAS_MANPAGE)
+  set_target_properties(bitcoin-util PROPERTIES OUTPUT_NAME peercoin-util)  # peercoin branding
+    install_binary_component(bitcoin-util HAS_MANPAGE)
 endif()
 
 
@@ -414,6 +421,7 @@ if(BUILD_KERNEL_LIB)
         core_interface
         bitcoinkernel
     )
+    set_target_properties(bitcoin-chainstate PROPERTIES OUTPUT_NAME peercoin-chainstate)  # peercoin branding
     install_binary_component(bitcoin-chainstate INTERNAL)
   endif()
 endif()

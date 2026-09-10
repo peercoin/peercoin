@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,19 +10,21 @@
 #include <qt/qvalidatedlineedit.h>
 #include <qt/sendcoinsrecipient.h>
 
+#include <addresstype.h>
 #include <base58.h>
 #include <chainparams.h>
+#include <common/args.h>
 #include <interfaces/node.h>
 #include <key_io.h>
+#include <logging.h>
 #include <policy/policy.h>
 #include <primitives/transaction.h>
 #include <protocol.h>
 #include <script/script.h>
-#include <script/solver.h>
+#include <util/chaintype.h>
 #include <util/exception.h>
 #include <util/fs.h>
 #include <util/fs_helpers.h>
-#include <util/system.h>
 #include <util/time.h>
 
 #ifdef WIN32
@@ -62,7 +64,7 @@
 #include <QSize>
 #include <QStandardPaths>
 #include <QString>
-#include <QTextDocument> // for Qt::mightBeRichText
+#include <QTextDocument>
 #include <QThread>
 #include <QUrlQuery>
 #include <QtGlobal>
@@ -103,22 +105,27 @@ QFont fixedPitchFont(bool use_embedded_font)
     return QFontDatabase::systemFont(QFontDatabase::FixedFont);
 }
 
-// Just some dummy data to generate a convincing random-looking (but consistent) address
-static const uint8_t dummydata[] = {0xeb,0x15,0x23,0x1d,0xfc,0xeb,0x60,0x92,0x58,0x86,0xb6,0x7d,0x06,0x52,0x99,0x92,0x59,0x15,0xae,0xb1,0x72,0xc0,0x66,0x47};
-
-// Generate a dummy address with invalid CRC, starting with the network prefix.
+// Return a pre-generated dummy bech32m address (P2TR) with invalid checksum.
 static std::string DummyAddress(const CChainParams &params)
 {
-    std::vector<unsigned char> sourcedata = params.Base58Prefix(CChainParams::PUBKEY_ADDRESS);
-    sourcedata.insert(sourcedata.end(), dummydata, dummydata + sizeof(dummydata));
-    for(int i=0; i<256; ++i) { // Try every trailing byte
-        std::string s = EncodeBase58(sourcedata);
-        if (!IsValidDestinationString(s)) {
-            return s;
-        }
-        sourcedata[sourcedata.size()-1] += 1;
-    }
-    return "";
+    std::string addr;
+    switch (params.GetChainType()) {
+    case ChainType::MAIN:
+        addr = "bc1p35yvjel7srp783ztf8v6jdra7dhfzk5jaun8xz2qp6ws7z80n4tq2jku9f";
+        break;
+    case ChainType::SIGNET:
+    case ChainType::TESTNET:
+    case ChainType::TESTNET4:
+        addr = "tb1p35yvjel7srp783ztf8v6jdra7dhfzk5jaun8xz2qp6ws7z80n4tqa6qnlg";
+        break;
+    case ChainType::REGTEST:
+        addr = "bcrt1p35yvjel7srp783ztf8v6jdra7dhfzk5jaun8xz2qp6ws7z80n4tqsr2427";
+        break;
+    } // no default case, so the compiler can warn about missing cases
+    assert(!addr.empty());
+
+    if (Assume(!IsValidDestinationString(addr))) return addr;
+    return {};
 }
 
 void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
@@ -413,7 +420,7 @@ void handleCloseWindowShortcut(QWidget* w)
 
 void openDebugLogfile()
 {
-    fs::path pathDebug = gArgs.GetDataDirNet() / "debug.log";
+    fs::path pathDebug = LogInstance().m_file_path;
 
     /* Open debug.log with the associated application */
     if (fs::exists(pathDebug))
@@ -425,7 +432,7 @@ bool openBitcoinConf()
     fs::path pathConfig = gArgs.GetConfigFilePath();
 
     /* Create the file */
-    std::ofstream configFile{pathConfig, std::ios_base::app};
+    std::ofstream configFile{pathConfig.std_path(), std::ios_base::app};
 
     if (!configFile.good())
         return false;
@@ -494,12 +501,12 @@ bool LabelOutOfFocusEventFilter::eventFilter(QObject* watched, QEvent* event)
 #ifdef WIN32
 fs::path static StartupShortcutPath()
 {
-    std::string chain = gArgs.GetChainName();
-    if (chain == CBaseChainParams::MAIN)
+    ChainType chain = gArgs.GetChainType();
+    if (chain == ChainType::MAIN)
         return GetSpecialFolderPath(CSIDL_STARTUP) / "Peercoin.lnk";
-    if (chain == CBaseChainParams::TESTNET) // Remove this special case when CBaseChainParams::TESTNET = "testnet4"
+    if (chain == ChainType::TESTNET) // Remove this special case when testnet CBaseChainParams::DataDir() is incremented to "testnet4"
         return GetSpecialFolderPath(CSIDL_STARTUP) / "Peercoin (testnet).lnk";
-    return GetSpecialFolderPath(CSIDL_STARTUP) / fs::u8path(strprintf("Peercoin (%s).lnk", chain));
+    return GetSpecialFolderPath(CSIDL_STARTUP) / fs::u8path(strprintf("Peercoin (%s).lnk", ChainTypeToString(chain)));
 }
 
 bool GetStartOnSystemStartup()
@@ -532,7 +539,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
             // Start client minimized
             QString strArgs = "-min";
             // Set -testnet /-regtest options
-            strArgs += QString::fromStdString(strprintf(" -chain=%s", gArgs.GetChainName()));
+            strArgs += QString::fromStdString(strprintf(" -chain=%s", gArgs.GetChainTypeString()));
 
             // Set the path to the shortcut target
             psl->SetPath(pszExePath);
@@ -577,15 +584,15 @@ fs::path static GetAutostartDir()
 
 fs::path static GetAutostartFilePath()
 {
-    std::string chain = gArgs.GetChainName();
-    if (chain == CBaseChainParams::MAIN)
+    ChainType chain = gArgs.GetChainType();
+    if (chain == ChainType::MAIN)
         return GetAutostartDir() / "peercoin.desktop";
-    return GetAutostartDir() / fs::u8path(strprintf("peercoin-%s.desktop", chain));
+    return GetAutostartDir() / fs::u8path(strprintf("peercoin-%s.desktop", ChainTypeToString(chain)));
 }
 
 bool GetStartOnSystemStartup()
 {
-    std::ifstream optionFile{GetAutostartFilePath()};
+    std::ifstream optionFile{GetAutostartFilePath().std_path()};
     if (!optionFile.good())
         return false;
     // Scan through file for "Hidden=true":
@@ -617,18 +624,18 @@ bool SetStartOnSystemStartup(bool fAutoStart)
 
         fs::create_directories(GetAutostartDir());
 
-        std::ofstream optionFile{GetAutostartFilePath(), std::ios_base::out | std::ios_base::trunc};
+        std::ofstream optionFile{GetAutostartFilePath().std_path(), std::ios_base::out | std::ios_base::trunc};
         if (!optionFile.good())
             return false;
-        std::string chain = gArgs.GetChainName();
+        ChainType chain = gArgs.GetChainType();
         // Write a bitcoin.desktop file to the autostart directory:
         optionFile << "[Desktop Entry]\n";
         optionFile << "Type=Application\n";
-        if (chain == CBaseChainParams::MAIN)
+        if (chain == ChainType::MAIN)
             optionFile << "Name=Peercoin\n";
         else
-            optionFile << strprintf("Name=Peercoin (%s)\n", chain);
-        optionFile << "Exec=" << pszExePath << strprintf(" -min -chain=%s\n", chain);
+            optionFile << strprintf("Name=Peercoin (%s)\n", ChainTypeToString(chain));
+        optionFile << "Exec=" << pszExePath << strprintf(" -min -chain=%s\n", ChainTypeToString(chain));
         optionFile << "Terminal=false\n";
         optionFile << "Hidden=false\n";
         optionFile.close();
@@ -659,7 +666,7 @@ fs::path QStringToPath(const QString &path)
 
 QString PathToQString(const fs::path &path)
 {
-    return QString::fromStdString(path.u8string());
+    return QString::fromStdString(path.utf8string());
 }
 
 QString NetworkToQString(Network net)
@@ -707,14 +714,15 @@ QString ConnectionTypeToQString(ConnectionType conn_type, bool prepend_direction
     case ConnectionType::FEELER: return prefix + QObject::tr("Feeler");
     //: Short-lived peer connection type that solicits known addresses from a peer.
     case ConnectionType::ADDR_FETCH: return prefix + QObject::tr("Address Fetch");
+    //: Short-lived peer connection type that is used for broadcasting privacy-sensitive data.
+    case ConnectionType::PRIVATE_BROADCAST: return prefix + QObject::tr("Private Broadcast");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
 
 QString formatDurationStr(std::chrono::seconds dur)
 {
-    using days = std::chrono::duration<int, std::ratio<86400>>; // can remove this line after C++20
-    const auto d{std::chrono::duration_cast<days>(dur)};
+    const auto d{std::chrono::duration_cast<std::chrono::days>(dur)};
     const auto h{std::chrono::duration_cast<std::chrono::hours>(dur - d)};
     const auto m{std::chrono::duration_cast<std::chrono::minutes>(dur - d - h)};
     const auto s{std::chrono::duration_cast<std::chrono::seconds>(dur - d - h - m)};
@@ -758,9 +766,9 @@ QString formatPingTime(std::chrono::microseconds ping_time)
         QObject::tr("%1 ms").arg(QString::number((int)(count_microseconds(ping_time) / 1000), 10));
 }
 
-QString formatTimeOffset(int64_t nTimeOffset)
+QString formatTimeOffset(int64_t time_offset)
 {
-  return QObject::tr("%1 s").arg(QString::number((int)nTimeOffset, 10));
+  return QObject::tr("%1 s").arg(QString::number((int)time_offset, 10));
 }
 
 QString formatNiceTimeOffset(qint64 secs)
@@ -903,29 +911,24 @@ void LogQtInfo()
 #else
     const std::string qt_link{"dynamic"};
 #endif
-#ifdef QT_STATICPLUGIN
-    const std::string plugin_link{"static"};
-#else
-    const std::string plugin_link{"dynamic"};
-#endif
-    LogPrintf("Qt %s (%s), plugin=%s (%s)\n", qVersion(), qt_link, QGuiApplication::platformName().toStdString(), plugin_link);
+    LogInfo("Qt %s (%s), plugin=%s\n", qVersion(), qt_link, QGuiApplication::platformName().toStdString());
     const auto static_plugins = QPluginLoader::staticPlugins();
     if (static_plugins.empty()) {
-        LogPrintf("No static plugins.\n");
+        LogInfo("No static plugins.\n");
     } else {
-        LogPrintf("Static plugins:\n");
+        LogInfo("Static plugins:\n");
         for (const QStaticPlugin& p : static_plugins) {
             QJsonObject meta_data = p.metaData();
             const std::string plugin_class = meta_data.take(QString("className")).toString().toStdString();
             const int plugin_version = meta_data.take(QString("version")).toInt();
-            LogPrintf(" %s, version %d\n", plugin_class, plugin_version);
+            LogInfo(" %s, version %d\n", plugin_class, plugin_version);
         }
     }
 
-    LogPrintf("Style: %s / %s\n", QApplication::style()->objectName().toStdString(), QApplication::style()->metaObject()->className());
-    LogPrintf("System: %s, %s\n", QSysInfo::prettyProductName().toStdString(), QSysInfo::buildAbi().toStdString());
+    LogInfo("Style: %s / %s\n", QApplication::style()->objectName().toStdString(), QApplication::style()->metaObject()->className());
+    LogInfo("System: %s, %s\n", QSysInfo::prettyProductName().toStdString(), QSysInfo::buildAbi().toStdString());
     for (const QScreen* s : QGuiApplication::screens()) {
-        LogPrintf("Screen: %s %dx%d, pixel ratio=%.1f\n", s->name().toStdString(), s->size().width(), s->size().height(), s->devicePixelRatio());
+        LogInfo("Screen: %s %dx%d, pixel ratio=%.1f\n", s->name().toStdString(), s->size().width(), s->size().height(), s->devicePixelRatio());
     }
 }
 
@@ -938,33 +941,12 @@ void PopupMenu(QMenu* menu, const QPoint& point, QAction* at_action)
 
 QDateTime StartOfDay(const QDate& date)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     return date.startOfDay();
-#else
-    return QDateTime(date);
-#endif
 }
 
 bool HasPixmap(const QLabel* label)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     return !label->pixmap(Qt::ReturnByValue).isNull();
-#else
-    return label->pixmap() != nullptr;
-#endif
-}
-
-QImage GetImage(const QLabel* label)
-{
-    if (!HasPixmap(label)) {
-        return QImage();
-    }
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    return label->pixmap(Qt::ReturnByValue).toImage();
-#else
-    return label->pixmap()->toImage();
-#endif
 }
 
 QString MakeHtmlLink(const QString& source, const QString& link)
@@ -992,4 +974,13 @@ void ShowModalDialogAsynchronously(QDialog* dialog)
     dialog->show();
 }
 
+QString WalletDisplayName(const QString& name)
+{
+    return name.isEmpty() ? "[" + QObject::tr("default wallet") + "]" : name;
+}
+
+QString WalletDisplayName(const std::string& name)
+{
+    return WalletDisplayName(QString::fromStdString(name));
+}
 } // namespace GUIUtil

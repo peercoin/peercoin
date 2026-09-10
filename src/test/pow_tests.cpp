@@ -6,6 +6,7 @@
 #include <chainparams.h>
 #include <pow.h>
 #include <test/util/random.h>
+#include <random.h>
 #include <test/util/setup_common.h>
 
 #include <boost/test/unit_test.hpp>
@@ -16,7 +17,7 @@ BOOST_FIXTURE_TEST_SUITE(pow_tests, BasicTestingSetup)
 /* real blocks used */
 BOOST_AUTO_TEST_CASE(get_next_work)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 2;
@@ -41,7 +42,7 @@ BOOST_AUTO_TEST_CASE(get_next_work)
 /* Test the target before v9 */
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 2;
@@ -65,7 +66,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9)
 
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -96,7 +97,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos)
 
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos2)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -136,7 +137,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9pos2)
 /* Test the target correct after v9 */
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexThirdLast;
     pindexThirdLast.nHeight = 2;
@@ -161,7 +162,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -193,7 +194,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos2)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -232,7 +233,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos2)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos7200)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindexFourthLast;
     pindexFourthLast.nHeight = 2;
@@ -279,7 +280,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9pos7200)
 
 BOOST_AUTO_TEST_CASE(get_next_work_beforev9real)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindex495492;
     pindex495492.nHeight = 495492;
@@ -393,7 +394,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_beforev9real)
 
 BOOST_AUTO_TEST_CASE(get_next_work_afterv9real)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
 
     CBlockIndex pindex495492;
     pindex495492.nHeight = 495492;
@@ -508,7 +509,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_afterv9real)
 
 BOOST_AUTO_TEST_CASE(GetBlockProofEquivalentTime_test)
 {
-    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
     std::vector<CBlockIndex> blocks(10000);
     for (int i = 0; i < 10000; i++) {
         blocks[i].pprev = i ? &blocks[i - 1] : nullptr;
@@ -518,23 +519,24 @@ BOOST_AUTO_TEST_CASE(GetBlockProofEquivalentTime_test)
         blocks[i].nChainTrust = i ? blocks[i - 1].nChainTrust + GetBlockTrust(blocks[i - 1]) : arith_uint256(0);
     }
 
+    FastRandomContext rng;
     for (int j = 0; j < 1000; j++) {
-        CBlockIndex *p1 = &blocks[InsecureRandRange(10000)];
-        CBlockIndex *p2 = &blocks[InsecureRandRange(10000)];
-        CBlockIndex *p3 = &blocks[InsecureRandRange(10000)];
+        CBlockIndex *p1 = &blocks[rng.randrange(10000)];
+        CBlockIndex *p2 = &blocks[rng.randrange(10000)];
+        CBlockIndex *p3 = &blocks[rng.randrange(10000)];
 
         int64_t tdiff = GetBlockProofEquivalentTime(*p1, *p2, *p3, chainParams->GetConsensus());
         BOOST_CHECK_EQUAL(tdiff, p1->GetBlockTime() - p2->GetBlockTime());
     }
 }
 
-void sanity_check_chainparams(const ArgsManager& args, std::string chainName)
+void sanity_check_chainparams(const ArgsManager& args, ChainType chain_type)
 {
-    const auto chainParams = CreateChainParams(args, chainName);
+    const auto chainParams = CreateChainParams(args, chain_type);
     const auto consensus = chainParams->GetConsensus();
 
     // hash genesis is correct
-    BOOST_CHECK_EQUAL(consensus.hashGenesisBlock, chainParams->GenesisBlock().GetHash());
+    BOOST_CHECK_EQUAL(consensus.hashGenesisBlock.ToString(), chainParams->GenesisBlock().GetHash().ToString());
 
     // target timespan is an even multiple of spacing
     BOOST_CHECK_EQUAL(consensus.nTargetTimespan % consensus.nPowTargetSpacing, 0);
@@ -549,7 +551,7 @@ void sanity_check_chainparams(const ArgsManager& args, std::string chainName)
 
     // check max target * 4*nPowTargetTimespan doesn't overflow -- see pow.cpp:CalculateNextWorkRequired()
     if (!consensus.fPowNoRetargeting) {
-        arith_uint256 targ_max("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+        arith_uint256 targ_max = UintToArith256(uint256::FromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").value());
         targ_max /= consensus.nTargetTimespan*4;
         BOOST_CHECK(UintToArith256(consensus.powLimit) < targ_max);
     }
@@ -557,22 +559,22 @@ void sanity_check_chainparams(const ArgsManager& args, std::string chainName)
 
 BOOST_AUTO_TEST_CASE(ChainParams_MAIN_sanity)
 {
-    sanity_check_chainparams(*m_node.args, CBaseChainParams::MAIN);
+    sanity_check_chainparams(*m_node.args, ChainType::MAIN);
 }
 
 BOOST_AUTO_TEST_CASE(ChainParams_REGTEST_sanity)
 {
-    sanity_check_chainparams(*m_node.args, CBaseChainParams::REGTEST);
+    sanity_check_chainparams(*m_node.args, ChainType::REGTEST);
 }
 
 BOOST_AUTO_TEST_CASE(ChainParams_TESTNET_sanity)
 {
-    sanity_check_chainparams(*m_node.args, CBaseChainParams::TESTNET);
+    sanity_check_chainparams(*m_node.args, ChainType::TESTNET);
 }
 
 BOOST_AUTO_TEST_CASE(ChainParams_SIGNET_sanity)
 {
-    sanity_check_chainparams(*m_node.args, CBaseChainParams::SIGNET);
+    sanity_check_chainparams(*m_node.args, ChainType::SIGNET);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

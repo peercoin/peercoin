@@ -55,8 +55,8 @@ bool BCLog::Logger::StartLogging()
 {
     StdLockGuard scoped_lock(m_cs);
 
-    assert(m_buffering);
-    assert(m_fileout == nullptr);
+    // peercoin: allow repeated StartLogging calls (test fixtures re-init the logger)
+    if (!m_buffering) return true;
 
     if (m_print_to_file) {
         assert(!m_file_path.empty());

@@ -1,18 +1,16 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_QT_BITCOIN_H
 #define BITCOIN_QT_BITCOIN_H
 
-#if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
-#endif
+#include <bitcoin-build-config.h> // IWYU pragma: keep
 
 #include <interfaces/node.h>
 #include <qt/initexecutor.h>
 
-#include <assert.h>
+#include <cassert>
 #include <memory>
 #include <optional>
 
@@ -60,9 +58,6 @@ public:
     /// Request core initialization
     void requestInitialize();
 
-    /// Get process return value
-    int getReturnValue() const { return returnValue; }
-
     /// Get window identifier of QMainWindow (BitcoinGUI)
     WId getMainWinId() const;
 
@@ -102,7 +97,6 @@ private:
     PaymentServer* paymentServer{nullptr};
     WalletController* m_wallet_controller{nullptr};
 #endif
-    int returnValue{0};
     const PlatformStyle* platformStyle{nullptr};
     std::unique_ptr<QWidget> shutdownWindow;
     SplashScreen* m_splash = nullptr;

@@ -359,6 +359,11 @@ public:
         return ::tableRPC.execute(req);
     }
     std::vector<std::string> listRpcCommands() override { return ::tableRPC.listCommands(); }
+    CBlockIndex* tipBlock() override // peercoin
+    {
+        LOCK(::cs_main);
+        return chainman().ActiveChain().Tip();
+    }
     std::optional<Coin> getUnspentOutput(const COutPoint& output) override
     {
         LOCK(::cs_main);

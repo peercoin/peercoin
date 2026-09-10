@@ -202,4 +202,6 @@ protected:
 
 std::optional<ChainType> GetNetworkForMagic(const MessageStartChars& pchMessageStart);
 
+inline std::optional<ChainType> GetNetworkForMagicBridge(const MessageStartChars& pchMessageStart) { return GetNetworkForMagic(pchMessageStart); }
+
 #endif // BITCOIN_KERNEL_CHAINPARAMS_H

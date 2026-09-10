@@ -1,10 +1,11 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_QT_SENDCOINSDIALOG_H
 #define BITCOIN_QT_SENDCOINSDIALOG_H
 
+#include <primitives/transaction_identifier.h>
 #include <qt/clientmodel.h>
 #include <qt/walletmodel.h>
 
@@ -61,7 +62,7 @@ public Q_SLOTS:
     void setBalance(const interfaces::WalletBalances& balances);
 
 Q_SIGNALS:
-    void coinsSent(const uint256& txid);
+    void coinsSent(const Txid& txid);
 
 private:
     Ui::SendCoinsDialog *ui;
@@ -96,14 +97,18 @@ private:
 
 private Q_SLOTS:
     void sendButtonClicked(bool checked);
-    //void on_buttonChooseFee_clicked();
-    //void on_buttonMinimizeFee_clicked();
+    void on_buttonChooseFee_clicked();
+    void on_buttonMinimizeFee_clicked();
     void removeEntry(SendCoinsEntry* entry);
     void useAvailableBalance(SendCoinsEntry* entry);
     void refreshBalance();
     void coinControlFeatureChanged(bool);
     void coinControlButtonClicked();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    void coinControlChangeChecked(Qt::CheckState);
+#else
     void coinControlChangeChecked(int);
+#endif
     void coinControlChangeEdited(const QString &);
     void coinControlUpdateLabels();
     void coinControlClipboardQuantity();
@@ -111,11 +116,10 @@ private Q_SLOTS:
     void coinControlClipboardFee();
     void coinControlClipboardAfterFee();
     void coinControlClipboardBytes();
-    void coinControlClipboardLowOutput();
     void coinControlClipboardChange();
-    //void updateFeeSectionControls();
-    //void updateSmartFeeLabel();
-    void updateNumberOfBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool headers, SynchronizationState sync_state);
+    void updateFeeSectionControls();
+    void updateNumberOfBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, SyncType synctype, SynchronizationState sync_state);
+    void updateSmartFeeLabel();
 
 Q_SIGNALS:
     // Fired when a message should be reported to the user
