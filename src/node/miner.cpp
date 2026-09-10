@@ -137,6 +137,10 @@ void BlockAssembler::resetBlock()
 }
 
 // peercoin: if pwallet != NULL it will attempt to create coinstake
+// peercoin bridge: PoS minter status for RPC (getstakinginfo)
+std::string g_strMintWarning;
+std::atomic<bool> g_fStaking{false};
+
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node, CTxDestination destination)
 {
     const auto time_start{SteadyClock::now()};
@@ -183,6 +187,9 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         *pfPoSCancel = true;
         pblock->nBits = GetNextTargetRequired(pindexPrev, true, chainparams.GetConsensus());
         CMutableTransaction txCoinStake;
+        // peercoin bridge: modern CMutableTransaction leaves nTime zero-initialized;
+        // v0.16 semantics require the coinstake search time to be the current time.
+        txCoinStake.nTime = GetAdjustedTime();
         int64_t nSearchTime = txCoinStake.nTime; // search to current time
         if (nSearchTime > nLastCoinStakeSearchTime)
         {
@@ -412,26 +419,32 @@ void PoSMiner(NodeContext& m_node)
     std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.");
     std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.");
     std::string strMintEmpty = "";
-        std::string strMintWarning;
 #ifdef ENABLE_WALLET
     if (!gArgs.GetBoolArg("-minting", true) || !gArgs.GetBoolArg("-staking", true))
     {
 #endif
-        strMintWarning = strMintDisabledMessage;
+        g_strMintWarning = strMintDisabledMessage;
         LogPrintf("proof-of-stake minter disabled\n");
         return;
 #ifdef ENABLE_WALLET
     }
 
     CConnman* connman = m_node.connman.get();
-    CWallet* pwallet;
+    CWallet* pwallet = nullptr;
     // ppctodo: deal with multiple wallets better
-    if (m_node.wallet_loader->getWallets().size() && gArgs.GetBoolArg("-minting", true))
-        pwallet = m_node.wallet_loader->getWallets()[0]->wallet();
-    else
-        return;
+    // peercoin bridge: wallet loading happens in AppInit step 9 and may lag this
+    // thread's startup; wait for a wallet to appear instead of silently exiting.
+    while (!pwallet) {
+        if (m_node.shutdown_signal && bool{*m_node.shutdown_signal})
+            return;
+        if (gArgs.GetBoolArg("-minting", true) && m_node.wallet_loader->getWallets().size())
+            pwallet = m_node.wallet_loader->getWallets()[0]->wallet();
+        else
+            UninterruptibleSleep(std::chrono::milliseconds(500));
+    }
 
-    LogPrintf("CPUMiner started for proof-of-stake\n");
+    g_fStaking = true; // peercoin bridge
+        LogPrintf("CPUMiner started for proof-of-stake\n");
     util::ThreadRename("peercoin-stake-minter");
 
     unsigned int nExtraNonce = 0;
@@ -467,12 +480,12 @@ void PoSMiner(NodeContext& m_node)
         bool fNeedToClear = false;
         while (true) {
             while (pwallet->IsLocked()) {
-                if (strMintWarning != strMintMessage) {
-                    strMintWarning = strMintMessage;
+                if (g_strMintWarning != strMintMessage) {
+                    g_strMintWarning = strMintMessage;
                     uiInterface.NotifyAlertChanged();
                 }
                 fNeedToClear = true;
-                if (![&](auto d){ if (m_node.shutdown_signal && (*m_node.shutdown_signal)()) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(3)))
+                if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(3)))
                     return;
             }
 
@@ -481,7 +494,7 @@ void PoSMiner(NodeContext& m_node)
                 // on an obsolete chain. In regtest mode we expect to fly solo.
                 while(connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0 || m_node.chainman->IsInitialBlockDownload()) {
                     while(connman == nullptr) {UninterruptibleSleep(1s);}
-                    if (![&](auto d){ if (m_node.shutdown_signal && (*m_node.shutdown_signal)()) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
+                    if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
                         return;
                     }
             }
@@ -493,17 +506,17 @@ void PoSMiner(NodeContext& m_node)
                 while (m_node.chainman->GuessVerificationProgress(pindexPrev) < 0.996)
                 {
                     LogPrintf("Minter thread sleeps while sync at %f\n", m_node.chainman->GuessVerificationProgress(pindexPrev));
-                    if (strMintWarning != strMintSyncMessage) {
-                        strMintWarning = strMintSyncMessage;
+                    if (g_strMintWarning != strMintSyncMessage) {
+                        g_strMintWarning = strMintSyncMessage;
                         uiInterface.NotifyAlertChanged();
                     }
                     fNeedToClear = true;
-                    if (![&](auto d){ if (m_node.shutdown_signal && (*m_node.shutdown_signal)()) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
+                    if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
                             return;
                 }
             }
             if (fNeedToClear) {
-                strMintWarning = strMintEmpty;
+                g_strMintWarning = strMintEmpty;
                 uiInterface.NotifyAlertChanged();
                 fNeedToClear = false;
             }
@@ -531,14 +544,14 @@ void PoSMiner(NodeContext& m_node)
             {
                 if (fPoSCancel == true)
                 {
-                    if (![&](auto d){ if (m_node.shutdown_signal && (*m_node.shutdown_signal)()) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::milliseconds(pos_timio)))
+                    if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::milliseconds(pos_timio)))
                         return;
                     continue;
                 }
-                strMintWarning = strMintBlockMessage;
+                g_strMintWarning = strMintBlockMessage;
                 uiInterface.NotifyAlertChanged();
                 LogPrintf("Error in PeercoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
-                if (![&](auto d){ if (m_node.shutdown_signal && (*m_node.shutdown_signal)()) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
+                if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
                    return;
 
                 return;
@@ -567,10 +580,10 @@ void PoSMiner(NodeContext& m_node)
                     continue;
                 }
                 // Rest for ~3 minutes after successful block to preserve close quick
-                if (![&](auto d){ if (m_node.shutdown_signal && (*m_node.shutdown_signal)()) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(60 + GetRand(4))))
+                if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(60 + GetRand(4))))
                     return;
             }
-            if (![&](auto d){ if (m_node.shutdown_signal && (*m_node.shutdown_signal)()) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::milliseconds(pos_timio)))
+            if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::milliseconds(pos_timio)))
                 return;
 
             continue;

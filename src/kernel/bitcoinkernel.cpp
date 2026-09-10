@@ -928,6 +928,8 @@ btck_BlockValidationResult btck_block_validation_state_get_block_validation_resu
         return btck_BlockValidationResult_INVALID_PREV;
     case BlockValidationResult::BLOCK_TIME_FUTURE:
         return btck_BlockValidationResult_TIME_FUTURE;
+    case BlockValidationResult::BLOCK_CHECKPOINT: // peercoin bridge: canonical PPC checkpoint rejection
+        return btck_BlockValidationResult_CONSENSUS;
     case BlockValidationResult::BLOCK_HEADER_LOW_WORK:
         return btck_BlockValidationResult_HEADER_LOW_WORK;
     } // no default case, so the compiler can warn about missing cases

@@ -24,6 +24,26 @@
 using util::Join;
 
 namespace wallet {
+// peercoin bridge: v0.16 loaded every wallet found in the wallets directory at startup,
+// regardless of persisted -wallet settings. Modern core only loads the explicit settings
+// list. Merge both so wallets in the directory keep auto-loading.
+static std::vector<std::string> AutoLoadNames(interfaces::Chain& chain)
+{
+    std::vector<std::string> names;
+    for (const auto& wallet : chain.getSettingsList("wallet")) {
+        if (wallet.isStr()) names.push_back(wallet.get_str());
+    }
+    if (names.empty()) {
+        std::error_code ec;
+        for (const auto& entry : fs::directory_iterator(GetWalletDir(), ec)) {
+            const auto& p = entry.path();
+            if (entry.is_directory() && (fs::exists(p / "wallet.cdb") || fs::exists(p / "wallet.dat"))) {
+                names.push_back(fs::PathToString(p.filename()));
+            }
+        }
+    }
+    return names;
+}
 bool VerifyWallets(WalletContext& context)
 {
     interfaces::Chain& chain = *context.chain;
@@ -78,13 +98,7 @@ bool VerifyWallets(WalletContext& context)
     // Keep track of each wallet absolute path to detect duplicates.
     std::set<fs::path> wallet_paths;
 
-    for (const auto& wallet : chain.getSettingsList("wallet")) {
-        if (!wallet.isStr()) {
-            chain.initError(_("Invalid value detected for '-wallet' or '-nowallet'. "
-                              "'-wallet' requires a string value, while '-nowallet' accepts only '1' to disable all wallets"));
-            return false;
-        }
-        const auto& wallet_file = wallet.get_str();
+    for (const auto& wallet_file : AutoLoadNames(chain)) {
         const fs::path path = fsbridge::AbsPathJoin(GetWalletDir(), fs::PathFromString(wallet_file));
 
         if (!wallet_paths.insert(path).second) {
@@ -120,13 +134,7 @@ bool LoadWallets(WalletContext& context)
     interfaces::Chain& chain = *context.chain;
     try {
         std::set<fs::path> wallet_paths;
-        for (const auto& wallet : chain.getSettingsList("wallet")) {
-            if (!wallet.isStr()) {
-                chain.initError(_("Invalid value detected for '-wallet' or '-nowallet'. "
-                                  "'-wallet' requires a string value, while '-nowallet' accepts only '1' to disable all wallets"));
-                return false;
-            }
-            const auto& name = wallet.get_str();
+        for (const auto& name : AutoLoadNames(chain)) {
             if (!wallet_paths.insert(fs::PathFromString(name)).second) {
                 continue;
             }

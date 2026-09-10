@@ -5,6 +5,7 @@
 #include <kernel/context.h>
 
 #include <crypto/sha256.h>
+#include <shutdown.h>
 #include <random.h>
 #include <util/log.h>
 
@@ -19,6 +20,7 @@ Context::Context()
         std::string sha256_algo = SHA256AutoDetect();
         LogInfo("Using the '%s' SHA256 implementation\n", sha256_algo);
         RandomInit();
+        assert(InitShutdownState()); // peercoin bridge: token-pipe shutdown for v0.16-era WaitForShutdown
     });
 }
 

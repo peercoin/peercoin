@@ -208,6 +208,7 @@ public:
 // parameter code (v31 code uses consteval uint256{hex} literals).
 inline uint256 uint256S(std::string_view hex)
 {
+    if (hex.size() >= 2 && hex[0] == '0' && (hex[1] == 'x' || hex[1] == 'X')) hex = hex.substr(2); // peercoin bridge: accept 0x-prefixed literals
     return uint256::FromHex(hex).value_or(uint256{});
 };
 

@@ -416,6 +416,8 @@ public:
 /** Context-independent validity checks */
 bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSignature = true);
 
+
+
 /**
  * Verify a block, including transactions.
  *
@@ -574,6 +576,13 @@ enum class Assumeutxo {
  */
 class Chainstate
 {
+public: // peercoin bridge: v31-era accessor aliases for tag bodies compiled against this class
+    CChain& ActiveChain() EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
+    const CChain& ActiveChain() const EXCLUSIVE_LOCKS_REQUIRED(::cs_main); // peercoin bridge
+    const CChainParams& GetParams() const;
+    const Consensus::Params& GetConsensus() const;
+    bool IsInitialBlockDownload() const;
+    kernel::Notifications& GetNotifications() const;
 protected:
     /**
      * The ChainState Mutex

@@ -572,7 +572,7 @@ bool ECC_InitSanityCheck() {
 static void ECC_Start() {
     assert(secp256k1_context_sign == nullptr);
 
-    secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_NONE);
+    secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY); // peercoin bridge: legacy libsecp needs precomputed ecmult_gen tables
     assert(ctx != nullptr);
 
     {

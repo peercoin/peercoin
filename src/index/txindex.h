@@ -16,7 +16,7 @@ namespace interfaces {
 class Chain;
 }
 
-static constexpr bool DEFAULT_TXINDEX{false};
+static constexpr bool DEFAULT_TXINDEX{true}; // peercoin bridge: kernel verification uses txindex offsets
 
 /**
  * TxIndex is used to look up transactions included in the blockchain by hash.

@@ -1193,7 +1193,7 @@ RPCHelpMan getblockchaininfo()
     const CBlockIndex& tip{*CHECK_NONFATAL(active_chainstate.m_chain.Tip())};
     const int height{tip.nHeight};
     UniValue obj(UniValue::VOBJ);
-    obj.pushKV("chain", (chainman.GetParams().IsTestChain() ? "test" : "main"));
+    obj.pushKV("chain", chainman.GetParams().GetChainTypeString()); // peercoin bridge: full network name
     obj.pushKV("blocks", height);
     obj.pushKV("headers", chainman.m_best_header ? chainman.m_best_header->nHeight : -1);
     obj.pushKV("bestblockhash", tip.GetBlockHash().GetHex());
@@ -2527,3 +2527,46 @@ static RPCHelpMan getblockfilter()
     };
 }
 
+// peercoin bridge: legacy RPC registration for the blockchain category
+void RegisterBlockchainRPCCommands(CRPCTable& t)
+{
+    static const CRPCCommand commands[]{
+        {"blockchain", &getblockchaininfo},
+        {"blockchain", &getchaintxstats},
+        {"blockchain", &getblockstats},
+        {"blockchain", &getbestblockhash},
+        {"blockchain", &getblockcount},
+        {"blockchain", &getblock},
+        {"blockchain", &getblockfrompeer},
+        {"blockchain", &getblockhash},
+        {"blockchain", &getblockheader},
+        {"blockchain", &getchaintips},
+        {"blockchain", &getdifficulty},
+        {"blockchain", &getdeploymentinfo},
+        {"blockchain", &gettxout},
+        {"blockchain", &gettxoutsetinfo},
+        {"blockchain", &verifychain},
+        {"blockchain", &preciousblock},
+        {"blockchain", &scantxoutset},
+        {"blockchain", &scanblocks},
+        {"blockchain", &getblockfilter},
+        {"hidden", &invalidateblock},
+        {"hidden", &reconsiderblock},
+        {"blockchain", &waitfornewblock},
+        {"blockchain", &waitforblock},
+        {"blockchain", &waitforblockheight},
+        {"hidden", &syncwithvalidationinterfacequeue},
+    };
+    for (const auto& c : commands) {
+        t.appendCommand(c.name, &c);
+    }
+}
+
+// peercoin bridge: legacy availability check used by txoutproof RPC
+void CheckBlockDataAvailability(node::BlockManager& blockman, const CBlockIndex& blockindex, bool check_for_undo)
+{
+    const BlockStatus status = BlockStatus(check_for_undo ? (BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO) : BLOCK_HAVE_DATA);
+    if (!(blockindex.nStatus & status)) {
+        throw JSONRPCError(RPC_MISC_ERROR, check_for_undo ? "Block or undo data not available" : "Block not available");
+    }
+}

@@ -5,6 +5,8 @@
 #ifndef BITCOIN_KERNEL_CONTEXT_H
 #define BITCOIN_KERNEL_CONTEXT_H
 
+#include <key.h>
+
 namespace kernel {
 //! Context struct holding the kernel library's logically global state, and
 //! passed to external libbitcoin_kernel functions which need access to this
@@ -15,6 +17,8 @@ namespace kernel {
 //! should be stored to std::unique_ptr members pointing to opaque types.
 struct Context {
     Context();
+
+    ECC_Context m_ecc_context; // peercoin bridge: v0.16-era signing context
 };
 } // namespace kernel
 

@@ -11,6 +11,7 @@
 #include <txdb.h>
 #include <consensus/validation.h>
 #include <util/system.h>
+#include <util/strencodings.h>
 #include <validation.h>
 #include <random.h>
 #include <script/interpreter.h>
@@ -536,7 +537,10 @@ static bool GetKernelStakeModifierV03(CBlockIndex* pindexPrev, uint256 hashBlock
 static bool GetKernelStakeModifier(CBlockIndex* pindexPrev, uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake, Chainstate& chainstate)
 {
     if (IsProtocolV05(nTimeTx))
-        return GetKernelStakeModifierV05(pindexPrev, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    {
+        bool ok = GetKernelStakeModifierV05(pindexPrev, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+        return ok;
+    }
     else
         return GetKernelStakeModifierV03(pindexPrev, hashBlockFrom, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake, chainstate);
 }
@@ -624,7 +628,9 @@ bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBl
 
     // Now check if proof-of-stake hash meets target protocol
     if (CBigNum(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
+    {
         return false;
+    }
     if (gArgs.GetBoolArg("-debug", false) && !fPrintProofOfStake)
     {
         if (IsProtocolV03(nTimeTx)) {
@@ -682,7 +688,7 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
             return error("CheckProofOfStake() : unable to read kernel block from disk");
         uint64_t nCount = blockFrom.vtx.size();
         size_t varint_size = nCount < 253 ? 1 : nCount <= 0xffff ? 3 : nCount <= 0xffffffff ? 5 : 9;
-        nTxPrevOffset = pindexFrom->nDataPos + CBlockHeader::NORMAL_SERIALIZE_SIZE + varint_size;
+        nTxPrevOffset = CBlockHeader::NORMAL_SERIALIZE_SIZE + varint_size; // canonical: offset within block data, not file-absolute
         for (const auto& txo : blockFrom.vtx) {
             bool found = false;
             for (size_t o = 0; o < txo->vout.size(); ++o) {

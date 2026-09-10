@@ -15,7 +15,9 @@
 #include <init.h>
 #include <interfaces/chain.h>
 #include <interfaces/init.h>
+#include <kernel/context.h>
 #include <node/context.h>
+#include <node/warnings.h>
 #include <node/interface_ui.h>
 #include <noui.h>
 #include <shutdown.h>
@@ -36,7 +38,6 @@
 using node::NodeContext;
 
 const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
-UrlDecodeFn* const URL_DECODE = urlDecode;
 
 #if HAVE_DECL_FORK
 
@@ -127,12 +128,12 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
 
     // Process help and version before taking care about datadir
     if (HelpRequested(args) || args.IsArgSet("-version")) {
-        std::string strUsage = PACKAGE_NAME " version " + FormatFullVersion() + "\n";
+        std::string strUsage = CLIENT_NAME " version " + FormatFullVersion() + "\n";
 
         if (args.IsArgSet("-version")) {
             strUsage += FormatParagraph(LicenseInfo());
         } else {
-            strUsage += "\nUsage:  peercoind [options]                     Start " PACKAGE_NAME "\n"
+            strUsage += "\nUsage:  peercoind [options]                     Start " CLIENT_NAME "\n"
                 "\n";
             strUsage += args.GetHelpMessage();
         }
@@ -168,7 +169,7 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
         // Set this early so that parameter interactions go to console
         InitLogging(args);
         InitParameterInteraction(args);
-        if (!AppInitBasicSetup(args)) {
+        if (!AppInitBasicSetup(args, node.exit_status)) {
             // InitError will have been called with detailed error, which ends up on console
             return false;
         }
@@ -178,6 +179,7 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
         }
 
         node.kernel = std::make_unique<kernel::Context>();
+        node.warnings = std::make_unique<node::Warnings>();
         if (!AppInitSanityChecks(*node.kernel))
         {
             // InitError will have been called with detailed error, which ends up on console
@@ -186,7 +188,7 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
 
         if (args.GetBoolArg("-daemon", DEFAULT_DAEMON) || args.GetBoolArg("-daemonwait", DEFAULT_DAEMONWAIT)) {
 #if HAVE_DECL_FORK
-            tfm::format(std::cout, PACKAGE_NAME " starting\n");
+            tfm::format(std::cout, CLIENT_NAME " starting\n");
 
             // Daemonize
             switch (fork_daemon(1, 0, daemon_ep)) { // don't chdir (1), do close FDs (0)
@@ -214,7 +216,7 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
 #endif // HAVE_DECL_FORK
         }
         // Lock data directory after daemonization
-        if (!AppInitLockDataDirectory())
+        if (!AppInitLockDirectories())
         {
             // If locking the data directory failed, exit immediately
             return false;
@@ -234,7 +236,7 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
         daemon_ep.Close();
     }
 #endif
-    SetSyscallSandboxPolicy(SyscallSandboxPolicy::SHUTOFF);
+    SetSyscallSandboxPolicy(SyscallSandboxPolicy::DEFAULT);
     if (fRet) {
         WaitForShutdown();
     }

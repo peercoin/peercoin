@@ -18,5 +18,5 @@ int64_t GetTimeOffset()
 
 int64_t GetAdjustedTime()
 {
-    return GetTimeSeconds() + GetTimeOffset();
+    return GetTime() + GetTimeOffset();
 }

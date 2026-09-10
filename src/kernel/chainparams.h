@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -47,6 +48,18 @@ struct AssumeutxoData {
     //! prior to having a loaded blockindex.
     uint256 blockhash;
     unsigned int nChainTx{0}; // peercoin compat
+};
+
+// peercoin bridge: canonical PPC checkpoint plumbing (master kernel/chainparams.h).
+typedef std::map<int, uint256> MapCheckpoints;
+
+struct CCheckpointData {
+    MapCheckpoints mapCheckpoints;
+
+    int GetHeight() const {
+        const auto& final_checkpoint = mapCheckpoints.rbegin();
+        return final_checkpoint->first /* height */;
+    }
 };
 
 /**
@@ -117,6 +130,9 @@ public:
     const std::vector<uint8_t>& FixedSeeds() const { return vFixedSeeds; }
     const HeadersSyncParams& HeadersSync() const { return m_headers_sync_params; }
 
+    // peercoin bridge: canonical PPC checkpoint data.
+    const CCheckpointData& Checkpoints() const { return checkpointData; }
+
     std::optional<AssumeutxoData> AssumeutxoForHeight(int height) const
     {
         return FindFirst(m_assumeutxo_data, [&](const auto& d) { return d.height == height; });
@@ -181,6 +197,7 @@ protected:
     std::vector<AssumeutxoData> m_assumeutxo_data;
     ChainTxData chainTxData;
     HeadersSyncParams m_headers_sync_params;
+    CCheckpointData checkpointData; // peercoin bridge
 };
 
 std::optional<ChainType> GetNetworkForMagic(const MessageStartChars& pchMessageStart);

@@ -6,6 +6,7 @@
 #include <bitcoin-build-config.h> // IWYU pragma: keep
 
 #include <netbase.h>
+#include <span>
 
 #include <compat/compat.h>
 #include <logging.h>
@@ -409,7 +410,7 @@ bool Socks5(const std::string& strDest, uint16_t port, const ProxyCredentials* a
             vSocks5Init.push_back(0x01); // 1 method identifier follows...
             vSocks5Init.push_back(SOCKS5Method::NOAUTH);
         }
-        sock.SendComplete(vSocks5Init, g_socks5_recv_timeout, g_socks5_interrupt);
+        sock.SendComplete(std::string{vSocks5Init.begin(), vSocks5Init.end()}, g_socks5_recv_timeout, g_socks5_interrupt);
         uint8_t pchRet1[2];
         if (InterruptibleRecv(pchRet1, 2, g_socks5_recv_timeout, sock) != IntrRecvError::OK) {
             LogInfo("Socks5() connect to %s:%d failed: InterruptibleRecv() timeout or other failure\n", strDest, port);
@@ -431,7 +432,7 @@ bool Socks5(const std::string& strDest, uint16_t port, const ProxyCredentials* a
             vAuth.insert(vAuth.end(), auth->username.begin(), auth->username.end());
             vAuth.push_back(auth->password.size());
             vAuth.insert(vAuth.end(), auth->password.begin(), auth->password.end());
-            sock.SendComplete(vAuth, g_socks5_recv_timeout, g_socks5_interrupt);
+            sock.SendComplete(std::string{vAuth.begin(), vAuth.end()}, g_socks5_recv_timeout, g_socks5_interrupt);
             LogDebug(BCLog::PROXY, "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
             uint8_t pchRetA[2];
             if (InterruptibleRecv(pchRetA, 2, g_socks5_recv_timeout, sock) != IntrRecvError::OK) {
@@ -457,7 +458,7 @@ bool Socks5(const std::string& strDest, uint16_t port, const ProxyCredentials* a
         vSocks5.insert(vSocks5.end(), strDest.begin(), strDest.end());
         vSocks5.push_back((port >> 8) & 0xFF);
         vSocks5.push_back((port >> 0) & 0xFF);
-        sock.SendComplete(vSocks5, g_socks5_recv_timeout, g_socks5_interrupt);
+        sock.SendComplete(std::string{vSocks5.begin(), vSocks5.end()}, g_socks5_recv_timeout, g_socks5_interrupt);
         uint8_t pchRet2[4];
         if ((recvr = InterruptibleRecv(pchRet2, 4, g_socks5_recv_timeout, sock)) != IntrRecvError::OK) {
             if (recvr == IntrRecvError::Timeout) {

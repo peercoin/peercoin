@@ -71,6 +71,12 @@ public:
         return (nBits == 0);
     }
 
+    // peercoin bridge: flags bit in header indicates PoS (headers-first sync).
+    bool IsProofOfStake() const
+    {
+        return (nFlags & /*BLOCK_PROOF_OF_STAKE*/ 1u) != 0;
+    }
+
     uint256 GetHash() const;
 
     NodeSeconds Time() const
@@ -143,6 +149,8 @@ public:
     // peercoin: two types of block: proof-of-work or proof-of-stake
     bool IsProofOfStake() const
     {
+        // peercoin: flags bit is authoritative on headers; vtx check when present.
+        if (nFlags & /*BLOCK_PROOF_OF_STAKE*/ 1u) return true; // peercoin bridge
         return (vtx.size() > 1 && vtx[1]->IsCoinStake());
     }
 

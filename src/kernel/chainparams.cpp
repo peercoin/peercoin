@@ -69,6 +69,61 @@ static CBlock CreateGenesisBlock(uint32_t nTimeTx, uint32_t nTimeBlock, uint32_t
 /**
  * Main network on which people trade goods and services.
  */
+
+// peercoin bridge: canonical PPC checkpoint trust lists (restored; v31 removed
+// the checkpoint subsystem but the historical chain segment below the last
+// checkpoint cannot be re-verified by modern consensus code).
+static std::map<int, uint256> MainCheckpoints()
+{
+    return {
+
+                {     0, uint256S("0x0000000032fe677166d54963b62a4677d8957e87c508eaa4fd7eb1c880cd27e3")},
+                { 19080, uint256S("0x000000000000bca54d9ac17881f94193fd6a270c1bb21c3bf0b37f588a40dbd7")},
+                { 30583, uint256S("0xd39d1481a7eecba48932ea5913be58ad3894c7ee6d5a8ba8abeb772c66a6696e")},
+                { 99999, uint256S("0x27fd5e1de16a4270eb8c68dee2754a64da6312c7c3a0e99a7e6776246be1ee3f")},
+                {219999, uint256S("0xab0dad4b10d2370f009ed6df6effca1ba42f01d5070d6b30afeedf6463fbe7a2")},
+                {336000, uint256S("0x4d261cef6e61a5ed8325e560f1d6e36f4698853a4c7134677f47a1d1d842bdf6")},
+                {371850, uint256S("0x6b18adcb0a6e080dae85b74eee2b83fabb157bbea64fab0ed2192b2f6d5b89f3")},
+                {407813, uint256S("0x00000000000000012730b0f48bed8afbeb08164c9d63597afb082e82ea05cec9")},
+                {443561, uint256S("0xf81cea8e4e40b2cfcc13a8bd82436399c35a55df951b95e7128601c1838029ed")},
+                {455470, uint256S("0xd1472c26229f90b8589d331aa47ba9023cb953b92dce342c753e7a6b3431bf1e")},
+                {479189, uint256S("0xc9c065028b20a23fbb9627bbca5946c7497f11e1f72433d4d215c79047cf06f2")},
+                {504051, uint256S("0xff65454ebdf1d89174bec10a3c016db92f7b1d9a4759603472842f254be8d7b3")},
+                {589659, uint256S("0x967c14abf21214639aeff0a270c4543cd3b80fe53178384ac5aa3c277662f1d0")},
+                {714688, uint256S("0x0000000000000000bef29f005dc65af3950b14af7200998759ba8977561f9d95")},
+                {770396, uint256S("0x0fc7bf7f0e830eea0bc367c76f9dcfc70d42d5625d93b056354dc23049de6e29")},
+                {801334, uint256S("0x4cf53c51bbefa0a4c30a73609ab115276e33e9e696ea056f46e9ead36d4209b1")},
+    };
+}
+static std::map<int, uint256> TestNetCheckpoints()
+{
+    return {
+        {     0, uint256S("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06")},
+        { 19080, uint256S("0xb054d63d41852d71b611eaa8eca37d9fddca69b5013cf0966d453402ec8005ce")},
+        { 30583, uint256S("0x5179c0c496b5d25ab81ffe14273ea6928c6ff81c0a0d6a83b5d7d41d64886300")},
+        { 99999, uint256S("0xa7b03b14b8673683d972ab81775f3e85fea4fe689874b5956183466535dc651c")},
+        {219999, uint256S("0x0691bb86c92762c5c4c5a3723585ebeb7ec59310bbb0bdb6666551ab24ad919e")},
+        {336000, uint256S("0xf07adf61615c529f7c282b858d13d3e037b197324cb12e0669c461947494c4e3")},
+        {372751, uint256S("0x000000000000148db599b217c117b5104f5043c55f6ca2a8a065d9fab9f9bba1")},
+        {382019, uint256S("0x3ab75769d7957d9bf0857b5019d0a0e41044fa9ecf30b2f9c32aa457b0864ce5")},
+        {408500, uint256S("0x1636ac08b073d26b28fa40243d58dd5deb215752efe094c92c61998e4e9baf3f")},
+        {412691, uint256S("0x0e20318be88f07f521453435b37cfc516c3de07264a78ed7170985a1126126ab")},
+        {441299, uint256S("0x4091d0836a37c50ceee876000ac0cb251fd10031dab901d2c0677cd86283096e")},
+        {442735, uint256S("0x1b83b33894d51be0b8b323bfab093f638915236e0e40ba3b52bb33fdbc4053cd")},
+        {516308, uint256S("0x0000000ed333c5fa4be2c941f3c3a0680c3a7d582cbf74f4516f8503474e2585")},
+        {573702, uint256S("0xc41259778268fe3bba597c7707fe400d9a7d66b4d6d2a9593c898fd69fb56a5f")},
+        {612778, uint256S("0x00000003216118fab90ea268ce526e1fcce67dc97b74c5b62119cc3d244d8f71")},
+    };
+}
+static std::map<int, uint256> CheckpointsForNetwork(ChainType type)
+{
+    switch (type) {
+    case ChainType::MAIN: return MainCheckpoints();
+    case ChainType::TESTNET: return TestNetCheckpoints();
+    default: return {};
+    }
+}
+
 class CMainParams : public CChainParams {
 public:
     CMainParams() {
@@ -145,7 +200,7 @@ public:
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x0000000032fe677166d54963b62a4677d8957e87c508eaa4fd7eb1c880cd27e3"));
         assert(genesis.hashMerkleRoot == uint256S("0x3c2d8f85fab4d17aac558cc648a1a58acff0de6deb890c29985690052c5993c2"));
-
+                
         // Note that of those which support the service bits prefix, most only support a subset of
         // possible options.
         // This is fine at runtime as we'll fall back to using them as an addrfetch if they don't support the
@@ -177,6 +232,10 @@ public:
             0.006583698 // * estimated number of transactions per second after that timestamp
                         //   2618324/(1743098457-1345400356) = 0.006583698
         };
+
+        // peercoin bridge: headers sync params (v31 machinery has no defaults set)
+        m_headers_sync_params = HeadersSyncParams{/*commitment_period=*/2016, /*redownload_buffer_size=*/1008};
+        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
     }
 };
 
@@ -209,7 +268,7 @@ public:
         consensus.SegwitHeight = 394215;
 
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000a39348f70f067a");  // 500000
-        consensus.defaultAssumeValid = uint256S("0xa40f64181ee4a3bedda2eae0107d9da0e049fe285b6e6e2a7f1f11697f22c7ed"); // 500000
+        consensus.defaultAssumeValid = uint256S("0x00000003216118fab90ea268ce526e1fcce67dc97b74c5b62119cc3d244d8f71"); // 612778
 
         pchMessageStart[0] = 0xcb;
         pchMessageStart[1] = 0xf2;
@@ -222,7 +281,7 @@ public:
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06"));
         assert(genesis.hashMerkleRoot == uint256S("0x3c2d8f85fab4d17aac558cc648a1a58acff0de6deb890c29985690052c5993c2"));
-
+                
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
@@ -241,6 +300,7 @@ public:
         bech32_hrp = "tpc";
 
         vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_test), std::end(chainparams_seed_test));
+
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
 
@@ -253,6 +313,10 @@ public:
                         //   1221679/(1739494055-1346029522) = 0.003104928
 
         };
+
+        // peercoin bridge: headers sync params (v31 machinery has no defaults set)
+        m_headers_sync_params = HeadersSyncParams{/*commitment_period=*/2016, /*redownload_buffer_size=*/1008};
+        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
     }
 };
 
@@ -284,6 +348,10 @@ public:
                 .tx_count = 1903567,
                 .dTxRate  = 0.02336701143027275,
             };
+
+        // peercoin bridge: headers sync params (v31 machinery has no defaults set)
+        m_headers_sync_params = HeadersSyncParams{/*commitment_period=*/2016, /*redownload_buffer_size=*/1008};
+        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
         } else {
             bin = *options.challenge;
             consensus.nMinimumChainWork = uint256{};
@@ -295,6 +363,10 @@ public:
                 0,
                 0,
             };
+
+        // peercoin bridge: headers sync params (v31 machinery has no defaults set)
+        m_headers_sync_params = HeadersSyncParams{/*commitment_period=*/2016, /*redownload_buffer_size=*/1008};
+        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
             LogInfo("Signet with challenge %s\n", HexStr(bin));
         }
 
@@ -342,7 +414,7 @@ public:
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06"));
         assert(genesis.hashMerkleRoot == uint256S("0x3c2d8f85fab4d17aac558cc648a1a58acff0de6deb890c29985690052c5993c2"));
-
+                
         vFixedSeeds.clear();
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
@@ -386,9 +458,11 @@ public:
         consensus.nTargetSpacingWorkMax = 12 * consensus.nStakeTargetSpacing; // 2-hour
         consensus.nPowTargetSpacing = consensus.nStakeTargetSpacing;
 
-        consensus.nStakeMinAge = 60 * 60 * 24; // test net min age is 1 day
+        // regtest dev ergonomics: mint in ~real time. Selection interval spans ~35x the
+        // modifier interval; minAge must exceed it for the v0.5 fresh-tip rule to be satisfiable.
+        consensus.nStakeMinAge = 60 * 5;
         consensus.nStakeMaxAge = 60 * 60 * 24 * 90;
-        consensus.nModifierInterval = 60 * 20; // Modifier interval: time to elapse before new modifier is computed
+        consensus.nModifierInterval = 5;
         consensus.nCoinbaseMaturity = 60;
 
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -446,7 +520,7 @@ public:
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x00000001f757bb737f6596503e17cd17b0658ce630cc727c0cca81aec47c9f06"));
         assert(genesis.hashMerkleRoot == uint256S("0x3c2d8f85fab4d17aac558cc648a1a58acff0de6deb890c29985690052c5993c2"));
-
+                
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();
         vSeeds.emplace_back("dummySeed.invalid.");
@@ -459,6 +533,10 @@ public:
             0,
             0
         };
+
+        // peercoin bridge: headers sync params (v31 machinery has no defaults set)
+        m_headers_sync_params = HeadersSyncParams{/*commitment_period=*/2016, /*redownload_buffer_size=*/1008};
+        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);

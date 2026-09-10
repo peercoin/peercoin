@@ -134,6 +134,8 @@ public:
 struct CoinSelectionParams {
     /** Randomness to use in the context of coin selection. */
     FastRandomContext& rng_fast;
+    /** peercoin: coinstake selection skips fee/amount checks on the placeholder first output. */
+    bool m_coinstake = false;
     /** Size of a change output in bytes, determined by the output type. */
     int change_output_size = 0;
     /** Size of the input to spend a change output in virtual bytes. */

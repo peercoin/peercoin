@@ -223,6 +223,16 @@ static const CRPCConvertParam vRPCConvertParams[] =
 };
 // clang-format on
 
+/** Non-RFC4627 JSON parser, accepts internal values (such as numbers, true, false, null)
+ * as well as objects and arrays.
+ */
+UniValue ParseNonRFCJSONValue(std::string_view raw)
+{
+    UniValue parsed;
+    if (!parsed.read(raw)) throw std::runtime_error(tfm::format("Error parsing JSON: %s", raw));
+    return parsed;
+}
+
 class CRPCConvertTable
 {
 private:
@@ -255,15 +265,6 @@ CRPCConvertTable::CRPCConvertTable()
 
 static CRPCConvertTable rpcCvtTable;
 
-/** Non-RFC4627 JSON parser, accepts internal values (such as numbers, true, false, null)
- * as well as objects and arrays.
- */
-UniValue ParseNonRFCJSONValue(std::string_view raw)
-{
-    UniValue parsed;
-    if (!parsed.read(raw)) throw std::runtime_error(tfm::format("Error parsing JSON: %s", raw));
-    return parsed;
-}
 
 UniValue RPCConvertValues(const std::string &strMethod, const std::vector<std::string> &strParams)
 {
@@ -302,7 +303,7 @@ UniValue RPCConvertNamedValues(const std::string &strMethod, const std::vector<s
         // Use __pushKV instead of pushKV to avoid overwriting an explicit
         // "args" value with an implicit one. Let the RPC server handle the
         // request as given.
-        params.__pushKV("args", positional_args);
+        params.pushKVEnd("args", positional_args); // peercoin bridge: __pushKV
     }
 
     return params;

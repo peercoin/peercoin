@@ -5,6 +5,7 @@
 
 #include <wallet/fees.h>
 
+#include <consensus/tx_verify.h> // peercoin bridge: GetMinFee
 #include <wallet/coincontrol.h>
 #include <wallet/wallet.h>
 
@@ -23,7 +24,9 @@ CAmount GetMinimumFee(const CWallet& wallet, unsigned int nTxBytes, const CCoinC
 
 CFeeRate GetRequiredFeeRate(const CWallet& wallet)
 {
-    return std::max(wallet.m_min_fee, wallet.chain().relayMinFee());
+    // peercoin bridge: consensus floor GetMinFee(tx, nTime=now) (0.01 PPC/kB)
+    CFeeRate ppconsensus_min{GetMinFee(1000, (uint32_t)GetTime())};
+    return std::max({wallet.m_min_fee, wallet.chain().relayMinFee(), ppconsensus_min});
 }
 
 CFeeRate GetMinimumFeeRate(const CWallet& wallet, const CCoinControl& coin_control, FeeCalculation* feeCalc)

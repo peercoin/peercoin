@@ -559,6 +559,11 @@ public:
         const int height{WITH_LOCK(::cs_main, return chainman().ActiveChain().Height())};
         return height >= 0 ? std::optional{height} : std::nullopt;
     }
+    // peercoin bridge: per-network coinbase maturity from chain params
+    int getCoinbaseMaturity() override
+    {
+        return chainman().GetParams().GetConsensus().nCoinbaseMaturity;
+    }
     uint256 getBlockHash(int height) override
     {
         LOCK(::cs_main);

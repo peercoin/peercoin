@@ -53,6 +53,7 @@
 #include <stdexcept>
 #include <system_error>
 #include <unordered_map>
+#include <kernel.h>
 
 namespace kernel {
 static constexpr uint8_t DB_BLOCK_FILES{'f'};
@@ -145,7 +146,24 @@ bool BlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, s
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
 
-                if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
+                // peercoin related block index fields
+                pindexNew->nMint          = diskindex.nMint;
+                pindexNew->nMoneySupply   = diskindex.nMoneySupply;
+                pindexNew->nFlags         = diskindex.nFlags;
+                pindexNew->nHeightStake   = diskindex.nHeightStake;
+                pindexNew->nStakeModifier = diskindex.nStakeModifier;
+                pindexNew->prevoutStake   = diskindex.prevoutStake;
+                pindexNew->nStakeTime     = diskindex.nStakeTime;
+                pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
+
+                // peercoin: calculate stake modifier checksum
+                pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
+                if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum)) {
+                    LogError("%s: Rejected by stake modifier checkpoint height=%d, modifier=0x%016llx\n", __func__, pindexNew->nHeight, (unsigned long long)diskindex.nStakeModifier);
+                    return false;
+                }
+
+                if (pindexNew->IsProofOfWork() && !CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
                     LogError("%s: CheckProofOfWork failed: %s\n", __func__, pindexNew->ToString());
                     return false;
                 }
@@ -221,6 +239,21 @@ const CBlockIndex* BlockManager::LookupBlockIndex(const uint256& hash) const
     return it == m_block_index.end() ? nullptr : &it->second;
 }
 
+// peercoin bridge: canonical PPC master GetLastCheckpoint.
+const CBlockIndex* BlockManager::GetLastCheckpoint(const CCheckpointData& data)
+{
+    const MapCheckpoints& checkpoints = data.mapCheckpoints;
+
+    for (MapCheckpoints::const_reverse_iterator i = checkpoints.rbegin(); i != checkpoints.rend(); ++i) {
+        const uint256& hash = i->second;
+        const CBlockIndex* pindex = LookupBlockIndex(hash);
+        if (pindex) {
+            return pindex;
+        }
+    }
+    return nullptr;
+}
+
 CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block, CBlockIndex*& best_header)
 {
     AssertLockHeld(cs_main);
@@ -241,9 +274,12 @@ CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block, CBlockInde
     if (miPrev != m_block_index.end()) {
         pindexNew->pprev = &(*miPrev).second;
         pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
+        pindexNew->nHeightStake = pindexNew->pprev->nHeightStake + (block.nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE); // peercoin bridge: canonical PPC master AddToBlockIndex
         pindexNew->BuildSkip();
     }
     pindexNew->nTimeMax = (pindexNew->pprev ? std::max(pindexNew->pprev->nTimeMax, pindexNew->nTime) : pindexNew->nTime);
+    if (block.nFlags & CBlockIndex::BLOCK_PROOF_OF_STAKE)
+        pindexNew->SetProofOfStake(); // peercoin bridge: canonical PPC master AddToBlockIndex
     pindexNew->nChainTrust = (pindexNew->pprev ? pindexNew->pprev->nChainTrust : 0) + GetBlockTrust(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (best_header == nullptr || best_header->nChainTrust < pindexNew->nChainTrust) {
@@ -1053,8 +1089,8 @@ bool BlockManager::ReadBlock(CBlock& block, const FlatFilePos& pos, const std::o
 
     const auto block_hash{block.GetHash()};
 
-    // Check the header
-    if (!CheckProofOfWork(block_hash, block.nBits, GetConsensus())) {
+    // Check the header (peercoin: proof-of-stake blocks carry no work)
+    if (!block.IsProofOfStake() && !CheckProofOfWork(block_hash, block.nBits, GetConsensus())) {
         LogError("Errors in block header at %s while reading block", pos.ToString());
         return false;
     }

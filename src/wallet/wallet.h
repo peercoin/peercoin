@@ -1085,6 +1085,9 @@ public:
     //! Find the private key for the given key id from the wallet's descriptors, if available
     //! Returns nullopt when no descriptor has the key or if the wallet is locked.
     std::optional<CKey> GetKey(const CKeyID& keyid) const;
+    // peercoin bridge: fetch private key via the signing provider that matches the given
+    // script (descriptor providers returned by GetSolvingProvider carry pubkeys only).
+    bool GetStakingKey(const CScript& script, const CKeyID& keyid, CKey& keyOut) const;
 
     //! Disconnect chain notifications and wait for all notifications to be processed
     void DisconnectChainNotifications();

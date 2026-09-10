@@ -7,6 +7,7 @@
 
 #include <arith_uint256.h>
 #include <chain.h>
+#include <logging.h>
 #include <primitives/block.h>
 #include <uint256.h>
 
@@ -347,4 +348,36 @@ std::optional<arith_uint256> DeriveTarget(unsigned int nBits, const uint256 pow_
         return {};
 
     return bnTarget;
+}
+
+static arith_uint256 SetCompactArith(uint32_t nbits)
+{
+    arith_uint256 target{0};
+    target.SetCompact(nbits);
+    return target;
+}
+
+bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits)
+{
+    // peercoin bridge: POW difficulty may not change outside retarget blocks.
+    if (params.fPowNoRetargeting && old_nbits != new_nbits) {
+        return false;
+    }
+    arith_uint256 target_old = SetCompactArith(old_nbits);
+    arith_uint256 target_new = SetCompactArith(new_nbits);
+    if ((height % params.DifficultyAdjustmentInterval()) != 0) {
+        return old_nbits == new_nbits;
+    }
+    const arith_uint256 max_target = (target_old << 2);
+    const arith_uint256 min_target = ((target_old >> 2) + ((target_old.GetLow64() & 3) ? 1 : 0));
+    return (min_target <= target_new) && (target_new <= max_target);
+}
+
+
+CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
+{
+    // peercoin bridge: issuance happens through coinstake minting and is
+    // tracked directly in CBlockIndex::nMoneySupply; there is no fixed
+    // per-block PoW subsidy here.
+    return 0;
 }

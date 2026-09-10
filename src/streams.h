@@ -111,7 +111,7 @@ public:
         : m_stream{stream},
           m_type{type_in},
           m_version{version_in},
-          m_pos_marker{(type_in & SER_POSMARKER) != 0},
+          m_pos_marker{(type_in & SER_GETHASH) == 0},
           m_tx_params{!(version_in & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
 
     void write(std::span<const std::byte> src) { m_stream->write(src); }
@@ -174,13 +174,13 @@ public:
         : m_data{std::as_bytes(data)},
           m_type{type_in},
           m_version{version_in},
-          m_pos_marker{(type_in & SER_POSMARKER) != 0},
+          m_pos_marker{(type_in & SER_GETHASH) == 0},
           m_tx_params{!(version_in & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
     SpanReader(int type_in, int version_in, std::span<const std::byte> data)
         : m_data{data},
           m_type{type_in},
           m_version{version_in},
-          m_pos_marker{(type_in & SER_POSMARKER) != 0},
+          m_pos_marker{(type_in & SER_GETHASH) == 0},
           m_tx_params{!(version_in & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
 
     int GetType() const { return m_type; }
@@ -395,24 +395,24 @@ public:
     explicit CDataStream(int nTypeIn, int nVersionIn)
         : nType{nTypeIn},
           nVersion{nVersionIn},
-          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_pos_marker{(nTypeIn & SER_GETHASH) == 0},
           m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
 
     explicit CDataStream(std::span<const uint8_t> sp, int nTypeIn, int nVersionIn)
         : DataStream{sp},
           nType{nTypeIn},
           nVersion{nVersionIn},
-          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_pos_marker{(nTypeIn & SER_GETHASH) == 0},
           m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
     explicit CDataStream(std::span<const value_type> sp, int nTypeIn, int nVersionIn)
         : DataStream{sp},
           nType{nTypeIn},
           nVersion{nVersionIn},
-          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_pos_marker{(nTypeIn & SER_GETHASH) == 0},
           m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
 
     int GetType() const    { return nType; }
-    void SetType(int n)    { nType = n; m_pos_marker.pos_marker = (n & SER_POSMARKER) != 0; }
+    void SetType(int n)    { nType = n; m_pos_marker.pos_marker = (n & SER_GETHASH) == 0; }
     void SetVersion(int n) { nVersion = n; m_tx_params.allow_witness = !(n & SERIALIZE_TRANSACTION_NO_WITNESS); }
     int GetVersion() const { return nVersion; }
 
@@ -749,7 +749,7 @@ public:
         : AutoFile{filenew},
           nType{nTypeIn},
           nVersion{nVersionIn},
-          m_pos_marker{(nTypeIn & SER_POSMARKER) != 0},
+          m_pos_marker{(nTypeIn & SER_GETHASH) == 0},
           m_tx_params{!(nVersionIn & SERIALIZE_TRANSACTION_NO_WITNESS)} {}
 
     int GetType() const    { return nType; }
@@ -797,6 +797,15 @@ using DataBuffer = std::vector<std::byte>;
  */
 class BufferedFile
 {
+public:
+    // peercoin bridge: legacy typed serialization params for disk streams.
+    template <typename P>
+    const P& GetParams() const
+    {
+        static const P params{};
+        return params;
+    }
+
 private:
     AutoFile& m_src;
     uint64_t nSrcPos{0};  //!< how many bytes have been read from source

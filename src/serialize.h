@@ -1258,7 +1258,7 @@ static const int SERIALIZE_TRANSACTION_NO_WITNESS = 0x40000000; // peercoin: leg
  */
 struct PosMarkerParams
 {
-    bool pos_marker = false; // peercoin: mutable so legacy CDataStream::SetType() stays functional
+    bool pos_marker = true; // peercoin: upstream PPC serializes nFlags on disk/network; hashing sites opt out via NO_POSMARKER
     SER_PARAMS_OPFUNC
 };
 static constexpr PosMarkerParams WITH_POSMARKER{.pos_marker = true};
@@ -1282,7 +1282,7 @@ size_t GetSerializeSize(const T& t, int nType, int nVersion = 0)
 {
     SizeComputer sc;
     ParamsStream{sc,
-                PosMarkerParams{(nType & SER_POSMARKER) != 0},
+                PosMarkerParams{(nType & SER_GETHASH) == 0},
                 TransactionSerParams{!(nVersion & SERIALIZE_TRANSACTION_NO_WITNESS)}}
         << t;
     return sc.size();

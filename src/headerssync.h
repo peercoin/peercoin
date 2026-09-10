@@ -25,6 +25,7 @@ struct CompressedHeader {
     uint32_t nTime{0};
     uint32_t nBits{0};
     uint32_t nNonce{0};
+    uint32_t nFlags{0}; // peercoin bridge: preserve PoS flags through presync
 
     CompressedHeader()
     {
@@ -36,7 +37,8 @@ struct CompressedHeader {
           hashMerkleRoot{header.hashMerkleRoot},
           nTime{header.nTime},
           nBits{header.nBits},
-          nNonce{header.nNonce}
+          nNonce{header.nNonce},
+          nFlags{header.nFlags}
     {
     }
 
@@ -49,6 +51,7 @@ struct CompressedHeader {
         ret.nTime = nTime;
         ret.nBits = nBits;
         ret.nNonce = nNonce;
+        ret.nFlags = nFlags;
         return ret;
     };
 };

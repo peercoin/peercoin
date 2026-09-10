@@ -129,6 +129,8 @@ add_library(bitcoin_common STATIC EXCLUDE_FROM_ALL
   rpc/request.cpp
   rpc/util.cpp
   scheduler.cpp
+  shutdown.cpp
+  timedata.cpp
   script/descriptor.cpp
   script/miniscript.cpp
   script/parsing.cpp

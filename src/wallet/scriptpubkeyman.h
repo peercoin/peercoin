@@ -318,6 +318,11 @@ private:
     // Fetch the SigningProvider for a given index and optionally include private keys. Called by the above functions.
     std::unique_ptr<FlatSigningProvider> GetSigningProvider(int32_t index, bool include_private = false) const EXCLUSIVE_LOCKS_REQUIRED(cs_desc_man);
 
+public:
+    // peercoin bridge: upstream GetSolvingProvider() deliberately excludes private keys;
+    // PoS block signing needs them for descriptor-wallet staking outputs.
+    std::unique_ptr<FlatSigningProvider> GetStakingSigningProvider(const CScript& script) const { return GetSigningProvider(script, /*include_private=*/true); }
+
 protected:
     WalletDescriptor m_wallet_descriptor GUARDED_BY(cs_desc_man);
 

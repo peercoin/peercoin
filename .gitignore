@@ -174,3 +174,4 @@ dist/
 /guix-build-*
 
 /ci/scratch/
+/build-asan/

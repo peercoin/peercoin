@@ -26,6 +26,9 @@
 #include <interfaces/handler.h>
 #include <interfaces/wallet.h>
 #include <kernel/mempool_removal_reason.h>
+#include <validation.h> // peercoin bridge: chainman/GetCoinAge
+#include <consensus/tx_verify.h> // peercoin bridge: GetMinFee
+#include <rpc/blockchain.h> // peercoin bridge: GetDifficulty
 #include <kernel/types.h>
 #include <key.h>
 #include <key_io.h>
@@ -69,6 +72,9 @@
 #include <wallet/db.h>
 #include <wallet/external_signer_scriptpubkeyman.h>
 #include <wallet/scriptpubkeyman.h>
+#include <wallet/spend.h>
+#include <wallet/coinselection.h>
+#include <bignum.h> // peercoin bridge
 #include <wallet/transaction.h>
 #include <wallet/types.h>
 #include <wallet/walletdb.h>
@@ -3340,7 +3346,8 @@ int CWallet::GetTxBlocksToMaturity(const CWalletTx& wtx) const
     }
     int chain_depth = GetTxDepthInMainChain(wtx);
     assert(chain_depth >= 0); // coinbase tx should not be conflicted
-    return std::max(0, (COINBASE_MATURITY+1) - chain_depth);
+    // peercoin bridge: use per-network nCoinbaseMaturity instead of hardcoded 100
+    return std::max(0, (chain().getCoinbaseMaturity() + 1) - chain_depth);
 }
 
 bool CWallet::IsTxImmatureCoinBase(const CWalletTx& wtx) const
@@ -3809,19 +3816,21 @@ util::Result<std::reference_wrapper<DescriptorScriptPubKeyMan>> CWallet::AddWall
     // Save the descriptor to DB
     spk_man->WriteDescriptor();
 
-    // Break balance caches so that outputs that are now IsMine in already known txs will be included in th// peercoin: helper — locate a spent tx's block header + disk offset for the PoS kernel
+    // Break balance caches so that outputs that are now IsMine in already known txs will be included in the balance
+    MarkDirty();
+
+    return std::reference_wrapper(*spk_man);
+}
+
 static bool FindKernelBlockSource(interfaces::Chain& chain, const uint256& block_hash, const CTransactionRef& tx_want, CBlockHeader& header_out, unsigned int& nTxPrevOffset_out)
 {
     LOCK(::cs_main);
     int file_number = 0;
     unsigned int data_pos = 0;
-    interfaces::Chain::FoundBlock fb;
-    chain.findBlock(block_hash, fb.fileNumber(file_number).dataPos(data_pos));
-    if (!fb.found) return false;
     CBlock block;
-    interfaces::Chain::FoundBlock fb2;
-    chain.findBlock(block_hash, fb2.data(block));
-    if (!fb2.found || block.IsNull()) return false;
+    interfaces::FoundBlock fb;
+    chain.findBlock(block_hash, fb.fileNumber(file_number).dataPos(data_pos).data(block));
+    if (!fb.found || block.IsNull()) return false;
     header_out = static_cast<const CBlockHeader&>(block);
     unsigned int off = data_pos + CBlockHeader::NORMAL_SERIALIZE_SIZE + GetSizeOfCompactSize(block.vtx.size());
     for (const auto& tx : block.vtx) {
@@ -3835,6 +3844,37 @@ static bool error(const std::string& msg)
 {
     LogPrintf("ERROR: %s\n", msg);
     return false;
+}
+
+double SecurityToOptimalFraction(double security, bool isTestnet) {
+    const double coeffsMain[] = {
+        -0.01205449390140,      // const
+        0.00021672965052,       // security
+        0.00843001158271,       // security^(1/2)
+        -0.31668853152981,      // security^(1/3)
+        3.15194385589535,       // security^(1/4)
+        -12.93131277924088,     // security^(1/5)
+        25.02314857164244,      // security^(1/6)
+        -22.70985422100839,     // security^(1/7)
+        7.78628320089075        // security^(1/8)
+    };
+    const double coeffsTestnet[] = {
+        -0.00277474262686,      // const
+        0.00015824596035,       // security
+        0.00012080445529,       // security^(1/2)
+        -0.04679164943874,      // security^(1/3)
+        0.56524766014644,       // security^(1/4)
+        -2.50113964308348,      // security^(1/5)
+        5.03930675692864,       // security^(1/6)
+        -4.68984257228335,      // security^(1/7)
+        1.63578550998557        // security^(1/8)
+    };
+    const auto coeffs = isTestnet ? coeffsTestnet : coeffsMain;
+    double optimalFraction = coeffs[0]; // const term
+    for (int i = 1; i < 9; ++i) {
+        optimalFraction += std::pow(security, 1.0 / i) * coeffs[i];
+    }
+    return optimalFraction;
 }
 
 // peercoin: create coin stake transaction
@@ -3889,8 +3929,12 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     CoinSelectionParams coin_selection_params{rng_fast};
     coin_selection_params.m_subtract_fee_outputs = true;
     coin_selection_params.m_coinstake = true;
+    // peercoin bridge: modern selection algorithms require a non-zero effective feerate
+    // to compute per-input fees; coinstake rewards make the rate negligible.
+    coin_selection_params.m_effective_feerate = CFeeRate{1};
+    coin_selection_params.m_long_term_feerate = CFeeRate{1};
 
-    wallet::CoinsResult availableCoins = AvailableCoins(*pwallet, &temp);
+    wallet::CoinsResult availableCoins = AvailableCoins(*pwallet, &temp, coin_selection_params.m_effective_feerate);
 
     // Choose coins to use
     CAmount nAllowedBalance = availableCoins.GetTotalAmount();
@@ -3908,7 +3952,9 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     util::Result<SelectionResult> result = SelectCoins(*pwallet, availableCoins, /*pre_set_inputs=*/ {}, nAllowedBalance, temp, coin_selection_params);
 
     if (!result)
+    {
         return false;
+    }
 
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
@@ -3920,16 +3966,16 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         uint256 block_hash;
         CTransactionRef tx;
         if (!g_txindex || !g_txindex->FindTx(pcoin->outpoint.hash, block_hash, tx) || !tx)
-            continue;
+        continue;
         CBlockHeader header;
         CDiskTxPos postx;
         unsigned int nTxOffset = 0;
         if (!FindKernelBlockSource(chain(), block_hash, tx, header, nTxOffset))
-            continue;
+        continue;
 
         static int nMaxStakeSearchInterval = 60;
         if (header.GetBlockTime() + params.nStakeMinAge > txNew.nTime - nMaxStakeSearchInterval)
-            continue; // only count coins meeting min age requirement
+        continue; // only count coins meeting min age requirement
 
         bool fKernelFound = false;
         for (unsigned int n=0; n<std::min(nSearchInterval,(int64_t)nMaxStakeSearchInterval) && !fKernelFound; n++)
@@ -3958,23 +4004,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                 if (whichType == TxoutType::PUBKEYHASH || whichType == TxoutType::WITNESS_V0_KEYHASH) // pay to address type or witness keyhash
                 {
                     // convert to pay to public key type
-                    CKey key;
-                    if (IsLegacy()) {
-                        auto scriptPubKeyMan = pwallet->GetLegacyScriptPubKeyMan();
-                        if (!scriptPubKeyMan) {
-                            if (bDebug)
-                                LogPrintf("CreateCoinStake : failed to get scriptpubkeyman for kernel type=%s\n", GetTxnOutputType(whichType));
-                            break;  // unable to find corresponding public key
-                        }
-                        if (!scriptPubKeyMan->GetKey(CKeyID(uint160(vSolutions[0])), key))
-                        {
-                            if (bDebug)
-                                LogPrintf("CreateCoinStake : failed to get key for kernel type=%s\n", GetTxnOutputType(whichType));
-                            break;  // unable to find corresponding public key
-                        }
-                        scriptPubKeyOut << ToByteVector(key.GetPubKey()) << OP_CHECKSIG;
-                    }
-                    else {
+                    // peercoin bridge: legacy keystore path dropped with unified wallets
+                    {
                         std::unique_ptr<SigningProvider> provider = pwallet->GetSolvingProvider(scriptPubKeyKernel);
                         if (!provider) {
                             if (bDebug)
@@ -3988,6 +4019,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                                 LogPrintf("CreateCoinStake : failed to get key for output %s\n", pcoin->txout.ToString());
                             break;
                         }
+                        CKey mintkey_tmp;
+                        bool mk_ok = provider.get()->GetKey(ckey, mintkey_tmp);
                         scriptPubKeyOut << ToByteVector(pkey) << OP_CHECKSIG;
                     }
                 }
@@ -4007,7 +4040,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                     CPubKey pkey;
                     if (!provider.get()->GetPubKey(ckey, pkey)) {
                         if (bDebug)
-                            LogPrintf("CreateCoinStake : failed to get key for minter output\n", pcoin->txout.ToString());
+                            LogPrintf("CreateCoinStake : failed to get key for minter output\n");
                         break;
                     }
                     scriptPubKeyOut << ToByteVector(pkey) << OP_CHECKSIG;
@@ -4036,12 +4069,14 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
             break; // if kernel is found stop searching
     }
     if (nCredit == 0 || nCredit > nAllowedBalance)
+    {
         return false;
+    }
 
     // rfc28 precalculation
     int maxMintingUtxos = gArgs.GetIntArg("-maxmintingutxos", MAX_MINTING_UTXOS);
 
-    double difficulty = GetDifficulty(GetLastBlockIndex(chainman.ActiveChain().Tip(), true), chainman.ActiveChain().Tip());
+    double difficulty = GetDifficulty(*GetLastBlockIndex(chainman.ActiveChain().Tip(), true));
     CAmount supply = chainman.ActiveChain().Tip()->nMoneySupply;
     int maxDayWeight = (params.nStakeMaxAge - params.nStakeMinAge) / (60*60*24);
     double securityLevel = (uint64_t(2) << 31)*difficulty / maxDayWeight / (supply/COIN) / params.nStakeTargetSpacing;
@@ -4163,15 +4198,6 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         // Sign
         int nIn = 0;
 
-        if (IsLegacy()) {
-            for (const auto& pcoin : vwtxPrev)
-            {
-                SignatureData empty;
-                if (!SignSignature(*pwallet->GetLegacyScriptPubKeyMan(), *pcoin, txNew, nIn++, SIGHASH_ALL, empty))
-                    return error(std::string("CreateCoinStake : failed to sign coinstake"));
-            }
-        }
-        else
         {
             // Fetch previous transactions (inputs):
             std::map<COutPoint, Coin> coins;
@@ -4211,12 +4237,6 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
     // Successfully generated coinstake
     return true;
-}
-
-e balance
-    MarkDirty();
-
-    return std::reference_wrapper(*spk_man);
 }
 
 bool CWallet::MigrateToSQLite(bilingual_str& error)
@@ -4936,6 +4956,22 @@ std::optional<CKey> CWallet::GetKey(const CKeyID& keyid) const
         }
     }
     return std::nullopt;
+}
+
+bool CWallet::GetStakingKey(const CScript& script, const CKeyID& keyid, CKey& keyOut) const
+{
+    Assert(IsWalletFlagSet(WALLET_FLAG_DESCRIPTORS));
+
+    for (const auto& spkm : GetAllScriptPubKeyMans()) {
+        const DescriptorScriptPubKeyMan* desc_spkm = dynamic_cast<DescriptorScriptPubKeyMan*>(spkm);
+        assert(desc_spkm);
+        std::unique_ptr<FlatSigningProvider> provider = desc_spkm->GetStakingSigningProvider(script);
+        bool ok = provider && provider->GetKey(keyid, keyOut);
+        if (ok) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void CWallet::WriteBestBlock() const

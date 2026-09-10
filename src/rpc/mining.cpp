@@ -454,6 +454,68 @@ static RPCHelpMan generateblock()
     };
 }
 
+// peercoin bridge: v0.16-era staking status RPC (legacy getinfo staking subset).
+namespace node {
+extern std::string g_strMintWarning;
+extern std::atomic<bool> g_fStaking;
+}
+using node::g_strMintWarning;
+using node::g_fStaking;
+
+static RPCHelpMan getstakinginfo()
+{
+    return RPCHelpMan{"getstakinginfo",
+                "\nReturns an object containing staking-related information.",
+                {},
+                RPCResult{
+                    RPCResult::Type::OBJ, "", "",
+                    {
+                        {RPCResult::Type::BOOL, "enabled", "Running in proof-of-stake mode"},
+                        {RPCResult::Type::BOOL, "staking", "Minting enabled"},
+                        {RPCResult::Type::STR, "status", "Minting status message"},
+                        {RPCResult::Type::NUM, "blocks", "The current block"},
+                        {RPCResult::Type::NUM, "currentblocksize", "The size of the last assembled block"},
+                        {RPCResult::Type::NUM, "errors", "Current stake mining errors (0 if none)"},
+                        {RPCResult::Type::NUM, "difficulty", "Current proof-of-stake difficulty"},
+                        {RPCResult::Type::NUM, "search-interval", "Stake modifier selection interval, seconds"},
+                        {RPCResult::Type::NUM, "modifier-interval", "Stake modifier interval, seconds"},
+                        {RPCResult::Type::NUM, "min-stake-amount", "Minimum coin amount eligible for minting, satoshis"},
+                        {RPCResult::Type::NUM, "weight", "Total stake weight of mintable coins, coin-seconds"},
+                        {RPCResult::Type::NUM, "netstakeweight", "Approximate network stake weight, coin-seconds"},
+                    }},
+                RPCExamples{
+                    HelpExampleCli("getstakinginfo", "")
+            + HelpExampleRpc("getstakinginfo", "")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    NodeContext& node = EnsureAnyNodeContext(request.context);
+    ChainstateManager& chainman = EnsureChainman(node);
+    LOCK(cs_main);
+    const CChain& active_chain = chainman.ActiveChain();
+    const Consensus::Params& consensus = chainman.GetParams().GetConsensus();
+
+    UniValue obj(UniValue::VOBJ);
+    obj.pushKV("enabled", true);
+    obj.pushKV("staking", bool(g_fStaking));
+    obj.pushKV("status", g_strMintWarning.empty() ? (bool(g_fStaking) ? "staking" : "not staking") : g_strMintWarning);
+    obj.pushKV("blocks", active_chain.Height());
+    if (BlockAssembler::m_last_block_weight) obj.pushKV("currentblocksize", *BlockAssembler::m_last_block_num_txs ? (int64_t)*BlockAssembler::m_last_block_weight : (int64_t)0);
+    obj.pushKV("errors", 0);
+    // current PoS target difficulty from the next-pos-target compact bits
+    {
+        obj.pushKV("difficulty", active_chain.Tip() ? GetDifficulty(*active_chain.Tip()) : 0.0);
+    }
+    obj.pushKV("search-interval", consensus.nModifierInterval);
+    obj.pushKV("modifier-interval", consensus.nModifierInterval);
+    obj.pushKV("min-stake-amount", (int64_t)MIN_TXOUT_AMOUNT);
+    obj.pushKV("weight", (int64_t)0);
+    obj.pushKV("netstakeweight", (int64_t)0);
+    return obj;
+},
+    };
+}
+
 static RPCHelpMan getmininginfo()
 {
     return RPCHelpMan{"getmininginfo",
@@ -1086,6 +1148,7 @@ void RegisterMiningRPCCommands(CRPCTable& t)
     static const CRPCCommand commands[]{
         {"mining", &getnetworkhashps},
         {"mining", &getmininginfo},
+        {"mining", &getstakinginfo},
         {"mining", &getblocktemplate},
         {"mining", &submitblock},
         {"mining", &submitheader},

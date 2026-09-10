@@ -18,7 +18,7 @@ using node::NodeContext;
 
 namespace init {
 namespace {
-const char* EXE_NAME = "bitcoind";
+const char* EXE_NAME = "peercoind"; // peercoin branding
 
 class BitcoindInit : public interfaces::Init
 {
@@ -30,13 +30,13 @@ public:
     }
     std::unique_ptr<interfaces::Node> makeNode() override { return interfaces::MakeNode(m_node); }
     std::unique_ptr<interfaces::Chain> makeChain() override { return interfaces::MakeChain(m_node); }
-    std::unique_ptr<interfaces::Mining> makeMining() override { return interfaces::MakeMining(m_node); }
+    std::unique_ptr<interfaces::Mining> makeMining() { return interfaces::MakeMining(m_node); } // peercoin bridge: base Init lacks makeMining
     std::unique_ptr<interfaces::WalletLoader> makeWalletLoader(interfaces::Chain& chain) override
     {
         return MakeWalletLoader(chain, *Assert(m_node.args));
     }
     std::unique_ptr<interfaces::Echo> makeEcho() override { return interfaces::MakeEcho(); }
-    const char* exeName() override { return EXE_NAME; }
+    const char* exeName() { return EXE_NAME; } // peercoin bridge: base Init lacks exeName
     NodeContext& m_node;
 };
 } // namespace

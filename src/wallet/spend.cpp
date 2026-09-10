@@ -7,6 +7,7 @@
 #include <common/messages.h>
 #include <common/system.h>
 #include <consensus/amount.h>
+#include <consensus/tx_verify.h> // peercoin bridge: GetMinFee
 #include <consensus/validation.h>
 #include <interfaces/chain.h>
 #include <node/types.h>
@@ -21,6 +22,7 @@
 #include <util/check.h>
 #include <util/moneystr.h>
 #include <util/rbf.h>
+#include <util/time.h> // peercoin bridge: GetTime for GetMinFee
 #include <util/trace.h>
 #include <util/translation.h>
 #include <wallet/coincontrol.h>
@@ -1326,6 +1328,17 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         return util::Error{_("Missing solving data for estimating transaction size")};
     }
     CAmount fee_needed = coin_selection_params.m_effective_feerate.GetFee(nBytes) + result.GetTotalBumpFees();
+    // peercoin bridge: v0.16 consensus min fee is chunked on the full serialized size (incl. witness),
+    // not the segwit vsize used by the modern fee model. txNew is unsigned here, so estimate the
+    // post-signing size by signing a throwaway copy with the wallet's signing providers.
+    {
+        CMutableTransaction tx_est(txNew);
+        if (sign && wallet.SignTransaction(tx_est)) {
+            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION), (uint32_t)GetTime()));
+        } else {
+            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), (uint32_t)GetTime()));
+        }
+    }
     const CAmount output_value = CalculateOutputValue(txNew);
     Assume(recipients_sum + change_amount == output_value);
     CAmount current_fee = result.GetSelectedValue() - output_value;
@@ -1343,6 +1356,20 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         if (fee_needed != current_fee) {
             return util::Error{Untranslated(STR_INTERNAL_BUG("Change adjustment: Fee needed != fee paid"))};
         }
+    }
+
+    // peercoin bridge: fee_needed may have been raised by the chunked consensus min fee
+    // above what the modern selection provided; shrink change to cover the deficit.
+    if (change_pos && fee_needed > current_fee && *change_pos < txNew.vout.size()) {
+        auto& change = txNew.vout.at(*change_pos);
+        CAmount deficit = fee_needed - current_fee;
+        CTxOut probe = change;
+        probe.nValue -= deficit;
+        if (IsDust(probe, wallet.chain().relayDustFee())) {
+            return util::Error{_("Insufficient funds")};
+        }
+        change.nValue -= deficit;
+        current_fee = result.GetSelectedValue() - CalculateOutputValue(txNew);
     }
 
     // Reduce output values for subtractFeeFromAmount
@@ -1397,6 +1424,25 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
 
     if (sign && !wallet.SignTransaction(txNew)) {
         return util::Error{_("Signing transaction failed")};
+    }
+
+    // peercoin bridge: re-check the chunked consensus min fee on the fully signed tx;
+    // actual signatures may be slightly larger than the pre-signing estimate.
+    if (sign && change_pos && *change_pos < txNew.vout.size()) {
+        for (int attempt = 0; attempt < 10; ++attempt) {
+            CAmount pp_min = GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), (uint32_t)GetTime());
+            CAmount paid = result.GetSelectedValue() - CalculateOutputValue(txNew);
+            if (paid >= pp_min) break;
+            CAmount delta = pp_min - paid;
+            auto& change = txNew.vout.at(*change_pos);
+            CTxOut probe = change;
+            probe.nValue -= delta;
+            if (IsDust(probe, wallet.chain().relayDustFee())) break;
+            change.nValue -= delta;
+            if (!wallet.SignTransaction(txNew)) {
+                return util::Error{_("Signing transaction failed")};
+            }
+        }
     }
 
     // Return the constructed transaction data.

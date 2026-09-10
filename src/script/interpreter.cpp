@@ -1328,6 +1328,10 @@ public:
     void Serialize(S &s) const {
         // Serialize version
         ::Serialize(s, txTo.version);
+        // peercoin bridge: PPC legacy transactions serialize nTime after the
+        // version (version < 3 gate); the signing preimage must include it.
+        if (txTo.version < 3)
+            ::Serialize(s, txTo.nTime);
         // Serialize vin
         unsigned int nInputs = fAnyoneCanPay ? 1 : txTo.vin.size();
         ::WriteCompactSize(s, nInputs);
