@@ -318,6 +318,10 @@ bool ClientModel::getProxyInfo(std::string& ip_port) const
 }
 
 void ClientModel::checkGithub() {
+    if (QThread::currentThread() != thread()) { // peercoin: wallet load happens on worker thread
+        QMetaObject::invokeMethod(this, [this] { checkGithub(); }, Qt::QueuedConnection);
+        return;
+    }
     auto now = std::chrono::system_clock::now();
     std::time_t current_time = std::chrono::system_clock::to_time_t(now);
     std::tm current_date = *std::localtime(&current_time);

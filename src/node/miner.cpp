@@ -498,22 +498,25 @@ void PoSMiner(NodeContext& m_node)
                         return;
                     }
             }
-            CBlockIndex* pindexPrev;
+            CBlockIndex* pindexPrev{nullptr};
+            // peercoin: never sleep while holding cs_main (starves msghand/opencon during IBD)
+            while (true)
             {
-                LOCK(cs_main);
-                pindexPrev = m_node.chainman->ActiveChain().Tip();
-
-                while (m_node.chainman->GuessVerificationProgress(pindexPrev) < 0.996)
+                double progress{0.0};
                 {
-                    LogPrintf("Minter thread sleeps while sync at %f\n", m_node.chainman->GuessVerificationProgress(pindexPrev));
-                    if (g_strMintWarning != strMintSyncMessage) {
-                        g_strMintWarning = strMintSyncMessage;
-                        uiInterface.NotifyAlertChanged();
-                    }
-                    fNeedToClear = true;
-                    if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
-                            return;
+                    LOCK(cs_main);
+                    pindexPrev = m_node.chainman->ActiveChain().Tip();
+                    progress = m_node.chainman->GuessVerificationProgress(pindexPrev);
                 }
+                if (progress >= 0.996) break;
+                LogPrintf("Minter thread sleeps while sync at %f\n", progress);
+                if (g_strMintWarning != strMintSyncMessage) {
+                    g_strMintWarning = strMintSyncMessage;
+                    uiInterface.NotifyAlertChanged();
+                }
+                fNeedToClear = true;
+                if (![&](auto d){ if (m_node.shutdown_signal && bool{*m_node.shutdown_signal}) return false; std::this_thread::sleep_for(d); return true; }(std::chrono::seconds(10)))
+                        return;
             }
             if (fNeedToClear) {
                 g_strMintWarning = strMintEmpty;
