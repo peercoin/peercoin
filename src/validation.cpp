@@ -2452,9 +2452,6 @@ bool PeercoinContextualBlockChecks(const CBlock& block, BlockValidationState& st
         return error("ConnectBlock() : SetStakeEntropyBit() failed");
     pindex->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
     pindex->nStakeModifierChecksum = nStakeModifierChecksum;
-    LogPrintf("DBGMODSET: h=%d modifier=0x%016llx checksum=%08x hpos=%s gen=%d\n",
-        pindex->nHeight, (unsigned long long)pindex->nStakeModifier, nStakeModifierChecksum,
-        pindex->hashProofOfStake.ToString(), (int)fGeneratedStakeModifier);
     chainstate.m_blockman.MarkDirtyBlockIndex(pindex); // peercoin bridge: queue a write to disk
 
     return true;
@@ -2873,7 +2870,6 @@ bool Chainstate::FlushStateToDisk(
         const auto empty_cache{(mode == FlushStateMode::FORCE_FLUSH) || fCacheLarge || fCacheCritical};
         // Combine all conditions that result in a write to disk.
         bool should_write = (mode == FlushStateMode::FORCE_SYNC) || empty_cache || fPeriodicWrite || fFlushForPrune;
-        LogPrintf("DBGFLUSHCALL: mode=%d should_write=%d dirty=%zu\n", (int)mode, (int)should_write, m_blockman.m_dirty_blockindex.size());
         // Write blocks, block index and best chain related state to disk.
         if (should_write) {
             LogDebug(BCLog::COINDB, "Writing chainstate to disk: flush mode=%s, prune=%d, large=%d, critical=%d, periodic=%d",

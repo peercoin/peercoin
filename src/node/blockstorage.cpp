@@ -557,9 +557,6 @@ void BlockManager::WriteBlockIndexDB()
     std::vector<const CBlockIndex*> vBlocks;
     vBlocks.reserve(m_dirty_blockindex.size());
     for (std::set<CBlockIndex*>::iterator it = m_dirty_blockindex.begin(); it != m_dirty_blockindex.end();) {
-        if ((*it)->nHeight >= 30582 && (*it)->nHeight <= 30585)
-            LogError("DBGFLUSH: h=%d modifier=0x%016llx checksum=%08x hpos=%s\n", (*it)->nHeight,
-                (unsigned long long)(*it)->nStakeModifier, (*it)->nStakeModifierChecksum, (*it)->hashProofOfStake.ToString());
         vBlocks.push_back(*it);
         m_dirty_blockindex.erase(it++);
     }
