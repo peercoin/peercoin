@@ -19,6 +19,7 @@
 #include <script/script.h>
 #include <script/signingprovider.h>
 #include <script/solver.h>
+#include <timedata.h> // peercoin: GetAdjustedTime for fixed fee calculation
 #include <util/check.h>
 #include <util/moneystr.h>
 #include <util/rbf.h>
@@ -1152,29 +1153,25 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         coin_selection_params.change_spend_size = change_spend_size;
     }
 
+    // peercoin: fixed fee model. Normal sends use GetMinFee(), not Bitcoin-style
+    // estimation/fallback. Explicit fee_rate/paytxfee remains an override only.
+    uint32_t nTime = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime());
+    const bool explicit_feerate = coin_control.m_feerate.has_value();
+
     // Set discard feerate
-    coin_selection_params.m_discard_feerate = GetDiscardRate(wallet);
+    coin_selection_params.m_discard_feerate = explicit_feerate ? *coin_control.m_feerate : CFeeRate{PERKB_TX_FEE};
 
     // Get the fee rate to use effective values in coin selection
     FeeCalculation feeCalc;
-    coin_selection_params.m_effective_feerate = GetMinimumFeeRate(wallet, coin_control, &feeCalc);
-    // Do not, ever, assume that it's fine to change the fee rate if the user has explicitly
-    // provided one
-    if (coin_control.m_feerate && coin_selection_params.m_effective_feerate > *coin_control.m_feerate) {
-        return util::Error{strprintf(_("Fee rate (%s) is lower than the minimum fee rate setting (%s)"), coin_control.m_feerate->ToString(FeeRateFormat::SAT_VB), coin_selection_params.m_effective_feerate.ToString(FeeRateFormat::SAT_VB))};
-    }
+    coin_selection_params.m_effective_feerate = explicit_feerate ? std::max(*coin_control.m_feerate, GetRequiredFeeRate(wallet)) : GetRequiredFeeRate(wallet);
     if (feeCalc.reason == FeeReason::FALLBACK && !wallet.m_allow_fallback_fee) {
         // eventually allow a fallback fee
         return util::Error{strprintf(_("Fee estimation failed. Fallbackfee is disabled. Wait a few blocks or enable %s."), "-fallbackfee")};
     }
 
     // Calculate the cost of change
-    // Cost of change is the cost of creating the change output + cost of spending the change output in the future.
-    // For creating the change output now, we use the effective feerate.
-    // For spending the change output in the future, we use the discard feerate for now.
-    // So cost of change = (change output size * effective feerate) + (size of spending change output * discard feerate)
-    coin_selection_params.m_change_fee = coin_selection_params.m_effective_feerate.GetFee(coin_selection_params.change_output_size);
-    coin_selection_params.m_cost_of_change = coin_selection_params.m_discard_feerate.GetFee(coin_selection_params.change_spend_size) + coin_selection_params.m_change_fee;
+    coin_selection_params.m_change_fee = GetMinFee(coin_selection_params.change_output_size, nTime);
+    coin_selection_params.m_cost_of_change = GetMinFee(coin_selection_params.change_spend_size, nTime) + coin_selection_params.m_change_fee;
 
     coin_selection_params.m_min_change_target = GenerateChangeTarget(std::floor(recipients_sum / vecSend.size()), coin_selection_params.m_change_fee, rng_fast);
 
@@ -1182,11 +1179,13 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     // 1. at least equal to dust threshold
     // 2. at least 1 sat greater than fees to spend it at m_discard_feerate
     const auto dust = GetDustThreshold(change_prototype_txout, coin_selection_params.m_discard_feerate);
-    const auto change_spend_fee = coin_selection_params.m_discard_feerate.GetFee(coin_selection_params.change_spend_size);
+    const auto change_spend_fee = GetMinFee(coin_selection_params.change_spend_size, nTime);
     coin_selection_params.min_viable_change = std::max(change_spend_fee + 1, dust);
 
-    // Include the fees for things that aren't inputs, excluding the change output
-    const CAmount not_input_fees = coin_selection_params.m_effective_feerate.GetFee(coin_selection_params.m_subtract_fee_outputs ? 0 : coin_selection_params.tx_noinputs_size);
+    // Include the fees for things that aren't inputs, excluding the change output.
+    // peercoin: when subtract fee from amount is requested, the fee is taken from the
+    // recipients later, so it must not be added to the coin selection target.
+    const CAmount not_input_fees = coin_selection_params.tx_noinputs_size && !coin_selection_params.m_subtract_fee_outputs ? GetMinFee(coin_selection_params.tx_noinputs_size, nTime) : 0;
     CAmount selection_target = recipients_sum + not_input_fees;
 
     // This can only happen if feerate is 0, and requested destinations are value of 0 (e.g. OP_RETURN)
@@ -1227,7 +1226,9 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
             assert(!available_coins.Size() || available_coins.GetEffectiveTotalAmount().has_value());
             CAmount available_effective_balance = preset_inputs.GetEffectiveTotalAmount().value_or(0) + available_coins.GetEffectiveTotalAmount().value_or(0);
             if (available_effective_balance < selection_target) {
-                Assume(!coin_selection_params.m_subtract_fee_outputs);
+                if (coin_selection_params.m_subtract_fee_outputs) {
+                    return util::Error{_("The transaction amount is too small to send after the fee has been deducted")};
+                }
                 return util::Error{strprintf(_("The total exceeds your balance when the %s transaction fee is included."), FormatMoney(selection_target - recipients_sum))};
             }
         }
@@ -1327,16 +1328,17 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     if (nBytes == -1) {
         return util::Error{_("Missing solving data for estimating transaction size")};
     }
-    CAmount fee_needed = coin_selection_params.m_effective_feerate.GetFee(nBytes) + result.GetTotalBumpFees();
-    // peercoin bridge: v0.16 consensus min fee is chunked on the full serialized size (incl. witness),
-    // not the segwit vsize used by the modern fee model. txNew is unsigned here, so estimate the
-    // post-signing size by signing a throwaway copy with the wallet's signing providers.
+    CAmount fee_needed = 0;
+    if (explicit_feerate) {
+        fee_needed = coin_selection_params.m_effective_feerate.GetFee(nBytes) + result.GetTotalBumpFees();
+    }
+    // peercoin: fixed fee is chunked on the full serialized signed transaction size.
     {
         CMutableTransaction tx_est(txNew);
         if (sign && wallet.SignTransaction(tx_est)) {
-            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION), (uint32_t)GetTime()));
+            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION), nTime));
         } else {
-            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), (uint32_t)GetTime()));
+            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), nTime));
         }
     }
     const CAmount output_value = CalculateOutputValue(txNew);
@@ -1426,21 +1428,26 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         return util::Error{_("Signing transaction failed")};
     }
 
-    // peercoin bridge: re-check the chunked consensus min fee on the fully signed tx;
+    // peercoin: re-check the chunked consensus min fee on the fully signed tx;
     // actual signatures may be slightly larger than the pre-signing estimate.
-    if (sign && change_pos && *change_pos < txNew.vout.size()) {
-        for (int attempt = 0; attempt < 10; ++attempt) {
-            CAmount pp_min = GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), (uint32_t)GetTime());
-            CAmount paid = result.GetSelectedValue() - CalculateOutputValue(txNew);
-            if (paid >= pp_min) break;
-            CAmount delta = pp_min - paid;
-            auto& change = txNew.vout.at(*change_pos);
-            CTxOut probe = change;
-            probe.nValue -= delta;
-            if (IsDust(probe, wallet.chain().relayDustFee())) break;
-            change.nValue -= delta;
-            if (!wallet.SignTransaction(txNew)) {
-                return util::Error{_("Signing transaction failed")};
+    if (sign) {
+        CAmount pp_min = GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), nTime);
+        CAmount paid = result.GetSelectedValue() - CalculateOutputValue(txNew);
+        if (paid < pp_min) {
+            if (change_pos && *change_pos < txNew.vout.size()) {
+                CAmount delta = pp_min - paid;
+                auto& change = txNew.vout.at(*change_pos);
+                CTxOut probe = change;
+                probe.nValue -= delta;
+                if (IsDust(probe, wallet.chain().relayDustFee())) {
+                    return util::Error{_("Insufficient funds")};
+                }
+                change.nValue -= delta;
+                if (!wallet.SignTransaction(txNew)) {
+                    return util::Error{_("Signing transaction failed")};
+                }
+            } else {
+                return util::Error{_("Insufficient funds")};
             }
         }
     }

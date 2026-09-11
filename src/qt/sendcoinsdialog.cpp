@@ -17,6 +17,7 @@
 #include <qt/sendcoinsentry.h>
 
 #include <chainparams.h>
+#include <consensus/amount.h> // peercoin fixed fee: PERKB_TX_FEE
 #include <interfaces/node.h>
 #include <key_io.h>
 #include <node/interface_ui.h>
@@ -121,14 +122,28 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *_platformStyle, QWidget *p
     if (!settings.contains("nFeeRadio") && settings.contains("nTransactionFee") && settings.value("nTransactionFee").toLongLong() > 0) // compatibility
         settings.setValue("nFeeRadio", 1); // custom
     if (!settings.contains("nFeeRadio"))
-        settings.setValue("nFeeRadio", 0); // recommended
+        settings.setValue("nFeeRadio", 0); // peercoin fixed fee
     if (!settings.contains("nSmartFeeSliderPosition"))
         settings.setValue("nSmartFeeSliderPosition", 0);
+    if (!settings.contains("nTransactionFee"))
+        settings.setValue("nTransactionFee", (qint64)PERKB_TX_FEE);
     ui->groupFee->setId(ui->radioSmartFee, 0);
     ui->groupFee->setId(ui->radioCustomFee, 1);
     ui->groupFee->button((int)std::max(0, std::min(1, settings.value("nFeeRadio").toInt())))->setChecked(true);
     ui->customFee->SetAllowEmpty(false);
     ui->customFee->setValue(settings.value("nTransactionFee").toLongLong());
+
+    // peercoin: no Bitcoin-style fee estimation, RBF, or confirmation-target selector.
+    ui->radioSmartFee->setText(tr("Fixed fee"));
+    ui->radioCustomFee->setVisible(false);
+    ui->confTargetSelector->setVisible(false);
+    ui->customFee->setVisible(false);
+    ui->optInRBF->setVisible(false);
+    ui->labelCustomFeeWarning->setVisible(false);
+    ui->labelCustomPerKilobyte->setVisible(false);
+    ui->labelSmartFee2->setVisible(false);
+    ui->labelFeeEstimation->setText(tr("Fixed fee."));
+    ui->fallbackFeeWarningLabel->setVisible(false);
     minimizeFeeSection(settings.value("fFeeSectionMinimized").toBool());
 
     GUIUtil::ExceptionSafeConnect(ui->sendButton, &QPushButton::clicked, this, &SendCoinsDialog::sendButtonClicked);
@@ -805,14 +820,16 @@ void SendCoinsDialog::useAvailableBalance(SendCoinsEntry* entry)
 
 void SendCoinsDialog::updateFeeSectionControls()
 {
-    ui->confTargetSelector      ->setEnabled(ui->radioSmartFee->isChecked());
+    // peercoin: fee estimation controls are disabled by design; only fixed fee or explicit custom fee.
+    ui->confTargetSelector      ->setEnabled(false);
     ui->labelSmartFee           ->setEnabled(ui->radioSmartFee->isChecked());
-    ui->labelSmartFee2          ->setEnabled(ui->radioSmartFee->isChecked());
-    ui->labelSmartFee3          ->setEnabled(ui->radioSmartFee->isChecked());
-    ui->labelFeeEstimation      ->setEnabled(ui->radioSmartFee->isChecked());
-    ui->labelCustomFeeWarning   ->setEnabled(ui->radioCustomFee->isChecked());
-    ui->labelCustomPerKilobyte  ->setEnabled(ui->radioCustomFee->isChecked());
-    ui->customFee               ->setEnabled(ui->radioCustomFee->isChecked());
+    ui->labelSmartFee2          ->setEnabled(false);
+    ui->labelSmartFee3          ->setEnabled(false);
+    ui->labelFeeEstimation      ->setEnabled(false);
+    ui->labelCustomFeeWarning   ->setEnabled(false);
+    ui->labelCustomPerKilobyte  ->setEnabled(false);
+    ui->customFee               ->setEnabled(false);
+    ui->optInRBF                ->setEnabled(false);
 }
 
 void SendCoinsDialog::updateFeeMinimizedLabel()
@@ -855,28 +872,21 @@ void SendCoinsDialog::updateSmartFeeLabel()
     if(!model || !model->getOptionsModel())
         return;
     updateCoinControlState();
-    m_coin_control->m_feerate.reset(); // Explicitly use only fee estimation rate for smart fee labels
-    int returned_target;
-    FeeReason reason;
+    m_coin_control->m_feerate.reset(); // peercoin: default fixed fee unless custom fee radio is checked
+
+    // peercoin: fixed fee model, no Bitcoin-style smart fee estimation.
+    int returned_target = 0;
+    FeeReason reason = FeeReason::REQUIRED;
     CFeeRate feeRate = CFeeRate(model->wallet().getMinimumFee(1000, *m_coin_control, &returned_target, &reason));
-
-    ui->labelSmartFee->setText(tr("%1/kvB").arg(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), feeRate.GetFeePerK())));
-
-    if (reason == FeeReason::FALLBACK) {
-        ui->labelSmartFee2->show(); // (Smart fee not initialized yet. This usually takes a few blocks...)
-        ui->labelFeeEstimation->setText("");
-        ui->fallbackFeeWarningLabel->setVisible(true);
-        int lightness = ui->fallbackFeeWarningLabel->palette().color(QPalette::WindowText).lightness();
-        QColor warning_colour(255 - (lightness / 5), 176 - (lightness / 3), 48 - (lightness / 14));
-        ui->fallbackFeeWarningLabel->setStyleSheet("QLabel { color: " + warning_colour.name() + "; }");
-        ui->fallbackFeeWarningLabel->setIndent(GUIUtil::TextWidth(QFontMetrics(ui->fallbackFeeWarningLabel->font()), "x"));
+    CAmount display_fee = feeRate.GetFeePerK();
+    if (ui->radioCustomFee->isChecked() && ui->customFee->value() > display_fee) {
+        display_fee = ui->customFee->value();
     }
-    else
-    {
-        ui->labelSmartFee2->hide();
-        ui->labelFeeEstimation->setText(tr("Estimated to begin confirmation within %n block(s).", "", returned_target));
-        ui->fallbackFeeWarningLabel->setVisible(false);
-    }
+
+    ui->labelSmartFee->setText(tr("%1/kvB").arg(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), display_fee)));
+    ui->labelSmartFee2->hide();
+    ui->labelFeeEstimation->setText(tr("Fixed fee."));
+    ui->fallbackFeeWarningLabel->setVisible(false);
 
     updateFeeMinimizedLabel();
 }
