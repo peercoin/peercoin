@@ -606,7 +606,7 @@ static RPCHelpMan getblocktemplate()
                     {"str", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "other client side supported softfork deployment"},
                 }},
             },
-            RPCArgOptions{.oneline_description="\"template_request\""}},
+            RPCArgOptions{.oneline_description="template_request"}},
         },
         {
             RPCResult{"If the proposal was accepted with mode=='proposal'", RPCResult::Type::NONE, "", ""},

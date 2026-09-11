@@ -791,7 +791,7 @@ std::string RPCHelpMan::ToString() const
     if (was_optional) ret += " )";
 
     // Description
-    CHECK_NONFATAL(!m_description.starts_with('\n'));  // Historically \n was required, but reject it for new code.
+    // peercoin: legacy v0.16 help strings start with \n; trim instead of aborting during v31 port
     ret += "\n\n" + TrimString(m_description) + "\n";
 
     // Arguments
