@@ -5,12 +5,23 @@
 
 #include <bitcoin-build-config.h> // IWYU pragma: keep
 
+#include <chainparams.h>
+#include <common/args.h>
+#include <consensus/amount.h>
 #include <core_io.h>
+#include <interfaces/wallet.h>
+#include <kernelrecord.h>
 #include <key_io.h>
+#include <node/miner.h>
 #include <rpc/server.h>
 #include <rpc/util.h>
+#include <timedata.h>
 #include <univalue.h>
+#include <util/check.h>
+#include <util/moneystr.h>
+#include <util/time.h>
 #include <util/translation.h>
+#include <variant>
 #include <wallet/context.h>
 #include <wallet/receive.h>
 #include <wallet/rpc/util.h>
@@ -30,6 +41,24 @@ static const std::map<uint64_t, std::string> WALLET_FLAG_CAVEATS{
      "destinations in the past. Until this is done, some destinations may "
      "be considered unused, even if the opposite is the case."},
 };
+
+static std::string DestinationString(const CTxDestination& dest)
+{
+    if (const auto* pk_dest = std::get_if<PubKeyDestination>(&dest)) {
+        return EncodeDestination(PKHash(pk_dest->GetPubKey()));
+    }
+    if (IsValidDestination(dest)) {
+        return EncodeDestination(dest);
+    }
+    return {};
+}
+
+static std::string ScriptDestinationString(const CScript& script)
+{
+    CTxDestination dest;
+    ExtractDestination(script, dest);
+    return DestinationString(dest);
+}
 
 static RPCHelpMan getwalletinfo()
 {
@@ -840,6 +869,237 @@ static RPCHelpMan createwalletdescriptor()
     };
 }
 
+RPCHelpMan importcoinstake()
+{
+    return RPCHelpMan{"importcoinstake",
+                "Import presigned coinstake for use in minting.\n",
+                {
+                    {"coinstake", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "signed coinstake transaction as hex."},
+                    {"timestamp", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "timestamp when this coinstake will be valid."},
+                },
+                RPCResult{RPCResult::Type::OBJ, "", "", {
+                    {RPCResult::Type::STR_HEX, "txid", "transaction id if import is successful."},
+                    {RPCResult::Type::NUM, "nTime", "timestamp when coinstake is due to mint."},
+                }},
+                RPCExamples{
+                    HelpExampleCli("importcoinstake", "03000000")
+            + HelpExampleRpc("importcoinstake", "03000000")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return UniValue::VNULL;
+    CWallet* const pwallet = wallet.get();
+
+    CMutableTransaction mtx;
+    if (!DecodeHexTx(mtx, request.params[0].get_str())) {
+        throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+    }
+    CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
+
+    int64_t timestamp = request.params[1].isNull() ? tx->nTime : request.params[1].getInt<int64_t>();
+    if (timestamp < GetTime()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Expired coinstake");
+    }
+    if (timestamp > std::numeric_limits<uint32_t>::max()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Timestamp out of range");
+    }
+    if (!tx->IsCoinStake()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Transaction is not a coinstake");
+    }
+
+    LOCK(pwallet->cs_wallet);
+    if (pwallet->IsMine(tx->vout[1]) == ISMINE_NO) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "No keys for vout[1]");
+    }
+    pwallet->m_coinstakes[static_cast<uint32_t>(timestamp)] = tx;
+
+    UniValue result(UniValue::VOBJ);
+    result.pushKV("txid", tx->GetHash().GetHex());
+    result.pushKV("nTime", int64_t(tx->nTime));
+    return result;
+},
+    };
+}
+
+RPCHelpMan listminting()
+{
+    return RPCHelpMan{"listminting",
+                "Return all mintable outputs and provide details for each of them.\n",
+                {
+                    {"count", RPCArg::Type::NUM, RPCArg::Optional::OMITTED, "maximum number of outputs to be returned."},
+                },
+                RPCResult{
+                    RPCResult::Type::ARR, "", "",
+                    {
+                        {RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR, "address", "Address of the output"},
+                            {RPCResult::Type::STR_HEX, "input-txid", /*optional=*/true, "Transaction id"},
+                            {RPCResult::Type::NUM_TIME, "time", "Time of transaction"},
+                            {RPCResult::Type::NUM, "amount", "Amount of transaction output"},
+                            {RPCResult::Type::STR, "status", "Status of transaction output"},
+                            {RPCResult::Type::NUM, "age-in-day", /*optional=*/true, "Age of transaction in days"},
+                            {RPCResult::Type::NUM, "coin-day-weight", /*optional=*/true, "Weight of transaction output"},
+                            {RPCResult::Type::NUM, "proof-of-stake-difficulty", /*optional=*/true, "Current proof of stake difficulty"},
+                            {RPCResult::Type::NUM, "minting-probability-10min", /*optional=*/true, "Probability of minting in next 10 minutes"},
+                            {RPCResult::Type::NUM, "minting-probability-24h", /*optional=*/true, "Probability of minting in next 24 hours"},
+                            {RPCResult::Type::NUM, "minting-probability-30d", /*optional=*/true, "Probability of minting in next 30 days"},
+                            {RPCResult::Type::NUM, "minting-probability-90d", /*optional=*/true, "Probability of minting in next 90 days"},
+                            {RPCResult::Type::NUM, "search-interval-in-sec", /*optional=*/true, "Interval between last minting attempts"},
+                            {RPCResult::Type::NUM, "attempts", /*optional=*/true, "Number of seconds since maturity"},
+                            {RPCResult::Type::NUM, "due-in-seconds", /*optional=*/true, "Number of seconds until a presigned coinstake is due"},
+                        }},
+                    }
+                },
+                RPCExamples{
+                    HelpExampleCli("listminting", "10")
+            + HelpExampleRpc("listminting", "10")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    WalletContext& context = EnsureWalletContext(request.context);
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return UniValue::VNULL;
+    CWallet* const pwallet = wallet.get();
+
+    int64_t count = -1;
+    if (!request.params[0].isNull()) {
+        count = request.params[0].getInt<int64_t>();
+    }
+
+    UniValue ret(UniValue::VARR);
+
+    const double difficulty = pwallet->chain().lastBlockDifficulty(true).value_or(1.0);
+    const int64_t nStakeMinAge = Params().GetConsensus().nStakeMinAge;
+
+    std::unique_ptr<interfaces::Wallet> iwallet = interfaces::MakeWallet(context, wallet);
+    const auto vwtx = iwallet->getWalletTxs();
+    const int64_t nTime = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime());
+    const int64_t minAge = nStakeMinAge / 60 / 60 / 24;
+
+    bool count_reached = false;
+    for (const auto& wtx : vwtx) {
+        if (count > 0 && (int64_t)ret.size() >= count) {
+            count_reached = true;
+            break;
+        }
+
+        std::vector<KernelRecord> txList = KernelRecord::decomposeOutput(*iwallet, wtx);
+        for (auto& kr : txList) {
+            if (kr.spent) continue;
+            if (count > 0 && (int64_t)ret.size() >= count) {
+                count_reached = true;
+                break;
+            }
+
+            std::string status = "immature";
+            int64_t searchInterval = 0;
+            int64_t attempts = 0;
+            const int64_t age = kr.getAge();
+            if (age >= minAge) {
+                status = "mature";
+                searchInterval = nLastCoinStakeSearchInterval;
+                attempts = nTime - kr.nTime - nStakeMinAge;
+            }
+
+            UniValue obj(UniValue::VOBJ);
+            obj.pushKV("address",                   kr.address);
+            obj.pushKV("input-txid",                kr.hash.ToString());
+            obj.pushKV("time",                      kr.nTime);
+            obj.pushKV("amount",                    ValueFromAmount(kr.nValue));
+            obj.pushKV("status",                    status);
+            obj.pushKV("age-in-day",                age);
+            obj.pushKV("coin-day-weight",           kr.getCoinAge());
+            obj.pushKV("proof-of-stake-difficulty", difficulty);
+            obj.pushKV("minting-probability-10min", kr.getProbToMintWithinNMinutes(difficulty, 10));
+            obj.pushKV("minting-probability-24h",   kr.getProbToMintWithinNMinutes(difficulty, 60 * 24));
+            obj.pushKV("minting-probability-30d",   kr.getProbToMintWithinNMinutes(difficulty, 60 * 24 * 30));
+            obj.pushKV("minting-probability-90d",   kr.getProbToMintWithinNMinutes(difficulty, 60 * 24 * 90));
+            obj.pushKV("search-interval-in-sec",    searchInterval);
+            obj.pushKV("attempts",                  attempts);
+            ret.push_back(std::move(obj));
+        }
+        if (count_reached) break;
+    }
+
+    LOCK(pwallet->cs_wallet);
+    for (const auto& [timestamp, txn] : pwallet->m_coinstakes) {
+        if (count > 0 && (int64_t)ret.size() >= count) break;
+        UniValue obj(UniValue::VOBJ);
+        obj.pushKV("address",                   ScriptDestinationString(txn->vout[1].scriptPubKey));
+        obj.pushKV("amount",                    ValueFromAmount(txn->vout[1].nValue));
+        obj.pushKV("status",                    "imported");
+        obj.pushKV("time",                      int64_t(txn->nTime));
+        obj.pushKV("due-in-seconds",            int64_t(txn->nTime) - nTime);
+        ret.push_back(std::move(obj));
+    }
+
+    return ret;
+},
+    };
+}
+
+RPCHelpMan reservebalance()
+{
+    return RPCHelpMan{"reservebalance",
+                "Set reserve amount not participating in network protection.\n",
+                {
+                    {"reserve", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED, "turn balance reserve on or off."},
+                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "amount of " + CURRENCY_UNIT + " to be reserved."},
+                },
+                RPCResult{RPCResult::Type::OBJ, "", "", {
+                    {RPCResult::Type::BOOL, "reserve", "status of reserve."},
+                    {RPCResult::Type::NUM, "amount", "amount of " + CURRENCY_UNIT + " reserved."},
+                }},
+                RPCExamples{
+                    HelpExampleCli("reservebalance", "true 10")
+            + HelpExampleRpc("reservebalance", "true 10")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    WalletContext& context = EnsureWalletContext(request.context);
+    ArgsManager& args = *Assert(context.args);
+
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return UniValue::VNULL;
+    CWallet* const pwallet = wallet.get();
+
+    LOCK(pwallet->cs_wallet);
+    EnsureWalletIsUnlocked(*pwallet);
+
+    if (request.params.size() > 0) {
+        bool fReserve = request.params[0].get_bool();
+        if (fReserve) {
+            if (request.params.size() == 1) {
+                throw JSONRPCError(RPC_INVALID_PARAMETER, "must provide amount to reserve balance.");
+            }
+            int64_t nAmount = AmountFromValue(request.params[1]);
+            nAmount = (nAmount / CENT) * CENT;
+            if (nAmount < 0) {
+                throw JSONRPCError(RPC_INVALID_PARAMETER, "amount cannot be negative.");
+            }
+            args.ForceSetArg("-reservebalance", FormatMoney(nAmount));
+        } else {
+            if (request.params.size() > 1) {
+                throw JSONRPCError(RPC_INVALID_PARAMETER, "cannot specify amount to turn off reserve.");
+            }
+            args.ForceSetArg("-reservebalance", "0");
+        }
+    }
+
+    UniValue result(UniValue::VOBJ);
+    std::optional<CAmount> nReserveBalance = ParseMoney(args.GetArg("-reservebalance", ""));
+    if (args.IsArgSet("-reservebalance") && !nReserveBalance) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid reserve balance amount");
+    }
+    result.pushKV("reserve", nReserveBalance.value_or(0) > 0);
+    result.pushKV("amount", ValueFromAmount(nReserveBalance.value_or(0)));
+    return result;
+},
+    };
+}
+
 // addresses
 RPCHelpMan getaddressinfo();
 RPCHelpMan getnewaddress();
@@ -901,6 +1161,12 @@ RPCHelpMan abandontransaction();
 RPCHelpMan rescanblockchain();
 RPCHelpMan abortrescan();
 
+// peercoin commands
+RPCHelpMan importcoinstake();
+RPCHelpMan listminting();
+RPCHelpMan optimizeutxoset();
+RPCHelpMan reservebalance();
+
 std::span<const CRPCCommand> GetWalletRPCCommands()
 {
     static const CRPCCommand commands[]{
@@ -925,11 +1191,13 @@ std::span<const CRPCCommand> GetWalletRPCCommands()
         {"wallet", &gettransaction},
         {"wallet", &getbalances},
         {"wallet", &getwalletinfo},
+        {"wallet", &importcoinstake},
         {"wallet", &importdescriptors},
         {"wallet", &importprunedfunds},
         {"wallet", &keypoolrefill},
         {"wallet", &listaddressgroupings},
         {"wallet", &listdescriptors},
+        {"wallet", &listminting},
         {"wallet", &listlabels},
         {"wallet", &listlockunspent},
         {"wallet", &listreceivedbyaddress},
@@ -938,12 +1206,14 @@ std::span<const CRPCCommand> GetWalletRPCCommands()
         {"wallet", &listtransactions},
         {"wallet", &listunspent},
         {"wallet", &listwalletdir},
+        {"wallet", &optimizeutxoset},
         {"wallet", &listwallets},
         {"wallet", &loadwallet},
         {"wallet", &lockunspent},
         {"wallet", &migratewallet},
         {"wallet", &removeprunedfunds},
         {"wallet", &rescanblockchain},
+        {"wallet", &reservebalance},
         {"wallet", &send},
         {"wallet", &sendmany},
         {"wallet", &sendtoaddress},

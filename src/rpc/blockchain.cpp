@@ -475,9 +475,12 @@ static RPCHelpMan getdifficulty()
 {
     ChainstateManager& chainman = EnsureAnyChainman(request.context);
     LOCK(cs_main);
+    const CBlockIndex* tip = chainman.ActiveChain().Tip();
+    const CBlockIndex* last_pow = GetLastBlockIndex(tip, false);
+    const CBlockIndex* last_pos = GetLastBlockIndex(tip, true);
     UniValue obj(UniValue::VOBJ);
-    obj.pushKV("proof-of-work",        GetDifficulty(*chainman.ActiveChain().Tip()));
-    obj.pushKV("proof-of-stake",       GetDifficulty(*GetLastBlockIndex(chainman.ActiveChain().Tip(), true)));
+    obj.pushKV("proof-of-work",        last_pow ? GetDifficulty(*last_pow) : 1.0);
+    obj.pushKV("proof-of-stake",       last_pos ? GetDifficulty(*last_pos) : 1.0);
     obj.pushKV("search-interval",      (int)nLastCoinStakeSearchInterval);
     return obj;
 },

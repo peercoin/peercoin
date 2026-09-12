@@ -132,6 +132,9 @@ public:
     // peercoin bridge: per-network coinbase maturity (v0.16 wallet needs it from chain params)
     virtual int getCoinbaseMaturity() { return 100; }
 
+    // peercoin bridge: difficulty of the latest block of the requested proof type.
+    virtual std::optional<double> lastBlockDifficulty(bool proof_of_stake) { return std::nullopt; }
+
     //! Get block hash. Height must be valid or this function will abort.
     virtual uint256 getBlockHash(int height) = 0;
 

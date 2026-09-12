@@ -3,6 +3,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <common/messages.h>
+#include <consensus/amount.h>
+#include <consensus/tx_verify.h>
 #include <consensus/validation.h>
 #include <core_io.h>
 #include <key_io.h>
@@ -11,8 +13,11 @@
 #include <policy/truc_policy.h>
 #include <rpc/rawtransaction_util.h>
 #include <rpc/util.h>
+#include <timedata.h>
 #include <script/script.h>
+#include <util/moneystr.h>
 #include <util/rbf.h>
+#include <util/time.h>
 #include <util/translation.h>
 #include <util/vector.h>
 #include <wallet/coincontrol.h>
@@ -22,6 +27,7 @@
 #include <wallet/spend.h>
 #include <wallet/wallet.h>
 
+#include <set>
 #include <univalue.h>
 
 using common::FeeModeFromString;
@@ -1786,6 +1792,161 @@ RPCHelpMan walletcreatefundedpsbt()
     result.pushKV("fee", ValueFromAmount(txr.fee));
     result.pushKV("changepos", txr.change_pos ? (int)*txr.change_pos : -1);
     return result;
+},
+    };
+}
+
+static bool PeercoinOutputDestination(const CTxOut& txout, CTxDestination& dest)
+{
+    if (ExtractDestination(txout.scriptPubKey, dest) && IsValidDestination(dest)) {
+        return true;
+    }
+    if (const auto* pk_dest = std::get_if<PubKeyDestination>(&dest)) {
+        dest = PKHash(pk_dest->GetPubKey());
+        return IsValidDestination(dest);
+    }
+    return false;
+}
+
+RPCHelpMan optimizeutxoset()
+{
+    return RPCHelpMan{"optimizeutxoset",
+                "\nOptimize the UTXO set in order to maximize the PoS yield. This is only valid for continuous minting. The accumulated coinage will be reset!" +
+        HELP_REQUIRING_PASSPHRASE,
+                {
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " address to receive all the new UTXOs. If not provided, new UTXOs will be assigned to the addresses of the input UTXOs."},
+                    {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " amount to set the value of new UTXOs, i.e. make new UTXOs with value of 110. If amount is not provided, a sensible default will be used."},
+                    {"transmit", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, transmit transaction after generating it."},
+                    {"fromAddress", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " address to split coins from. If not provided, all available coins will be used."},
+                },
+                {
+                    RPCResult{"if transmit is not set or set to false",
+                        RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR_HEX, "tx", "The transaction hex."}
+                        },
+                    },
+                    RPCResult{"if transmit is set to true",
+                        RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR_HEX, "txid", "The transaction id."}
+                        },
+                    },
+                },
+                RPCExamples{
+                    "\nSplit available coins into UTXOs of 110 " + CURRENCY_UNIT + "\n"
+                    + HelpExampleCli("optimizeutxoset", "null 110")
+                    + "\nSplit all coins from one address into a single destination\n"
+                    + HelpExampleCli("optimizeutxoset", EXAMPLE_ADDRESS[0] + " 110 false " + EXAMPLE_ADDRESS[0])
+               },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!pwallet) return UniValue::VNULL;
+
+    pwallet->BlockUntilSyncedToCurrentChain();
+
+    LOCK(pwallet->cs_wallet);
+    EnsureWalletIsUnlocked(*pwallet);
+
+    const bool transmit{request.params[2].isNull() ? false : request.params[2].get_bool()};
+    auto unset_string = [](const UniValue& value) {
+        return value.isNull() || (value.isStr() && value.get_str() == "null");
+    };
+    CCoinControl coin_control;
+
+    CTxDestination target_dest;
+    const bool use_target_dest = !unset_string(request.params[0]);
+    if (use_target_dest) {
+        target_dest = DecodeDestination(request.params[0].get_str());
+        if (!IsValidDestination(target_dest)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid ") + CURRENCY_UNIT + " address: " + request.params[0].get_str());
+        }
+    }
+
+    CTxDestination from_dest;
+    const bool use_from_dest = !unset_string(request.params[3]);
+    if (use_from_dest) {
+        from_dest = DecodeDestination(request.params[3].get_str());
+        if (!IsValidDestination(from_dest)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid ") + CURRENCY_UNIT + " address: " + request.params[3].get_str());
+        }
+    }
+
+    const CoinsResult available_result = AvailableCoins(*pwallet, nullptr);
+    CAmount available_coins = 0;
+    std::vector<CTxDestination> destination_pool;
+
+    if (use_from_dest) {
+        coin_control.m_allow_other_inputs = false;
+        for (const COutput& out : available_result.All()) {
+            CTxDestination out_dest;
+            if (!PeercoinOutputDestination(out.txout, out_dest) || out_dest != from_dest) {
+                continue;
+            }
+            coin_control.Select(out.outpoint);
+            available_coins += out.txout.nValue;
+        }
+        if (!use_target_dest) {
+            destination_pool.push_back(from_dest);
+        }
+    } else {
+        available_coins = available_result.GetTotalAmount();
+        coin_control.m_allow_other_inputs = true;
+        std::set<std::string> seen_destinations;
+        for (const COutput& out : available_result.All()) {
+            CTxDestination out_dest;
+            if (!PeercoinOutputDestination(out.txout, out_dest)) {
+                continue;
+            }
+            if (seen_destinations.insert(EncodeDestination(out_dest)).second) {
+                destination_pool.push_back(out_dest);
+            }
+        }
+    }
+
+    if (available_coins == 0) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "no available coins to optimize");
+    }
+
+    const size_t max_recipients = 30;
+    static const CAmount DEFAULT_OPTIMIZE_TARGET_OUTPUT_AMOUNT = 110 * COIN;
+    const bool use_amount = !unset_string(request.params[1]);
+    CAmount amount = use_amount ? AmountFromValue(request.params[1]) : DEFAULT_OPTIMIZE_TARGET_OUTPUT_AMOUNT;
+    if (amount < MIN_TARGET_OUTPUT_AMOUNT) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("amount must be at least %s", FormatMoney(MIN_TARGET_OUTPUT_AMOUNT)));
+    }
+
+    const std::vector<CTxDestination> recipient_destinations = use_target_dest ? std::vector<CTxDestination>{target_dest} : destination_pool;
+    if (recipient_destinations.empty()) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "no destination for optimized outputs");
+    }
+
+    std::vector<CRecipient> recipients;
+    CAmount remaining = available_coins;
+    while (recipients.size() < max_recipients && remaining >= amount) {
+        recipients.push_back({recipient_destinations[recipients.size() % recipient_destinations.size()], amount, true});
+        remaining -= amount;
+    }
+
+    if (recipients.empty()) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "not enough funds to create optimized outputs after fees");
+    }
+
+    auto res = CreateTransaction(*pwallet, recipients, std::nullopt, coin_control, true);
+    if (!res) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, util::ErrorString(res).original);
+    }
+    const CTransactionRef tx = res->tx;
+
+    UniValue entry(UniValue::VOBJ);
+    if (transmit) {
+        pwallet->CommitTransaction(tx, mapValue_t{}, {} /* orderForm */);
+        entry.pushKV("txid", tx->GetHash().GetHex());
+    } else {
+        entry.pushKV("tx", EncodeHexTx(*tx));
+    }
+    return entry;
 },
     };
 }

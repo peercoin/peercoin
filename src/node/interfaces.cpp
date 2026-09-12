@@ -569,6 +569,13 @@ public:
     {
         return chainman().GetParams().GetConsensus().nCoinbaseMaturity;
     }
+    std::optional<double> lastBlockDifficulty(bool proof_of_stake) override
+    {
+        LOCK(::cs_main);
+        const CBlockIndex* pindex = GetLastBlockIndex(chainman().ActiveChain().Tip(), proof_of_stake);
+        if (!pindex) return std::nullopt;
+        return pindex->GetBlockDifficulty();
+    }
     uint256 getBlockHash(int height) override
     {
         LOCK(::cs_main);
