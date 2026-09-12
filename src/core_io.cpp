@@ -519,7 +519,9 @@ void TxToUniv(const CTransaction& tx, const uint256& block_hash, UniValue& entry
     entry.pushKV("vout", std::move(vout));
 
     if (have_undo) {
-        const CAmount fee = amt_total_in - amt_total_out;
+        // peercoin: PoS blocks contain coinstake transactions that create rewards
+        // and therefore have outputs larger than inputs.
+        const CAmount fee = (tx.IsCoinBase() || tx.IsCoinStake()) ? CAmount{0} : amt_total_in - amt_total_out;
         CHECK_NONFATAL(MoneyRange(fee));
         entry.pushKV("fee", ValueFromAmount(fee));
     }

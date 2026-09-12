@@ -32,6 +32,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 using common::PSBTError;
@@ -65,15 +66,23 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
         result.txin_is_mine.emplace_back(InputIsMine(wallet, txin));
     }
     result.txout_is_mine.reserve(wtx.tx->vout.size());
+    result.txout_is_change.reserve(wtx.tx->vout.size());
     result.txout_address.reserve(wtx.tx->vout.size());
     result.txout_address_is_mine.reserve(wtx.tx->vout.size());
     for (const auto& txout : wtx.tx->vout) {
-        result.txout_is_mine.emplace_back(wallet.IsMine(txout));
+        const isminetype mine = wallet.IsMine(txout);
+        result.txout_is_mine.emplace_back(mine);
         result.txout_is_change.push_back(OutputIsChange(wallet, txout));
         result.txout_address.emplace_back();
         result.txout_address_is_mine.emplace_back(ExtractDestination(txout.scriptPubKey, result.txout_address.back()) ?
-                                                      wallet.IsMine(result.txout_address.back()) :
-                                                      ISMINE_NO);
+                                                      wallet.IsMine(result.txout_address.back()) != ISMINE_NO :
+                                                      false);
+        // peercoin: legacy P2PK outputs have no canonical address in v31,
+        // but the UI and wallet history should show their pubkey hash.
+        if (const auto* pk_dest = std::get_if<PubKeyDestination>(&result.txout_address.back()); pk_dest && mine != ISMINE_NO) {
+            result.txout_address.back() = PKHash(pk_dest->GetPubKey());
+            result.txout_address_is_mine.back() = true;
+        }
     }
     result.credit = CachedTxGetCredit(wallet, wtx, /*avoid_reuse=*/true);
     result.debit = CachedTxGetDebit(wallet, wtx, /*avoid_reuse=*/true);

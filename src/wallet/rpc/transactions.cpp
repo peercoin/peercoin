@@ -292,6 +292,20 @@ static void MaybePushAddress(UniValue & entry, const CTxDestination &dest)
     }
 }
 
+// peercoin: coinstake transactions have their own transaction categories
+static void PushCoinStakeCategory(UniValue& entry, const CWalletTx& wtx, const CWallet& wallet)
+    EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)
+{
+    AssertLockHeld(wallet.cs_wallet);
+    if (wallet.GetTxDepthInMainChain(wtx) < 1) {
+        entry.pushKV("category", "stake-orphan");
+    } else if (wallet.GetTxBlocksToMaturity(wtx) > 0) {
+        entry.pushKV("category", "stake");
+    } else {
+        entry.pushKV("category", "stake-mint");
+    }
+}
+
 /**
  * List transactions based on the given criteria.
  *
@@ -321,7 +335,11 @@ static void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, int nM
         {
             UniValue entry(UniValue::VOBJ);
             MaybePushAddress(entry, s.destination);
-            entry.pushKV("category", "send");
+            if (wtx.IsCoinStake()) {
+                PushCoinStakeCategory(entry, wtx, wallet);
+            } else {
+                entry.pushKV("category", "send");
+            }
             entry.pushKV("amount", ValueFromAmount(-s.amount));
             const auto* address_book_entry = wallet.FindAddressBookEntry(s.destination);
             if (address_book_entry) {
@@ -359,6 +377,10 @@ static void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, int nM
                     entry.pushKV("category", "immature");
                 else
                     entry.pushKV("category", "generate");
+            }
+            else if (wtx.IsCoinStake())
+            {
+                PushCoinStakeCategory(entry, wtx, wallet);
             }
             else
             {
@@ -441,7 +463,10 @@ RPCHelpMan listtransactions()
                                 "\"receive\"               Non-coinbase transactions received.\n"
                                 "\"generate\"              Coinbase transactions received with more than 100 confirmations.\n"
                                 "\"immature\"              Coinbase transactions received with 100 or fewer confirmations.\n"
-                                "\"orphan\"                Orphaned coinbase transactions received."},
+                                "\"orphan\"                Orphaned coinbase transactions received.\n"
+                                "\"stake-orphan\"          peercoin orphaned coinstake transactions.\n"
+                                "\"stake\"                 peercoin coinstakes that have not reached maturity.\n"
+                                "\"stake-mint\"            peercoin mature coinstakes."},
                             {RPCResult::Type::STR_AMOUNT, "amount", "The amount in " + CURRENCY_UNIT + ". This is negative for the 'send' category, and is positive\n"
                                 "for all other categories"},
                             {RPCResult::Type::STR, "label", /*optional=*/true, "A comment for the address/transaction, if any"},

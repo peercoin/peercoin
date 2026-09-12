@@ -1509,17 +1509,6 @@ void PeerManagerImpl::FindNextBlocks(std::vector<const CBlockIndex*>& vBlocks, c
         // pindexLastCommonBlock as long as all ancestors are already downloaded, or if it's
         // already part of our chain.
         for (const CBlockIndex* pindex : vToFetch) {
-            static int64_t s_last_dbg{0};
-            int64_t s_now = GetTime<std::chrono::seconds>().count();
-            if (s_now - s_last_dbg > 30) {
-                s_last_dbg = s_now;
-                LogInfo("DBGFNB: h%d %s validTree=%d csw=%d btc16=%d have=%d inflight=%d windowEnd=%d bestKnown=%d lastCommon=%d\n",
-                    pindex->nHeight, pindex->GetBlockHash().ToString().substr(0,16),
-                    (int)pindex->IsValid(BLOCK_VALID_TREE), (int)CanServeWitnesses(peer),
-                    (int)IsBTC16BIPsEnabled(pindex->nTime), (int)(pindex->nStatus & BLOCK_HAVE_DATA),
-                    (int)IsBlockRequested(pindex->GetBlockHash()), nWindowEnd,
-                    state->pindexBestKnownBlock->nHeight, state->pindexLastCommonBlock ? state->pindexLastCommonBlock->nHeight : -1);
-            }
             if (!pindex->IsValid(BLOCK_VALID_TREE)) {
                 // We consider the chain that this peer is on invalid.
                 return;
@@ -2940,14 +2929,7 @@ void PeerManagerImpl::UpdatePeerStateForReceivedHeaders(CNode& pfrom, Peer& peer
 {
     LOCK(cs_main);
     CNodeState *nodestate = State(pfrom.GetId());
-
-    LogInfo("DBGUPDH: last=%s h%d new=%d maymore=%d bestKnownBefore=%d\n",
-        last_header.GetBlockHash().ToString().substr(0,16), last_header.nHeight,
-        (int)received_new_header, (int)may_have_more_headers,
-        nodestate->pindexBestKnownBlock ? nodestate->pindexBestKnownBlock->nHeight : -1);
     UpdateBlockAvailability(pfrom.GetId(), last_header.GetBlockHash());
-    LogInfo("DBGUPDH2: bestKnownAfter=%d\n",
-        nodestate->pindexBestKnownBlock ? nodestate->pindexBestKnownBlock->nHeight : -1);
 
     // From here, pindexBestKnownBlock should be guaranteed to be non-null,
     // because it is set in UpdateBlockAvailability. Some nullptr checks
@@ -3015,7 +2997,6 @@ void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, Peer& peer,
         return;
     }
 
-    LogPrintf("DBG headersmsg count=%d f0=%08x f1=%08x h0=%s\n", (int)headers.size(), headers.empty()?0u:headers[0].nFlags, headers.size()>1?headers[1].nFlags:0u, headers.empty()?"":headers[0].GetHash().ToString());
     // Before we do any processing, make sure these pass basic sanity checks.
     // We'll rely on headers having valid proof-of-work further down, as an
     // anti-DoS criteria (note: this check is required before passing any

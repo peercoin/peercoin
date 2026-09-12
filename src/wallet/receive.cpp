@@ -5,6 +5,7 @@
 #include <consensus/amount.h>
 #include <consensus/consensus.h>
 #include <util/check.h>
+#include <variant>
 #include <wallet/receive.h>
 #include <wallet/transaction.h>
 #include <wallet/wallet.h>
@@ -162,11 +163,47 @@ void CachedTxGetAmounts(const CWallet& wallet, const CWalletTx& wtx,
     }
 
     LOCK(wallet.cs_wallet);
+
+    auto legacy_destination = [](const CScript& script) -> CTxDestination {
+        CTxDestination address;
+        if (ExtractDestination(script, address)) {
+            return address;
+        }
+        // peercoin: legacy P2PK outputs show their pubkey hash.
+        if (const auto* pk_dest = std::get_if<PubKeyDestination>(&address)) {
+            return PKHash(pk_dest->GetPubKey());
+        }
+        return CNoDestination();
+    };
+
+    // peercoin: treat coinstake as a single "receive" entry carrying the mint reward
+    if (wtx.IsCoinStake())
+    {
+        for (unsigned int i = 0; i < wtx.tx->vout.size(); ++i)
+        {
+            const CTxOut& txout = wtx.tx->vout[i];
+            const isminetype mine = wallet.IsMine(txout);
+
+            if (!(mine & (ISMINE_SPENDABLE | ISMINE_WATCH_ONLY)) || txout.nValue <= 0)
+                continue;
+
+            CTxDestination address = legacy_destination(txout.scriptPubKey);
+            // nFee is negative for coinstake generation, because we are gaining money from it
+            listReceived.push_back({address, -nFee, (int)i});
+            nFee = 0;
+            return;
+        }
+
+        listReceived.push_back({CNoDestination(), 0, 0});
+        return;
+    }
+
     // Sent/received.
     for (unsigned int i = 0; i < wtx.tx->vout.size(); ++i)
     {
         const CTxOut& txout = wtx.tx->vout[i];
-        bool ismine = wallet.IsMine(txout);
+        const isminetype mine = wallet.IsMine(txout);
+        const bool ismine = mine & (ISMINE_SPENDABLE | ISMINE_WATCH_ONLY);
         // Only need to handle txouts if AT LEAST one of these is true:
         //   1) they debit from us (sent)
         //   2) the output is to us (received)
@@ -179,13 +216,12 @@ void CachedTxGetAmounts(const CWallet& wallet, const CWalletTx& wtx,
             continue;
 
         // In either case, we need to get the destination address
-        CTxDestination address;
+        CTxDestination address = legacy_destination(txout.scriptPubKey);
 
-        if (!ExtractDestination(txout.scriptPubKey, address) && !txout.scriptPubKey.IsUnspendable())
+        if (std::get_if<CNoDestination>(&address) && !txout.scriptPubKey.IsUnspendable())
         {
             wallet.WalletLogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
                                     wtx.GetHash().ToString());
-            address = CNoDestination();
         }
 
         COutputEntry output = {address, txout.nValue, (int)i};
@@ -269,14 +305,12 @@ Balance GetBalance(const CWallet& wallet, const int min_depth, bool avoid_reuse)
             if (!(mine & (ISMINE_SPENDABLE | ISMINE_WATCH_ONLY))) continue;
 
             // Get the amounts for mine/watchonly, bucket by trust, depth and maturity
+            // peercoin: coinstakes are immature until the network maturity period passes.
             const bool is_immature{wallet.IsTxImmatureCoinBase(wtx) && wtx.isConfirmed()};
-            const bool immature_stake{wtx.IsCoinStake() && wtx.isConfirmed() && !CachedTxIsTrusted(wallet, wtx)};
 
             if (is_immature) {
                 if (mine & ISMINE_SPENDABLE) ret.m_mine_immature += txout.nValue;
                 if (mine & ISMINE_WATCH_ONLY) ret.m_watchonly_immature += txout.nValue;
-            } else if (immature_stake) {
-                if (mine & ISMINE_SPENDABLE) ret.m_mine_stake += txout.nValue;
             } else if (is_trusted && tx_depth >= min_depth) {
                 if (mine & ISMINE_SPENDABLE) ret.m_mine_trusted += txout.nValue;
                 if (mine & ISMINE_WATCH_ONLY) ret.m_watchonly_trusted += txout.nValue;

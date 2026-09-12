@@ -500,7 +500,7 @@ static RPCHelpMan getstakinginfo()
     obj.pushKV("staking", bool(g_fStaking));
     obj.pushKV("status", g_strMintWarning.empty() ? (bool(g_fStaking) ? "staking" : "not staking") : g_strMintWarning);
     obj.pushKV("blocks", active_chain.Height());
-    if (BlockAssembler::m_last_block_weight) obj.pushKV("currentblocksize", *BlockAssembler::m_last_block_num_txs ? (int64_t)*BlockAssembler::m_last_block_weight : (int64_t)0);
+    obj.pushKV("currentblocksize", BlockAssembler::m_last_block_weight ? *BlockAssembler::m_last_block_weight : int64_t{0});
     obj.pushKV("errors", 0);
     // current PoS target difficulty from the next-pos-target compact bits
     {
@@ -532,7 +532,14 @@ static RPCHelpMan getmininginfo()
                         {RPCResult::Type::NUM, "networkghps", "The network gigahashes per second"},
                         {RPCResult::Type::NUM, "pooledtx", "The size of the mempool"},
                         {RPCResult::Type::STR, "chain", "current network name (main, test, signet, regtest)"},
-                        {RPCResult::Type::STR, "warnings", "any network and blockchain warnings"},
+                        (IsDeprecatedRPCEnabled("warnings") ?
+                            RPCResult{RPCResult::Type::STR, "warnings", "any network and blockchain warnings (DEPRECATED)"} :
+                            RPCResult{RPCResult::Type::ARR, "warnings", "any network and blockchain warnings (run with `-deprecatedrpc=warnings` to return the latest warning as a single string)",
+                            {
+                                {RPCResult::Type::STR, "", "warning"},
+                            }
+                            }
+                        ),
                     }},
                 RPCExamples{
                     HelpExampleCli("getmininginfo", "")

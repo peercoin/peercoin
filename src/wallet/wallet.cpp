@@ -2026,7 +2026,8 @@ bool CWallet::SubmitTxMemoryPoolAndRelay(CWalletTx& wtx,
     if (wtx.isAbandoned()) return false;
     // Don't try to submit coinbase transactions. These would fail anyway but would
     // cause log spam.
-    if (wtx.IsCoinBase()) return false;
+    // peercoin: coinstakes are mined, not broadcast like normal transactions.
+    if (wtx.IsCoinBase() || wtx.IsCoinStake()) return false;
     // Don't try to submit conflicted or confirmed transactions.
     if (GetTxDepthInMainChain(wtx) != 0) return false;
 
@@ -3342,12 +3343,17 @@ int CWallet::GetTxBlocksToMaturity(const CWalletTx& wtx) const
 {
     AssertLockHeld(cs_wallet);
 
-    if (!wtx.IsCoinBase()) {
+    // peercoin: PoS coinstake rewards use the same maturity rule as coinbase
+    if (!wtx.IsCoinBase() && !wtx.IsCoinStake()) {
         return 0;
     }
     int chain_depth = GetTxDepthInMainChain(wtx);
-    assert(chain_depth >= 0); // coinbase tx should not be conflicted
+    if (wtx.IsCoinBase()) {
+        assert(chain_depth >= 0); // coinbase tx should not be conflicted
+    }
     // peercoin bridge: use per-network nCoinbaseMaturity instead of hardcoded 100
+    // A negative depth means the coinstake was orphaned; keep the maturity countdown
+    // non-zero so the UI can show it as NotAccepted without counting it as spendable.
     return std::max(0, (chain().getCoinbaseMaturity() + 1) - chain_depth);
 }
 
@@ -3355,7 +3361,7 @@ bool CWallet::IsTxImmatureCoinBase(const CWalletTx& wtx) const
 {
     AssertLockHeld(cs_wallet);
 
-    // note GetBlocksToMaturity is 0 for non-coinbase tx
+    // peercoin: also immature coinstakes
     return GetTxBlocksToMaturity(wtx) > 0;
 }
 
@@ -3827,14 +3833,12 @@ util::Result<std::reference_wrapper<DescriptorScriptPubKeyMan>> CWallet::AddWall
 static bool FindKernelBlockSource(interfaces::Chain& chain, const uint256& block_hash, const CTransactionRef& tx_want, CBlockHeader& header_out, unsigned int& nTxPrevOffset_out)
 {
     LOCK(::cs_main);
-    int file_number = 0;
-    unsigned int data_pos = 0;
     CBlock block;
     interfaces::FoundBlock fb;
-    chain.findBlock(block_hash, fb.fileNumber(file_number).dataPos(data_pos).data(block));
+    chain.findBlock(block_hash, fb.data(block));
     if (!fb.found || block.IsNull()) return false;
     header_out = static_cast<const CBlockHeader&>(block);
-    unsigned int off = data_pos + CBlockHeader::NORMAL_SERIALIZE_SIZE + GetSizeOfCompactSize(block.vtx.size());
+    unsigned int off = CBlockHeader::NORMAL_SERIALIZE_SIZE + GetSizeOfCompactSize(block.vtx.size());
     for (const auto& tx : block.vtx) {
         if (tx == tx_want || (tx && tx_want && *tx == *tx_want)) { nTxPrevOffset_out = off; return true; }
         off += GetSerializeSize(*tx, SER_DISK, CLIENT_VERSION);
@@ -3914,8 +3918,9 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     bnTargetPerCoinDay.SetCompact(nBits);
 
     // Transaction index is required to get to block header
-    if (!g_txindex)
+    if (!g_txindex) {
         return error(std::string("CreateCoinStake : transaction index unavailable"));
+    }
     const Consensus::Params& params = chainman.GetParams().GetConsensus();
 
     LOCK2(cs_main, pwallet->cs_wallet);
@@ -3931,6 +3936,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     CoinSelectionParams coin_selection_params{rng_fast};
     coin_selection_params.m_subtract_fee_outputs = true;
     coin_selection_params.m_coinstake = true;
+    // peercoin: coinstakes are limited by MAX_MINTING_UTXOS, not MAX_STANDARD_TX_WEIGHT.
+    coin_selection_params.m_max_tx_weight = std::numeric_limits<int>::max();
     // peercoin bridge: modern selection algorithms require a non-zero effective feerate
     // to compute per-input fees; coinstake rewards make the rate negligible.
     coin_selection_params.m_effective_feerate = CFeeRate{1};
@@ -3941,15 +3948,18 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     // Choose coins to use
     CAmount nAllowedBalance = availableCoins.GetTotalAmount();
     std::optional<CAmount> nReserveBalance = ParseMoney(gArgs.GetArg("-reservebalance", ""));
-    if (gArgs.IsArgSet("-reservebalance") && !nReserveBalance)
+    if (gArgs.IsArgSet("-reservebalance") && !nReserveBalance) {
         return error(std::string("CreateCoinStake : invalid reserve balance amount"));
-    if (nAllowedBalance <= nReserveBalance)
+    }
+    if (nAllowedBalance <= nReserveBalance) {
         return false;
+    }
 
     if (nReserveBalance) nAllowedBalance -= nReserveBalance.value();
 
-    if (nAllowedBalance < MIN_TXOUT_AMOUNT)
+    if (nAllowedBalance < MIN_TXOUT_AMOUNT) {
         return false;
+    }
 
     util::Result<SelectionResult> result = SelectCoins(*pwallet, availableCoins, /*pre_set_inputs=*/ {}, nAllowedBalance, temp, coin_selection_params);
 
@@ -4138,8 +4148,9 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     {
         uint64_t nCoinAge;
         CCoinsViewCache view(&chainman.ActiveChainstate().CoinsTip());
-        if (!GetCoinAge((const CTransaction)txNew, view, nCoinAge, txNew.nTime, true))
+        if (!GetCoinAge((const CTransaction)txNew, view, nCoinAge, txNew.nTime, true)) {
             return error(std::string("CreateCoinStake : failed to calculate coin age"));
+        }
 
         CAmount nReward = GetProofOfStakeReward(nCoinAge, txNew.nTime, chainman.ActiveChain().Tip()->nMoneySupply);
         // Refuse to create mint that has zero or negative reward

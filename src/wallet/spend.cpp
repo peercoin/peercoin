@@ -1333,9 +1333,10 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         fee_needed = coin_selection_params.m_effective_feerate.GetFee(nBytes) + result.GetTotalBumpFees();
     }
     // peercoin: fixed fee is chunked on the full serialized signed transaction size.
+    // Estimate the signed size even for sign=false/PSBT funding paths by signing a throwaway copy.
     {
         CMutableTransaction tx_est(txNew);
-        if (sign && wallet.SignTransaction(tx_est)) {
+        if (wallet.SignTransaction(tx_est)) {
             fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION), nTime));
         } else {
             fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), nTime));

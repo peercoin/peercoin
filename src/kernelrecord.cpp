@@ -5,6 +5,7 @@
 #include <chainparams.h>
 #include <timedata.h>
 #include <interfaces/wallet.h>
+#include <variant>
 #include <math.h>
 using namespace std;
 
@@ -47,6 +48,9 @@ vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, c
                 if (ExtractDestination(txOut.scriptPubKey, address)) {
                     // Sent to Bitcoin Address
                     addrStr = EncodeDestination(address);
+                } else if (const auto pk_dest = std::get_if<PubKeyDestination>(&address)) {
+                    // peercoin: legacy P2PK outputs still show their pubkey hash
+                    addrStr = EncodeDestination(PKHash(pk_dest->GetPubKey()));
                 } else {
                     // Sent to IP, or other non-address transaction like OP_EVAL
                     addrStr = mapValue["to"];
