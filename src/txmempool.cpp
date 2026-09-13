@@ -15,6 +15,7 @@
 #include <policy/policy.h>
 #include <policy/settings.h>
 #include <random.h>
+#include <timedata.h>
 #include <tinyformat.h>
 #include <util/check.h>
 #include <util/feefrac.h>
@@ -535,7 +536,8 @@ void CTxMemPool::check(const CCoinsViewCache& active_coins_tip, int64_t spendhei
         TxValidationState dummy_state; // Not used. CheckTxInputs() should always pass
         CAmount txfee = 0;
         assert(!tx.IsCoinBase());
-        assert(Consensus::CheckTxInputs(tx, dummy_state, mempoolDuplicate, spendheight, txfee, Params().GetConsensus(), /*nTimeTx=*/0));
+        assert(Consensus::CheckTxInputs(tx, dummy_state, mempoolDuplicate, spendheight, txfee, Params().GetConsensus(),
+                                          tx.nTime ? tx.nTime : (uint32_t)TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime())));
         for (const auto& input: tx.vin) mempoolDuplicate.SpendCoin(input.prevout);
         AddCoins(mempoolDuplicate, tx, std::numeric_limits<int>::max());
     }

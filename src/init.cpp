@@ -808,13 +808,20 @@ void InitParameterInteraction(ArgsManager& args)
             LogInfo("parameter interaction: -whitebind set -> setting -listen=1\n");
     }
 
-    if (!args.GetArgs("-connect").empty() || args.IsArgNegated("-connect") || args.GetIntArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS) <= 0) {
-        // when only connecting to trusted nodes, do not seed via DNS, or listen by default
+    const auto connect_args = args.GetArgs("-connect");
+    const bool connect_only_zero = args.IsArgNegated("-connect") ||
+                                   (connect_args.size() == 1 && connect_args[0] == "0");
+    if (!connect_args.empty() || args.IsArgNegated("-connect") || args.GetIntArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS) <= 0) {
+        // when only connecting to trusted nodes, do not seed via DNS
         // do the same when connections are disabled
         if (args.SoftSetBoolArg("-dnsseed", false))
             LogInfo("parameter interaction: -connect or -maxconnections=0 set -> setting -dnsseed=0\n");
-        if (args.SoftSetBoolArg("-listen", false))
-            LogInfo("parameter interaction: -connect or -maxconnections=0 set -> setting -listen=0\n");
+        // peercoin bridge: -connect=0/-noconnect only disables automatic outgoing
+        // connections; it must not disable listening.
+        if (!connect_only_zero || args.GetIntArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS) <= 0) {
+            if (args.SoftSetBoolArg("-listen", false))
+                LogInfo("parameter interaction: -connect or -maxconnections=0 set -> setting -listen=0\n");
+        }
     }
 
     std::string proxy_arg = args.GetArg("-proxy", "");

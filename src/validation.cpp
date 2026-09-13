@@ -3447,7 +3447,7 @@ void ChainstateManager::UpdateIBDStatus()
     {
         // peercoin bridge: inline IsTipRecent (PPC-era CChain lacks this helper)
         const CBlockIndex* tip{CurrentChainstate().m_chain.Tip()};
-        if (!tip || tip->GetMedianTimePast() < GetTime() - count_seconds(m_options.max_tip_age)) return;
+        if (!tip || tip->GetBlockTime() < GetTime() - count_seconds(m_options.max_tip_age)) return;
     }
     LogInfo("Leaving InitialBlockDownload (latching to false)");
     m_cached_is_ibd.store(false, std::memory_order_relaxed);
