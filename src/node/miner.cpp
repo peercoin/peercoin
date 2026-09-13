@@ -494,7 +494,7 @@ void PoSMiner(NodeContext& m_node)
             }
 
             if (!have_destination || destination_wallet.lock() != wallet) {
-                LOCK2(cs_main, wallet->cs_wallet);
+                LOCK(wallet->cs_wallet);
                 const std::string label = "mintkey";
                 CTxDestination mint_dest;
                 wallet->ForEachAddrBookEntry([&](const CTxDestination& _dest, const std::string& _label, bool _is_change, const std::optional<wallet::AddressPurpose>& _purpose) {
