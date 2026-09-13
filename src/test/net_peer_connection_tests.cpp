@@ -70,7 +70,7 @@ void AddPeer(NodeId& id, std::vector<CNode*>& nodes, PeerManager& peerman, Connm
                                  /*nKeyedNetGroupIn=*/0,
                                  /*nLocalHostNonceIn=*/0,
                                  CAddress{},
-                                 /*addrNameIn=*/"",
+                                 /*addrNameIn=*/addr.ToStringAddrPort(),
                                  conn_type,
                                  /*inbound_onion=*/inbound_onion,
                                  /*network_key=*/0});
@@ -91,9 +91,11 @@ BOOST_FIXTURE_TEST_CASE(test_addnode_getaddednodeinfo_and_connection_detection, 
     NodeId id{0};
     std::vector<CNode*> nodes;
 
+    const std::string localhost{strprintf("127.0.0.1:%d", Params().GetDefaultPort())};
+
     // Connect a localhost peer.
     {
-        ASSERT_DEBUG_LOG("Added connection to 127.0.0.1:8333 peer=1");
+        ASSERT_DEBUG_LOG(strprintf("Added connection to %s peer=1", localhost));
         AddPeer(id, nodes, *peerman, *connman, ConnectionType::MANUAL, /*onion_peer=*/false, /*address=*/"127.0.0.1");
         BOOST_REQUIRE(nodes.back() != nullptr);
     }
@@ -102,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(test_addnode_getaddednodeinfo_and_connection_detection, 
     // address that resolves to multiple IPs, including that of the connected peer.
     // The connection attempt should consistently fail due to the check in ConnectNode().
     for (int i = 0; i < 10; ++i) {
-        ASSERT_DEBUG_LOG("Not opening a connection to localhost, already connected to 127.0.0.1:8333");
+        ASSERT_DEBUG_LOG(strprintf("Not opening a connection to localhost, already connected to %s", localhost));
         BOOST_CHECK(!connman->ConnectNodePublic(*peerman, "localhost", ConnectionType::MANUAL));
     }
 
