@@ -1293,8 +1293,9 @@ template<typename... Args>
 size_t GetSerializeSizeMany(int nVersion, const Args&... t)
 {
     SizeComputer sc;
-    ParamsStream wrapper{sc, PosMarkerParams{false},
-                        TransactionSerParams{!(nVersion & SERIALIZE_TRANSACTION_NO_WITNESS)}};
+    PosMarkerParams pos_marker_params{false};
+    TransactionSerParams tx_params{!(nVersion & SERIALIZE_TRANSACTION_NO_WITNESS)};
+    ParamsStream wrapper{sc, pos_marker_params, tx_params};
     (void)((wrapper << t), ...);
     return sc.size();
 }
