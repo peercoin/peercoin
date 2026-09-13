@@ -763,13 +763,13 @@ RPCHelpMan gettransaction()
     }
     const CWalletTx& wtx = it->second;
 
-    CAmount nCredit = CachedTxGetCredit(*pwallet, wtx, /*avoid_reuse=*/false);
+    CAmount nCredit = wtx.IsCoinStake() ? TxGetCredit(*pwallet, *wtx.tx) : CachedTxGetCredit(*pwallet, wtx, /*avoid_reuse=*/false);
     CAmount nDebit = CachedTxGetDebit(*pwallet, wtx, /*avoid_reuse=*/false);
     CAmount nNet = nCredit - nDebit;
     CAmount nFee = (CachedTxIsFromMe(*pwallet, wtx) ? wtx.tx->GetValueOut() - nDebit : 0);
 
-    entry.pushKV("amount", ValueFromAmount(nNet - nFee));
-    if (CachedTxIsFromMe(*pwallet, wtx))
+    entry.pushKV("amount", nFee < 0 ? ValueFromAmount(nNet - nFee) : ValueFromAmount(nNet));
+    if (CachedTxIsFromMe(*pwallet, wtx) && nFee < 0)
         entry.pushKV("fee", ValueFromAmount(nFee));
 
     WalletTxToJSON(*pwallet, wtx, entry);
