@@ -103,6 +103,9 @@ public:
     static constexpr int SHORTTXIDS_LENGTH = 6;
 
     CBlockHeader header;
+    // peercoin: blocks are signed, and compact block relay carries the block
+    // signature so that peers can reconstruct a fully valid block.
+    std::vector<unsigned char> vchBlockSig;
 
     /**
      * Dummy for deserialization
@@ -120,7 +123,7 @@ public:
 
     SERIALIZE_METHODS(CBlockHeaderAndShortTxIDs, obj)
     {
-        READWRITE(obj.header, obj.nonce, Using<VectorFormatter<CustomUintFormatter<SHORTTXIDS_LENGTH>>>(obj.shorttxids), obj.prefilledtxn);
+        READWRITE(obj.header, obj.nonce, obj.vchBlockSig, Using<VectorFormatter<CustomUintFormatter<SHORTTXIDS_LENGTH>>>(obj.shorttxids), obj.prefilledtxn);
         if (ser_action.ForRead()) {
             if (obj.BlockTxCount() > std::numeric_limits<uint16_t>::max()) {
                 throw std::ios_base::failure("indexes overflowed 16 bits");
@@ -137,6 +140,8 @@ protected:
     const CTxMemPool* pool;
 public:
     CBlockHeader header;
+    // peercoin: carried through compact block relay so FillBlock can produce a signed block
+    std::vector<unsigned char> vchBlockSig;
 
     // Can be overridden for testing
     using IsBlockMutatedFn = std::function<bool(const CBlock&, bool)>;
