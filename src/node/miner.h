@@ -11,6 +11,7 @@
 #include <primitives/block.h>
 #include <txmempool.h>
 #include <node/context.h>
+#include <util/signalinterrupt.h>
 #include <memory>
 #include <optional>
 #include <stdint.h>
@@ -125,6 +126,8 @@ namespace boost {
 } // namespace boost
 
 void MintStake(NodeContext& m_node);
+void StopStakeMinter();
+bool StakeMinterStopRequested(const util::SignalInterrupt* shutdown_signal);
 
 /** Update an old GenerateCoinbaseCommitment from CreateNewBlock after the block txs have changed */
 void RegenerateCommitments(CBlock& block, ChainstateManager& chainman);
