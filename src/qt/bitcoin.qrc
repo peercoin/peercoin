@@ -56,6 +56,7 @@
         <file alias="logo">res/images/logo.png</file>
         <file alias="logomask">res/images/logomask.png</file>
         <file alias="dragonfly">res/images/dragonfly.png</file>
+        <file alias="lepidoptera">res/images/lepidoptera.png</file>
         <file alias="transparent">res/images/transparent-background.png</file>
     </qresource>
     <qresource prefix="/animation">

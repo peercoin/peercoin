@@ -70,9 +70,10 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QRect rectIcon(QPoint(40,30), requiredSize);
     pixPaint.drawPixmap(rectIcon, icon);
 
-    QRect rectAvatar(QPoint(15,55), QSize(1323/3,1391/3));
+    const QSize avatarSize(474, 463);
+    QRect rectAvatar(QPoint(15, 55), avatarSize);
 
-    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/dragonfly"));
+    pixPaint.drawPixmap(rectAvatar, QPixmap(":/images/lepidoptera"));
 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
