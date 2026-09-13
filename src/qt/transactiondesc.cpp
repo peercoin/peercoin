@@ -321,7 +321,8 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
             if (!GetPaymentRequestMerchant(r.second, merchant)) {
                 merchant.clear();
             } else {
-                merchant += tr(" (Certificate was not verified)");
+                merchant += " ";
+                merchant += tr("(Certificate was not verified)");
             }
             if (!merchant.isNull()) {
                 strHTML += "<b>" + tr("Merchant") + ":</b> " + GUIUtil::HtmlEscape(merchant) + "<br>";
