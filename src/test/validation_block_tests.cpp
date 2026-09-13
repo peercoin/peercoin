@@ -65,7 +65,9 @@ struct TestSubscriber final : public CValidationInterface {
 std::shared_ptr<CBlock> MinerTestingSetup::Block(const uint256& prev_hash)
 {
     static int i = 0;
-    static uint64_t time = Params().GenesisBlock().nTime;
+    // Generate blocks after the BTC16 switch so they are not required to
+    // carry a legacy Peercoin block signature.
+    static uint64_t time = 1600000000;
 
     BlockAssembler::Options options;
     options.coinbase_output_script = CScript{} << i++ << OP_TRUE;
