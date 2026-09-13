@@ -1156,8 +1156,8 @@ BOOST_AUTO_TEST_CASE(checktxinputs_invalid_transactions_test)
     check_invalid(/*input_value=*/1 * COIN,
                   /*output_value=*/0,
                   /*coinbase=*/true,
-                  /*spend_height=*/COINBASE_MATURITY,
-                  TxValidationResult::TX_PREMATURE_SPEND, /*expected_reason=*/"bad-txns-premature-spend-of-coinbase");
+                  /*spend_height=*/g_regression_params->GetConsensus().nCoinbaseMaturity,
+                  TxValidationResult::TX_PREMATURE_SPEND, /*expected_reason=*/"bad-txns-premature-spend-of-coinbase/coinstake");
 }
 
 BOOST_AUTO_TEST_CASE(getvalueout_out_of_range_throws)
