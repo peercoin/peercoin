@@ -40,7 +40,6 @@
 #include <undo.h>
 #include <univalue.h>
 #include <util/check.h>
-#include <util/fs.h>
 #include <util/strencodings.h>
 #include <util/system.h>
 #include <util/translation.h>
@@ -51,11 +50,8 @@
 
 #include <stdint.h>
 
-#include <univalue.h>
-
 #include <node/miner.h>
 #include <kernel.h>
-#include <validation.h>
 #include <condition_variable>
 #include <memory>
 #include <mutex>

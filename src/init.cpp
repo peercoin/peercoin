@@ -60,7 +60,6 @@
 #include <node/mempool_persist.h>
 #include <node/mempool_persist_args.h>
 #include <node/txreconciliation.h>
-#include <node/miner.h>
 #include <node/peerman_args.h>
 #include <policy/feerate.h>
 #include <policy/fees/block_policy_estimator.h>
@@ -85,7 +84,6 @@
 #include <util/batchpriority.h>
 #include <util/chaintype.h>
 #include <util/check.h>
-#include <util/fs.h>
 #include <util/fs_helpers.h>
 #include <util/moneystr.h>
 #include <util/result.h>
@@ -106,7 +104,6 @@
 #include <condition_variable>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
 #include <fstream>
 #include <functional>
 #include <set>

@@ -22,7 +22,6 @@
 #include <primitives/transaction.h>
 #include <rpc/blockchain.h>
 #include <timedata.h>
-#include <rpc/blockchain.h>
 #include <util/moneystr.h>
 #include <util/system.h>
 #include <util/threadnames.h>
@@ -35,8 +34,6 @@
 #include <node/interface_ui.h>
 #include <util/exception.h>
 #include <util/thread.h>
-#include <validation.h>
-#include <wallet/wallet.h>
 #include <wallet/coincontrol.h>
 #include <node/warnings.h>
 #include <wallet/spend.h>
@@ -44,8 +41,6 @@
 
 #include <algorithm>
 #include <utility>
-
-#include <boost/thread.hpp>
 
 using wallet::CWallet;
 using wallet::COutput;
@@ -591,11 +586,6 @@ void PoSMiner(NodeContext& m_node)
 
             continue;
         }
-    }
-    catch (::boost::thread_interrupted)
-    {
-        LogPrintf("PeercoinMiner terminated\n");
-        return;
     }
     catch (const std::runtime_error &e)
     {

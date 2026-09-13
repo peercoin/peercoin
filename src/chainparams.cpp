@@ -23,9 +23,6 @@
 
 using util::SplitString;
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-
 void ReadSigNetArgs(const ArgsManager& args, CChainParams::SigNetOptions& options)
 {
     if (!args.GetArgs("-signetseednode").empty()) {
