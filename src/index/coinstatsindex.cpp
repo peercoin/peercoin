@@ -44,6 +44,30 @@ static constexpr uint8_t DB_MUHASH{'M'};
 
 namespace {
 
+CAmount BlockIssuanceAmount(const CBlock& block, const CBlockUndo* undo_data)
+{
+    arith_uint256 out{0};
+    arith_uint256 in{0};
+
+    for (const auto& tx : block.vtx) {
+        out += arith_uint256{static_cast<uint64_t>(tx->GetValueOut())};
+    }
+
+    if (undo_data) {
+        for (const auto& tx_undo : undo_data->vtxundo) {
+            for (const auto& coin : tx_undo.vprevout) {
+                in += arith_uint256{static_cast<uint64_t>(coin.out.nValue)};
+            }
+        }
+    }
+
+    const bool positive{out >= in};
+    const arith_uint256 diff{positive ? out - in : in - out};
+    constexpr auto max_camount{static_cast<uint64_t>(std::numeric_limits<CAmount>::max())};
+    const uint64_t amount{diff > arith_uint256{max_camount} ? max_camount : diff.GetLow64()};
+    return positive ? static_cast<CAmount>(amount) : static_cast<CAmount>(-static_cast<int64_t>(amount));
+}
+
 struct DBVal {
     uint256 muhash{uint256::ZERO};
     uint64_t transaction_output_count{0};
@@ -108,7 +132,7 @@ CoinStatsIndex::CoinStatsIndex(std::unique_ptr<interfaces::Chain> chain, size_t 
 
 bool CoinStatsIndex::CustomAppend(const interfaces::BlockInfo& block)
 {
-    const CAmount block_subsidy{GetBlockSubsidy(block.height, Params().GetConsensus())};
+    const CAmount block_subsidy{block.data ? BlockIssuanceAmount(*block.data, block.undo_data) : CAmount{0}};
     m_total_subsidy += block_subsidy;
 
     // Ignore genesis block
@@ -128,7 +152,7 @@ bool CoinStatsIndex::CustomAppend(const interfaces::BlockInfo& block)
 
             // Skip duplicate txid coinbase transactions (BIP30).
             if (is_coinbase && IsBIP30Unspendable(block.hash, block.height)) {
-                m_total_unspendables_bip30 += block_subsidy;
+                m_total_unspendables_bip30 += tx->GetValueOut();
                 continue;
             }
 
