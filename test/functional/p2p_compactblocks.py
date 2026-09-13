@@ -919,7 +919,9 @@ class CompactBlocksTest(BitcoinTestFramework):
 
 
     def run_test(self):
-        self.wallet = MiniWallet(self.nodes[0], mode=MiniWalletMode.RAW_OP_TRUE)
+        # peercoin: RAW_OP_TRUE outputs are rejected as non-standard; use the
+        # Peercoin-compatible MiniWallet default.
+        self.wallet = MiniWallet(self.nodes[0])
 
         # Setup the p2p connections
         self.segwit_node = self.nodes[0].add_p2p_connection(TestP2PConn())

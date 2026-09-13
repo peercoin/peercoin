@@ -86,7 +86,8 @@ class MiniWalletMode(Enum):
 
 
 class MiniWallet:
-    def __init__(self, test_node, *, mode=MiniWalletMode.ADDRESS_OP_TRUE, tag_name=None):
+    # peercoin: default to RAW_P2PK because Taproot is not supported here.
+    def __init__(self, test_node, *, mode=MiniWalletMode.RAW_P2PK, tag_name=None):
         self._test_node = test_node
         self._utxos = []
         self._mode = mode
@@ -181,7 +182,8 @@ class MiniWallet:
                     break
         elif self._mode == MiniWalletMode.RAW_OP_TRUE:
             for i in tx.vin:
-                i.scriptSig = CScript([OP_NOP] * 43)  # pad to identical size
+                # peercoin: legacy script verification requires push-only scriptSigs
+                i.scriptSig = CScript(b'\x2a' + b'\x00' * 42)
         elif self._mode == MiniWalletMode.ADDRESS_OP_TRUE:
             tx.wit.vtxinwit = [CTxInWitness()] * len(tx.vin)
             for i in tx.wit.vtxinwit:
@@ -367,7 +369,7 @@ class MiniWallet:
         if self._mode in (MiniWalletMode.RAW_OP_TRUE, MiniWalletMode.ADDRESS_OP_TRUE):
             vsize = Decimal(108)  # anyone-can-spend, Peercoin nTime
         elif self._mode == MiniWalletMode.RAW_P2PK:
-            vsize = Decimal(168)  # P2PK (73 bytes scriptSig + 35 bytes scriptPubKey + 60 bytes other)
+            vsize = Decimal(172)  # P2PK (73 bytes scriptSig + 35 bytes scriptPubKey + 64 bytes other)
         else:
             assert False
         if target_vsize and not fee:  # respect fee_rate if target vsize is passed

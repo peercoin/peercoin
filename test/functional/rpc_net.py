@@ -63,8 +63,8 @@ class NetTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.extra_args = [
-            ["-minrelaytxfee=0.00001000", "-deprecatedrpc=startingheight"],
-            ["-minrelaytxfee=0.00000500"],
+            ["-minrelaytxfee=0.000010", "-deprecatedrpc=startingheight"],
+            ["-minrelaytxfee=0.000005"],
         ]
         # Specify a non-working proxy to make sure no actual connections to public IPs are attempted
         for args in self.extra_args:
@@ -115,8 +115,9 @@ class NetTest(BitcoinTestFramework):
         # the address bound to on one side will be the source address for the other node
         assert_equal(peer_info[0][0]['addrbind'], peer_info[1][0]['addr'])
         assert_equal(peer_info[1][0]['addrbind'], peer_info[0][0]['addr'])
-        assert_equal(peer_info[0][0]['minfeefilter'], Decimal("0.00000500"))
-        assert_equal(peer_info[1][0]['minfeefilter'], Decimal("0.00001000"))
+        # peercoin: feefilter messages are not sent, so peers report zero
+        assert_equal(peer_info[0][0]['minfeefilter'], Decimal("0"))
+        assert_equal(peer_info[1][0]['minfeefilter'], Decimal("0"))
         # check the `servicesnames` field
         for info in peer_info:
             assert_net_servicesnames(int(info[0]["services"], 0x10), info[0]["servicesnames"])
@@ -136,7 +137,7 @@ class NetTest(BitcoinTestFramework):
         self.nodes[0].setmocktime(no_version_peer_conntime)
         with self.nodes[0].wait_for_new_peer():
             no_version_peer = self.nodes[0].add_p2p_connection(P2PInterface(), send_version=False, wait_for_verack=False)
-        if self.options.v2transport:
+        if getattr(self.options, "v2transport", False):
             self.wait_until(lambda: self.nodes[0].getpeerinfo()[no_version_peer_id]["transport_protocol_type"] == "v2")
         self.nodes[0].setmocktime(0)
         peer_info = self.nodes[0].getpeerinfo()[no_version_peer_id]
@@ -162,8 +163,8 @@ class NetTest(BitcoinTestFramework):
                 "inflight": [],
                 "last_block": 0,
                 "last_transaction": 0,
-                "lastrecv": 0 if not self.options.v2transport else no_version_peer_conntime,
-                "lastsend": 0 if not self.options.v2transport else no_version_peer_conntime,
+                "lastrecv": 0 if not getattr(self.options, "v2transport", False) else no_version_peer_conntime,
+                "lastsend": 0 if not getattr(self.options, "v2transport", False) else no_version_peer_conntime,
                 "minfeefilter": Decimal("0E-8"),
                 "network": "not_publicly_routable",
                 "permissions": [],
@@ -173,13 +174,13 @@ class NetTest(BitcoinTestFramework):
                 "last_inv_sequence": 0,
                 "services": "0000000000000000",
                 "servicesnames": [],
-                "session_id": "" if not self.options.v2transport else no_version_peer.v2_state.peer['session_id'].hex(),
+                "session_id": "" if not getattr(self.options, "v2transport", False) else no_version_peer.v2_state.peer['session_id'].hex(),
                 "startingheight": -1,
                 "subver": "",
                 "synced_blocks": -1,
                 "synced_headers": -1,
                 "timeoffset": 0,
-                "transport_protocol_type": "v1" if not self.options.v2transport else "v2",
+                "transport_protocol_type": "v1" if not getattr(self.options, "v2transport", False) else "v2",
                 "version": 0,
             },
         )
@@ -194,7 +195,7 @@ class NetTest(BitcoinTestFramework):
         # size depends on the used p2p version:
         #   - p2p v1: 24 bytes (header) + 8 bytes (payload) = 32 bytes
         #   - p2p v2: 21 bytes (header/tag with short-id) + 8 bytes (payload) = 29 bytes
-        ping_size = 32 if not self.options.v2transport else 29
+        ping_size = 32 if not getattr(self.options, "v2transport", False) else 29
         net_totals_before = self.nodes[0].getnettotals()
         peer_info_before = self.nodes[0].getpeerinfo()
 
@@ -279,7 +280,7 @@ class NetTest(BitcoinTestFramework):
     def test_service_flags(self):
         self.log.info("Test service flags")
         self.nodes[0].add_p2p_connection(P2PInterface(), services=(1 << 4) | (1 << 63))
-        if self.options.v2transport:
+        if getattr(self.options, "v2transport", False):
             assert_equal(['UNKNOWN[2^4]', 'P2P_V2', 'UNKNOWN[2^63]'], self.nodes[0].getpeerinfo()[-1]['servicesnames'])
         else:
             assert_equal(['UNKNOWN[2^4]', 'UNKNOWN[2^63]'], self.nodes[0].getpeerinfo()[-1]['servicesnames'])

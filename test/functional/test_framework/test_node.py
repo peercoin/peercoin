@@ -334,6 +334,18 @@ class TestNode():
     def version_is_at_least(self, ver):
         return self.version is None or self.version >= ver
 
+    @contextlib.contextmanager
+    def wait_for_new_peer(self):
+        """Wait until a new peer has connected after the context exits."""
+        before = {peer["id"] for peer in self.getpeerinfo()}
+        yield {}
+        deadline = time.time() + self.rpc_timeout
+        while time.time() < deadline:
+            if any(peer["id"] not in before for peer in self.getpeerinfo()):
+                return
+            time.sleep(0.1)
+        raise self._raise_assertion_error("Timed out waiting for a new peer")
+
     def stop_node(self, expected_stderr='', *, wait=0, wait_until_stopped=True):
         """Stop the node."""
         if not self.running:

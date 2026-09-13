@@ -23,6 +23,9 @@ from typing import List
 from .address import create_deterministic_address_bcrt1_p2tr_op_true
 from .authproxy import JSONRPCException
 from . import coverage
+from .descriptors import descsum_create
+from .key import ECKey
+from .script_util import key_to_p2pk_script
 from .p2p import NetworkThread
 from .test_node import TestNode
 from .util import (
@@ -586,15 +589,21 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
             # Wait for nodes to stop
             node.wait_until_stopped()
 
-    def restart_node(self, i, extra_args=None):
+    def restart_node(self, i, extra_args=None, *, clear_addrman=False):
         """Stop and start a test node"""
         self.stop_node(i)
+        if clear_addrman:
+            peers_dat = os.path.join(self.nodes[i].chain_path, "peers.dat")
+            try:
+                os.remove(peers_dat)
+            except FileNotFoundError:
+                pass
         self.start_node(i, extra_args)
 
     def wait_for_node_exit(self, i, timeout):
         self.nodes[i].process.wait(timeout)
 
-    def connect_nodes(self, a, b):
+    def connect_nodes(self, a, b, *, peer_advertises_v2=None, wait_for_cb=True):
         from_connection = self.nodes[a]
         to_connection = self.nodes[b]
         from_num_peers = 1 + len(from_connection.getpeerinfo())
@@ -818,14 +827,32 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
             # block in the cache does not age too much (have an old tip age).
             # This is needed so that we are out of IBD when the test starts,
             # see the tip age check in IsInitialBlockDownload().
-            gen_addresses = [k.address for k in TestNode.PRIV_KEYS][:3] + [create_deterministic_address_bcrt1_p2tr_op_true()[0]]
-            assert_equal(len(gen_addresses), 4)
+            # peercoin: mine the fourth slot to the MiniWallet default P2PK
+            # output so the default MiniWallet has mature spendable UTXOs.
+            gen_targets = [k.address for k in TestNode.PRIV_KEYS][:3]
+            miniwallet_key = ECKey()
+            miniwallet_key.set((1).to_bytes(32, 'big'), True)
+            miniwallet_script = key_to_p2pk_script(miniwallet_key.get_pubkey().get_bytes())
+            miniwallet_descriptor = descsum_create(f'raw({miniwallet_script.hex()})')
+            gen_targets.append(None)
+            assert_equal(len(gen_targets), 4)
             for i in range(8):
-                self.generatetoaddress(
-                    cache_node,
-                    nblocks=25 if i != 7 else 24,
-                    address=gen_addresses[i % len(gen_addresses)],
-                )
+                nblocks = 25 if i != 7 else 24
+                target = gen_targets[i % len(gen_targets)]
+                if target is None:
+                    self.generatetodescriptor(
+                        cache_node,
+                        nblocks,
+                        miniwallet_descriptor,
+                        sync_fun=self.no_op,
+                    )
+                else:
+                    self.generatetoaddress(
+                        cache_node,
+                        nblocks=nblocks,
+                        address=target,
+                        sync_fun=self.no_op,
+                    )
 
             assert_equal(cache_node.getblockchaininfo()["blocks"], 199)
 
