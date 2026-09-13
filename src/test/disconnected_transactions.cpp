@@ -5,17 +5,30 @@
 #include <boost/test/unit_test.hpp>
 #include <core_memusage.h>
 #include <kernel/disconnected_transactions.h>
+#include <primitives/transaction.h>
 #include <test/util/setup_common.h>
 
-BOOST_FIXTURE_TEST_SUITE(disconnected_transactions, TestChain100Setup)
+BOOST_FIXTURE_TEST_SUITE(disconnected_transactions, BasicTestingSetup)
 
 //! Tests that DisconnectedBlockTransactions limits its own memory properly
 BOOST_AUTO_TEST_CASE(disconnectpool_memory_limits)
 {
-    // Use the coinbase transactions from TestChain100Setup. It doesn't matter whether these
-    // transactions would realistically be in a block together, they just need distinct txids and
-    // uniform size for this test to work.
-    std::vector<CTransactionRef> block_vtx(m_coinbase_txns);
+    // Build distinct transactions with a fixed serialized size. The exact
+    // contents do not matter; this only exercises the disconnected pool.
+    std::vector<CTransactionRef> block_vtx;
+    block_vtx.reserve(100);
+    for (int i = 0; i < 100; ++i) {
+        CMutableTransaction tx;
+        tx.version = 1;
+        tx.nTime = 0;
+        tx.vin.emplace_back();
+        tx.vin.back().prevout = COutPoint(Txid{}, static_cast<uint32_t>(i));
+        std::vector<unsigned char> marker(4, 0);
+        marker[0] = static_cast<unsigned char>(i);
+        tx.vin.back().scriptSig = CScript() << marker;
+        tx.vout.emplace_back(10 * COIN, CScript() << std::vector<unsigned char>(20, 1));
+        block_vtx.push_back(MakeTransactionRef(std::move(tx)));
+    }
     BOOST_CHECK_EQUAL(block_vtx.size(), 100);
 
     // Roughly estimate sizes to sanity check that DisconnectedBlockTransactions::DynamicMemoryUsage
