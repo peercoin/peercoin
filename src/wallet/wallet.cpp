@@ -4122,7 +4122,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
         // Attempt to add more inputs
         // Only add coins of the same key/address as kernel
-        if (((pcoin->txout.scriptPubKey == scriptPubKeyKernel || pcoin->txout.scriptPubKey == txNew.vout[1].scriptPubKey))
+        if (txNew.vout.size() >= 2 &&
+            ((pcoin->txout.scriptPubKey == scriptPubKeyKernel || pcoin->txout.scriptPubKey == txNew.vout[1].scriptPubKey))
             && (pcoin->outpoint.hash != txNew.vin[0].prevout.hash)
             && pwallet->m_combine_coins)
         {
