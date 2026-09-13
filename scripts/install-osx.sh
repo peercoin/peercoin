@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/usr/bin/env bash
 
 patch -p1 < contrib/homebrew/makefile.osx.patch
 

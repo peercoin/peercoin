@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/usr/bin/env bash
 
 #debuild and associated tools
 sudo apt-get install -qqy devscripts debhelper

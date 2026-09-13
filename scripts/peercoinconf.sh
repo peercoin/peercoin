@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/usr/bin/env bash
 
 mkdir -p ~/.peercoin
 echo "rpcuser=username" >>~/.peercoin/peercoin.conf

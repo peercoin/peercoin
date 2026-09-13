@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/usr/bin/env bash
 
 #https://github.com/peercoin/peercoin/wiki/Compiling-for-Windows-on-Debian-linux
 

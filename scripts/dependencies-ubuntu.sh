@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/usr/bin/env bash
 
 sudo apt-get update -qq
 sudo apt-get upgrade -y -qq

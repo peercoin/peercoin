@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/usr/bin/env bash
 
 
 MXE_PATH=/usr/lib/mxe

@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/usr/bin/env bash
 
 #Travis pre installs many unnecessary packages https://docs.travis-ci.com/user/reference/trusty/
 
