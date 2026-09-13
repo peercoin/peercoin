@@ -5,49 +5,52 @@
 
 export LC_ALL=C
 TOPDIR=${TOPDIR:-$(git rev-parse --show-toplevel)}
-BUILDDIR=${BUILDDIR:-$TOPDIR}
+BUILDDIR=${BUILDDIR:-$TOPDIR/build}
 
-BINDIR=${BINDIR:-$BUILDDIR/src}
+BINDIR=${BINDIR:-$BUILDDIR/bin}
 MANDIR=${MANDIR:-$TOPDIR/doc/man}
 
 BITCOIND=${BITCOIND:-$BINDIR/peercoind}
 BITCOINCLI=${BITCOINCLI:-$BINDIR/peercoin-cli}
 BITCOINTX=${BITCOINTX:-$BINDIR/peercoin-tx}
 WALLET_TOOL=${WALLET_TOOL:-$BINDIR/peercoin-wallet}
-BITCOINUTIL=${BITCOINQT:-$BINDIR/peercoin-util}
-BITCOINQT=${BITCOINQT:-$BINDIR/qt/peercoin-qt}
+BITCOINUTIL=${BITCOINUTIL:-$BINDIR/peercoin-util}
+BITCOINQT=${BITCOINQT:-$BINDIR/peercoin-qt}
 
-[ ! -x "$BITCOIND" ] && echo "$BITCOIND not found or not executable." && exit 1
+cmds=("$BITCOIND" "$BITCOINCLI" "$BITCOINTX" "$WALLET_TOOL" "$BITCOINUTIL" "$BITCOINQT")
+
+for cmd in "${cmds[@]}"; do
+  [ -x "$cmd" ] || { echo "$cmd not found or not executable." >&2; exit 1; }
+done
 
 # Don't allow man pages to be generated for binaries built from a dirty tree
-DIRTY=""
-for cmd in $BITCOIND $BITCOINCLI $BITCOINTX $WALLET_TOOL $BITCOINUTIL $BITCOINQT; do
-  VERSION_OUTPUT=$($cmd --version)
+DIRTY=()
+for cmd in "${cmds[@]}"; do
+  VERSION_OUTPUT=$("$cmd" --version)
   if [[ $VERSION_OUTPUT == *"dirty"* ]]; then
-    DIRTY="${DIRTY}${cmd}\n"
+    DIRTY+=("$cmd")
   fi
 done
-if [ -n "$DIRTY" ]
-then
-  echo -e "WARNING: the following binaries were built from a dirty tree:\n"
-  echo -e "$DIRTY"
-  echo "man pages generated from dirty binaries should NOT be committed."
-  echo "To properly generate man pages, please commit your changes to the above binaries, rebuild them, then run this script again."
+if [ ${#DIRTY[@]} -gt 0 ]; then
+  echo "WARNING: the following binaries were built from a dirty tree:" >&2
+  printf '  %s\n' "${DIRTY[@]}" >&2
+  echo "man pages generated from dirty binaries should NOT be committed." >&2
+  echo "To properly generate man pages, please commit your changes to the above binaries, rebuild them, then run this script again." >&2
 fi
 
-# The autodetected version git tag can screw up manpage output a little bit
-read -r -a BTCVER <<< "$($BITCOINCLI --version | head -n1 | awk -F'[ -]' '{ print $6, $7 }')"
+VERSION=$("$BITCOINCLI" --version | head -n1 | sed -n 's/.*\(v[0-9][0-9.]*\).*/\1/p')
+if [ -z "$VERSION" ]; then
+  echo "Could not determine version from $BITCOINCLI --version" >&2
+  exit 1
+fi
 
-# Create a footer file with copyright content.
-# This gets autodetected fine for peercoind if --version-string is not set,
-# but has different outcomes for peercoin-qt and peercoin-cli.
-echo "[COPYRIGHT]" > footer.h2m
-$BITCOIND --version | sed -n '1!p' >> footer.h2m
+footer=$(mktemp "${TMPDIR:-/tmp}/peercoin-footer.XXXXXX.h2m")
+trap 'rm -f "$footer"' EXIT
 
-for cmd in $BITCOIND $BITCOINCLI $BITCOINTX $WALLET_TOOL $BITCOINUTIL $BITCOINQT; do
+printf '[COPYRIGHT]\n' > "$footer"
+"$BITCOIND" --version | sed -n '1!p' >> "$footer"
+
+for cmd in "${cmds[@]}"; do
   cmdname="${cmd##*/}"
-  help2man -N --version-string="${BTCVER[0]}" --include=footer.h2m -o "${MANDIR}/${cmdname}.1" "${cmd}"
-  sed -i "s/\\\-${BTCVER[1]}//g" "${MANDIR}/${cmdname}.1"
+  help2man -N --version-string="$VERSION" --include="$footer" -o "${MANDIR}/${cmdname}.1" "$cmd"
 done
-
-rm -f footer.h2m
