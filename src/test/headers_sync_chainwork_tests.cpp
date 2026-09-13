@@ -43,7 +43,9 @@ using State = HeadersSyncState::State;
     } while (false)
 
 constexpr size_t TARGET_BLOCKS{15'000};
-constexpr arith_uint256 CHAIN_WORK{TARGET_BLOCKS * 2};
+// peercoin: GetBlockTrust() returns 1 for proof-of-work headers, so a
+// TARGET_BLOCKS-long PoW header chain provides TARGET_BLOCKS units of trust.
+constexpr arith_uint256 CHAIN_WORK{TARGET_BLOCKS};
 
 // Subtract MAX_HEADERS_RESULTS (2000 headers/message) + an arbitrary smaller
 // value (123) so our redownload buffer is well below the number of blocks
@@ -54,28 +56,24 @@ constexpr size_t COMMITMENT_PERIOD{600}; // Somewhat close to mainnet.
 struct HeadersGeneratorSetup : public RegTestingSetup {
     const CBlock& genesis{Params().GenesisBlock()};
     CBlockIndex& chain_start{WITH_LOCK(::cs_main, return *Assert(m_node.chainman->m_blockman.LookupBlockIndex(genesis.GetHash())))};
+    const uint32_t pow_limit_bits{UintToArith256(Params().GetConsensus().powLimit).GetCompact()};
 
     // Generate headers for two different chains (using differing merkle roots
     // to ensure the headers are different).
     const std::vector<CBlockHeader>& FirstChain()
     {
-        // Block header hash target is half of max uint256 (2**256 / 2), expressible
-        // roughly as the coefficient 0x7fffff with the exponent 0x20 (32 bytes).
-        // This implies around every 2nd hash attempt should succeed, which
-        // is why CHAIN_WORK == TARGET_BLOCKS * 2.
-        assert(genesis.nBits == 0x207fffff);
-
-        // Subtract 1 since the genesis block also contributes work so we reach
-        // the CHAIN_WORK target.
+        // peercoin: regtest PowLimit is the easiest accepted target. Generate
+        // headers at that target so header search stays fast while HeadersSync
+        // still sees enough trust. PoW header trust is 1 unit per block.
         static const auto first_chain{GenerateHeaders(/*count=*/TARGET_BLOCKS - 1, genesis.GetHash(),
-                genesis.nVersion, genesis.nTime, /*merkle_root=*/uint256::ZERO, genesis.nBits)};
+                genesis.nVersion, genesis.nTime, /*merkle_root=*/uint256::ZERO, pow_limit_bits)};
         return first_chain;
     }
     const std::vector<CBlockHeader>& SecondChain()
     {
-        // Subtract 2 to keep total work below the target.
+        // Subtract 2 to keep total trust below the target.
         static const auto second_chain{GenerateHeaders(/*count=*/TARGET_BLOCKS - 2, genesis.GetHash(),
-                genesis.nVersion, genesis.nTime, /*merkle_root=*/uint256::ONE, genesis.nBits)};
+                genesis.nVersion, genesis.nTime, /*merkle_root=*/uint256::ONE, pow_limit_bits)};
         return second_chain;
     }
 
