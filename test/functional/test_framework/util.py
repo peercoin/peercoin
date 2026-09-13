@@ -56,6 +56,22 @@ def assert_equal(thing1, thing2, *args):
         raise AssertionError("not(%s)" % " == ".join(str(arg) for arg in (thing1, thing2) + args))
 
 
+def assert_not_equal(thing1, thing2, *args, error_message=None):
+    if thing1 == thing2 or any(thing1 == arg for arg in args):
+        message = "not(%s)" % " != ".join(str(arg) for arg in (thing1, thing2) + args)
+        if error_message:
+            message = f"{error_message}: {message}"
+        raise AssertionError(message)
+
+
+def random_bitflip(data):
+    data = bytearray(data)
+    assert len(data) > 0
+    bit = random.randrange(len(data) * 8)
+    data[bit // 8] ^= 1 << (bit % 8)
+    return bytes(data)
+
+
 def assert_greater_than(thing1, thing2):
     if thing1 <= thing2:
         raise AssertionError("%s <= %s" % (str(thing1), str(thing2)))
