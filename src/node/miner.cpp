@@ -175,7 +175,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     CBlock* const pblock = &pblocktemplate->block; // pointer for convenience
     pblock->nTime = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime());
 
-    LOCK(::cs_main);
+    UniqueLock<RecursiveMutex> wallet_lock(pwallet ? &pwallet->cs_wallet : nullptr, "cs_wallet", __FILE__, __LINE__);
+    UniqueLock<RecursiveMutex> cs_main_lock(::cs_main, "cs_main", __FILE__, __LINE__);
 
     CBlockIndex* pindexPrev = m_chainstate.m_chain.Tip();
     assert(pindexPrev != nullptr);

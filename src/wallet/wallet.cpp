@@ -3923,7 +3923,9 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     }
     const Consensus::Params& params = chainman.GetParams().GetConsensus();
 
-    LOCK2(cs_main, pwallet->cs_wallet);
+    // peercoin: staking paths acquire cs_wallet before cs_main; keep that
+    // order here to avoid reversing the lock hierarchy used by wallet startup.
+    LOCK2(pwallet->cs_wallet, cs_main);
     txNew.vin.clear();
     txNew.vout.clear();
     // Mark coin stake transaction
