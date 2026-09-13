@@ -72,7 +72,7 @@ TEST_EXIT_SKIPPED = 77
 TEST_FRAMEWORK_MODULES = [
     "address",
     "blocktools",
-    "muhash",
+    "crypto.muhash",
     "key",
     "script",
     "segwit_addr",

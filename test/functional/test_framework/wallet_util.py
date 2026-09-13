@@ -138,3 +138,16 @@ def generate_wif_key():
     k = ECKey()
     k.generate()
     return bytes_to_wif(k.get_bytes(), k.is_compressed)
+
+def generate_keypair(compressed=True, wif=False):
+    """Generate a fresh ECDSA keypair.
+
+    Returns the private key (as raw bytes, or WIF if requested) and the
+    public key as bytes.
+    """
+    eckey = ECKey()
+    eckey.generate(compressed)
+    privkey = eckey.get_bytes()
+    if wif:
+        privkey = bytes_to_wif(privkey, compressed)
+    return privkey, eckey.get_pubkey().get_bytes()

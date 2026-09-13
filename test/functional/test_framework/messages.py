@@ -635,6 +635,23 @@ class CTransaction:
     def get_vsize(self):
         return math.ceil(self.get_weight() / WITNESS_SCALE_FACTOR)
 
+    @property
+    def version(self):
+        return self.nVersion
+
+    @version.setter
+    def version(self, value):
+        self.nVersion = value
+
+    @property
+    def txid_hex(self):
+        self.calc_sha256()
+        return self.hash
+
+    @property
+    def wtxid_hex(self):
+        return self.getwtxid()
+
     def __repr__(self):
         return "CTransaction(nVersion=%i nTime=%i vin=%s vout=%s wit=%s nLockTime=%i)" \
             % (self.nVersion, self.nTime, repr(self.vin), repr(self.vout), repr(self.wit), self.nLockTime)
@@ -660,7 +677,7 @@ class CBlockHeader:
             self.calc_sha256()
 
     def set_null(self):
-        self.nVersion = 4
+        self.nVersion = 6
         self.hashPrevBlock = 0
         self.hashMerkleRoot = 0
         self.nTime = 0
@@ -677,7 +694,7 @@ class CBlockHeader:
         self.nTime = struct.unpack("<I", f.read(4))[0]
         self.nBits = struct.unpack("<I", f.read(4))[0]
         self.nNonce = struct.unpack("<I", f.read(4))[0]
-        #self.nFlags = struct.unpack("<I", f.read(4))[0]
+        self.nFlags = struct.unpack("<I", f.read(4))[0]
         self.sha256 = None
         self.hash = None
 
@@ -689,7 +706,7 @@ class CBlockHeader:
         r += struct.pack("<I", self.nTime)
         r += struct.pack("<I", self.nBits)
         r += struct.pack("<I", self.nNonce)
-        #r += struct.pack("<I", self.nFlags)
+        r += struct.pack("<I", self.nFlags)
         return r
 
     def calc_sha256(self):
@@ -709,13 +726,23 @@ class CBlockHeader:
         self.calc_sha256()
         return self.sha256
 
+    @property
+    def hash_hex(self):
+        self.calc_sha256()
+        return self.hash
+
+    @property
+    def hash_int(self):
+        self.calc_sha256()
+        return self.sha256
+
     def __repr__(self):
         return "CBlockHeader(nVersion=%i hashPrevBlock=%064x hashMerkleRoot=%064x nTime=%s nBits=%08x nNonce=%08x nFlags=%08x)" \
             % (self.nVersion, self.hashPrevBlock, self.hashMerkleRoot,
                time.ctime(self.nTime), self.nBits, self.nNonce, self.nFlags)
 
 BLOCK_HEADER_SIZE = len(CBlockHeader().serialize())
-assert_equal(BLOCK_HEADER_SIZE, 80)
+assert_equal(BLOCK_HEADER_SIZE, 84)
 
 class CBlock(CBlockHeader):
     __slots__ = ("vtx", "vchBlockSig",)
@@ -834,12 +861,13 @@ class PrefilledTransaction:
 
 # This is what we send on the wire, in a cmpctblock message.
 class P2PHeaderAndShortIDs:
-    __slots__ = ("header", "nonce", "prefilled_txn", "prefilled_txn_length",
+    __slots__ = ("header", "nonce", "vchBlockSig", "prefilled_txn", "prefilled_txn_length",
                  "shortids", "shortids_length")
 
     def __init__(self):
         self.header = CBlockHeader()
         self.nonce = 0
+        self.vchBlockSig = b''
         self.shortids_length = 0
         self.shortids = []
         self.prefilled_txn_length = 0
@@ -848,6 +876,7 @@ class P2PHeaderAndShortIDs:
     def deserialize(self, f):
         self.header.deserialize(f)
         self.nonce = struct.unpack("<Q", f.read(8))[0]
+        self.vchBlockSig = deser_string(f)
         self.shortids_length = deser_compact_size(f)
         for _ in range(self.shortids_length):
             # shortids are defined to be 6 bytes in the spec, so append
@@ -861,6 +890,7 @@ class P2PHeaderAndShortIDs:
         r = b""
         r += self.header.serialize()
         r += struct.pack("<Q", self.nonce)
+        r += ser_string(self.vchBlockSig)
         r += ser_compact_size(self.shortids_length)
         for x in self.shortids:
             # We only want the first 6 bytes
@@ -884,6 +914,8 @@ class P2PHeaderAndShortWitnessIDs(P2PHeaderAndShortIDs):
 
 # Calculate the BIP 152-compact blocks shortid for a given transaction hash
 def calculate_shortid(k0, k1, tx_hash):
+    if isinstance(tx_hash, int):
+        tx_hash = ser_uint256(tx_hash)
     expected_shortid = siphash256(k0, k1, tx_hash)
     expected_shortid &= 0x0000ffffffffffff
     return expected_shortid

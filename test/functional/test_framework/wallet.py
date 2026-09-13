@@ -57,6 +57,7 @@ from test_framework.util import (
 from test_framework.wallet_util import generate_keypair
 
 DEFAULT_FEE = Decimal("0.0001")
+MIN_FEE_RATE = Decimal("0.011")
 
 class MiniWalletMode(Enum):
     """Determines the transaction type the MiniWallet is creating and spending.
@@ -351,7 +352,7 @@ class MiniWallet:
     def create_self_transfer(
             self,
             *,
-            fee_rate=Decimal("0.003"),
+            fee_rate=MIN_FEE_RATE,
             fee=Decimal("0"),
             utxo_to_spend=None,
             target_vsize=0,
@@ -364,7 +365,7 @@ class MiniWallet:
         assert fee >= 0
         # calculate fee
         if self._mode in (MiniWalletMode.RAW_OP_TRUE, MiniWalletMode.ADDRESS_OP_TRUE):
-            vsize = Decimal(104)  # anyone-can-spend
+            vsize = Decimal(108)  # anyone-can-spend, Peercoin nTime
         elif self._mode == MiniWalletMode.RAW_P2PK:
             vsize = Decimal(168)  # P2PK (73 bytes scriptSig + 35 bytes scriptPubKey + 60 bytes other)
         else:

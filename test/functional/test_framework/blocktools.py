@@ -62,6 +62,7 @@ WITNESS_COMMITMENT_HEADER = b"\xaa\x21\xa9\xed"
 
 NORMAL_GBT_REQUEST_PARAMS = {"rules": ["segwit"]}
 VERSIONBITS_LAST_OLD_BLOCK_VERSION = 4
+DEFAULT_BLOCK_VERSION = 6
 MIN_BLOCKS_TO_KEEP = 288
 
 
@@ -70,7 +71,7 @@ def create_block(hashprev=None, coinbase=None, ntime=None, *, version=None, tmpl
     block = CBlock()
     if tmpl is None:
         tmpl = {}
-    block.nVersion = version or tmpl.get('version') or VERSIONBITS_LAST_OLD_BLOCK_VERSION
+    block.nVersion = version or tmpl.get('version') or DEFAULT_BLOCK_VERSION
     block.nTime = ntime or tmpl.get('curtime') or int(time.time() + 600)
     block.hashPrevBlock = hashprev or int(tmpl['previousblockhash'], 0x10)
     if tmpl and not tmpl.get('bits') is None:

@@ -350,7 +350,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
             self.log.error("Hint: Call {} '{}' to consolidate all logs".format(os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + "/../combine_logs.py"), self.options.tmpdir))
             self.log.error("")
             self.log.error("If this failure happened unexpectedly or intermittently, please file a bug and provide a link or upload of the combined log.")
-            self.log.error(self.config['environment']['PACKAGE_BUGREPORT'])
+            self.log.error(self.config['environment']['CLIENT_BUGREPORT'])
             self.log.error("")
             exit_code = TEST_EXIT_FAILED
         # Logging.shutdown will not remove stream- and filehandlers, so we must
@@ -803,8 +803,14 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
             # Wait for RPC connections to be ready
             cache_node.wait_for_rpc_connection()
 
-            # Set a time in the past, so that blocks don't end up in the future
-            cache_node.setmocktime(cache_node.getblockheader(cache_node.getbestblockhash())['time'])
+            # Set a time in the past, so that blocks don't end up in the future.
+            # peercoin: the cached chain uses unsigned regtest PoW blocks, so stay
+            # after the BTC16 block-signature cutoff to match consensus checks.
+            btc16_switch_time = 1569931200 if self.chain == "main" else 1554811200
+            cache_node.setmocktime(max(
+                cache_node.getblockheader(cache_node.getbestblockhash())["time"],
+                btc16_switch_time + 1,
+            ))
 
             # Create a 199-block-long chain; each of the 3 first nodes
             # gets 25 mature blocks and 25 immature.

@@ -273,6 +273,10 @@ class P2PConnection(asyncio.Protocol):
         self._log_message("send", message)
         return self.send_raw_message(tmsg)
 
+    def send_without_ping(self, message):
+        """Send a P2P message without synchronizing with a ping."""
+        return self.send_message(message)
+
     def send_raw_message(self, raw_message_bytes):
         if not self.is_connected:
             raise IOError('Not connected')

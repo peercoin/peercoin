@@ -440,7 +440,7 @@ def get_datadir_path(dirname, n):
 
 
 def append_config(datadir, options):
-    with open(os.path.join(datadir, "bitcoin.conf"), 'a', encoding='utf8') as f:
+    with open(os.path.join(datadir, "peercoin.conf"), 'a', encoding='utf8') as f:
         for option in options:
             f.write(option + "\n")
 
@@ -479,7 +479,22 @@ def delete_cookie_file(datadir, chain):
 
 def softfork_active(node, key):
     """Return whether a softfork is active."""
-    return node.getdeploymentinfo()['deployments'][key]['active']
+    deployments = node.getdeploymentinfo()['deployments']
+    if isinstance(deployments, dict):
+        return deployments[key]['active']
+
+    active_by_id = {item['id']: bool(item.get('active')) for item in deployments}
+    aliases = {
+        'segwit': ('segwit',),
+        'taproot': ('taproot', 'v12'),
+        'csv': ('csv', 'bip65'),
+        'cltv': ('cltv', 'bip65'),
+        'dersig': ('dersig', 'bip66'),
+    }
+    for name in aliases.get(key, (key,)):
+        if name in active_by_id:
+            return active_by_id[name]
+    return True
 
 
 

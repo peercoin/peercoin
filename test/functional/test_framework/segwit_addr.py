@@ -133,9 +133,9 @@ class TestFrameworkScript(unittest.TestCase):
             self.assertEqual(encode_segwit_address(hrp, witver, witprog), addr)
 
         # P2WPKH
-        test_python_bech32('bcrt1qthmht0k2qnh3wy7336z05lu2km7emzfpm3wg46')
+        test_python_bech32('pcrt1qthmht0k2qnh3wy7336z05lu2km7emzfpqufu7j')
         # P2WSH
-        test_python_bech32('bcrt1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3xueyj')
-        test_python_bech32('bcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqseac85')
+        test_python_bech32('pcrt1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9m6rlr')
+        test_python_bech32('pcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqyymzu9')
         # P2TR
-        test_python_bech32('bcrt1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqc8gma6')
+        test_python_bech32('pcrt1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqv6wpxt')

@@ -654,7 +654,7 @@ class TestNode():
 
         def addconnection_callback(address, port):
             self.log.debug("Connecting to %s:%d %s" % (address, port, connection_type))
-            self.addconnection('%s:%d' % (address, port), connection_type)
+            self.addconnection('%s:%d' % (address, port), connection_type, False)
 
         p2p_conn.peer_accept_connection(connect_cb=addconnection_callback, connect_id=p2p_idx + 1, net=self.chain, timeout_factor=self.timeout_factor, **kwargs)()
 
