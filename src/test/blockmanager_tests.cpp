@@ -252,8 +252,8 @@ BOOST_AUTO_TEST_CASE(blockmanager_flush_block_file)
     CBlock block3;
     block3.nVersion = 3;
 
-    // They are 80 bytes header + 1 byte 0x00 for vtx length
-    constexpr int TEST_BLOCK_SIZE{81};
+    // Peercoin adds the PoS header flags and the block signature.
+    const int TEST_BLOCK_SIZE{static_cast<int>(::GetSerializeSize(CBlock{}))};
 
     // Blockstore is empty
     BOOST_CHECK_EQUAL(blockman.CalculateCurrentUsage(), 0);
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(blockmanager_flush_block_file)
     // First two blocks are written as expected
     // Errors are expected because block data is junk, thrown AFTER successful read
     CBlock read_block;
-    BOOST_CHECK_EQUAL(read_block.nVersion, 0);
+    BOOST_CHECK_EQUAL(read_block.nVersion, 6);
     {
         ASSERT_DEBUG_LOG("Errors in block header");
         BOOST_CHECK(!blockman.ReadBlock(read_block, pos1, {}));
