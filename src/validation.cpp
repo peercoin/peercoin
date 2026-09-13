@@ -2387,6 +2387,14 @@ static int64_t num_blocks_total = 0;
 bool PeercoinContextualBlockChecks(const CBlock& block, BlockValidationState& state, CBlockIndex* pindex, bool fJustCheck, Chainstate& chainstate)
 {
     uint256 hashProofOfStake = uint256();
+    if (block.IsProofOfStake() &&
+        (block.vtx.size() < 2 ||
+         !block.vtx[1]->IsCoinStake() ||
+         block.vtx[1]->vin.empty() ||
+         block.vtx[1]->vout.size() < 2)) {
+        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cs-missing", "missing or malformed coinstake");
+    }
+
     // peercoin: verify hash target and signature of coinstake tx
     if (block.IsProofOfStake() && !CheckProofOfStake(state, pindex->pprev, block.vtx[1], block.nBits, hashProofOfStake, block.vtx[1]->nTime ? block.vtx[1]->nTime : block.nTime, chainstate)) {
         LogPrintf("WARNING: %s: check proof-of-stake failed for block %s\n", __func__, block.GetHash().ToString());
@@ -4116,8 +4124,17 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
         if (block.vtx[i]->IsCoinStake())
             return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cs-missing", "coinstake in wrong position");
 
+    // peercoin: proof-of-stake blocks require a well-formed coinstake.
+    if (block.IsProofOfStake() &&
+        (block.vtx.size() < 2 ||
+         !block.vtx[1]->IsCoinStake() ||
+         block.vtx[1]->vin.empty() ||
+         block.vtx[1]->vout.size() < 2)) {
+        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cs-missing", "missing or malformed coinstake");
+    }
+
     // peercoin: first coinbase output should be empty if proof-of-stake block
-    if (block.IsProofOfStake() && !block.vtx[0]->vout[0].IsEmpty())
+    if (block.IsProofOfStake() && !block.vtx[0]->vout.empty() && !block.vtx[0]->vout[0].IsEmpty())
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cb-notempty", "coinbase output not empty in PoS block");
 
     // Check coinbase timestamp
@@ -5823,6 +5840,16 @@ typedef std::vector<unsigned char> valtype;
 #ifdef ENABLE_WALLET
 bool SignBlock(CBlock& block, const CWallet& keystore)
 {
+    if (block.vtx.empty() || block.vtx[0]->vout.empty())
+        return false;
+    if (block.IsProofOfStake() &&
+        (block.vtx.size() < 2 ||
+         !block.vtx[1]->IsCoinStake() ||
+         block.vtx[1]->vin.empty() ||
+         block.vtx[1]->vout.size() < 2)) {
+        return false;
+    }
+
     std::vector<valtype> vSolutions;
     const CTxOut& txout = block.IsProofOfStake()? block.vtx[1]->vout[1] : block.vtx[0]->vout[0];
 
@@ -5884,6 +5911,16 @@ bool CheckBlockSignature(const CBlock& block)
 {
     if (block.GetHash() == Params().GetConsensus().hashGenesisBlock)
         return block.vchBlockSig.empty();
+
+    if (block.vtx.empty() || block.vtx[0]->vout.empty())
+        return false;
+    if (block.IsProofOfStake() &&
+        (block.vtx.size() < 2 ||
+         !block.vtx[1]->IsCoinStake() ||
+         block.vtx[1]->vin.empty() ||
+         block.vtx[1]->vout.size() < 2)) {
+        return false;
+    }
 
     std::vector<valtype> vSolutions;
     const CTxOut& txout = block.IsProofOfStake()? block.vtx[1]->vout[1] : block.vtx[0]->vout[0];
