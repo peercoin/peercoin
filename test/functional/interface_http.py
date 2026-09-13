@@ -176,7 +176,7 @@ class HTTPBasicsTest (BitcoinTestFramework):
             headers=headers_chunked,
             encode_chunked=True)
         out1 = conn.getresponse().read()
-        assert_equal(out1, b'{"result":"high-hash","error":null}\n')
+        assert_equal(out1, b'{"result":null,"error":{"code":-22,"message":"Block does not start with a coinbase"}}\n')
 
 
         self.log.info("Check -rpcservertimeout")

@@ -340,6 +340,8 @@ class TestNode():
             return
         self.log.debug("Stopping node")
         try:
+            if self.rpc_connected:
+                self.rpc._set_conn()
             # Do not use wait argument when testing older nodes, e.g. in wallet_backwards_compatibility.py
             if self.version_is_at_least(180000):
                 self.stop(wait=wait)
@@ -347,6 +349,10 @@ class TestNode():
                 self.stop()
         except http.client.CannotSendRequest:
             self.log.exception("Unable to stop node.")
+            self.wait_until_stopped()
+        except (http.client.RemoteDisconnected, http.client.BadStatusLine, ConnectionResetError, BrokenPipeError) as e:
+            self.log.debug("Unable to send stop request: %s", e)
+            self.wait_until_stopped()
 
         # If there are any running perf processes, stop them.
         for profile_name in tuple(self.perf_subprocesses.keys()):

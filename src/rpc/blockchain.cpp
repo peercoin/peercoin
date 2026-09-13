@@ -52,7 +52,9 @@
 
 #include <node/miner.h>
 #include <kernel.h>
+#include <chrono>
 #include <condition_variable>
+#include <functional>
 #include <memory>
 #include <mutex>
 
@@ -299,6 +301,49 @@ void RPCNotifyBlockChange(const CBlockIndex* pindex)
     cond_blockchange.notify_all();
 }
 
+class RPCBlockChangeNotifier final : public CValidationInterface
+{
+public:
+    ~RPCBlockChangeNotifier() {}
+
+protected:
+    void UpdatedBlockTip(const CBlockIndex* pindexNew, const CBlockIndex*, bool) override
+    {
+        RPCNotifyBlockChange(pindexNew);
+    }
+};
+
+static CUpdatedBlock WaitForBlockChangeRPC(const JSONRPCRequest& request, int timeout_ms, const std::function<bool(const CUpdatedBlock&)>& done)
+{
+    auto& signals = *CHECK_NONFATAL(EnsureAnyNodeContext(request.context).validation_signals);
+    auto notifier = std::make_shared<RPCBlockChangeNotifier>();
+    signals.RegisterSharedValidationInterface(notifier);
+    CUpdatedBlock block;
+    try {
+        {
+            WAIT_LOCK(cs_blockchange, lock);
+            const auto deadline = timeout_ms ? std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms)
+                                             : std::chrono::steady_clock::time_point::max();
+            while (!done(latestblock) && IsRPCRunning()) {
+                const auto now = std::chrono::steady_clock::now();
+                if (now >= deadline) break;
+                const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - now);
+                if (remaining < std::chrono::milliseconds(100)) {
+                    cond_blockchange.wait_for(lock, remaining);
+                } else {
+                    cond_blockchange.wait_for(lock, std::chrono::milliseconds(100));
+                }
+            }
+            block = latestblock;
+        }
+        signals.UnregisterSharedValidationInterface(notifier);
+        return block;
+    } catch (...) {
+        signals.UnregisterSharedValidationInterface(notifier);
+        throw;
+    }
+}
+
 static RPCHelpMan waitfornewblock()
 {
     return RPCHelpMan{"waitfornewblock",
@@ -323,16 +368,14 @@ static RPCHelpMan waitfornewblock()
     if (!request.params[0].isNull())
         timeout = request.params[0].getInt<int>();
 
-    CUpdatedBlock block;
+    CUpdatedBlock initial_block;
     {
-        WAIT_LOCK(cs_blockchange, lock);
-        block = latestblock;
-        if(timeout)
-            cond_blockchange.wait_for(lock, std::chrono::milliseconds(timeout), [&block]() EXCLUSIVE_LOCKS_REQUIRED(cs_blockchange) {return latestblock.height != block.height || latestblock.hash != block.hash || !IsRPCRunning(); });
-        else
-            cond_blockchange.wait(lock, [&block]() EXCLUSIVE_LOCKS_REQUIRED(cs_blockchange) {return latestblock.height != block.height || latestblock.hash != block.hash || !IsRPCRunning(); });
-        block = latestblock;
+        LOCK(cs_blockchange);
+        initial_block = latestblock;
     }
+    CUpdatedBlock block = WaitForBlockChangeRPC(request, timeout, [&initial_block](const CUpdatedBlock& current) {
+        return current.height != initial_block.height || current.hash != initial_block.hash;
+    });
     UniValue ret(UniValue::VOBJ);
     ret.pushKV("hash", block.hash.GetHex());
     ret.pushKV("height", block.height);
@@ -369,15 +412,9 @@ static RPCHelpMan waitforblock()
     if (!request.params[1].isNull())
         timeout = request.params[1].getInt<int>();
 
-    CUpdatedBlock block;
-    {
-        WAIT_LOCK(cs_blockchange, lock);
-        if(timeout)
-            cond_blockchange.wait_for(lock, std::chrono::milliseconds(timeout), [&hash]() EXCLUSIVE_LOCKS_REQUIRED(cs_blockchange) {return latestblock.hash == hash || !IsRPCRunning();});
-        else
-            cond_blockchange.wait(lock, [&hash]() EXCLUSIVE_LOCKS_REQUIRED(cs_blockchange) {return latestblock.hash == hash || !IsRPCRunning(); });
-        block = latestblock;
-    }
+    CUpdatedBlock block = WaitForBlockChangeRPC(request, timeout, [&hash](const CUpdatedBlock& current) {
+        return current.hash == hash;
+    });
 
     UniValue ret(UniValue::VOBJ);
     ret.pushKV("hash", block.hash.GetHex());
@@ -416,15 +453,9 @@ static RPCHelpMan waitforblockheight()
     if (!request.params[1].isNull())
         timeout = request.params[1].getInt<int>();
 
-    CUpdatedBlock block;
-    {
-        WAIT_LOCK(cs_blockchange, lock);
-        if(timeout)
-            cond_blockchange.wait_for(lock, std::chrono::milliseconds(timeout), [&height]() EXCLUSIVE_LOCKS_REQUIRED(cs_blockchange) {return latestblock.height >= height || !IsRPCRunning();});
-        else
-            cond_blockchange.wait(lock, [&height]() EXCLUSIVE_LOCKS_REQUIRED(cs_blockchange) {return latestblock.height >= height || !IsRPCRunning(); });
-        block = latestblock;
-    }
+    CUpdatedBlock block = WaitForBlockChangeRPC(request, timeout, [height](const CUpdatedBlock& current) {
+        return current.height >= height;
+    });
     UniValue ret(UniValue::VOBJ);
     ret.pushKV("hash", block.hash.GetHex());
     ret.pushKV("height", block.height);

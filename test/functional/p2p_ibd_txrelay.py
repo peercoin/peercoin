@@ -38,15 +38,17 @@ class P2PIBDTxRelayTest(BitcoinTestFramework):
         self.setup_clean_chain = True
         self.num_nodes = 2
         self.extra_args = [
-            ["-minrelaytxfee={:.8f}".format(NORMAL_FEE_FILTER)],
-            ["-minrelaytxfee={:.8f}".format(NORMAL_FEE_FILTER)],
+            ["-minrelaytxfee={:.6f}".format(NORMAL_FEE_FILTER)],
+            ["-minrelaytxfee={:.6f}".format(NORMAL_FEE_FILTER)],
         ]
 
     def run_test(self):
-        self.log.info("Check that nodes set minfilter to MAX_MONEY while still in IBD")
+        self.log.info("Check that nodes do not send feefilter messages while still in IBD")
+        # peercoin: feefilter peer messaging is disabled in the legacy net
+        # processing path, so minfeefilter stays unset here.
         for node in self.nodes:
             assert node.getblockchaininfo()['initialblockdownload']
-            self.wait_until(lambda: all(peer['minfeefilter'] == MAX_FEE_FILTER for peer in node.getpeerinfo()))
+            assert all(peer['minfeefilter'] == 0 for peer in node.getpeerinfo())
 
         self.nodes[0].setmocktime(int(time.time()))
         self.log.info("Mine one old block so we stay in IBD, then remember its coinbase wtxid")
@@ -68,12 +70,14 @@ class P2PIBDTxRelayTest(BitcoinTestFramework):
         self.nodes[0].disconnect_p2ps()
 
         self.log.info("Check that nodes don't process unsolicited transactions while still in IBD")
-        # A transaction hex pulled from tx_valid.json. There are no valid transactions since no UTXOs
-        # exist yet, but it should be a well-formed transaction.
-        rawhex = "0100000001b14bdcbc3e01bdaad36cc08e81e69c82e1060bc14e518db2b49aa43ad90ba260000000004a01ff473" + \
+        # A transaction hex pulled from tx_valid.json, adapted to the Peercoin
+        # legacy tx format by adding nTime after version. There are no valid
+        # transactions since no UTXOs exist yet, but it should parse.
+        bitcoin_rawhex = "0100000001b14bdcbc3e01bdaad36cc08e81e69c82e1060bc14e518db2b49aa43ad90ba260000000004a01ff473" + \
             "04402203f16c6f40162ab686621ef3000b04e75418a0c0cb2d8aebeac894ae360ac1e780220ddc15ecdfc3507ac48e168" + \
             "1a33eb60996631bf6bf5bc0a0682c4db743ce7ca2b01ffffffff0140420f00000000001976a914660d4ef3a743e3e696a" + \
             "d990364e555c271ad504b88ac00000000"
+        rawhex = bitcoin_rawhex[:8] + "00000000" + bitcoin_rawhex[8:]
         assert self.nodes[1].decoderawtransaction(rawhex) # returns a dict, should not throw
         tx = from_hex(CTransaction(), rawhex)
         peer_txer = self.nodes[0].add_p2p_connection(P2PInterface())
@@ -84,10 +88,10 @@ class P2PIBDTxRelayTest(BitcoinTestFramework):
         # Come out of IBD by generating a block
         self.generate(self.nodes[0], 1)
 
-        self.log.info("Check that nodes reset minfilter after coming out of IBD")
+        self.log.info("Check that feefilter messages remain disabled outside of IBD")
         for node in self.nodes:
             assert not node.getblockchaininfo()['initialblockdownload']
-            self.wait_until(lambda: all(peer['minfeefilter'] == NORMAL_FEE_FILTER for peer in node.getpeerinfo()))
+            assert all(peer['minfeefilter'] == 0 for peer in node.getpeerinfo())
 
         self.log.info("Check that txs confirmed during IBD are not in the recently-confirmed filter once out of ibd")
         peer_inver = self.nodes[0].add_p2p_connection(P2PDataStore())

@@ -68,6 +68,44 @@ static RPCHelpMan setmocktime()
     };
 }
 
+static RPCHelpMan bumpmocktime()
+{
+    return RPCHelpMan{"bumpmocktime",
+        "\nSimulate the passage of n seconds (-regtest only)\n",
+        {
+            {"n", RPCArg::Type::NUM, RPCArg::Optional::NO, "Number of seconds to advance mocktime by."},
+        },
+        RPCResult{RPCResult::Type::NONE, "", ""},
+        RPCExamples{HelpExampleCli("bumpmocktime", "60")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    if (!Params().IsMockableChain()) {
+        throw std::runtime_error("bumpmocktime is for regression testing (-regtest mode) only");
+    }
+
+    const int64_t seconds_to_bump{request.params[0].getInt<int64_t>()};
+    if (seconds_to_bump < 0) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Number of seconds cannot be negative: %s.", seconds_to_bump));
+    }
+    if (seconds_to_bump > 3600) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Number of seconds cannot be greater than 3600: %s.", seconds_to_bump));
+    }
+
+    const NodeContext& node_context{EnsureAnyNodeContext(request.context)};
+    const std::chrono::seconds new_time{GetTime<std::chrono::seconds>() + std::chrono::seconds{seconds_to_bump}};
+    SetMockTime(new_time);
+    for (const auto& chain_client : node_context.chain_clients) {
+        chain_client->setMockTime(new_time.count());
+    }
+    if (node_context.scheduler && seconds_to_bump > 0) {
+        node_context.scheduler->MockForward(std::chrono::seconds{seconds_to_bump});
+    }
+
+    return UniValue::VNULL;
+},
+    };
+}
+
 #if defined(USE_SYSCALL_SANDBOX)
 static RPCHelpMan invokedisallowedsyscall()
 {
@@ -420,6 +458,7 @@ void RegisterNodeRPCCommands(CRPCTable& t)
         {"control", &logging},
         {"util", &getindexinfo},
         {"hidden", &setmocktime},
+        {"hidden", &bumpmocktime},
         {"hidden", &mockscheduler},
         {"hidden", &echo},
         {"hidden", &echojson},
