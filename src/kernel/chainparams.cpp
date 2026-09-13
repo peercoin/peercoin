@@ -351,7 +351,6 @@ public:
 
         // peercoin bridge: headers sync params (v31 machinery has no defaults set)
         m_headers_sync_params = HeadersSyncParams{/*commitment_period=*/2016, /*redownload_buffer_size=*/1008};
-        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
         } else {
             bin = *options.challenge;
             consensus.nMinimumChainWork = uint256{};
@@ -366,7 +365,6 @@ public:
 
         // peercoin bridge: headers sync params (v31 machinery has no defaults set)
         m_headers_sync_params = HeadersSyncParams{/*commitment_period=*/2016, /*redownload_buffer_size=*/1008};
-        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
             LogInfo("Signet with challenge %s\n", HexStr(bin));
         }
 
@@ -375,6 +373,7 @@ public:
         }
 
         m_chain_type = ChainType::SIGNET;
+        checkpointData.mapCheckpoints = CheckpointsForNetwork(m_chain_type); // peercoin bridge
         consensus.signet_blocks = true;
         consensus.signet_challenge.assign(bin.begin(), bin.end());
         //consensus.nSubsidyHalvingInterval = 210000;
