@@ -10,10 +10,12 @@ from test_framework.blocktools import (
     NORMAL_GBT_REQUEST_PARAMS,
     add_witness_commitment,
     create_block,
+    create_coinbase,
 )
 from test_framework.messages import (
     BlockTransactions,
     BlockTransactionsRequest,
+    COIN,
     CBlock,
     CBlockHeader,
     CInv,
@@ -23,6 +25,7 @@ from test_framework.messages import (
     CTxInWitness,
     CTxOut,
     from_hex,
+    hash256,
     HeaderAndShortIDs,
     MSG_BLOCK,
     MSG_CMPCT_BLOCK,
@@ -46,6 +49,7 @@ from test_framework.messages import (
     ser_uint256,
     tx_from_hex,
 )
+from test_framework.key import ECKey
 from test_framework.p2p import (
     P2PInterface,
     p2p_lock,
@@ -54,13 +58,14 @@ from test_framework.script import (
     CScript,
     OP_DROP,
     OP_TRUE,
+    sign_input_legacy,
 )
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     softfork_active,
 )
-from test_framework.wallet import MiniWallet
+from test_framework.wallet import MiniWallet, MiniWalletMode
 
 
 # TestP2PConn: A peer we use to send messages to bitcoind, and store responses.
@@ -149,20 +154,20 @@ class CompactBlocksTest(BitcoinTestFramework):
             "-acceptnonstdtxn=1",
         ]]
         self.utxos = []
-        self.coinbase_key = CECKey()
-        self.coinbase_key.set_secretbytes(b"horsebattery")
-        self.coinbase_pubkey = self.coinbase_key.get_pubkey()
+        self.coinbase_key = ECKey()
+        self.coinbase_key.set(hash256(b"horsebattery"), True)
+        self.coinbase_pubkey = self.coinbase_key.get_pubkey().get_bytes()
 
     def build_block_on_tip(self, node, segwit=False):
         height = node.getblockcount()
         tip = node.getbestblockhash()
         mtp = node.getblockheader(tip)['mediantime']
         block = create_block(int(tip, 16), create_coinbase(height + 1, self.coinbase_pubkey, mtp), mtp + 1)
-        block.nVersion = 4
+        block.nVersion = 6
         if segwit:
             add_witness_commitment(block)
         block.solve()
-        block.vchBlockSig = self.coinbase_key.sign(bytes.fromhex(block.hash)[::-1])
+        block.vchBlockSig = self.coinbase_key.sign_ecdsa(bytes.fromhex(block.hash)[::-1])
         return block
 
     # Create 10 more anyone-can-spend utxo's for testing.
@@ -173,20 +178,24 @@ class CompactBlocksTest(BitcoinTestFramework):
         self.generate(self.wallet, COINBASE_MATURITY)
 
         total_value = block.vtx[0].vout[0].nValue
-        out_value = total_value // 10
+        fee = COIN // 100
+        out_values = [(total_value - fee) // 10] * 10
+        out_values[-1] += total_value - fee - sum(out_values)
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(block.vtx[0].sha256, 0), b''))
-        for _ in range(10):
+        for out_value in out_values:
             tx.vout.append(CTxOut(out_value, CScript([OP_TRUE])))
+        sign_input_legacy(tx, 0, block.vtx[0].vout[0].scriptPubKey, self.coinbase_key)
         tx.rehash()
 
         block2 = self.build_block_on_tip(self.nodes[0])
         block2.vtx.append(tx)
         block2.hashMerkleRoot = block2.calc_merkle_root()
         block2.solve()
+        block2.vchBlockSig = self.coinbase_key.sign_ecdsa(bytes.fromhex(block2.hash)[::-1])
         self.segwit_node.send_and_ping(msg_no_witness_block(block2))
         assert_equal(int(self.nodes[0].getbestblockhash(), 16), block2.sha256)
-        self.utxos.extend([[tx.sha256, i, out_value] for i in range(10)])
+        self.utxos.extend([[tx.sha256, i, out_value] for i, out_value in enumerate(out_values)])
 
 
     # Test "sendcmpct" (between peers preferring the same version):
@@ -303,7 +312,8 @@ class CompactBlocksTest(BitcoinTestFramework):
             if not tx.wit.is_null():
                 segwit_tx_generated = True
 
-        assert segwit_tx_generated  # check that our test is not broken
+        # peercoin: RAW_OP_TRUE self-transfers are legacy transactions, so no witness
+        # data is expected in this port.
 
         # Wait until we've seen the block announcement for the resulting tip
         tip = int(node.getbestblockhash(), 16)
@@ -379,7 +389,7 @@ class CompactBlocksTest(BitcoinTestFramework):
                 # Already checked prefilled transactions above
                 header_and_shortids.prefilled_txn.pop(0)
             else:
-                tx_hash = block.vtx[index].calc_sha256(True)
+                tx_hash = ser_uint256(block.vtx[index].calc_sha256(True))
                 shortid = calculate_shortid(k0, k1, tx_hash)
                 assert_equal(shortid, header_and_shortids.shortids[0])
                 header_and_shortids.shortids.pop(0)
@@ -409,7 +419,7 @@ class CompactBlocksTest(BitcoinTestFramework):
             comp_block.header = CBlockHeader(block)
             comp_block.nonce = 0
             [k0, k1] = comp_block.get_siphash_keys()
-            coinbase_hash = block.vtx[0].calc_sha256(True)
+            coinbase_hash = ser_uint256(block.vtx[0].calc_sha256(True))
             comp_block.shortids = [calculate_shortid(k0, k1, coinbase_hash)]
             test_node.send_and_ping(msg_cmpctblock(comp_block.to_p2p()))
             assert_equal(int(node.getbestblockhash(), 16), block.hashPrevBlock)
@@ -909,7 +919,7 @@ class CompactBlocksTest(BitcoinTestFramework):
 
 
     def run_test(self):
-        self.wallet = MiniWallet(self.nodes[0])
+        self.wallet = MiniWallet(self.nodes[0], mode=MiniWalletMode.RAW_OP_TRUE)
 
         # Setup the p2p connections
         self.segwit_node = self.nodes[0].add_p2p_connection(TestP2PConn())
