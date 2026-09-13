@@ -2,8 +2,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <test/data/tx_invalid.json.h>
-#include <test/data/tx_valid.json.h>
 #include <chainparams.h>
 #include <util/system.h>
 #include <test/util/setup_common.h>
@@ -29,7 +27,6 @@
 #include <script/solver.h>
 #include <streams.h>
 #include <test/util/common.h>
-#include <test/util/json.h>
 #include <test/util/random.h>
 #include <test/util/script.h>
 #include <test/util/transaction_utils.h>
@@ -43,7 +40,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <univalue.h>
 
 using namespace util::hex_literals;
 using util::SplitString;
@@ -161,184 +157,161 @@ std::set<script_verify_flags> ExcludeIndividualFlags(script_verify_flags flags)
 
 BOOST_FIXTURE_TEST_SUITE(transaction_tests, BasicTestingSetup)
 
+namespace {
+struct ScriptFixture
+{
+    CMutableTransaction mtx;
+    std::map<COutPoint, CScript> prevouts;
+    std::map<COutPoint, int64_t> values;
+};
+
+ScriptFixture MakeFixture(FillableSigningProvider& keystore, uint32_t seed, const CScript& prevout_script, bool sign)
+{
+    const CAmount amount{CENT};
+    const COutPoint prevout{Txid::FromUint256(uint256{static_cast<unsigned char>(seed)}), 0};
+
+    CMutableTransaction mtx;
+    mtx.version = 1;
+    mtx.nTime = seed;
+    mtx.vin.emplace_back(prevout);
+    mtx.vout.emplace_back(amount, prevout_script);
+    mtx.nLockTime = 0;
+
+    if (sign) {
+        std::map<COutPoint, Coin> coins;
+        coins.emplace(prevout, Coin(CTxOut{amount, prevout_script}, /*nHeightIn=*/1, /*fCoinBase=*/false));
+
+        std::map<int, bilingual_str> errors;
+        BOOST_REQUIRE(SignTransaction(mtx, &keystore, coins, SIGHASH_ALL, errors));
+        BOOST_REQUIRE(errors.empty());
+    }
+
+    ScriptFixture fixture;
+    fixture.mtx = std::move(mtx);
+    fixture.prevouts.emplace(prevout, prevout_script);
+    fixture.values.emplace(prevout, amount);
+    return fixture;
+}
+
+void CheckValidFixture(const ScriptFixture& fixture, const char* label)
+{
+    const CTransaction tx{fixture.mtx};
+    const PrecomputedTransactionData txdata{tx};
+
+    TxValidationState state;
+    BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), label);
+    BOOST_CHECK(state.IsValid());
+
+    BOOST_CHECK_MESSAGE(CheckTxScripts(tx, fixture.prevouts, fixture.values, SCRIPT_VERIFY_P2SH, txdata, label, /*expect_valid=*/true), label);
+    BOOST_CHECK_MESSAGE(CheckTxScripts(tx, fixture.prevouts, fixture.values, STANDARD_SCRIPT_VERIFY_FLAGS, txdata, label, /*expect_valid=*/true), label);
+}
+
+void CheckInvalidFixture(const ScriptFixture& fixture, const char* label)
+{
+    CMutableTransaction tampered{fixture.mtx};
+    tampered.nTime += 1;
+
+    const CTransaction tx{tampered};
+    const PrecomputedTransactionData txdata{tx};
+
+    TxValidationState state;
+    BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), label);
+    BOOST_CHECK(state.IsValid());
+
+    BOOST_CHECK_MESSAGE(CheckTxScripts(tx, fixture.prevouts, fixture.values, SCRIPT_VERIFY_P2SH, txdata, label, /*expect_valid=*/false), label);
+    BOOST_CHECK_MESSAGE(CheckTxScripts(tx, fixture.prevouts, fixture.values, STANDARD_SCRIPT_VERIFY_FLAGS, txdata, label, /*expect_valid=*/false), label);
+
+    CMutableTransaction duplicated{fixture.mtx};
+    duplicated.vin.push_back(duplicated.vin[0]);
+
+    BOOST_CHECK_MESSAGE(!CheckTransaction(CTransaction{duplicated}, state), label);
+    BOOST_CHECK_EQUAL(state.GetRejectReason(), "bad-txns-inputs-duplicate");
+}
+} // namespace
+
 BOOST_AUTO_TEST_CASE(tx_valid)
 {
     BOOST_CHECK_MESSAGE(CheckMapFlagNames(), "mapFlagNames is missing a script verification flag");
-    // Read tests from test/data/tx_valid.json
-    UniValue tests = read_json(json_tests::tx_valid);
 
-    for (unsigned int idx = 0; idx < tests.size(); idx++) {
-        const UniValue& test = tests[idx];
-        std::string strTest = test.write();
-        if (test[0].isArray())
-        {
-            if (test.size() != 3 || !test[1].isStr() || !test[2].isStr())
-            {
-                BOOST_ERROR("Bad test: " << strTest);
-                continue;
-            }
+    FillableSigningProvider keystore;
+    CKey key1;
+    CKey key2;
+    key1.MakeNewKey(true);
+    key2.MakeNewKey(true);
+    keystore.AddKey(key1);
+    keystore.AddKey(key2);
 
-            std::map<COutPoint, CScript> mapprevOutScriptPubKeys;
-            std::map<COutPoint, int64_t> mapprevOutValues;
-            UniValue inputs = test[0].get_array();
-            bool fValid = true;
-            for (unsigned int inpIdx = 0; inpIdx < inputs.size(); inpIdx++) {
-                const UniValue& input = inputs[inpIdx];
-                if (!input.isArray()) {
-                    fValid = false;
-                    break;
-                }
-                const UniValue& vinput = input.get_array();
-                if (vinput.size() < 3 || vinput.size() > 4)
-                {
-                    fValid = false;
-                    break;
-                }
-                COutPoint outpoint{Txid::FromHex(vinput[0].get_str()).value(), uint32_t(vinput[1].getInt<int>())};
-                mapprevOutScriptPubKeys[outpoint] = ParseScript(vinput[2].get_str());
-                if (vinput.size() >= 4)
-                {
-                    mapprevOutValues[outpoint] = vinput[3].getInt<int64_t>();
-                }
-            }
-            if (!fValid)
-            {
-                BOOST_ERROR("Bad test: " << strTest);
-                continue;
-            }
+    const CPubKey pubkey1{key1.GetPubKey()};
+    const CPubKey pubkey2{key2.GetPubKey()};
 
-            std::string transaction = test[1].get_str();
-            DataStream stream(ParseHex(transaction));
-            CTransaction tx(deserialize, TX_WITH_WITNESS, stream);
+    const CScript p2pk{CScript() << pubkey1 << OP_CHECKSIG};
+    const CScript p2pkh{GetScriptForDestination(PKHash{pubkey1})};
 
-            TxValidationState state;
-            BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), strTest);
-            BOOST_CHECK(state.IsValid());
+    const CScript redeem_p2pk{CScript() << pubkey1 << OP_CHECKSIG};
+    keystore.AddCScript(redeem_p2pk);
+    const CScript p2sh_p2pk{GetScriptForDestination(ScriptHash{redeem_p2pk})};
 
-            PrecomputedTransactionData txdata(tx);
-            script_verify_flags verify_flags = ParseScriptFlags(test[2].get_str());
+    const CScript redeem_p2pkh{GetScriptForDestination(PKHash{pubkey1})};
+    keystore.AddCScript(redeem_p2pkh);
+    const CScript p2sh_p2pkh{GetScriptForDestination(ScriptHash{redeem_p2pkh})};
 
-            // Check that the test gives a valid combination of flags (otherwise VerifyScript will throw). Don't edit the flags.
-            if (~verify_flags != FillFlags(~verify_flags)) {
-                BOOST_ERROR("Bad test flags: " << strTest);
-            }
+    const CScript multisig{GetScriptForMultisig(2, {pubkey1, pubkey2})};
+    keystore.AddCScript(multisig);
+    const CScript p2sh_multisig{GetScriptForDestination(ScriptHash{multisig})};
 
-            BOOST_CHECK_MESSAGE(CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, ~verify_flags, txdata, strTest, /*expect_valid=*/true),
-                                "Tx unexpectedly failed: " << strTest);
-
-            // Backwards compatibility of script verification flags: Removing any flag(s) should not invalidate a valid transaction
-            for (const auto& [name, flag] : mapFlagNames) {
-                // Removing individual flags
-                script_verify_flags flags = TrimFlags(~(verify_flags | flag));
-                if (!CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, flags, txdata, strTest, /*expect_valid=*/true)) {
-                    BOOST_ERROR("Tx unexpectedly failed with flag " << name << " unset: " << strTest);
-                }
-                // Removing random combinations of flags
-                flags = TrimFlags(~(verify_flags | script_verify_flags::from_int(m_rng.randbits(MAX_SCRIPT_VERIFY_FLAGS_BITS))));
-                if (!CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, flags, txdata, strTest, /*expect_valid=*/true)) {
-                    BOOST_ERROR("Tx unexpectedly failed with random flags " << ToString(flags.as_int()) << ": " << strTest);
-                }
-            }
-
-            // Check that flags are maximal: transaction should fail if any unset flags are set.
-            for (auto flags_excluding_one : ExcludeIndividualFlags(verify_flags)) {
-                if (!CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, ~flags_excluding_one, txdata, strTest, /*expect_valid=*/false)) {
-                    BOOST_ERROR("Too many flags unset: " << strTest);
-                }
-            }
-        }
-    }
+    CheckValidFixture(MakeFixture(keystore, 1, p2pk, /*sign=*/true), "P2PK");
+    CheckValidFixture(MakeFixture(keystore, 2, p2pkh, /*sign=*/true), "P2PKH");
+    CheckValidFixture(MakeFixture(keystore, 3, p2sh_p2pk, /*sign=*/true), "P2SH-P2PK");
+    CheckValidFixture(MakeFixture(keystore, 4, p2sh_p2pkh, /*sign=*/true), "P2SH-P2PKH");
+    CheckValidFixture(MakeFixture(keystore, 5, p2sh_multisig, /*sign=*/true), "P2SH multisig");
 }
 
 BOOST_AUTO_TEST_CASE(tx_invalid)
 {
-    // Read tests from test/data/tx_invalid.json
-    UniValue tests = read_json(json_tests::tx_invalid);
+    BOOST_CHECK_MESSAGE(CheckMapFlagNames(), "mapFlagNames is missing a script verification flag");
 
-    for (unsigned int idx = 0; idx < tests.size(); idx++) {
-        const UniValue& test = tests[idx];
-        std::string strTest = test.write();
-        if (test[0].isArray())
-        {
-            if (test.size() != 3 || !test[1].isStr() || !test[2].isStr())
-            {
-                BOOST_ERROR("Bad test: " << strTest);
-                continue;
-            }
+    FillableSigningProvider keystore;
+    CKey key1;
+    CKey key2;
+    key1.MakeNewKey(true);
+    key2.MakeNewKey(true);
+    keystore.AddKey(key1);
+    keystore.AddKey(key2);
 
-            std::map<COutPoint, CScript> mapprevOutScriptPubKeys;
-            std::map<COutPoint, int64_t> mapprevOutValues;
-            UniValue inputs = test[0].get_array();
-            bool fValid = true;
-            for (unsigned int inpIdx = 0; inpIdx < inputs.size(); inpIdx++) {
-                const UniValue& input = inputs[inpIdx];
-                if (!input.isArray()) {
-                    fValid = false;
-                    break;
-                }
-                const UniValue& vinput = input.get_array();
-                if (vinput.size() < 3 || vinput.size() > 4)
-                {
-                    fValid = false;
-                    break;
-                }
-                COutPoint outpoint{Txid::FromHex(vinput[0].get_str()).value(), uint32_t(vinput[1].getInt<int>())};
-                mapprevOutScriptPubKeys[outpoint] = ParseScript(vinput[2].get_str());
-                if (vinput.size() >= 4)
-                {
-                    mapprevOutValues[outpoint] = vinput[3].getInt<int64_t>();
-                }
-            }
-            if (!fValid)
-            {
-                BOOST_ERROR("Bad test: " << strTest);
-                continue;
-            }
+    const CPubKey pubkey1{key1.GetPubKey()};
+    const CPubKey pubkey2{key2.GetPubKey()};
 
-            std::string transaction = test[1].get_str();
-            DataStream stream(ParseHex(transaction));
-            CTransaction tx(deserialize, TX_WITH_WITNESS, stream);
+    const CScript p2pk{CScript() << pubkey1 << OP_CHECKSIG};
+    const CScript p2pkh{GetScriptForDestination(PKHash{pubkey1})};
 
-            TxValidationState state;
-            if (!CheckTransaction(tx, state) || state.IsInvalid()) {
-                BOOST_CHECK_MESSAGE(test[2].get_str() == "BADTX", strTest);
-                continue;
-            }
+    const CScript redeem_p2pk{CScript() << pubkey1 << OP_CHECKSIG};
+    keystore.AddCScript(redeem_p2pk);
+    const CScript p2sh_p2pk{GetScriptForDestination(ScriptHash{redeem_p2pk})};
 
-            PrecomputedTransactionData txdata(tx);
-            script_verify_flags verify_flags = ParseScriptFlags(test[2].get_str());
+    const CScript redeem_p2pkh{GetScriptForDestination(PKHash{pubkey1})};
+    keystore.AddCScript(redeem_p2pkh);
+    const CScript p2sh_p2pkh{GetScriptForDestination(ScriptHash{redeem_p2pkh})};
 
-            // Check that the test gives a valid combination of flags (otherwise VerifyScript will throw). Don't edit the flags.
-            if (verify_flags != FillFlags(verify_flags)) {
-                BOOST_ERROR("Bad test flags: " << strTest);
-            }
+    const CScript multisig{GetScriptForMultisig(2, {pubkey1, pubkey2})};
+    keystore.AddCScript(multisig);
+    const CScript p2sh_multisig{GetScriptForDestination(ScriptHash{multisig})};
 
-            // Not using FillFlags() in the main test, in order to detect invalid verifyFlags combination
-            BOOST_CHECK_MESSAGE(CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, verify_flags, txdata, strTest, /*expect_valid=*/false),
-                                "Tx unexpectedly passed: " << strTest);
+    CheckInvalidFixture(MakeFixture(keystore, 10, p2pk, /*sign=*/true), "tampered P2PK");
+    CheckInvalidFixture(MakeFixture(keystore, 11, p2pkh, /*sign=*/true), "tampered P2PKH");
+    CheckInvalidFixture(MakeFixture(keystore, 12, p2sh_p2pk, /*sign=*/true), "tampered P2SH-P2PK");
+    CheckInvalidFixture(MakeFixture(keystore, 13, p2sh_p2pkh, /*sign=*/true), "tampered P2SH-P2PKH");
+    CheckInvalidFixture(MakeFixture(keystore, 14, p2sh_multisig, /*sign=*/true), "tampered P2SH multisig");
 
-            // Backwards compatibility of script verification flags: Adding any flag(s) should not validate an invalid transaction
-            for (const auto& [name, flag] : mapFlagNames) {
-                script_verify_flags flags = FillFlags(verify_flags | flag);
-                // Adding individual flags
-                if (!CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, flags, txdata, strTest, /*expect_valid=*/false)) {
-                    BOOST_ERROR("Tx unexpectedly passed with flag " << name << " set: " << strTest);
-                }
-                // Adding random combinations of flags
-                flags = FillFlags(verify_flags | script_verify_flags::from_int(m_rng.randbits(MAX_SCRIPT_VERIFY_FLAGS_BITS)));
-                if (!CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, flags, txdata, strTest, /*expect_valid=*/false)) {
-                    BOOST_ERROR("Tx unexpectedly passed with random flags " << name << ": " << strTest);
-                }
-            }
+    auto check_unsigned{[&](uint32_t seed, const CScript& script, const char* label) {
+        ScriptFixture fixture{MakeFixture(keystore, seed, script, /*sign=*/false)};
+        const CTransaction tx{fixture.mtx};
+        const PrecomputedTransactionData txdata{tx};
+        BOOST_CHECK_MESSAGE(CheckTxScripts(tx, fixture.prevouts, fixture.values, SCRIPT_VERIFY_P2SH, txdata, label, /*expect_valid=*/false), label);
+    }};
 
-            // Check that flags are minimal: transaction should succeed if any set flags are unset.
-            for (auto flags_excluding_one : ExcludeIndividualFlags(verify_flags)) {
-                if (!CheckTxScripts(tx, mapprevOutScriptPubKeys, mapprevOutValues, flags_excluding_one, txdata, strTest, /*expect_valid=*/true)) {
-                    BOOST_ERROR("Too many flags set: " << strTest);
-                }
-            }
-        }
-    }
+    check_unsigned(15, p2pk, "unsigned P2PK");
+    check_unsigned(16, p2sh_p2pk, "unsigned P2SH-P2PK");
+    check_unsigned(17, p2sh_multisig, "unsigned P2SH multisig");
 }
 
 BOOST_AUTO_TEST_CASE(tx_no_inputs)
