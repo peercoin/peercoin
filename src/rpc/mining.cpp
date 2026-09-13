@@ -162,7 +162,8 @@ static RPCHelpMan getnetworkghps()
         }
         pindex = chainman.ActiveChain().Next(pindex);
     }
-    double dNetworkGhps = (pindex ? GetDifficulty(*pindex) : 0.0) * 4.294967296 / nTargetSpacingWork;
+    const CBlockIndex* diff_index = pindex ? pindex : GetLastBlockIndex(chainman.ActiveChain().Tip(), false);
+    double dNetworkGhps = (diff_index ? GetDifficulty(*diff_index) : 1.0) * 4.294967296 / nTargetSpacingWork;
     return dNetworkGhps;
 },
     };
