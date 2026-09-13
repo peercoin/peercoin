@@ -436,6 +436,7 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
 void PoSMiner(NodeContext& m_node)
 {
     std::string strMintMessage = _("Info: Minting suspended due to locked wallet.");
+    std::string strMintNoPeersMessage = _("Info: Minting suspended due to network disconnection.");
     std::string strMintSyncMessage = _("Info: Minting suspended while synchronizing wallet.");
     std::string strMintDisabledMessage = _("Info: Minting disabled by 'nominting' option.");
     std::string strMintBlockMessage = _("Info: Minting suspended due to block creation failure.");
@@ -537,20 +538,41 @@ void PoSMiner(NodeContext& m_node)
                 if (destination_wallet.lock() != wallet) have_destination = false;
             }
 
-            if (false /* ppport: v31 dropped MiningRequiresPeers; solo staking allowed */) {
-                while (connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0 || m_node.chainman->IsInitialBlockDownload()) {
-                    while (connman == nullptr) {
-                        if (!sleep_or_stop(std::chrono::seconds(1))) return;
+            // peercoin: solo minting is not allowed; do not build blocks
+            // unless at least one peer is connected and the wallet is synced.
+            while (connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0 || m_node.chainman->IsInitialBlockDownload()) {
+                g_fStaking = false;
+                if (connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0) {
+                    if (g_strMintWarning != strMintNoPeersMessage) {
+                        g_strMintWarning = strMintNoPeersMessage;
+                        LogPrintf("Minter thread sleeps while disconnected\n");
+                        uiInterface.NotifyAlertChanged();
                     }
-                    if (!sleep_or_stop(std::chrono::seconds(10))) return;
-                    wallet = get_wallet();
-                    if (!wallet) {
-                        if (!sleep_or_stop(std::chrono::milliseconds(500))) return;
-                        continue;
+                } else {
+                    if (g_strMintWarning != strMintSyncMessage) {
+                        g_strMintWarning = strMintSyncMessage;
+                        LogPrintf("Minter thread sleeps while synchronizing\n");
+                        uiInterface.NotifyAlertChanged();
                     }
-                    if (destination_wallet.lock() != wallet) have_destination = false;
                 }
+                fNeedToClear = true;
+
+                if (!sleep_or_stop(std::chrono::seconds(10))) return;
+
+                wallet = get_wallet();
+                if (!wallet) {
+                    have_destination = false;
+                    destination_wallet.reset();
+                    if (g_strMintWarning != strMintNoWalletMessage) {
+                        g_strMintWarning = strMintNoWalletMessage;
+                        uiInterface.NotifyAlertChanged();
+                    }
+                    if (!sleep_or_stop(std::chrono::milliseconds(500))) return;
+                    continue;
+                }
+                if (destination_wallet.lock() != wallet) have_destination = false;
             }
+            g_fStaking = true;
 
             CBlockIndex* pindexPrev{nullptr};
             // peercoin: never sleep while holding cs_main (starves msghand/opencon during IBD)
