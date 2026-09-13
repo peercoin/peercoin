@@ -419,6 +419,7 @@ void Shutdown(NodeContext& node)
     node.ecc_context.reset();
     node.kernel.reset();
 
+    node::StopStakeMinter();
     if (m_minter_thread.joinable()) {
         m_minter_thread.join();
     }

@@ -97,7 +97,8 @@ void WalletController::closeWallet(WalletModel* wallet_model, QWidget* parent)
     box.setDefaultButton(QMessageBox::Yes);
     if (box.exec() != QMessageBox::Yes) return;
 
-    // peercoin: stop minter thread
+    // peercoin: stop minter thread cooperatively before unloading the wallet
+    node::StopStakeMinter();
     if (m_minter_thread.joinable()) {
         m_minter_thread.join();
     }
@@ -115,6 +116,10 @@ void WalletController::closeAllWallets(QWidget* parent)
         QMessageBox::Yes);
     if (button != QMessageBox::Yes) return;
 
+    node::StopStakeMinter();
+    if (m_minter_thread.joinable()) {
+        m_minter_thread.join();
+    }
     QMutexLocker locker(&m_mutex);
     for (WalletModel* wallet_model : m_wallets) {
         removeWallet(wallet_model);
