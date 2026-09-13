@@ -4,12 +4,14 @@
 
 #include <qt/transactionrecord.h>
 
+#include <addresstype.h>
 #include <chain.h>
 #include <interfaces/wallet.h>
 #include <key_io.h>
 #include <wallet/types.h>
 
 #include <stdint.h>
+#include <variant>
 
 #include <QDateTime>
 
@@ -24,6 +26,25 @@ bool TransactionRecord::showTransaction()
     // There are currently no cases where we hide transactions, but
     // we may want to use this in the future
     return true;
+}
+
+namespace {
+bool PeercoinEncodeDestination(const CTxDestination& txout_address, const CScript& scriptPubKey, std::string& address)
+{
+    CTxDestination dest = txout_address;
+    if (const auto* pk_dest = std::get_if<PubKeyDestination>(&dest)) {
+        dest = PKHash(pk_dest->GetPubKey());
+    } else if (std::get_if<CNoDestination>(&dest)) {
+        ExtractDestination(scriptPubKey, dest);
+        if (const auto* pk_dest = std::get_if<PubKeyDestination>(&dest)) {
+            dest = PKHash(pk_dest->GetPubKey());
+        }
+    }
+
+    if (std::get_if<CNoDestination>(&dest)) return false;
+    address = EncodeDestination(dest);
+    return true;
+}
 }
 
 /*
@@ -44,17 +65,18 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const interface
         if (!nDebit)
             nDebit = wtx.tx->GetValueOut() - nCredit;
         TransactionRecord sub(hash, nTime, TransactionRecord::StakeMint, "", -nDebit, wtx.tx->GetValueOut());
-        CTxDestination address;
-        const CTxOut& txout = wtx.tx->vout[1];
-        isminetype mine = wtx.txout_is_mine[1];
-        if (wtx.tx->vout[1].nValue == 0) {
-            const CTxOut& txout2 = wtx.tx->vout[2];
-            mine = wtx.txout_is_mine[2];
-            if(ExtractDestination(txout2.scriptPubKey, address) && wtx.txout_address_is_mine[2])
-                sub.address = EncodeDestination(address);
+        unsigned int out = 1;
+        if (wtx.tx->vout.size() > 2 && wtx.tx->vout[1].nValue == 0) {
+            out = 2;
         }
-        else if(ExtractDestination(txout.scriptPubKey, address) && wtx.txout_address_is_mine[1])
-            sub.address = EncodeDestination(address);
+        isminetype mine = out < wtx.txout_is_mine.size() ? wtx.txout_is_mine[out] : wallet::ISMINE_NO;
+        std::string address;
+        if (out < wtx.tx->vout.size() &&
+            out < wtx.txout_address.size() &&
+            (wtx.txout_address_is_mine[out] || mine != wallet::ISMINE_NO) &&
+            PeercoinEncodeDestination(wtx.txout_address[out], wtx.tx->vout[out].scriptPubKey, address)) {
+            sub.address = address;
+        }
 
         sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
         parts.append(sub);
