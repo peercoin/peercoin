@@ -24,16 +24,16 @@
 using namespace util::hex_literals;
 using util::ToString;
 
-static const std::string strSecret1 = "5HxWvvfubhXpYYpS3tJkw6fq9jE9j18THftkZjHHfmFiWtmAbrj";
-static const std::string strSecret2 = "5KC4ejrDjv152FGwP386VD1i2NYc5KkfSMyv1nGy1VGDxGHqVY3";
-static const std::string strSecret1C = "Kwr371tjA9u2rFSMZjTNun2PXXP3WPZu2afRHTcta6KxEUdm1vEw";
-static const std::string strSecret2C = "L3Hq7a8FEQwJkW1M2GNKDW28546Vp5miewcCzSqUD9kCAXrJdS3g";
-static const std::string addr1 = "1QFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ";
-static const std::string addr2 = "1F5y5E5FMc5YzdJtB9hLaUe43GDxEKXENJ";
-static const std::string addr1C = "1NoJrossxPBKfCHuJXT4HadJrXRE9Fxiqs";
-static const std::string addr2C = "1CRj2HyM1CXWzHAXLQtiGLyggNT9WQqsDs";
+static const std::string strSecret1 = "78sTdgMfU6jGxfnDumSiPjeRX16eUjUcZpnfyy7bLod3ezs9pfQ";
+static const std::string strSecret2 = "7A71MVXycKCXSNEjEvG3wqzJPeR6q46piWsqS27GgXdZ6Rb828P";
+static const std::string strSecret1C = "U5jiYtiCncHbSiAbyuAVhMEBDRRvRQUsysvb4Sg6aQn6igYJEEiT";
+static const std::string strSecret2C = "UBBWZSwirsKsLxjbSS5S15Dukx9Nj6ghcEsNmRtgDUCLejsGDtUZ";
+static const std::string addr1 = "PXr1zKs4813g2DxzeeD6z6qgPUWLBfwvdx";
+static const std::string addr2 = "PNg9ECU6QXZjyTyeXE1sFNcKf1PqKUZ6zv";
+static const std::string addr1C = "PWPV1nGj1JfWe2xfebmaxUbaUGb7J2um2W";
+static const std::string addr2C = "PL1uBGNC481hy7qHgVDEwEwxJ7d2a939QL";
 
-static const std::string strAddressBad = "1HV9Lc3sNHZxwj4Zk6fB38tEmBryq2cBiF";
+static const std::string strAddressBad = "PR5KVaSiRD49vZjL6Ayhi2rWNw2ruWvge7";
 
 
 BOOST_FIXTURE_TEST_SUITE(key_tests, BasicTestingSetup)
