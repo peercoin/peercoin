@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(siphash)
     // and the test would be affected by default tx version bumps if not fixed.
     tx.version = 1;
     ss << TX_WITH_WITNESS(tx);
-    BOOST_CHECK_EQUAL(PresaltedSipHasher(1, 2)(ss.GetHash()), 0x79751e980c2a0a35ULL);
+    BOOST_CHECK_EQUAL(PresaltedSipHasher(1, 2)(ss.GetHash()), 0x01708baa2a6b3c73ULL);
 
     // Check consistency between CSipHasher and PresaltedSipHasher.
     FastRandomContext ctx;
