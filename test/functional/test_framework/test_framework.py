@@ -243,17 +243,17 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         fname_bitcoind = os.path.join(
             config["environment"]["BUILDDIR"],
-            "src",
+            "bin",
             "peercoind" + config["environment"]["EXEEXT"],
         )
         fname_bitcoincli = os.path.join(
             config["environment"]["BUILDDIR"],
-            "src",
+            "bin",
             "peercoin-cli" + config["environment"]["EXEEXT"],
         )
         fname_bitcoinutil = os.path.join(
             config["environment"]["BUILDDIR"],
-            "src",
+            "bin",
             "peercoin-util" + config["environment"]["EXEEXT"],
         )
         self.options.bitcoind = os.getenv("BITCOIND", default=fname_bitcoind)
@@ -261,8 +261,8 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         self.options.bitcoinutil = os.getenv("BITCOINUTIL", default=fname_bitcoinutil)
 
         os.environ['PATH'] = os.pathsep.join([
-            os.path.join(config['environment']['BUILDDIR'], 'src'),
-            os.path.join(config['environment']['BUILDDIR'], 'src', 'qt'), os.environ['PATH']
+            os.path.join(config['environment']['BUILDDIR'], 'bin'),
+            os.environ['PATH']
         ])
 
 
