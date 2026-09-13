@@ -757,6 +757,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
         SetupDummyInputs(keystore, coins, {11*CENT, 50*CENT, 21*CENT, 22*CENT});
 
     CMutableTransaction t;
+    t.version = 1;
     t.vin.resize(1);
     t.vin[0].prevout.hash = dummyTransactions[0].GetHash();
     t.vin[0].prevout.n = 1;
@@ -925,18 +926,13 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     // Check tx-size (non-standard if transaction weight is > MAX_STANDARD_TX_WEIGHT)
     t.vin.clear();
     t.vin.resize(2438); // size per input (empty scriptSig): 41 bytes
-    t.vout[0].scriptPubKey = CScript() << OP_RETURN << std::vector<unsigned char>(19, 0); // output size: 30 bytes
-    // tx header:                12 bytes =>     48 weight units
-    // 2438 inputs: 2438*41 = 99958 bytes => 399832 weight units
-    //    1 output:              30 bytes =>    120 weight units
-    //                      ======================================
-    //                                total: 400000 weight units
-    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(t)), 400000);
+    t.vout[0].scriptPubKey = CScript() << OP_RETURN << std::vector<unsigned char>(15, 0);
+    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(t)), MAX_STANDARD_TX_WEIGHT);
     CheckIsStandard(t);
 
-    // increase output size by one byte, so we end up with 400004 weight units
-    t.vout[0].scriptPubKey = CScript() << OP_RETURN << std::vector<unsigned char>(20, 0); // output size: 31 bytes
-    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(t)), 400004);
+    // increase output size by one byte, so we end up over MAX_STANDARD_TX_WEIGHT
+    t.vout[0].scriptPubKey = CScript() << OP_RETURN << std::vector<unsigned char>(16, 0);
+    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(t)), MAX_STANDARD_TX_WEIGHT + WITNESS_SCALE_FACTOR);
     CheckIsNotStandard(t, "tx-size");
 
     // Check bare multisig (standard if policy flag g_bare_multi is set)
