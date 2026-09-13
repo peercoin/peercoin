@@ -140,6 +140,7 @@ bool IsProtocolV07(unsigned int nTimeTx)
 
 bool IsBTC16BIPsEnabled(uint32_t nTimeTx)
 {
+    if (Params().GetChainTypeString() == "regtest") return true;
     bool fTestNet = Params().GetChainTypeString() != "main";
     return (nTimeTx >= (fTestNet? nBTC16BIPsTestSwitchTime : nBTC16BIPsSwitchTime));
 }
