@@ -514,8 +514,14 @@ static bool GetKernelStakeModifierV03(CBlockIndex* pindexPrev, uint256 hashBlock
     while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval)
     {
         const CBlockIndex* old_pindex = pindex;
-        pindex = (!tmpChain.empty() && pindex->nHeight >= tmpChain[0]->nHeight - 1)? tmpChain[n++] : chainstate.m_chain.Next(pindex);
-        if (n > tmpChain.size() || pindex == NULL) // check if tmpChain[n+1] exists
+        pindex = nullptr;
+        if (!tmpChain.empty()) {
+            if (n < tmpChain.size())
+                pindex = (old_pindex->nHeight >= tmpChain[0]->nHeight - 1) ? tmpChain[n++] : chainstate.m_chain.Next(old_pindex);
+        } else {
+            pindex = chainstate.m_chain.Next(old_pindex);
+        }
+        if ((!tmpChain.empty() && n >= tmpChain.size()) || pindex == NULL)
         {   // reached best block; may happen if node is behind on block chain
             if (fPrintProofOfStake || (old_pindex->GetBlockTime() + params.nStakeMinAge - nStakeModifierSelectionInterval > TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime())))
                 return error("GetKernelStakeModifier() : reached best block %s at height %d from block %s",
@@ -581,6 +587,9 @@ bool CheckStakeKernelHash(unsigned int nBits, CBlockIndex* pindexPrev, const CBl
 
     if (nTimeBlockFrom + params.nStakeMinAge > nTimeTx) // Min age requirement
         return error("CheckStakeKernelHash() : min age violation");
+
+    if (prevout.n >= txPrev->vout.size())
+        return error("CheckStakeKernelHash() : invalid kernel prevout.n");
 
     CBigNum bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
@@ -657,6 +666,9 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
     if (!tx->IsCoinStake())
         return error("CheckProofOfStake() : called on non-coinstake %s", tx->GetHash().ToString());
 
+    if (tx->vin.empty())
+        return error("CheckProofOfStake() : coinstake has no inputs");
+
     // Kernel (input 0) must match the stake hash target per coin age (nBits)
     const CTxIn& txin = tx->vin[0];
 
@@ -701,11 +713,13 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
 
     if (txPrev->GetHash() != txin.prevout.hash)
         return error("%s() : txid mismatch in CheckProofOfStake()", __PRETTY_FUNCTION__);
+    if (txin.prevout.n >= txPrev->vout.size())
+        return error("CheckProofOfStake() : invalid kernel prevout.n");
 
     // Verify signature
     {
         int nIn = 0;
-        const CTxOut& prevOut = txPrev->vout[tx->vin[nIn].prevout.n];
+        const CTxOut& prevOut = txPrev->vout[txin.prevout.n];
         TransactionSignatureChecker checker(&(*tx), nIn, prevOut.nValue, PrecomputedTransactionData(*tx), MissingDataBehavior(1));
 
         if (!VerifyScript(tx->vin[nIn].scriptSig, prevOut.scriptPubKey, &(tx->vin[nIn].scriptWitness), SCRIPT_VERIFY_P2SH, checker, nullptr))
