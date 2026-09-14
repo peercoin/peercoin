@@ -20,6 +20,7 @@
 #include <common/system.h>
 #include <consensus/amount.h>
 #include <consensus/consensus.h>
+#include <consensus/tx_check.h>
 #include <consensus/validation.h>
 #include <external_signer.h>
 #include <interfaces/chain.h>
@@ -84,6 +85,7 @@
 #include <cassert>
 #include <condition_variable>
 #include <exception>
+#include <limits>
 #include <optional>
 #include <stdexcept>
 #include <thread>
@@ -3893,6 +3895,146 @@ double SecurityToOptimalFraction(double security, bool isTestnet) {
         optimalFraction += std::pow(security, 1.0 / i) * coeffs[i];
     }
     return optimalFraction;
+}
+
+// peercoin: validate and persist a presigned coinstake for minting
+bool CWallet::ImportCoinStake(const CTransactionRef& tx, uint32_t timestamp, bilingual_str& error)
+{
+    AssertLockHeld(cs_wallet);
+
+    if (!tx) {
+        error = _("Transaction is not a coinstake.");
+        return false;
+    }
+    if (!tx->IsCoinStake()) {
+        error = _("Transaction is not a coinstake.");
+        return false;
+    }
+    if (tx->vin.empty()) {
+        error = _("Coinstake must have inputs.");
+        return false;
+    }
+    if (tx->vout.size() < 2) {
+        error = _("Coinstake must have at least two outputs.");
+        return false;
+    }
+    if (!tx->vout[0].IsEmpty()) {
+        error = _("First coinstake output must be empty.");
+        return false;
+    }
+
+    TxValidationState tx_state;
+    if (!CheckTransaction(*tx, tx_state)) {
+        error = strprintf(_("Invalid coinstake: %s"), tx_state.ToString());
+        return false;
+    }
+
+    const int64_t now = GetTime();
+    if (timestamp < static_cast<uint32_t>(tx->nTime)) {
+        error = _("Coinstake timestamp is before the transaction timestamp.");
+        return false;
+    }
+    if (timestamp <= static_cast<uint32_t>(now)) {
+        error = _("Expired coinstake.");
+        return false;
+    }
+    if (timestamp > static_cast<uint32_t>(now + MAX_IMPORTED_COINSTAKE_FUTURE_TIME)) {
+        error = _("Coinstake is scheduled too far in the future.");
+        return false;
+    }
+
+    if (IsMine(tx->vout[1]) == ISMINE_NO) {
+        error = _("No keys for coinstake payout output.");
+        return false;
+    }
+
+    const Txid txid = tx->GetHash();
+    if (std::any_of(m_coinstakes.begin(), m_coinstakes.end(), [&](const auto& entry) {
+        return entry.second && entry.second->GetHash() == txid;
+    })) {
+        error = _("Coinstake already imported.");
+        return false;
+    }
+
+    std::map<COutPoint, Coin> coins;
+    for (const auto& txin : tx->vin) {
+        coins.emplace(txin.prevout, Coin());
+    }
+    if (!HaveChain()) {
+        error = _("Chain interface unavailable while importing coinstake.");
+        return false;
+    }
+    chain().findCoins(coins);
+
+    for (const auto& [outpoint, coin] : coins) {
+        if (coin.IsSpent()) {
+            error = strprintf(_("Coinstake spends spent input %s."), outpoint.ToString());
+            return false;
+        }
+        if (IsMine(coin.out) == ISMINE_NO) {
+            error = strprintf(_("Coinstake spends non-wallet input %s."), outpoint.ToString());
+            return false;
+        }
+        if (IsLockedCoin(outpoint)) {
+            error = strprintf(_("Coinstake spends locked input %s."), outpoint.ToString());
+            return false;
+        }
+    }
+
+    const uint32_t now32 = static_cast<uint32_t>(std::min<uint64_t>(now, std::numeric_limits<uint32_t>::max()));
+    for (auto it = m_coinstakes.begin(); it != m_coinstakes.end();) {
+        if (it->first <= now32) {
+            it = m_coinstakes.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    if (m_coinstakes.size() >= MAX_IMPORTED_COINSTAKES) {
+        error = strprintf(_("Coinstake import limit reached (%d)."), MAX_IMPORTED_COINSTAKES);
+        return false;
+    }
+
+    auto inserted = m_coinstakes.emplace(timestamp, tx);
+    if (!inserted.second) {
+        error = _("Coinstake timestamp collision.");
+        return false;
+    }
+
+    if (!PersistCoinStakes()) {
+        m_coinstakes.erase(timestamp);
+        error = _("Failed to persist coinstake.");
+        return false;
+    }
+
+    return true;
+}
+
+bool CWallet::PersistCoinStakes()
+{
+    AssertLockHeld(cs_wallet);
+
+    WalletBatch batch(GetDatabase());
+    if (m_coinstakes.empty()) {
+        if (!batch.EraseCoinStakes()) {
+            WalletLogPrintf("%s: erasing coinstakes failed\n", __func__);
+            return false;
+        }
+        return true;
+    }
+
+    std::vector<std::pair<uint32_t, CMutableTransaction>> records;
+    records.reserve(m_coinstakes.size());
+    for (const auto& [timestamp, tx] : m_coinstakes) {
+        if (!tx) continue;
+        records.emplace_back(timestamp, CMutableTransaction(*tx));
+    }
+
+    if (!batch.WriteCoinStakes(records)) {
+        WalletLogPrintf("%s: writing coinstakes failed\n", __func__);
+        return false;
+    }
+    return true;
 }
 
 // peercoin: create coin stake transaction

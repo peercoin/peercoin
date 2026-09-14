@@ -248,6 +248,10 @@ public:
     bool WriteReserveBalance(CAmount reserve_balance);
     bool ReadReserveBalance(CAmount& reserve_balance) const;
 
+    bool WriteCoinStakes(const std::vector<std::pair<uint32_t, CMutableTransaction>>& records);
+    bool EraseCoinStakes();
+    bool ReadCoinStakes(std::vector<std::pair<uint32_t, CMutableTransaction>>& records) const;
+
     bool WriteDescriptorKey(const uint256& desc_id, const CPubKey& pubkey, const CPrivKey& privkey);
     bool WriteCryptedDescriptorKey(const uint256& desc_id, const CPubKey& pubkey, const std::vector<unsigned char>& secret);
     bool WriteDescriptor(const uint256& desc_id, const WalletDescriptor& descriptor);

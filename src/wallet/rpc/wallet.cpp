@@ -29,6 +29,7 @@
 #include <wallet/wallet.h>
 #include <wallet/walletutil.h>
 
+#include <limits>
 #include <optional>
 #include <string_view>
 
@@ -898,21 +899,15 @@ RPCHelpMan importcoinstake()
     CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 
     int64_t timestamp = request.params[1].isNull() ? tx->nTime : request.params[1].getInt<int64_t>();
-    if (timestamp < GetTime()) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Expired coinstake");
-    }
-    if (timestamp > std::numeric_limits<uint32_t>::max()) {
+    if (timestamp < 0 || timestamp > std::numeric_limits<uint32_t>::max()) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Timestamp out of range");
-    }
-    if (!tx->IsCoinStake()) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Transaction is not a coinstake");
     }
 
     LOCK(pwallet->cs_wallet);
-    if (pwallet->IsMine(tx->vout[1]) == ISMINE_NO) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "No keys for vout[1]");
+    bilingual_str error;
+    if (!pwallet->ImportCoinStake(tx, static_cast<uint32_t>(timestamp), error)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, error.original);
     }
-    pwallet->m_coinstakes[static_cast<uint32_t>(timestamp)] = tx;
 
     UniValue result(UniValue::VOBJ);
     result.pushKV("txid", tx->GetHash().GetHex());

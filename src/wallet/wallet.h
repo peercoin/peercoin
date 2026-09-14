@@ -708,7 +708,12 @@ public:
      */
     void CommitTransaction(CTransactionRef tx, mapValue_t mapValue, std::vector<std::pair<std::string, std::string>> orderForm);
     // peercoin: pre-signed coinstakes (importcoinstake) and minting
+    static constexpr uint32_t MAX_IMPORTED_COINSTAKES{100};
+    static constexpr int64_t MAX_IMPORTED_COINSTAKE_FUTURE_TIME{30 * 60 * 60 * 24};
+
     std::map<uint32_t, CTransactionRef> m_coinstakes GUARDED_BY(cs_wallet);
+    bool ImportCoinStake(const CTransactionRef& tx, uint32_t timestamp, bilingual_str& error) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
+    bool PersistCoinStakes() EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     bool CreateCoinStake(ChainstateManager& chainman, const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, CTxDestination destination);
 
     /** Pass this transaction to node for optional mempool insertion and relay to peers. */

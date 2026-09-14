@@ -51,6 +51,7 @@ const std::string NAME{"name"};
 const std::string OLD_KEY{"wkey"};
 const std::string ORDERPOSNEXT{"orderposnext"};
 const std::string RESERVEBALANCE{"reservebalance"};
+const std::string COINSTAKES{"coinstakes"};
 const std::string POOL{"pool"};
 const std::string PURPOSE{"purpose"};
 const std::string SETTINGS{"settings"};
@@ -213,6 +214,21 @@ bool WalletBatch::WriteReserveBalance(CAmount reserve_balance)
 bool WalletBatch::ReadReserveBalance(CAmount& reserve_balance) const
 {
     return m_batch->Read(DBKeys::RESERVEBALANCE, reserve_balance);
+}
+
+bool WalletBatch::WriteCoinStakes(const std::vector<std::pair<uint32_t, CMutableTransaction>>& records)
+{
+    return WriteIC(DBKeys::COINSTAKES, records);
+}
+
+bool WalletBatch::EraseCoinStakes()
+{
+    return EraseIC(DBKeys::COINSTAKES);
+}
+
+bool WalletBatch::ReadCoinStakes(std::vector<std::pair<uint32_t, CMutableTransaction>>& records) const
+{
+    return m_batch->Read(DBKeys::COINSTAKES, records);
 }
 
 bool WalletBatch::WriteActiveScriptPubKeyMan(uint8_t type, const uint256& id, bool internal)
@@ -1135,6 +1151,22 @@ DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
             pwallet->m_reserve_balance = reserve_balance;
         } else if (auto cmd_reserve_balance = ParseMoney(gArgs.GetArg("-reservebalance", ""))) {
             pwallet->m_reserve_balance = *cmd_reserve_balance;
+        }
+
+        std::vector<std::pair<uint32_t, CMutableTransaction>> coinstake_records;
+        if (m_batch->Read(DBKeys::COINSTAKES, coinstake_records)) {
+            const uint32_t now = static_cast<uint32_t>(GetTime());
+            pwallet->m_coinstakes.clear();
+            for (const auto& [timestamp, mtx] : coinstake_records) {
+                if (timestamp <= now) continue;
+                CTransactionRef tx = MakeTransactionRef(mtx);
+                if (!tx->IsCoinStake()) continue;
+                if (pwallet->m_coinstakes.size() >= CWallet::MAX_IMPORTED_COINSTAKES) break;
+                if (std::any_of(pwallet->m_coinstakes.begin(), pwallet->m_coinstakes.end(), [&](const auto& entry) {
+                    return entry.second && entry.second->GetHash() == tx->GetHash();
+                })) continue;
+                pwallet->m_coinstakes.emplace(timestamp, tx);
+            }
         }
 
 #ifndef ENABLE_EXTERNAL_SIGNER
