@@ -20,7 +20,7 @@ class SettingsTest(BitcoinTestFramework):
         self.uses_wallet = None
 
     def test_wallet_settings(self, settings_path):
-        if not self.is_wallet_compiled():
+        if not self.wallet_enabled():
             return
 
         self.log.info("Testing wallet settings..")
@@ -40,7 +40,7 @@ class SettingsTest(BitcoinTestFramework):
     def run_test(self):
         node, = self.nodes
         settings = node.chain_path / "settings.json"
-        conf = node.datadir_path / "bitcoin.conf"
+        conf = node.datadir_path / "peercoin.conf"
 
         # Assert default settings file was created
         self.stop_node(0)
