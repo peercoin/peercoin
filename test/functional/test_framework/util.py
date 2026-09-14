@@ -647,6 +647,14 @@ def modinv(a, n):
         t1 += n
     return t1
 
+def ensure_for(*, duration, f, check_interval=0.2):
+    """Ensure that f remains true for the full duration."""
+    time_end = time.time() + duration
+    while time.time() < time_end:
+        if not f():
+            raise AssertionError("Predicate did not remain true for the full duration")
+        time.sleep(check_interval)
+
 class TestFrameworkUtil(unittest.TestCase):
     def test_modinv(self):
         test_vectors = [

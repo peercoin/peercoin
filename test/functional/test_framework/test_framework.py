@@ -990,6 +990,10 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         """Checks whether external signer support was compiled."""
         return self.config["components"].getboolean("ENABLE_EXTERNAL_SIGNER")
 
+    def wallet_enabled(self):
+        """Checks whether the wallet RPC is available for this test run."""
+        return self.is_wallet_compiled() and self.options.descriptors is not None
+
     def is_wallet_compiled(self):
         """Checks whether the wallet module was compiled."""
         return self.config["components"].getboolean("ENABLE_WALLET")

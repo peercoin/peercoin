@@ -652,6 +652,15 @@ class CTransaction:
     def wtxid_hex(self):
         return self.getwtxid()
 
+    @property
+    def txid_int(self):
+        self.calc_sha256()
+        return self.sha256
+
+    @property
+    def wtxid_int(self):
+        return uint256_from_str(hash256(self.serialize_with_witness()))
+
     def __repr__(self):
         return "CTransaction(nVersion=%i nTime=%i vin=%s vout=%s wit=%s nLockTime=%i)" \
             % (self.nVersion, self.nTime, repr(self.vin), repr(self.vout), repr(self.wit), self.nLockTime)

@@ -33,7 +33,7 @@ class MempoolUnbroadcastTest(BitcoinTestFramework):
 
         self.log.info("Generate transactions that only node 0 knows about")
 
-        if self.is_wallet_compiled():
+        if self.wallet_enabled():
             self.import_deterministic_coinbase_privkeys()
             # generate a wallet txn
             addr = node.getnewaddress()
@@ -46,7 +46,7 @@ class MempoolUnbroadcastTest(BitcoinTestFramework):
         # check transactions are in unbroadcast using rpc
         mempoolinfo = self.nodes[0].getmempoolinfo()
         unbroadcast_count = 1
-        if self.is_wallet_compiled():
+        if self.wallet_enabled():
             unbroadcast_count += 1
         assert_equal(mempoolinfo['unbroadcastcount'], unbroadcast_count)
         mempool = self.nodes[0].getrawmempool(True)
@@ -56,7 +56,7 @@ class MempoolUnbroadcastTest(BitcoinTestFramework):
         # check that second node doesn't have these two txns
         mempool = self.nodes[1].getrawmempool()
         assert rpc_tx_hsh not in mempool
-        if self.is_wallet_compiled():
+        if self.wallet_enabled():
             assert wallet_tx_hsh not in mempool
 
         # ensure that unbroadcast txs are persisted to mempool.dat
@@ -70,7 +70,7 @@ class MempoolUnbroadcastTest(BitcoinTestFramework):
         self.sync_mempools(timeout=30)
         mempool = self.nodes[1].getrawmempool()
         assert rpc_tx_hsh in mempool
-        if self.is_wallet_compiled():
+        if self.wallet_enabled():
             assert wallet_tx_hsh in mempool
 
         # check that transactions are no longer in first node's unbroadcast set

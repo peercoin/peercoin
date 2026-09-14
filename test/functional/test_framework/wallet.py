@@ -97,10 +97,13 @@ class MiniWallet:
             assert tag_name is None
             self._scriptPubKey = bytes(CScript([OP_TRUE]))
         elif mode == MiniWalletMode.RAW_P2PK:
-            # use simple deterministic private key (k=1)
-            assert tag_name is None
+            # peercoin: deterministic P2PK; tag_name derives a distinct key.
             self._priv_key = ECKey()
-            self._priv_key.set((1).to_bytes(32, 'big'), True)
+            if tag_name is None:
+                secret = (1).to_bytes(32, 'big')
+            else:
+                secret = hash256(tag_name.encode())
+            self._priv_key.set(secret, True)
             pub_key = self._priv_key.get_pubkey()
             self._scriptPubKey = key_to_p2pk_script(pub_key.get_bytes())
         elif mode == MiniWalletMode.ADDRESS_OP_TRUE:

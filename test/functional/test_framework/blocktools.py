@@ -37,6 +37,7 @@ from .script import (
     OP_RETURN,
     OP_TRUE,
 )
+from .key import ECKey
 from .script_util import (
     key_to_p2pk_script,
     key_to_p2wpkh_script,
@@ -231,6 +232,37 @@ def send_to_witness(use_p2wsh, node, utxo, pubkey, encode_p2sh, amount, sign=Tru
             tx_to_witness = tx.serialize().hex()
 
     return node.sendrawtransaction(tx_to_witness)
+
+FORK_LENGTH = 10
+
+def create_empty_fork(node, fork_length=FORK_LENGTH):
+    """Create an empty Peercoin fork extending the node's current tip."""
+    key = ECKey()
+    key.set(hash256(b"horsebattery"), True)
+    pubkey = key.get_pubkey().get_bytes()
+
+    tip_hash = node.getbestblockhash()
+    tip = node.getblockheader(tip_hash)
+    mocktime = tip["time"] + 1
+    blocks = []
+
+    for _ in range(fork_length):
+        block = create_block(
+            int(tip_hash, 16),
+            create_coinbase(tip["height"] + 1, pubkey=pubkey),
+            mocktime,
+            version=6,
+        )
+        block.solve()
+        block.rehash()
+        block.vchBlockSig = key.sign_ecdsa(bytes.fromhex(block.hash)[::-1])
+        blocks.append(block)
+
+        tip_hash = block.hash_hex
+        tip["height"] += 1
+        mocktime += 1
+
+    return blocks
 
 class TestFrameworkBlockTools(unittest.TestCase):
     def test_create_coinbase(self):

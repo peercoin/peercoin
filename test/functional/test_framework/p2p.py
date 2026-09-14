@@ -95,6 +95,9 @@ P2P_SUBVERSION = "/python-p2p-tester:0.0.3/"
 P2P_VERSION_RELAY = 1
 # Delay after receiving a tx inv before requesting transactions from non-preferred peers, in seconds
 NONPREF_PEER_TX_DELAY = 2
+GETDATA_TX_INTERVAL = 60
+TXID_RELAY_DELAY = 2
+OVERLOADED_PEER_TX_DELAY = 2
 
 MESSAGEMAP = {
     b"addr": msg_addr,
