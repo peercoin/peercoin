@@ -22,23 +22,27 @@ bool KernelRecord::showTransaction(bool isCoinbase, int depth)
     return true;
 }
 
-/*
- * Decompose CWallet transaction to model kernel records.
- */
 vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, const interfaces::WalletTx &wtx)
 {
-    vector<KernelRecord> parts;
-    int64_t nTime = (wtx.tx->nTime ? wtx.tx->nTime : wtx.time);
-    Txid hash = wtx.tx->GetHash();
-    std::map<std::string, std::string> mapValue = wtx.value_map;
-
     int numBlocks;
     interfaces::WalletTxStatus status;
     interfaces::WalletOrderForm orderForm;
     bool inMempool;
-    wallet.getWalletTxDetails(hash, status, orderForm, inMempool, numBlocks);
+    wallet.getWalletTxDetails(wtx.tx->GetHash(), status, orderForm, inMempool, numBlocks);
+    return decomposeOutput(wallet, wtx, status.depth_in_main_chain);
+}
 
-    if (showTransaction(wtx.is_coinbase, status.depth_in_main_chain)) {
+/*
+ * Decompose CWallet transaction to model kernel records.
+ */
+vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, const interfaces::WalletTx &wtx, int depth)
+{
+    vector<KernelRecord> parts;
+    int64_t nTime = (wtx.tx->nTime ? wtx.tx->nTime : wtx.time);
+    Txid hash = wtx.tx->GetHash();
+    const std::map<std::string, std::string>& mapValue = wtx.value_map;
+
+    if (showTransaction(wtx.is_coinbase, depth)) {
         for (size_t nOut = 0; nOut < wtx.tx->vout.size(); nOut++) {
             CTxOut txOut = wtx.tx->vout[nOut];
             if (wallet.txoutIsMine(txOut)) {
@@ -53,7 +57,10 @@ vector<KernelRecord> KernelRecord::decomposeOutput(interfaces::Wallet& wallet, c
                     addrStr = EncodeDestination(PKHash(pk_dest->GetPubKey()));
                 } else {
                     // Sent to IP, or other non-address transaction like OP_EVAL
-                    addrStr = mapValue["to"];
+                    auto to_it = mapValue.find("to");
+                    if (to_it != mapValue.end()) {
+                        addrStr = to_it->second;
+                    }
                 }
                 std::vector<interfaces::WalletTxOut> coins = wallet.getCoins({COutPoint(hash, nOut)});
                 bool isSpent = coins.size() >= 1 ? coins[0].is_spent : true;

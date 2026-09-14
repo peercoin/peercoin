@@ -7,10 +7,16 @@
 #include <QAbstractTableModel>
 #include <QStringList>
 #include <interfaces/handler.h>
+#include <uint256.h>
 
+#include <chrono>
+#include <set>
+
+class CBlockIndex;
 class MintingTablePriv;
 class MintingFilterProxy;
 class KernelRecord;
+class QTimer;
 class WalletModel;
 
 /** UI model for the minting table of a wallet.
@@ -52,7 +58,20 @@ private:
     MintingFilterProxy *mintingProxyModel;
     int cachedNumBlocks;
 
+    QTimer* m_update_timer{nullptr};
+    std::set<uint256> m_pending_txids;
+    bool m_synced{false};
+    bool m_full_refresh_pending{true};
+
+    mutable const CBlockIndex* m_cached_pos_block{nullptr};
+    mutable double m_cached_pos_difficulty{0.0};
+    mutable bool m_cached_pos_valid{false};
+
     QString lookupAddress(const std::string &address, bool tooltip) const;
+
+    void refreshPosDifficulty() const;
+    void refreshModel();
+    void processPendingUpdates();
 
     double getDayToMint(KernelRecord *wtx) const;
     QString formatDayToMint(KernelRecord *wtx) const;
