@@ -151,3 +151,22 @@ def generate_keypair(compressed=True, wif=False):
     if wif:
         privkey = bytes_to_wif(privkey, compressed)
     return privkey, eckey.get_pubkey().get_bytes()
+
+
+class WalletUnlock:
+    """Unlock an encrypted wallet for the duration of the context."""
+
+    MAXIMUM_TIMEOUT = 999000
+
+    def __init__(self, wallet, passphrase, timeout=MAXIMUM_TIMEOUT):
+        self.wallet = wallet
+        self.passphrase = passphrase
+        self.timeout = timeout
+
+    def __enter__(self):
+        self.wallet.walletpassphrase(self.passphrase, self.timeout)
+        return self.wallet
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.wallet.walletlock()
+        return False
