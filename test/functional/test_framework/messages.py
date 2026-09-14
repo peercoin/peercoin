@@ -666,6 +666,15 @@ class CTransaction:
             % (self.nVersion, self.nTime, repr(self.vin), repr(self.vout), repr(self.wit), self.nLockTime)
 
 
+MAX_SEQUENCE_NONFINAL = 0xFFFFFFFE
+def from_binary(obj_type, binary):
+    obj = obj_type()
+    obj.deserialize(binary)
+    return obj
+
+
+
+
 class CBlockHeader:
     __slots__ = ("hash", "hashMerkleRoot", "hashPrevBlock", "nBits", "nNonce", "nFlags",
                  "nTime", "nVersion", "sha256")
