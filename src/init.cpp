@@ -761,7 +761,7 @@ void SetupServerArgs(ArgsManager& argsman, bool can_listen_ipc)
     gArgs.AddArg("-printcoinage", "Print coinage if debug is enabled", ArgsManager::ALLOW_ANY, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-printcreation", "Print coin creation if debug is enabled", ArgsManager::ALLOW_ANY, OptionsCategory::DEBUG_TEST);
 
-    gArgs.AddArg("-reservebalance=<amt>", "Reserve this many coins", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    gArgs.AddArg("-reservebalance=<amt>", "Seed the wallet reserve balance when not previously set", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     gArgs.AddArg("-minting", "Enable minting (default: true)", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     gArgs.AddArg("-staking", "Enable staking/minting (default: true)", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 

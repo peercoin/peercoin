@@ -7,8 +7,10 @@
 
 #include <wallet/walletdb.h>
 
+#include <common/args.h>
 #include <common/system.h>
 #include <key_io.h>
+#include <util/moneystr.h>
 #include <primitives/transaction_identifier.h>
 #include <protocol.h>
 #include <script/script.h>
@@ -48,6 +50,7 @@ const std::string MINVERSION{"minversion"};
 const std::string NAME{"name"};
 const std::string OLD_KEY{"wkey"};
 const std::string ORDERPOSNEXT{"orderposnext"};
+const std::string RESERVEBALANCE{"reservebalance"};
 const std::string POOL{"pool"};
 const std::string PURPOSE{"purpose"};
 const std::string SETTINGS{"settings"};
@@ -200,6 +203,16 @@ bool WalletBatch::IsEncrypted()
 bool WalletBatch::WriteOrderPosNext(int64_t nOrderPosNext)
 {
     return WriteIC(DBKeys::ORDERPOSNEXT, nOrderPosNext);
+}
+
+bool WalletBatch::WriteReserveBalance(CAmount reserve_balance)
+{
+    return WriteIC(DBKeys::RESERVEBALANCE, reserve_balance);
+}
+
+bool WalletBatch::ReadReserveBalance(CAmount& reserve_balance) const
+{
+    return m_batch->Read(DBKeys::RESERVEBALANCE, reserve_balance);
 }
 
 bool WalletBatch::WriteActiveScriptPubKeyMan(uint8_t type, const uint256& id, bool internal)
@@ -1116,6 +1129,13 @@ DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
         // Load wallet flags, so they are known when processing other records.
         // The FLAGS key is absent during wallet creation.
         if ((result = LoadWalletFlags(pwallet, *m_batch)) != DBErrors::LOAD_OK) return result;
+
+        CAmount reserve_balance = 0;
+        if (m_batch->Read(DBKeys::RESERVEBALANCE, reserve_balance)) {
+            pwallet->m_reserve_balance = reserve_balance;
+        } else if (auto cmd_reserve_balance = ParseMoney(gArgs.GetArg("-reservebalance", ""))) {
+            pwallet->m_reserve_balance = *cmd_reserve_balance;
+        }
 
 #ifndef ENABLE_EXTERNAL_SIGNER
         if (pwallet->IsWalletFlagSet(WALLET_FLAG_EXTERNAL_SIGNER)) {

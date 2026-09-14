@@ -1803,6 +1803,18 @@ uint64_t CWallet::GetWalletFlags() const
     return m_wallet_flags;
 }
 
+bool CWallet::SetReserveBalance(CAmount reserve_balance)
+{
+    AssertLockHeld(cs_wallet);
+    WalletBatch batch(GetDatabase());
+    if (!batch.WriteReserveBalance(reserve_balance)) {
+        WalletLogPrintf("%s: writing reserve balance failed\n", __func__);
+        return false;
+    }
+    m_reserve_balance = reserve_balance;
+    return true;
+}
+
 void CWallet::MaybeUpdateBirthTime(int64_t time)
 {
     int64_t birthtime = m_birth_time.load();
@@ -3949,15 +3961,15 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
     // Choose coins to use
     CAmount nAllowedBalance = availableCoins.GetTotalAmount();
-    std::optional<CAmount> nReserveBalance = ParseMoney(gArgs.GetArg("-reservebalance", ""));
-    if (gArgs.IsArgSet("-reservebalance") && !nReserveBalance) {
+    CAmount nReserveBalance = GetReserveBalance();
+    if (nReserveBalance < 0) {
         return error(std::string("CreateCoinStake : invalid reserve balance amount"));
     }
     if (nAllowedBalance <= nReserveBalance) {
         return false;
     }
 
-    if (nReserveBalance) nAllowedBalance -= nReserveBalance.value();
+    nAllowedBalance -= nReserveBalance;
 
     if (nAllowedBalance < MIN_TXOUT_AMOUNT) {
         return false;

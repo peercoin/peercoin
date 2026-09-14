@@ -1043,7 +1043,7 @@ RPCHelpMan listminting()
 RPCHelpMan reservebalance()
 {
     return RPCHelpMan{"reservebalance",
-                "Set reserve amount not participating in network protection.\n",
+                "Get or set the reserve amount not participating in network protection for this wallet.\n",
                 {
                     {"reserve", RPCArg::Type::BOOL, RPCArg::Optional::OMITTED, "turn balance reserve on or off."},
                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "amount of " + CURRENCY_UNIT + " to be reserved."},
@@ -1058,9 +1058,6 @@ RPCHelpMan reservebalance()
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-    WalletContext& context = EnsureWalletContext(request.context);
-    ArgsManager& args = *Assert(context.args);
-
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
     CWallet* const pwallet = wallet.get();
@@ -1079,22 +1076,23 @@ RPCHelpMan reservebalance()
             if (nAmount < 0) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "amount cannot be negative.");
             }
-            args.ForceSetArg("-reservebalance", FormatMoney(nAmount));
+            if (!pwallet->SetReserveBalance(nAmount)) {
+                throw JSONRPCError(RPC_WALLET_ERROR, "failed to persist reserve balance.");
+            }
         } else {
             if (request.params.size() > 1) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "cannot specify amount to turn off reserve.");
             }
-            args.ForceSetArg("-reservebalance", "0");
+            if (!pwallet->SetReserveBalance(0)) {
+                throw JSONRPCError(RPC_WALLET_ERROR, "failed to persist reserve balance.");
+            }
         }
     }
 
     UniValue result(UniValue::VOBJ);
-    std::optional<CAmount> nReserveBalance = ParseMoney(args.GetArg("-reservebalance", ""));
-    if (args.IsArgSet("-reservebalance") && !nReserveBalance) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid reserve balance amount");
-    }
-    result.pushKV("reserve", nReserveBalance.value_or(0) > 0);
-    result.pushKV("amount", ValueFromAmount(nReserveBalance.value_or(0)));
+    CAmount nReserveBalance = pwallet->GetReserveBalance();
+    result.pushKV("reserve", nReserveBalance > 0);
+    result.pushKV("amount", ValueFromAmount(nReserveBalance));
     return result;
 },
     };

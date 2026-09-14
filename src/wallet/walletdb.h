@@ -77,6 +77,7 @@ extern const std::string OLD_KEY;
 extern const std::string ORDERPOSNEXT;
 extern const std::string POOL;
 extern const std::string PURPOSE;
+extern const std::string RESERVEBALANCE;
 extern const std::string SETTINGS;
 extern const std::string TX;
 extern const std::string VERSION;
@@ -243,6 +244,9 @@ public:
     bool IsEncrypted();
 
     bool WriteOrderPosNext(int64_t nOrderPosNext);
+
+    bool WriteReserveBalance(CAmount reserve_balance);
+    bool ReadReserveBalance(CAmount& reserve_balance) const;
 
     bool WriteDescriptorKey(const uint256& desc_id, const CPubKey& pubkey, const CPrivKey& privkey);
     bool WriteCryptedDescriptorKey(const uint256& desc_id, const CPubKey& pubkey, const std::vector<unsigned char>& secret);

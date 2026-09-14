@@ -512,6 +512,8 @@ public:
 
     int64_t nOrderPosNext GUARDED_BY(cs_wallet) = 0;
 
+    CAmount m_reserve_balance GUARDED_BY(cs_wallet){0};
+
     std::map<CTxDestination, CAddressBookData> m_address_book GUARDED_BY(cs_wallet);
     const CAddressBookData* FindAddressBookEntry(const CTxDestination&, bool allow_change = false) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
@@ -935,6 +937,10 @@ public:
     bool LoadWalletFlags(uint64_t flags);
     //! Retrieve all of the wallet's flags
     uint64_t GetWalletFlags() const;
+
+    //! Amount that should not participate in coin selection/staking.
+    CAmount GetReserveBalance() const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet) { AssertLockHeld(cs_wallet); return m_reserve_balance; }
+    bool SetReserveBalance(CAmount reserve_balance) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
     /** Return wallet name for use in logs, will return "default wallet" if the wallet has no name. */
     std::string LogName() const override
