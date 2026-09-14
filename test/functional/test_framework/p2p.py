@@ -174,6 +174,7 @@ class P2PConnection(asyncio.Protocol):
         self.dstport = dstport
         # The initial message to send after the connection was made:
         self.on_connection_send_msg = None
+        self.version_msg = None
         self.recvbuf = b""
         self.magic_bytes = MAGIC_BYTES[net]
 
@@ -202,10 +203,10 @@ class P2PConnection(asyncio.Protocol):
         assert not self._transport
         logger.debug("Connected & Listening: %s:%d" % (self.dstaddr, self.dstport))
         self._transport = transport
+        self.on_open()
         if self.on_connection_send_msg:
             self.send_message(self.on_connection_send_msg)
             self.on_connection_send_msg = None  # Never used again
-        self.on_open()
 
     def connection_lost(self, exc):
         """asyncio callback when a connection is closed."""
@@ -363,7 +364,17 @@ class P2PInterface(P2PConnection):
         vt.addrTo.port = self.dstport
         vt.addrFrom.ip = "0.0.0.0"
         vt.addrFrom.port = 0
+        self.version_msg = vt
         self.on_connection_send_msg = vt  # Will be sent in connection_made callback
+
+    def send_version(self):
+        if not self.is_connected:
+            return
+        if self.on_connection_send_msg is not None:
+            self.send_message(self.on_connection_send_msg)
+            self.on_connection_send_msg = None
+        elif self.version_msg is not None:
+            self.send_message(self.version_msg)
 
     def peer_connect(self, *args, services=P2P_SERVICES, send_version=True, **kwargs):
         create_conn = super().peer_connect(*args, **kwargs)
