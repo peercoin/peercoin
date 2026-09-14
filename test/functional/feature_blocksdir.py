@@ -31,7 +31,7 @@ class BlocksdirTest(BitcoinTestFramework):
         self.log.info("mining blocks..")
         self.generatetoaddress(self.nodes[0], 10, self.nodes[0].get_deterministic_priv_key().address)
         assert (blocksdir_path / self.chain / "blocks" / "blk00000.dat").is_file()
-        assert (self.nodes[0].blocks_path / "index").is_dir()
+        assert (self.nodes[0].chain_path / "blocks" / "index").is_dir()
 
 
 if __name__ == '__main__':
