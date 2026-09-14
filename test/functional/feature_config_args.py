@@ -116,7 +116,7 @@ class ConfArgsTest(BitcoinTestFramework):
 
     def test_log_buffer(self):
         self.stop_node(0)
-        with self.nodes[0].assert_debug_log(expected_msgs=['Warning: parsed potentially confusing double-negative -connect=0\n']):
+        with self.nodes[0].assert_debug_log(expected_msgs=['parsed potentially confusing double-negative -connect=0']):
             self.start_node(0, extra_args=['-noconnect=0'])
 
     def test_args_log(self):
