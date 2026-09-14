@@ -20,6 +20,7 @@ import unittest
 from . import coverage
 from .authproxy import AuthServiceProxy, JSONRPCException
 from typing import Callable, Optional
+from .descriptors import descsum_create
 
 logger = logging.getLogger("TestFramework.utils")
 
@@ -695,3 +696,22 @@ class TestFrameworkUtil(unittest.TestCase):
 
         for a, n in test_vectors:
             self.assertEqual(modinv(a, n), pow(a, n-2, n))
+
+
+def wallet_importprivkey(wallet_rpc, privkey, timestamp, *, label=""):
+    """Import a private key into a descriptor-capable or legacy wallet."""
+    info = wallet_rpc.getwalletinfo()
+    if info.get("descriptors", False):
+        desc = descsum_create(f"combo({privkey})")
+        req = [{
+            "desc": desc,
+            "timestamp": timestamp,
+            "internal": False,
+            "label": label,
+        }]
+        res = wallet_rpc.importdescriptors(req)
+        if not res[0].get("success", False):
+            raise AssertionError(res[0].get("error", f"Failed to import {desc}"))
+    else:
+        rescan = timestamp in (0, "now")
+        wallet_rpc.importprivkey(privkey, label, rescan)
