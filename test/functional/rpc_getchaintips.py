@@ -62,7 +62,7 @@ class GetChainTipsTest (BitcoinTestFramework):
         tips[1]['status'] = 'active'
         assert_equal(tips[1], shortTip)
 
-        self.log.info("Test getchaintips behavior with invalid blocks")
+        self.log.info("Test getchaintips behavior with headers-only forks")
         self.disconnect_nodes(0, 1)
         n0 = self.nodes[0]
         tip = int(n0.getbestblockhash(), 16)
@@ -73,7 +73,8 @@ class GetChainTipsTest (BitcoinTestFramework):
         invalid_block.solve()
 
         block_time += 1
-        block2 = create_block(invalid_block.hash_int, create_coinbase(2), block_time, version=4)
+        # peercoin: regtest accepts Peercoin block version 6 headers.
+        block2 = create_block(invalid_block.hash_int, create_coinbase(2), block_time, version=6)
         block2.solve()
 
         self.log.info("Submit headers-only chain")
@@ -83,11 +84,8 @@ class GetChainTipsTest (BitcoinTestFramework):
         assert_equal(len(tips), 3)
         assert_equal(tips[0]['status'], 'headers-only')
 
-        self.log.info("Submit invalid block that invalidates the headers-only chain")
-        n0.submitblock(invalid_block.serialize().hex())
-        tips = n0.getchaintips()
-        assert_equal(len(tips), 3)
-        assert_equal(tips[0]['status'], 'invalid')
+        # peercoin: submitblock rejects the intentionally invalid block during
+        # CheckBlock() instead of recording it as an invalid chain tip.
 
 
 if __name__ == '__main__':
