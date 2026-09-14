@@ -999,7 +999,7 @@ RPCHelpMan listminting()
             const int64_t age = kr.getAge();
             if (age >= minAge) {
                 status = "mature";
-                searchInterval = nLastCoinStakeSearchInterval;
+                searchInterval = nLastCoinStakeSearchInterval.load();
                 attempts = nTime - kr.nTime - nStakeMinAge;
             }
 

@@ -508,7 +508,7 @@ static RPCHelpMan getdifficulty()
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("proof-of-work",        last_pow ? GetDifficulty(*last_pow) : 1.0);
     obj.pushKV("proof-of-stake",       last_pos ? GetDifficulty(*last_pos) : 1.0);
-    obj.pushKV("search-interval",      (int)nLastCoinStakeSearchInterval);
+    obj.pushKV("search-interval",      (int)nLastCoinStakeSearchInterval.load());
     return obj;
 },
     };

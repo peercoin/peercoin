@@ -12,6 +12,7 @@
 #include <txmempool.h>
 #include <node/context.h>
 #include <util/signalinterrupt.h>
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <stdint.h>
@@ -20,7 +21,7 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index_container.hpp>
 
-extern int64_t nLastCoinStakeSearchInterval;
+extern std::atomic<int64_t> nLastCoinStakeSearchInterval;
 extern std::thread m_minter_thread;
 
 // peercoin: legacy LP selection bridge tags/comparators

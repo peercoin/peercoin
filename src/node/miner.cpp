@@ -50,7 +50,7 @@ using wallet::COutput;
 using wallet::CCoinControl;
 using wallet::ReserveDestination;
 
-int64_t nLastCoinStakeSearchInterval = 0;
+std::atomic<int64_t> nLastCoinStakeSearchInterval{0};
 std::thread m_minter_thread;
 static std::atomic_bool g_stake_minter_stop{false};
 

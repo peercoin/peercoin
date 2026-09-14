@@ -336,6 +336,12 @@ void Shutdown(NodeContext& node)
     // as this would prevent the shutdown from completing.
     if (node.scheduler) node.scheduler->stop();
 
+    // Join the stake minter before any node services it uses are reset.
+    node::StopStakeMinter();
+    if (m_minter_thread.joinable()) {
+        m_minter_thread.join();
+    }
+
     // After the threads that potentially access these pointers have been stopped,
     // destruct and reset all to nullptr.
     node.peerman.reset();
@@ -418,11 +424,6 @@ void Shutdown(NodeContext& node)
     node.scheduler.reset();
     node.ecc_context.reset();
     node.kernel.reset();
-
-    node::StopStakeMinter();
-    if (m_minter_thread.joinable()) {
-        m_minter_thread.join();
-    }
 
     RemovePidFile(*node.args);
 
