@@ -1025,11 +1025,11 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
     def is_sqlite_compiled(self):
         """Checks whether the wallet module was compiled with Sqlite support."""
-        return self.config["components"].getboolean("USE_SQLITE")
+        return self.config["components"].getboolean("USE_SQLITE", fallback=self.wallet_enabled())
 
     def is_bdb_compiled(self):
         """Checks whether the wallet module was compiled with BDB support."""
-        return self.config["components"].getboolean("USE_BDB")
+        return self.config["components"].getboolean("USE_BDB", fallback=False)
 
     def is_embedded_asmap_compiled(self):
         """Checks whether embedded asmap data was compiled."""
