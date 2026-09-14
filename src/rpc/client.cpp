@@ -179,6 +179,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "mockscheduler", 0, "delta_time" },
     { "optimizeutxoset", 1, "amount" },
     { "optimizeutxoset", 2, "transmit" },
+    { "optimizeutxoset", 4, "force" },
     { "psbtbumpfee", 1, "conf_target" },
     { "psbtbumpfee", 1, "fee_rate" },
     { "psbtbumpfee", 1, "options" },

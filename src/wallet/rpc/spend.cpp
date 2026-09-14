@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <common/messages.h>
+#include <chainparams.h>
 #include <consensus/amount.h>
 #include <consensus/tx_verify.h>
 #include <consensus/validation.h>
@@ -27,7 +28,11 @@
 #include <wallet/spend.h>
 #include <wallet/wallet.h>
 
+#include <algorithm>
+#include <map>
+#include <optional>
 #include <set>
+#include <string>
 #include <univalue.h>
 
 using common::FeeModeFromString;
@@ -1810,26 +1815,56 @@ static bool PeercoinOutputDestination(const CTxOut& txout, CTxDestination& dest)
 
 RPCHelpMan optimizeutxoset()
 {
+    struct OptimizeCandidate {
+        COutPoint outpoint;
+        CTxOut txout;
+        CTxDestination dest;
+        int64_t time;
+    };
+
     return RPCHelpMan{"optimizeutxoset",
                 "\nOptimize the UTXO set in order to maximize the PoS yield. This is only valid for continuous minting. The accumulated coinage will be reset!" +
         HELP_REQUIRING_PASSPHRASE,
                 {
                     {"address", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " address to receive all the new UTXOs. If not provided, new UTXOs will be assigned to the addresses of the input UTXOs."},
                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " amount to set the value of new UTXOs, i.e. make new UTXOs with value of 110. If amount is not provided, a sensible default will be used."},
-                    {"transmit", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, transmit transaction after generating it."},
+                    {"transmit", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, transmit transactions after generating them."},
                     {"fromAddress", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "The " + CURRENCY_UNIT + " address to split coins from. If not provided, all available coins will be used."},
+                    {"force", RPCArg::Type::BOOL, RPCArg::Default{false}, "If true, transmit transactions even if immature coin-age warnings are present."},
                 },
                 {
                     RPCResult{"if transmit is not set or set to false",
                         RPCResult::Type::OBJ, "", "",
                         {
-                            {RPCResult::Type::STR_HEX, "tx", "The transaction hex."}
+                            {RPCResult::Type::ARR, "transactions", "The generated transaction hex.",
+                                {
+                                    {RPCResult::Type::STR_HEX, "tx", "The transaction hex."},
+                                }},
+                            {RPCResult::Type::STR_HEX, "tx", /*optional=*/true, "The first transaction hex, provided for compatibility."},
+                            {RPCResult::Type::NUM, "inputs", "The number of transaction inputs."},
+                            {RPCResult::Type::NUM, "outputs", "The number of transaction outputs."},
+                            {RPCResult::Type::STR_AMOUNT, "fee", "The total fixed fee."},
+                            {RPCResult::Type::ARR, "warnings", "",
+                                {
+                                    {RPCResult::Type::STR, "warning", "Warning about coin-age, reservebalance, or fees."},
+                                }},
                         },
                     },
                     RPCResult{"if transmit is set to true",
                         RPCResult::Type::OBJ, "", "",
                         {
-                            {RPCResult::Type::STR_HEX, "txid", "The transaction id."}
+                            {RPCResult::Type::ARR, "txids", "The transmitted transaction ids.",
+                                {
+                                    {RPCResult::Type::STR_HEX, "txid", "The transaction id."},
+                                }},
+                            {RPCResult::Type::STR_HEX, "txid", /*optional=*/true, "The first transaction id, provided for compatibility."},
+                            {RPCResult::Type::NUM, "inputs", "The number of transaction inputs."},
+                            {RPCResult::Type::NUM, "outputs", "The number of transaction outputs."},
+                            {RPCResult::Type::STR_AMOUNT, "fee", "The total fixed fee."},
+                            {RPCResult::Type::ARR, "warnings", "",
+                                {
+                                    {RPCResult::Type::STR, "warning", "Warning about coin-age, reservebalance, or fees."},
+                                }},
                         },
                     },
                 },
@@ -1838,6 +1873,8 @@ RPCHelpMan optimizeutxoset()
                     + HelpExampleCli("optimizeutxoset", "null 110")
                     + "\nSplit all coins from one address into a single destination\n"
                     + HelpExampleCli("optimizeutxoset", EXAMPLE_ADDRESS[0] + " 110 false " + EXAMPLE_ADDRESS[0])
+                    + "\nTransmit coins from one address after reviewing warnings\n"
+                    + HelpExampleCli("optimizeutxoset", EXAMPLE_ADDRESS[0] + " 110 true " + EXAMPLE_ADDRESS[0] + " true")
                },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
@@ -1850,10 +1887,10 @@ RPCHelpMan optimizeutxoset()
     EnsureWalletIsUnlocked(*pwallet);
 
     const bool transmit{request.params[2].isNull() ? false : request.params[2].get_bool()};
+    const bool force{request.params[4].isNull() ? false : request.params[4].get_bool()};
     auto unset_string = [](const UniValue& value) {
         return value.isNull() || (value.isStr() && value.get_str() == "null");
     };
-    CCoinControl coin_control;
 
     CTxDestination target_dest;
     const bool use_target_dest = !unset_string(request.params[0]);
@@ -1874,42 +1911,41 @@ RPCHelpMan optimizeutxoset()
     }
 
     const CoinsResult available_result = AvailableCoins(*pwallet, nullptr);
-    CAmount available_coins = 0;
+    std::vector<OptimizeCandidate> candidates;
     std::vector<CTxDestination> destination_pool;
+    std::set<std::string> seen_destinations;
+    CAmount candidate_total = 0;
 
-    if (use_from_dest) {
-        coin_control.m_allow_other_inputs = false;
-        for (const COutput& out : available_result.All()) {
-            CTxDestination out_dest;
-            if (!PeercoinOutputDestination(out.txout, out_dest) || out_dest != from_dest) {
-                continue;
-            }
-            coin_control.Select(out.outpoint);
-            available_coins += out.txout.nValue;
+    for (const COutput& out : available_result.All()) {
+        if (!out.safe) {
+            continue;
         }
-        if (!use_target_dest) {
-            destination_pool.push_back(from_dest);
+        CTxDestination out_dest;
+        if (!PeercoinOutputDestination(out.txout, out_dest)) {
+            continue;
         }
-    } else {
-        available_coins = available_result.GetTotalAmount();
-        coin_control.m_allow_other_inputs = true;
-        std::set<std::string> seen_destinations;
-        for (const COutput& out : available_result.All()) {
-            CTxDestination out_dest;
-            if (!PeercoinOutputDestination(out.txout, out_dest)) {
-                continue;
-            }
-            if (seen_destinations.insert(EncodeDestination(out_dest)).second) {
-                destination_pool.push_back(out_dest);
-            }
+        if (use_from_dest && out_dest != from_dest) {
+            continue;
+        }
+        candidates.push_back({out.outpoint, out.txout, out_dest, out.time});
+        candidate_total += out.txout.nValue;
+        if (seen_destinations.insert(EncodeDestination(out_dest)).second) {
+            destination_pool.push_back(out_dest);
         }
     }
 
-    if (available_coins == 0) {
+    if (candidate_total == 0) {
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "no available coins to optimize");
     }
 
+    const CAmount reserve = std::max(CAmount{0}, std::min(pwallet->GetReserveBalance(), candidate_total));
+    CAmount spendable_total = candidate_total - reserve;
+    if (spendable_total <= 0) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strprintf("no available coins to optimize after reservebalance of %s", FormatMoney(reserve)));
+    }
+
     const size_t max_recipients = 30;
+    const size_t max_inputs_per_tx = 400;
     static const CAmount DEFAULT_OPTIMIZE_TARGET_OUTPUT_AMOUNT = 110 * COIN;
     const bool use_amount = !unset_string(request.params[1]);
     CAmount amount = use_amount ? AmountFromValue(request.params[1]) : DEFAULT_OPTIMIZE_TARGET_OUTPUT_AMOUNT;
@@ -1917,35 +1953,201 @@ RPCHelpMan optimizeutxoset()
         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("amount must be at least %s", FormatMoney(MIN_TARGET_OUTPUT_AMOUNT)));
     }
 
+    std::sort(candidates.begin(), candidates.end(), [](const OptimizeCandidate& a, const OptimizeCandidate& b) {
+        if (a.txout.nValue != b.txout.nValue) {
+            return a.txout.nValue < b.txout.nValue;
+        }
+        return a.outpoint < b.outpoint;
+    });
+
     const std::vector<CTxDestination> recipient_destinations = use_target_dest ? std::vector<CTxDestination>{target_dest} : destination_pool;
     if (recipient_destinations.empty()) {
         throw JSONRPCError(RPC_WALLET_ERROR, "no destination for optimized outputs");
     }
 
-    std::vector<CRecipient> recipients;
-    CAmount remaining = available_coins;
-    while (recipients.size() < max_recipients && remaining >= amount) {
-        recipients.push_back({recipient_destinations[recipients.size() % recipient_destinations.size()], amount, true});
-        remaining -= amount;
+    auto make_recipients = [&](size_t count) {
+        std::vector<CRecipient> recipients;
+        recipients.reserve(count);
+        for (size_t i = 0; i < count; ++i) {
+            recipients.push_back({recipient_destinations[i % recipient_destinations.size()], amount, /*fSubtractFeeFromAmount=*/false});
+        }
+        return recipients;
+    };
+
+    std::vector<std::pair<CTransactionRef, CAmount>> batches;
+    std::vector<std::string> warnings;
+    if (reserve > 0) {
+        warnings.emplace_back(strprintf("reservebalance of %s was excluded from optimization", FormatMoney(reserve)));
+    }
+    warnings.emplace_back("optimized outputs will have their accumulated coin-age reset.");
+
+    const int64_t now = GetTime();
+    const int64_t min_stake_age = Params().GetConsensus().nStakeMinAge;
+    size_t input_count = 0;
+    size_t output_count = 0;
+    size_t young_input_count = 0;
+    CAmount total_fee = 0;
+    CAmount remaining_selected_budget = spendable_total;
+    size_t pos = 0;
+
+    while (pos < candidates.size() && remaining_selected_budget >= amount + MIN_TX_FEE) {
+        if (candidates[pos].txout.nValue > remaining_selected_budget) {
+            break;
+        }
+
+        size_t recipient_count = std::min(max_recipients, static_cast<size_t>(remaining_selected_budget / amount));
+        if (recipient_count == 0) {
+            break;
+        }
+
+        CCoinControl batch_coin_control;
+        batch_coin_control.m_allow_other_inputs = false;
+
+        const CAmount estimated_batch_fee = 4 * PERKB_TX_FEE;
+        const CAmount batch_target = std::min(remaining_selected_budget, static_cast<CAmount>(recipient_count) * amount + estimated_batch_fee);
+        std::vector<OptimizeCandidate> batch_inputs;
+        std::map<COutPoint, std::pair<CAmount, int64_t>> batch_lookup;
+        CAmount batch_total = 0;
+        while (pos < candidates.size() && batch_inputs.size() < max_inputs_per_tx) {
+            const auto& candidate = candidates[pos++];
+            if (!batch_inputs.empty() && batch_total + candidate.txout.nValue > remaining_selected_budget) {
+                break;
+            }
+            batch_coin_control.Select(candidate.outpoint);
+            batch_inputs.push_back(candidate);
+            batch_lookup.emplace(candidate.outpoint, std::make_pair(candidate.txout.nValue, candidate.time));
+            batch_total += candidate.txout.nValue;
+            if (batch_total >= batch_target) {
+                break;
+            }
+        }
+
+        if (batch_inputs.empty()) {
+            break;
+        }
+
+        if (batch_total <= amount + MIN_TX_FEE) {
+            continue;
+        }
+
+        recipient_count = std::min(recipient_count, static_cast<size_t>((batch_total - MIN_TX_FEE) / amount));
+        if (recipient_count == 0) {
+            warnings.emplace_back("a selected batch was too small to create an optimized output after the minimum fee");
+            continue;
+        }
+
+        std::vector<CRecipient> recipients = make_recipients(recipient_count);
+        std::optional<CreatedTransactionResult> tx_res;
+        bilingual_str tx_err;
+        for (;;) {
+            auto attempt = CreateTransaction(*pwallet, recipients, std::nullopt, batch_coin_control, true);
+            if (attempt) {
+                tx_res.emplace(std::move(*attempt));
+                break;
+            }
+            tx_err = util::ErrorString(attempt);
+            if (recipient_count <= 1) {
+                break;
+            }
+            const std::string err = tx_err.original;
+            const bool retry = err.find("nsufficient") != std::string::npos ||
+                               err.find("too small") != std::string::npos ||
+                               err.find("maximum transaction weight") != std::string::npos ||
+                               err.find("too large") != std::string::npos;
+            if (!retry) {
+                break;
+            }
+            --recipient_count;
+            recipients = make_recipients(recipient_count);
+        }
+        if (!tx_res) {
+            throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, tx_err.original);
+        }
+
+        const CTransactionRef tx = tx_res->tx;
+        const CAmount fee = tx_res->fee;
+        if (fee < MIN_TX_FEE) {
+            warnings.emplace_back(strprintf("generated transaction fee %s is below the minimum fixed fee %s", FormatMoney(fee), FormatMoney(MIN_TX_FEE)));
+        }
+        if (GetTransactionWeight(*tx) > MAX_STANDARD_TX_WEIGHT) {
+            throw JSONRPCError(RPC_WALLET_ERROR, "generated transaction exceeds the standard maximum transaction weight");
+        }
+
+        CAmount out_total = 0;
+        for (const auto& txout : tx->vout) {
+            out_total += txout.nValue;
+        }
+
+        CAmount selected_in_total = 0;
+        for (const auto& txin : tx->vin) {
+            const auto it = batch_lookup.find(txin.prevout);
+            if (it == batch_lookup.end()) {
+                throw JSONRPCError(RPC_WALLET_ERROR, strprintf("generated transaction uses unexpected input %s", txin.prevout.ToString()));
+            }
+            selected_in_total += it->second.first;
+            ++input_count;
+            if (now - it->second.second < min_stake_age) {
+                ++young_input_count;
+            }
+        }
+
+        if (out_total + fee > selected_in_total) {
+            throw JSONRPCError(RPC_WALLET_ERROR, "generated transaction spends more than its selected inputs");
+        }
+
+        output_count += tx->vout.size();
+        total_fee += fee;
+        batches.emplace_back(tx, fee);
+
+        if (selected_in_total >= remaining_selected_budget) {
+            remaining_selected_budget = 0;
+        } else {
+            remaining_selected_budget -= selected_in_total;
+        }
     }
 
-    if (recipients.empty()) {
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "not enough funds to create optimized outputs after fees");
+    if (batches.empty()) {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "not enough spendable funds above reservebalance to create optimized outputs after fees");
     }
 
-    auto res = CreateTransaction(*pwallet, recipients, std::nullopt, coin_control, true);
-    if (!res) {
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, util::ErrorString(res).original);
+    if (young_input_count > 0) {
+        warnings.emplace_back(strprintf("%zu input(s) are younger than the minimum mint age; optimizing them will reset their coin-age", young_input_count));
     }
-    const CTransactionRef tx = res->tx;
+    if (transmit && young_input_count > 0 && !force) {
+        throw JSONRPCError(RPC_WALLET_ERROR, strprintf("%zu input(s) are younger than the minimum mint age; rerun with force=true after reviewing the warnings", young_input_count));
+    }
 
     UniValue entry(UniValue::VOBJ);
+    UniValue txs(UniValue::VARR);
+    UniValue txids(UniValue::VARR);
+    UniValue warn(UniValue::VARR);
+
     if (transmit) {
-        pwallet->CommitTransaction(tx, mapValue_t{}, {} /* orderForm */);
-        entry.pushKV("txid", tx->GetHash().GetHex());
+        for (const auto& batch : batches) {
+            pwallet->CommitTransaction(batch.first, mapValue_t{}, {} /* orderForm */);
+            txids.push_back(batch.first->GetHash().GetHex());
+        }
+        entry.pushKV("txids", txids);
+        if (txids.size() == 1) {
+            entry.pushKV("txid", txids[0].get_str());
+        }
     } else {
-        entry.pushKV("tx", EncodeHexTx(*tx));
+        for (const auto& batch : batches) {
+            txs.push_back(EncodeHexTx(*batch.first));
+        }
+        entry.pushKV("transactions", txs);
+        if (txs.size() == 1) {
+            entry.pushKV("tx", txs[0].get_str());
+        }
     }
+
+    entry.pushKV("inputs", input_count);
+    entry.pushKV("outputs", output_count);
+    entry.pushKV("fee", ValueFromAmount(total_fee));
+    for (const auto& warning : warnings) {
+        warn.push_back(warning);
+    }
+    entry.pushKV("warnings", warn);
     return entry;
 },
     };
