@@ -25,7 +25,8 @@ from .authproxy import JSONRPCException
 from . import coverage
 from .descriptors import descsum_create
 from .key import ECKey
-from .script_util import key_to_p2pk_script
+from .script import CScript, OP_TRUE
+from .script_util import key_to_p2pk_script, script_to_p2sh_script
 from .p2p import NetworkThread
 from .test_node import TestNode
 from .util import (
@@ -827,12 +828,10 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
             # block in the cache does not age too much (have an old tip age).
             # This is needed so that we are out of IBD when the test starts,
             # see the tip age check in IsInitialBlockDownload().
-            # peercoin: mine the fourth slot to the MiniWallet default P2PK
+            # peercoin: mine the fourth slot to the MiniWallet default P2SH(OP_TRUE)
             # output so the default MiniWallet has mature spendable UTXOs.
             gen_targets = [k.address for k in TestNode.PRIV_KEYS][:3]
-            miniwallet_key = ECKey()
-            miniwallet_key.set((1).to_bytes(32, 'big'), True)
-            miniwallet_script = key_to_p2pk_script(miniwallet_key.get_pubkey().get_bytes())
+            miniwallet_script = script_to_p2sh_script(CScript([OP_TRUE]))
             miniwallet_descriptor = descsum_create(f'raw({miniwallet_script.hex()})')
             gen_targets.append(None)
             assert_equal(len(gen_targets), 4)

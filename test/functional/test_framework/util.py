@@ -666,6 +666,15 @@ def modinv(a, n):
         t1 += n
     return t1
 
+def sync_txindex(test_framework, node):
+    """Wait for the transaction index of node to be synced with its chain tip."""
+    test_framework.sync_blocks([node])
+    tip_height = node.getblockcount()
+    test_framework.wait_until(
+        lambda: node.getindexinfo()["txindex"]["synced"] and
+        node.getindexinfo()["txindex"]["best_block_height"] >= tip_height
+    )
+
 def ensure_for(*, duration, f, check_interval=0.2):
     """Ensure that f remains true for the full duration."""
     time_end = time.time() + duration

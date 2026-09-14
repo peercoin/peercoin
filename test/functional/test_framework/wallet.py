@@ -48,6 +48,7 @@ from test_framework.script_util import (
     key_to_p2pkh_script,
     key_to_p2sh_p2wpkh_script,
     key_to_p2wpkh_script,
+    script_to_p2sh_script,
 )
 from test_framework.util import (
     assert_equal,
@@ -84,19 +85,26 @@ class MiniWalletMode(Enum):
     ADDRESS_OP_TRUE = 1
     RAW_OP_TRUE = 2
     RAW_P2PK = 3
+    RAW_P2SH_OP_TRUE = 4
 
 
 class MiniWallet:
-    # peercoin: default to RAW_P2PK because Taproot is not supported here.
-    def __init__(self, test_node, *, mode=MiniWalletMode.RAW_P2PK, tag_name=None):
+    # peercoin: default to RAW_P2SH_OP_TRUE because Taproot is not supported here
+    # and bare OP_TRUE outputs are non-standard.
+    def __init__(self, test_node, *, mode=MiniWalletMode.RAW_P2SH_OP_TRUE, tag_name=None):
         self._test_node = test_node
         self._utxos = []
         self._mode = mode
 
         assert isinstance(mode, MiniWalletMode)
-        if mode == MiniWalletMode.RAW_OP_TRUE:
+        if mode == MiniWalletMode.RAW_P2SH_OP_TRUE:
             assert tag_name is None
-            self._scriptPubKey = bytes(CScript([OP_TRUE]))
+            self._redeem_script = CScript([OP_TRUE])
+            self._scriptPubKey = bytes(script_to_p2sh_script(self._redeem_script))
+        elif mode == MiniWalletMode.RAW_OP_TRUE:
+            assert tag_name is None
+            self._redeem_script = CScript([OP_TRUE])
+            self._scriptPubKey = bytes(script_to_p2sh_script(self._redeem_script))
         elif mode == MiniWalletMode.RAW_P2PK:
             # peercoin: deterministic P2PK; tag_name derives a distinct key.
             self._priv_key = ECKey()
@@ -184,10 +192,10 @@ class MiniWallet:
                 sign_input_legacy(tx, 0, self._scriptPubKey, self._priv_key)
                 if not fixed_length:
                     break
-        elif self._mode == MiniWalletMode.RAW_OP_TRUE:
+        elif self._mode in (MiniWalletMode.RAW_OP_TRUE, MiniWalletMode.RAW_P2SH_OP_TRUE):
+            # peercoin: bare OP_TRUE is non-standard, so use P2SH(OP_TRUE) with push-only scriptSig.
             for i in tx.vin:
-                # peercoin: legacy script verification requires push-only scriptSigs
-                i.scriptSig = CScript(b'\x2a' + b'\x00' * 42)
+                i.scriptSig = CScript([self._redeem_script])
         elif self._mode == MiniWalletMode.ADDRESS_OP_TRUE:
             tx.wit.vtxinwit = [CTxInWitness()] * len(tx.vin)
             for i in tx.wit.vtxinwit:
@@ -370,7 +378,9 @@ class MiniWallet:
         assert fee_rate >= 0
         assert fee >= 0
         # calculate fee
-        if self._mode in (MiniWalletMode.RAW_OP_TRUE, MiniWalletMode.ADDRESS_OP_TRUE):
+        if self._mode in (MiniWalletMode.RAW_OP_TRUE, MiniWalletMode.RAW_P2SH_OP_TRUE):
+            vsize = Decimal(89)  # P2SH(OP_TRUE), Peercoin nTime
+        elif self._mode == MiniWalletMode.ADDRESS_OP_TRUE:
             vsize = Decimal(108)  # anyone-can-spend, Peercoin nTime
         elif self._mode == MiniWalletMode.RAW_P2PK:
             vsize = Decimal(172)  # P2PK (73 bytes scriptSig + 35 bytes scriptPubKey + 64 bytes other)

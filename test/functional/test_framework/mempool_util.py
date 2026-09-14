@@ -29,6 +29,7 @@ from .util import (
 )
 from .wallet import (
     MiniWallet,
+    MiniWalletMode,
 )
 
 # Default for -minrelaytxfee in sat/kvB
@@ -74,7 +75,7 @@ def fill_mempool(test_framework, node, *, tx_sync_fun=None):
     # Generate UTXOs to flood the mempool
     # 1 to create a tx initially that will be evicted from the mempool later
     # 75 transactions each with a fee rate higher than the previous one
-    ephemeral_miniwallet = MiniWallet(node, tag_name="fill_mempool_ephemeral_wallet")
+    ephemeral_miniwallet = MiniWallet(node, mode=MiniWalletMode.RAW_P2PK, tag_name="fill_mempool_ephemeral_wallet")
     test_framework.generate(ephemeral_miniwallet, 1 + num_of_batches * tx_batch_size)
 
     # Mine enough blocks so that the UTXOs are allowed to be spent
@@ -97,9 +98,10 @@ def fill_mempool(test_framework, node, *, tx_sync_fun=None):
     # peercoin: large transactions must clear the absolute per-transaction fee floor, and each
     # batch needs a distinct fee amount to make the eviction ordering deterministic.
     huge_vsize = sum(len(tx.serialize()) for tx in txouts) + 172
-    incremental_fee = Decimal(node.getmempoolinfo()['incrementalrelayfee'])
-    base_fee = peercoin_min_fee(huge_vsize) + incremental_fee
-    batch_fees = [base_fee + Decimal(i) * incremental_fee for i in range(num_of_batches)]
+    huge_min_fee = peercoin_min_fee(huge_vsize)
+    fee_step = huge_min_fee / 10
+    base_fee = huge_min_fee + fee_step
+    batch_fees = [base_fee + Decimal(i) * fee_step for i in range(num_of_batches)]
 
     test_framework.log.debug("Fill up the mempool with txs with higher fee rate")
     for fee in batch_fees[:-3]:
