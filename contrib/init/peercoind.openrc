@@ -1,0 +1,93 @@
+#!/sbin/openrc-run
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/peercoin" ]; then
+	PEERCOIND_DEFAULT_DATADIR="/var/lib/peercoin"
+else
+	PEERCOIND_DEFAULT_DATADIR="/var/lib/peercoind"
+fi
+
+PEERCOIND_CONFIGFILE=${PEERCOIND_CONFIGFILE:-/etc/peercoin/peercoin.conf}
+PEERCOIND_PIDDIR=${PEERCOIND_PIDDIR:-/var/run/peercoind}
+PEERCOIND_PIDFILE=${PEERCOIND_PIDFILE:-${PEERCOIND_PIDDIR}/peercoind.pid}
+PEERCOIND_DATADIR=${PEERCOIND_DATADIR:-${PEERCOIND_DEFAULT_DATADIR}}
+PEERCOIND_USER=${PEERCOIND_USER:-${PEERCOIN_USER:-peercoin}}
+PEERCOIND_GROUP=${PEERCOIND_GROUP:-peercoin}
+PEERCOIND_BIN=${PEERCOIND_BIN:-/usr/bin/peercoind}
+PEERCOIND_NICE=${PEERCOIND_NICE:-${NICELEVEL:-0}}
+PEERCOIND_OPTS="${PEERCOIND_OPTS:-${PEERCOIN_OPTS}}"
+
+name="Peercoin Daemon"
+description="Peercoin cryptocurrency P2P network daemon"
+
+command="/usr/bin/peercoind"
+command_args="-pid=\"${PEERCOIND_PIDFILE}\" \
+		-conf=\"${PEERCOIND_CONFIGFILE}\" \
+		-datadir=\"${PEERCOIND_DATADIR}\" \
+		-daemon \
+		${PEERCOIND_OPTS}"
+
+required_files="${PEERCOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${PEERCOIND_USER} \
+			-N ${PEERCOIND_NICE} -w 2000"
+pidfile="${PEERCOIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${PEERCOIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${PEERCOIND_USER}:${PEERCOIND_GROUP}" \
+	"${PEERCOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${PEERCOIND_USER}:${PEERCOIND_GROUP}" \
+	"${PEERCOIND_PIDDIR}"
+
+	checkpath -f \
+	-o "${PEERCOIND_USER}:${PEERCOIND_GROUP}" \
+	-m 0660 \
+	"${PEERCOIND_CONFIGFILE}"
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if grep -qs '^rpcuser=' "${PEERCOIND_CONFIGFILE}" && \
+		! grep -qs '^rpcpassword=' "${PEERCOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run peercoind."
+		eerror "The setting must appear in ${PEERCOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Peercoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

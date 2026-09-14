@@ -29,7 +29,7 @@ Drag Peercoin to your applications folder, and then run Peercoin.
 
 * See the documentation at the [Peercoin Wiki](https://docs.peercoin.net/)
 for help and more information.
-* Peercoin is very similar to bitcoin, so you can use their wiki [Bitcoin Wiki](https://en.bitcoin.it/wiki/Main_Page).
+* Peercoin is very similar to bitcoin, so you can use their wiki [Bitcoin Wiki](https://en.peercoin.it/wiki/Main_Page).
 * Ask for help on [#general](https://peercoin.chat/) on peercoin.chat.
 
 Building
@@ -68,7 +68,7 @@ The Peercoin repo's [root README](/README.md) contains relevant information on t
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
-- [bitcoin.conf Configuration File](bitcoin-conf.md)
+- [peercoin.conf Configuration File](peercoin-conf.md)
 - [CJDNS Support](cjdns.md)
 - [Files](files.md)
 - [Fuzz-testing](fuzzing.md)

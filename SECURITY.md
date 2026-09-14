@@ -2,14 +2,15 @@
 
 ## Reporting a Vulnerability
 
-To report security issues send an email to secp256k1-security@bitcoincore.org (not for support).
+To report a security vulnerability, please open a private GitHub security advisory at:
 
-The following keys may be used to communicate sensitive information to developers:
+https://github.com/peercoin/peercoin/security/advisories/new
 
-| Name | Fingerprint |
-|------|-------------|
-| Pieter Wuille | 133E AC17 9436 F14A 5CF1  B794 860F EB80 4E66 9320 |
-| Michael Ford | E777 299F C265 DD04 7930  70EB 944D 35F9 AC3D B76A |
-| Andrew Chow | 1528 1230 0785 C964 44D3  334D 1756 5732 E08E 5E41 |
+If GitHub private vulnerability reporting is unavailable, email `security@peercoin.net`.
 
-You can import a key by running the following command with that individual’s fingerprint: `gpg --keyserver hkps://keys.openpgp.org --recv-keys "<fingerprint>"` Ensure that you put quotes around fingerprints containing spaces.
+Please do not disclose vulnerabilities publicly until the project has had time to investigate and release a fix.
+
+For general support questions, please use:
+
+- Peercoin documentation: https://docs.peercoin.net
+- Peercoin forum: https://talk.peercoin.net

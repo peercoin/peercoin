@@ -1,20 +1,20 @@
 # 1. Multisig Tutorial
 
-Currently, it is possible to create a multisig wallet using Bitcoin Core only.
+Currently, it is possible to create a multisig wallet using Peercoin only.
 
 Although there is already a brief explanation about the multisig in the [Descriptors documentation](/doc/descriptors.md#multisig), this tutorial proposes to use the signet (instead of regtest), bringing the reader closer to a real environment and explaining some functions in more detail.
 
 This tutorial uses [jq](https://github.com/stedolan/jq) JSON processor to process the results from RPC and stores the relevant values in bash variables. This makes the tutorial reproducible and easier to follow step by step.
 
-Before starting this tutorial, start the bitcoin node on the signet network.
+Before starting this tutorial, start the Peercoin node on the signet network.
 
 ```bash
-./build/bin/bitcoind -signet -daemon
+./build/bin/peercoind -signet -daemon
 ```
 
 This tutorial also uses the default WPKH derivation path to get the xpubs and does not conform to [BIP 45](https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki) or [BIP 87](https://github.com/bitcoin/bips/blob/master/bip-0087.mediawiki).
 
-At the time of writing, there is no way to extract a specific path from wallets in Bitcoin Core. For this, an external signer/xpub can be used.
+At the time of writing, there is no way to extract a specific path from wallets in Peercoin. For this, an external signer/xpub can be used.
 
 ## 1.1 Basic Multisig Workflow
 
@@ -27,11 +27,11 @@ These three wallets should not be used directly for privacy reasons (public key 
 ```bash
 for ((n=1;n<=3;n++))
 do
- ./build/bin/bitcoin rpc -signet createwallet "participant_${n}"
+ ./build/bin/peercoin rpc -signet createwallet "participant_${n}"
 done
 ```
 
-Extract the xpub of each wallet. To do this, the `listdescriptors` RPC is used. By default, Bitcoin Core single-sig wallets are created using path `m/44'/1'/0'` for PKH, `m/84'/1'/0'` for WPKH, `m/49'/1'/0'` for P2WPKH-nested-in-P2SH and `m/86'/1'/0'` for P2TR based accounts. Each of them uses the chain 0 for external addresses and chain 1 for internal ones, as shown in the example below.
+Extract the xpub of each wallet. To do this, the `listdescriptors` RPC is used. By default, Peercoin single-sig wallets are created using path `m/44'/1'/0'` for PKH, `m/84'/1'/0'` for WPKH, `m/49'/1'/0'` for P2WPKH-nested-in-P2SH and `m/86'/1'/0'` for P2TR based accounts. Each of them uses the chain 0 for external addresses and chain 1 for internal ones, as shown in the example below.
 
 ```
 wpkh([1004658e/84'/1'/0']tpubDCBEcmVKbfC9KfdydyLbJ2gfNL88grZu1XcWSW9ytTM6fitvaRmVyr8Ddf7SjZ2ZfMx9RicjYAXhuh3fmLiVLPodPEqnQQURUfrBKiiVZc8/0/*)#g8l47ngv
@@ -40,16 +40,16 @@ wpkh([1004658e/84'/1'/0']tpubDCBEcmVKbfC9KfdydyLbJ2gfNL88grZu1XcWSW9ytTM6fitvaRm
 ```
 
 The suffix (after #) is the checksum. Descriptors can optionally be suffixed with a checksum to protect against typos or copy-paste errors.
-All RPCs in Bitcoin Core will include the checksum in their output.
+All RPCs in Peercoin will include the checksum in their output.
 
-Note that previously at least two descriptors were usually used, one for external derivation paths and one for internal ones. Since https://github.com/bitcoin/bitcoin/pull/22838 this redundancy has been eliminated by a multipath descriptor with <code><0;1></code> at the [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#change) change level expanding to external and internal descriptors when imported.
+Note that previously at least two descriptors were usually used, one for external derivation paths and one for internal ones. Since https://github.com/peercoin/peercoin/pull/22838 this redundancy has been eliminated by a multipath descriptor with <code><0;1></code> at the [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#change) change level expanding to external and internal descriptors when imported.
 
 ```bash
 declare -A xpubs
 
 for ((n=1;n<=3;n++))
 do
- xpubs["xpub_${n}"]=$(./build/bin/bitcoin rpc -signet -rpcwallet="participant_${n}" listdescriptors | jq '.descriptors | [.[] | select(.desc | startswith("wpkh") and contains("/0/*") )][0] | .desc' | grep -Po '(?<=\().*(?=\))' | sed 's /0/\* /<0;1>/* ')
+ xpubs["xpub_${n}"]=$(./build/bin/peercoin rpc -signet -rpcwallet="participant_${n}" listdescriptors | jq '.descriptors | [.[] | select(.desc | startswith("wpkh") and contains("/0/*") )][0] | .desc' | grep -Po '(?<=\().*(?=\))' | sed 's /0/\* /<0;1>/* ')
 done
 ```
 
@@ -61,7 +61,7 @@ The following command can be used to verify if the xpub was generated correctly.
 for x in "${!xpubs[@]}"; do printf "[%s]=%s\n" "$x" "${xpubs[$x]}" ; done
 ```
 
-As previously mentioned, this step extracts the `m/84'/1'/0'` account instead of the path defined in [BIP 45](https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki) or [BIP 87](https://github.com/bitcoin/bips/blob/master/bip-0087.mediawiki), since there is no way to extract a specific path in Bitcoin Core at the time of writing.
+As previously mentioned, this step extracts the `m/84'/1'/0'` account instead of the path defined in [BIP 45](https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki) or [BIP 87](https://github.com/bitcoin/bips/blob/master/bip-0087.mediawiki), since there is no way to extract a specific path in Peercoin at the time of writing.
 
 ### 1.2 Define the Multisig Descriptor
 
@@ -70,12 +70,12 @@ Define the multisig descriptor, add the checksum and then, wrap it in a JSON arr
 ```bash
 desc="wsh(sortedmulti(2,${xpubs["xpub_1"]},${xpubs["xpub_2"]},${xpubs["xpub_3"]}))"
 
-checksum=$(./build/bin/bitcoin rpc -signet getdescriptorinfo $desc | jq -r '.checksum')
+checksum=$(./build/bin/peercoin rpc -signet getdescriptorinfo $desc | jq -r '.checksum')
 
 multisig_desc="[{\"desc\": \"${desc}#${checksum}\", \"active\": true, \"timestamp\": \"now\"}]"
 ```
 
-`desc` specifies the output type (`wsh`, in this case) and the xpubs involved. It also uses BIP 67 (`sortedmulti`), so the wallet can be recreated without worrying about the order of xpubs. Conceptually, descriptors describe a list of scriptPubKey (along with information for spending from it) [[source](https://github.com/bitcoin/bitcoin/issues/21199#issuecomment-780772418)].
+`desc` specifies the output type (`wsh`, in this case) and the xpubs involved. It also uses BIP 67 (`sortedmulti`), so the wallet can be recreated without worrying about the order of xpubs. Conceptually, descriptors describe a list of scriptPubKey (along with information for spending from it) [[source](https://github.com/peercoin/peercoin/issues/21199#issuecomment-780772418)].
 
 After creating the descriptor, it is necessary to add the checksum, which is required by the `importdescriptors` RPC.
 
@@ -89,7 +89,7 @@ There are other fields that can be added to the descriptor:
 
 Note: when a multipath descriptor is imported, it is expanded into two descriptors which are imported separately, with the second implicitly used for internal (change) addresses.
 
-Documentation for these and other parameters can be found by typing `./build/bin/bitcoin rpc -signet help importdescriptors`.
+Documentation for these and other parameters can be found by typing `./build/bin/peercoin rpc -signet help importdescriptors`.
 
 `multisig_desc` wraps the descriptor in a JSON array and will be used to create the multisig wallet.
 
@@ -102,18 +102,18 @@ Then import the descriptor created in the previous step using the `importdescrip
 After that, `getwalletinfo` can be used to check if the wallet was created successfully.
 
 ```bash
-./build/bin/bitcoin rpc -signet createwallet "multisig_wallet_01" disable_private_keys=true blank=true
+./build/bin/peercoin rpc -signet createwallet "multisig_wallet_01" disable_private_keys=true blank=true
 
-./build/bin/bitcoin rpc -signet -rpcwallet="multisig_wallet_01" importdescriptors "$multisig_desc"
+./build/bin/peercoin rpc -signet -rpcwallet="multisig_wallet_01" importdescriptors "$multisig_desc"
 
-./build/bin/bitcoin rpc -signet -rpcwallet="multisig_wallet_01" getwalletinfo
+./build/bin/peercoin rpc -signet -rpcwallet="multisig_wallet_01" getwalletinfo
 ```
 
 Once the wallets have already been created and this tutorial needs to be repeated or resumed, it is not necessary to recreate them, just load them with the command below:
 
 ```bash
-for ((n=1;n<=3;n++)); do ./build/bin/bitcoin rpc -signet loadwallet "participant_${n}"; done
-./build/bin/bitcoin rpc -signet loadwallet "multisig_wallet_01"
+for ((n=1;n<=3;n++)); do ./build/bin/peercoin rpc -signet loadwallet "participant_${n}"; done
+./build/bin/peercoin rpc -signet loadwallet "multisig_wallet_01"
 ```
 
 ### 1.4 Fund the wallet
@@ -127,9 +127,9 @@ The url used by the script can also be accessed directly. At time of writing, th
 Coins received by the wallet must have at least 1 confirmation before they can be spent. It is necessary to wait for a new block to be mined before continuing.
 
 ```bash
-receiving_address=$(./build/bin/bitcoin rpc -signet -rpcwallet="multisig_wallet_01" getnewaddress)
+receiving_address=$(./build/bin/peercoin rpc -signet -rpcwallet="multisig_wallet_01" getnewaddress)
 
-./contrib/signet/getcoins.py -c ./build/bin/bitcoin-cli -a $receiving_address
+./contrib/signet/getcoins.py -c ./build/bin/peercoin-cli -a $receiving_address
 ```
 
 To copy the receiving address onto the clipboard, use the following command. This can be useful when getting coins via the signet faucet mentioned above.
@@ -141,7 +141,7 @@ echo -n "$receiving_address" | xclip -sel clip
 The `getbalances` RPC may be used to check the balance. Coins with `trusted` status can be spent.
 
 ```bash
-./build/bin/bitcoin rpc -signet -rpcwallet="multisig_wallet_01" getbalances
+./build/bin/peercoin rpc -signet -rpcwallet="multisig_wallet_01" getbalances
 ```
 
 ### 1.5 Create a PSBT
@@ -152,18 +152,18 @@ PSBT is a data format that allows wallets and other tools to exchange informatio
 
 The current PSBT version (v0) is defined in [BIP 174](https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki).
 
-For simplicity, the destination address is taken from the `participant_1` wallet in the code above, but it can be any valid bitcoin address.
+For simplicity, the destination address is taken from the `participant_1` wallet in the code above, but it can be any valid Peercoin address.
 
 The `walletcreatefundedpsbt` RPC is used to create and fund a transaction in the PSBT format. It is the first step in creating the PSBT.
 
 ```bash
-balance=$(./build/bin/bitcoin rpc -signet -rpcwallet="multisig_wallet_01" getbalance)
+balance=$(./build/bin/peercoin rpc -signet -rpcwallet="multisig_wallet_01" getbalance)
 
 amount=$(echo "$balance * 0.8" | bc -l | sed -e 's/^\./0./' -e 's/^-\./-0./')
 
-destination_addr=$(./build/bin/bitcoin rpc -signet -rpcwallet="participant_1" getnewaddress)
+destination_addr=$(./build/bin/peercoin rpc -signet -rpcwallet="participant_1" getnewaddress)
 
-funded_psbt=$(./build/bin/bitcoin rpc -signet -rpcwallet="multisig_wallet_01" walletcreatefundedpsbt outputs="{\"$destination_addr\": $amount}" | jq -r '.psbt')
+funded_psbt=$(./build/bin/peercoin rpc -signet -rpcwallet="multisig_wallet_01" walletcreatefundedpsbt outputs="{\"$destination_addr\": $amount}" | jq -r '.psbt')
 ```
 
 There is also the `createpsbt` RPC, which serves the same purpose, but it has no access to the wallet or to the UTXO set. It is functionally the same as `createrawtransaction` and just drops the raw transaction into an otherwise blank PSBT. [[source](https://bitcointalk.org/index.php?topic=5131043.msg50573609#msg50573609)] In most cases, `walletcreatefundedpsbt` solves the problem.
@@ -177,9 +177,9 @@ Optionally, the PSBT can be decoded to a JSON format using `decodepsbt` RPC.
 The `analyzepsbt` RPC analyzes and provides information about the current status of a PSBT and its inputs, e.g. missing signatures.
 
 ```bash
-./build/bin/bitcoin rpc -signet decodepsbt $funded_psbt
+./build/bin/peercoin rpc -signet decodepsbt $funded_psbt
 
-./build/bin/bitcoin rpc -signet analyzepsbt $funded_psbt
+./build/bin/peercoin rpc -signet analyzepsbt $funded_psbt
 ```
 
 ### 1.7 Update the PSBT
@@ -189,9 +189,9 @@ In the code above, two PSBTs are created. One signed by `participant_1` wallet a
 The `walletprocesspsbt` is used by the wallet to sign a PSBT.
 
 ```bash
-psbt_1=$(./build/bin/bitcoin rpc -signet -rpcwallet="participant_1" walletprocesspsbt $funded_psbt | jq '.psbt')
+psbt_1=$(./build/bin/peercoin rpc -signet -rpcwallet="participant_1" walletprocesspsbt $funded_psbt | jq '.psbt')
 
-psbt_2=$(./build/bin/bitcoin rpc -signet -rpcwallet="participant_2" walletprocesspsbt $funded_psbt | jq '.psbt')
+psbt_2=$(./build/bin/peercoin rpc -signet -rpcwallet="participant_2" walletprocesspsbt $funded_psbt | jq '.psbt')
 ```
 
 ### 1.8 Combine the PSBT
@@ -199,7 +199,7 @@ psbt_2=$(./build/bin/bitcoin rpc -signet -rpcwallet="participant_2" walletproces
 The PSBT, if signed separately by the co-signers, must be combined into one transaction before being finalized. This is done by `combinepsbt` RPC.
 
 ```bash
-combined_psbt=$(./build/bin/bitcoin rpc -signet combinepsbt "[$psbt_1, $psbt_2]")
+combined_psbt=$(./build/bin/peercoin rpc -signet combinepsbt "[$psbt_1, $psbt_2]")
 ```
 
 There is an RPC called `joinpsbts`, but it has a different purpose than `combinepsbt`. `joinpsbts` joins the inputs from multiple distinct PSBTs into one PSBT.
@@ -213,9 +213,9 @@ The `finalizepsbt` RPC is used to produce a network serialized transaction which
 It checks that all inputs have complete scriptSigs and scriptWitnesses and, if so, encodes them into network serialized transactions.
 
 ```bash
-finalized_psbt_hex=$(./build/bin/bitcoin rpc -signet finalizepsbt $combined_psbt | jq -r '.hex')
+finalized_psbt_hex=$(./build/bin/peercoin rpc -signet finalizepsbt $combined_psbt | jq -r '.hex')
 
-./build/bin/bitcoin rpc -signet sendrawtransaction $finalized_psbt_hex
+./build/bin/peercoin rpc -signet sendrawtransaction $finalized_psbt_hex
 ```
 
 ### 1.10 Alternative Workflow (PSBT sequential signatures)
@@ -225,11 +225,11 @@ Instead of each wallet signing the original PSBT and combining them later, the w
 After that, the rest of the process is the same: the PSBT is finalized and transmitted to the network.
 
 ```bash
-psbt_1=$(./build/bin/bitcoin rpc -signet -rpcwallet="participant_1" walletprocesspsbt $funded_psbt | jq -r '.psbt')
+psbt_1=$(./build/bin/peercoin rpc -signet -rpcwallet="participant_1" walletprocesspsbt $funded_psbt | jq -r '.psbt')
 
-psbt_2=$(./build/bin/bitcoin rpc -signet -rpcwallet="participant_2" walletprocesspsbt $psbt_1 | jq -r '.psbt')
+psbt_2=$(./build/bin/peercoin rpc -signet -rpcwallet="participant_2" walletprocesspsbt $psbt_1 | jq -r '.psbt')
 
-finalized_psbt_hex=$(./build/bin/bitcoin rpc -signet finalizepsbt $psbt_2 | jq -r '.hex')
+finalized_psbt_hex=$(./build/bin/peercoin rpc -signet finalizepsbt $psbt_2 | jq -r '.hex')
 
-./build/bin/bitcoin rpc -signet sendrawtransaction $finalized_psbt_hex
+./build/bin/peercoin rpc -signet sendrawtransaction $finalized_psbt_hex
 ```

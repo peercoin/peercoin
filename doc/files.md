@@ -26,8 +26,8 @@ The data directory is the default location where the Peercoin files are stored.
 
 Platform | Data directory path
 ---------|--------------------
-Linux    | `$HOME/.peercoin/`
-macOS    | `$HOME/Library/Application Support/Peercoin/`
+Linux    | `$HOME/.bitcoin/`
+macOS    | `$HOME/Library/Application Support/Bitcoin/`
 Windows  | `%APPDATA%\Peercoin\` <sup>[\[1\]](#note1)</sup>
 
 2. A custom data directory path can be specified with the `-datadir` option.
@@ -67,7 +67,7 @@ Subdirectory       | File(s)               | Description
 `./`               | `onion_v3_private_key` | Cached Tor onion service private key for `-listenonion` option
 `./`               | `i2p_private_key`     | Private key that corresponds to our I2P address. When `-i2psam=` is specified the contents of this file is used to identify ourselves for making outgoing connections to I2P peers and possibly accepting incoming ones. Automatically generated if it does not exist.
 `./`               | `peers.dat`           | Peer IP address database (custom format)
-`./`               | `settings.json`       | Read-write settings set through GUI or RPC interfaces, augmenting manual settings from [bitcoin.conf](bitcoin-conf.md). File is created automatically if read-write settings storage is not disabled with `-nosettings` option. Path can be specified with `-settings` option
+`./`               | `settings.json`       | Read-write settings set through GUI or RPC interfaces, augmenting manual settings from [peercoin.conf](peercoin-conf.md). File is created automatically if read-write settings storage is not disabled with `-nosettings` option. Path can be specified with `-settings` option
 `./`               | `.cookie`             | Session RPC authentication cookie; if used, created at start and deleted on shutdown; can be specified by `-rpccookiefile` option
 `./`               | `.lock`               | Data directory lock file
 
@@ -113,13 +113,13 @@ These subdirectories and files are no longer used by Peercoin:
 
 Path           | Description | Repository notes
 ---------------|-------------|-----------------
-`banlist.dat`  | Stores the addresses/subnets of banned nodes; superseded by `banlist.json` in 22.0 and completely ignored in 23.0 | [PR #20966](https://github.com/bitcoin/bitcoin/pull/20966), [PR #22570](https://github.com/bitcoin/bitcoin/pull/22570)
-`blktree/`     | Blockchain index; replaced by `blocks/index/` in [0.6.0](https://github.com/bitcoin/bitcoin/blob/master/doc/release-notes/release-notes-0.8.0.md#improvements) | [PR #2231](https://github.com/bitcoin/bitcoin/pull/2231), [`8fdc94cc`](https://github.com/bitcoin/bitcoin/commit/8fdc94cc8f0341e96b1edb3a5b56811c0b20bd15)
-`coins/`       | Unspent transaction output database; replaced by `chainstate/` in 0.6.0 | [PR #2231](https://github.com/bitcoin/bitcoin/pull/2231), [`8fdc94cc`](https://github.com/bitcoin/bitcoin/commit/8fdc94cc8f0341e96b1edb3a5b56811c0b20bd15)
-`blkindex.dat` | Blockchain index BDB database; replaced by {`chainstate/`, `blocks/index/`, `blocks/revNNNNN.dat`<sup>[\[2\]](#note2)</sup>} in 0.6.0 | [PR #1677](https://github.com/bitcoin/bitcoin/pull/1677)
-`blk000?.dat`  | Block data (custom format, 2 GiB per file); replaced by `blocks/blkNNNNN.dat`<sup>[\[2\]](#note2)</sup> in 0.6.0 | [PR #1677](https://github.com/bitcoin/bitcoin/pull/1677)
-`addr.dat`     | Peer IP address BDB database; replaced by `peers.dat` in [0.5.0](https://github.com/bitcoin/bitcoin/blob/master/doc/release-notes/release-notes-0.7.0.md) | [PR #1198](https://github.com/bitcoin/bitcoin/pull/1198), [`928d3a01`](https://github.com/bitcoin/bitcoin/commit/928d3a011cc66c7f907c4d053f674ea77dc611cc)
-`onion_private_key` | Cached Tor onion service private key for `-listenonion` option. Was used for Tor v2 services; replaced by `onion_v3_private_key` in [0.21.0](https://github.com/bitcoin/bitcoin/blob/master/doc/release-notes/release-notes-0.21.0.md) | [PR #19954](https://github.com/bitcoin/bitcoin/pull/19954)
+`banlist.dat`  | Stores the addresses/subnets of banned nodes; superseded by `banlist.json` in 22.0 and completely ignored in 23.0 | [PR #20966](https://github.com/peercoin/peercoin/pull/20966), [PR #22570](https://github.com/peercoin/peercoin/pull/22570)
+`blktree/`     | Blockchain index; replaced by `blocks/index/` in [0.6.0](https://github.com/peercoin/peercoin/blob/master/doc/release-notes/release-notes-0.8.0.md#improvements) | [PR #2231](https://github.com/peercoin/peercoin/pull/2231), [`8fdc94cc`](https://github.com/peercoin/peercoin/commit/8fdc94cc8f0341e96b1edb3a5b56811c0b20bd15)
+`coins/`       | Unspent transaction output database; replaced by `chainstate/` in 0.6.0 | [PR #2231](https://github.com/peercoin/peercoin/pull/2231), [`8fdc94cc`](https://github.com/peercoin/peercoin/commit/8fdc94cc8f0341e96b1edb3a5b56811c0b20bd15)
+`blkindex.dat` | Blockchain index BDB database; replaced by {`chainstate/`, `blocks/index/`, `blocks/revNNNNN.dat`<sup>[\[2\]](#note2)</sup>} in 0.6.0 | [PR #1677](https://github.com/peercoin/peercoin/pull/1677)
+`blk000?.dat`  | Block data (custom format, 2 GiB per file); replaced by `blocks/blkNNNNN.dat`<sup>[\[2\]](#note2)</sup> in 0.6.0 | [PR #1677](https://github.com/peercoin/peercoin/pull/1677)
+`addr.dat`     | Peer IP address BDB database; replaced by `peers.dat` in [0.5.0](https://github.com/peercoin/peercoin/blob/master/doc/release-notes/release-notes-0.7.0.md) | [PR #1198](https://github.com/peercoin/peercoin/pull/1198), [`928d3a01`](https://github.com/peercoin/peercoin/commit/928d3a011cc66c7f907c4d053f674ea77dc611cc)
+`onion_private_key` | Cached Tor onion service private key for `-listenonion` option. Was used for Tor v2 services; replaced by `onion_v3_private_key` in [0.21.0](https://github.com/peercoin/peercoin/blob/master/doc/release-notes/release-notes-0.21.0.md) | [PR #19954](https://github.com/peercoin/peercoin/pull/19954)
 
 ## Notes
 

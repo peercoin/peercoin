@@ -47,25 +47,25 @@ other consensus and policy rules, each of the following conditions are met:
 ## History
 
 * Opt-in full replace-by-fee (without inherited signaling) honoured in mempool and mining as of
-  **v0.12.0** ([PR 6871](https://github.com/bitcoin/bitcoin/pull/6871)).
+  **v0.12.0** ([PR 6871](https://github.com/peercoin/peercoin/pull/6871)).
 
 * [BIP125](https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki) defined based on
-  Bitcoin Core implementation.
+  Peercoin implementation.
 
 * The incremental relay feerate used to calculate the required additional fees is distinct from
   `-minrelaytxfee` and configurable using `-incrementalrelayfee`
-  ([PR #9380](https://github.com/bitcoin/bitcoin/pull/9380)).
+  ([PR #9380](https://github.com/peercoin/peercoin/pull/9380)).
 
 * RBF enabled by default in the wallet GUI as of **v0.18.1** ([PR
-  #11605](https://github.com/bitcoin/bitcoin/pull/11605)).
+  #11605](https://github.com/peercoin/peercoin/pull/11605)).
 
 * Full replace-by-fee enabled as a configurable mempool policy as of **v24.0** ([PR
-  #25353](https://github.com/bitcoin/bitcoin/pull/25353)).
+  #25353](https://github.com/peercoin/peercoin/pull/25353)).
 
-* Full replace-by-fee is the default policy as of **v28.0** ([PR #30493](https://github.com/bitcoin/bitcoin/pull/30493)).
+* Full replace-by-fee is the default policy as of **v28.0** ([PR #30493](https://github.com/peercoin/peercoin/pull/30493)).
 
-* Signaling for replace-by-fee is no longer required as of [PR 30592](https://github.com/bitcoin/bitcoin/pull/30592).
+* Signaling for replace-by-fee is no longer required as of [PR 30592](https://github.com/peercoin/peercoin/pull/30592).
 
-* The incremental relay feerate default is 0.1sat/vB ([PR #33106](https://github.com/bitcoin/bitcoin/pull/33106)).
+* The incremental relay feerate default is 0.1sat/vB ([PR #33106](https://github.com/peercoin/peercoin/pull/33106)).
 
 * Feerate diagram policy enabled in conjunction with switch to cluster mempool as of **v31.0**.

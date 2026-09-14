@@ -4,21 +4,22 @@
 # see: dh_installdeb(1)
 
 conf() {
-	echo "Configuring .peercoin directory for each user..."
+	echo "Configuring data directory for each user..."
 	for _HOME in /home/*?; do
 		# Obtain the username
 		USER=$( basename ${_HOME} )
 
-		if [ ! -d "$_HOME/.peercoin" ]; then
-			echo "Peercoin directory not found for user $USER! Creating one now."
-			mkdir $_HOME/.peercoin
+		if [ ! -d "$_HOME/.bitcoin" ]; then
+			echo "Data directory not found for user $USER! Creating one now."
+			mkdir $_HOME/.bitcoin
 		fi
 
-		if [ ! -f $_HOME/.peercoin/peercoin.conf ]; then
-			echo "Peercoin configuration file not found for user $USER! Creating one now."
-			echo -e "rpcuser=rpcuser\nrpcpassword=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c10)" > $_HOME/.peercoin/peercoin.conf
+		if [ ! -f $_HOME/.bitcoin/peercoin.conf ]; then
+			echo "Configuration file not found for user $USER! Creating one now."
+			echo -e "rpcuser=rpcuser\nrpcpassword=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c10)" > $_HOME/.bitcoin/peercoin.conf
 		fi
-		chown -R $USER: $_HOME/.peercoin
+
+		chown -R $USER: "$_HOME/.bitcoin"
 	done
 }
 

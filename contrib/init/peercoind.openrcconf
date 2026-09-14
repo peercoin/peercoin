@@ -1,0 +1,33 @@
+# /etc/conf.d/peercoind: config file for /etc/init.d/peercoind
+
+# Config file location
+#PEERCOIND_CONFIGFILE="/etc/peercoin/peercoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $PEERCOIND_USER)
+#PEERCOIND_PIDDIR="/var/run/peercoind"
+
+# What filename to give the pidfile
+#PEERCOIND_PIDFILE="${PEERCOIND_PIDDIR}/peercoind.pid"
+
+# Where to write peercoind data (be mindful that the blockchain is large)
+#PEERCOIND_DATADIR="/var/lib/peercoind"
+
+# User and group to own peercoind process
+#PEERCOIND_USER="peercoin"
+#PEERCOIND_GROUP="peercoin"
+
+# Path to peercoind executable
+#PEERCOIND_BIN="/usr/bin/peercoind"
+
+# Nice value to run peercoind under
+#PEERCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#PEERCOIND_OPTS=""
+
+# The timeout in seconds OpenRC will wait for peercoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+PEERCOIND_SIGTERM_TIMEOUT=600

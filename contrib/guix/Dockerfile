@@ -100,7 +100,7 @@ RUN --security=insecure \
 RUN --mount=type=bind,src=depends,dst=/depends,rw \
     make -C /depends -j"$(nproc)" download && mv /depends/sources /sources
 
-ARG xcode_download_path="https://bitcoincore.org/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz"
+ARG xcode_download_path="https://peercoin.net/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz"
 ARG xcode_checksum=df75d30ecafc429e905134333aeae56ac65fac67cb4182622398fd717df77619
 
 RUN if [[ "${HOST}" == "x86_64-apple-darwin" || "${HOST}" == "arm64-apple-darwin" ]]; then \

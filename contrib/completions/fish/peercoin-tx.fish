@@ -1,5 +1,5 @@
 # Disable files from being included in completions by default
-complete --command bitcoin-tx --no-files
+complete --command peercoin-tx --no-files
 
 # Modified version of __fish_seen_subcommand_from
 # Uses regex to detect cmd= syntax
@@ -47,19 +47,19 @@ end
 
 # Add options
 complete \
-    --command bitcoin-tx \
+    --command peercoin-tx \
     --condition "not __fish_bitcoin_seen_cmd (__fish_bitcoin_tx_get_commands --commandsonly)" \
     --arguments "(__fish_bitcoin_tx_get_options)" \
     --no-files
 
 # Add commands
 complete \
-    --command bitcoin-tx \
+    --command peercoin-tx \
     --arguments "(__fish_bitcoin_tx_get_commands)" \
     --no-files
 
 # Add file completions for load and set commands
 complete \
-    --command bitcoin-tx \
+    --command peercoin-tx \
     --condition 'string match --regex -- "(load|set)=" (commandline -pt)' \
     --force-files

@@ -1,4 +1,4 @@
-# Copyright (c) 2020 The Bitcoin Core developers
+# Copyright (c) 2020 The Peercoin developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #
@@ -15,6 +15,6 @@ if [ $RECENT_TAG = $(git describe HEAD) ]; then
 else
   VERSION=$(git rev-parse --short HEAD)
 fi
-DISTNAME=bitcoin-${VERSION}
+DISTNAME=peercoin-${VERSION}
 GIT_ARCHIVE="${OUTDIR}/src/${DISTNAME}.tar.gz"
 git archive --output=$GIT_ARCHIVE HEAD

@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Bitcoin Core Security Policy
-    url: https://github.com/bitcoin/bitcoin/blob/master/SECURITY.md
+  - name: Peercoin Security Policy
+    url: https://github.com/peercoin/peercoin/blob/master/SECURITY.md
     about: View security policy
-  - name: Bitcoin Core Developers
-    url: https://bitcoincore.org
-    about: Bitcoin Core homepage
+  - name: Peercoin Community Forum
+    url: https://talk.peercoin.net
+    about: Peercoin support and community discussions

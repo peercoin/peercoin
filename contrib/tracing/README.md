@@ -2,8 +2,8 @@ Example scripts for User-space, Statically Defined Tracing (USDT)
 =================================================================
 
 This directory contains scripts showcasing User-space, Statically Defined
-Tracing (USDT) support for Bitcoin Core on Linux using. For more information on
-USDT support in Bitcoin Core see the [USDT documentation].
+Tracing (USDT) support for Peercoin on Linux using. For more information on
+USDT support in Peercoin see the [USDT documentation].
 
 [USDT documentation]: ../../doc/tracing.md
 
@@ -30,14 +30,14 @@ information. For development there exist a [bpftrace Reference Guide], a
 
 ## Examples
 
-The bpftrace examples contain a relative path to the `bitcoind` binary. By
+The bpftrace examples contain a relative path to the `peercoind` binary. By
 default, the scripts should be run from the repository-root and assume a
-self-compiled `bitcoind` binary. The paths in the examples can be changed, for
+self-compiled `peercoind` binary. The paths in the examples can be changed, for
 example, to point to release builds if needed. See the
-[Bitcoin Core USDT documentation] on how to list available tracepoints in your
-`bitcoind` binary.
+[Peercoin USDT documentation] on how to list available tracepoints in your
+`peercoind` binary.
 
-[Bitcoin Core USDT documentation]: ../../doc/tracing.md#listing-available-tracepoints
+[Peercoin USDT documentation]: ../../doc/tracing.md#listing-available-tracepoints
 
 **WARNING: eBPF programs require root privileges to be loaded into a Linux
 kernel VM. This means the bpftrace and BCC examples must be executed with root
@@ -82,7 +82,7 @@ about the connection. Peers can be selected individually to view recent P2P
 messages.
 
 ```
-$ python3 contrib/tracing/p2p_monitor.py $(pidof bitcoind)
+$ python3 contrib/tracing/p2p_monitor.py $(pidof peercoind)
 ```
 
 Lists selectable peers and traffic and connection information.
@@ -150,7 +150,7 @@ lost. BCC prints: `Possibly lost 2 samples` on lost messages.
 
 
 ```
-$ python3 contrib/tracing/log_raw_p2p_msgs.py $(pidof bitcoind)
+$ python3 contrib/tracing/log_raw_p2p_msgs.py $(pidof peercoind)
 ```
 
 ```
@@ -184,11 +184,11 @@ longer than 25ms to connect.
 $ bpftrace contrib/tracing/connectblock_benchmark.bt 20000 38000 25
 ```
 
-In a different terminal, starting Bitcoin Core in SigNet mode and with
+In a different terminal, starting Peercoin in SigNet mode and with
 re-indexing enabled.
 
 ```
-$ ./build/bin/bitcoind -signet -reindex
+$ ./build/bin/peercoind -signet -reindex
 ```
 
 This produces the following output.
@@ -241,7 +241,7 @@ A BCC Python script to log the UTXO cache flushes. Based on the
 `utxocache:flush` tracepoint.
 
 ```bash
-$ python3 contrib/tracing/log_utxocache_flush.py $(pidof bitcoind)
+$ python3 contrib/tracing/log_utxocache_flush.py $(pidof peercoind)
 ```
 
 ```
@@ -300,7 +300,7 @@ comprising a timestamp along with all event data available via the event's
 tracepoint.
 
 ```console
-$ python3 contrib/tracing/mempool_monitor.py $(pidof bitcoind)
+$ python3 contrib/tracing/mempool_monitor.py $(pidof peercoind)
 ```
 
 ```

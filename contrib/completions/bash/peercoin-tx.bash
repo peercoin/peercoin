@@ -1,5 +1,5 @@
-# bash programmable completion for bitcoin-tx(1)
-# Copyright (c) 2016-present The Bitcoin Core developers
+# bash programmable completion for peercoin-tx(1)
+# Copyright (c) 2016-present The Peercoin developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@ _bitcoin_tx() {
     local cur prev words=() cword
     local bitcoin_tx
 
-    # save and use original argument to invoke bitcoin-tx for -help
+    # save and use original argument to invoke peercoin-tx for -help
     # it might not be in $PATH
     bitcoin_tx="$1"
 
@@ -27,7 +27,7 @@ _bitcoin_tx() {
 
     if [[ "$cword" == 1 || ( "$prev" != "-create" && "$prev" == -* ) ]]; then
         # only options (or an uncompletable hex-string) allowed
-        # parse bitcoin-tx -help for options
+        # parse peercoin-tx -help for options
         local helpopts
         helpopts=$($bitcoin_tx -help | sed -e '/^  -/ p' -e d )
         COMPREPLY=( $( compgen -W "$helpopts" -- "$cur" ) )
@@ -46,7 +46,7 @@ _bitcoin_tx() {
 
     return 0
 } &&
-complete -F _bitcoin_tx bitcoin-tx
+complete -F _bitcoin_tx peercoin-tx
 
 # Local variables:
 # mode: shell-script

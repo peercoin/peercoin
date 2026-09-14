@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-present The Bitcoin Core developers
+# Copyright (c) 2014-present The Peercoin developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 '''
@@ -160,7 +160,7 @@ def main():
         sys.exit(1)
     g = sys.stdout
     indir = sys.argv[1]
-    g.write('// Copyright (c) The Bitcoin Core developers\n')
+    g.write('// Copyright (c) The Peercoin developers\n')
     g.write('// Distributed under the MIT software license, see the accompanying\n')
     g.write('// file COPYING or https://opensource.org/license/mit.\n\n')
     g.write('#ifndef BITCOIN_CHAINPARAMSSEEDS_H\n')

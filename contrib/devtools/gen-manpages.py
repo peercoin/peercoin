@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2022-present The Bitcoin Core developers
+# Copyright (c) 2022-present The Peercoin developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 import os
@@ -10,13 +10,13 @@ import tempfile
 import argparse
 
 BINARIES = [
-'bin/bitcoin',
-'bin/bitcoind',
-'bin/bitcoin-cli',
-'bin/bitcoin-tx',
-'bin/bitcoin-wallet',
-'bin/bitcoin-util',
-'bin/bitcoin-qt',
+'bin/peercoin',
+'bin/peercoind',
+'bin/peercoin-cli',
+'bin/peercoin-tx',
+'bin/peercoin-wallet',
+'bin/peercoin-util',
+'bin/peercoin-qt',
 ]
 
 parser = argparse.ArgumentParser(

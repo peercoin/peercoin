@@ -5,10 +5,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## This issue tracker is only for technical issues related to Bitcoin Core.
+        ## This issue tracker is only for technical issues related to Peercoin.
 
-        * General bitcoin questions and/or support requests should use Bitcoin StackExchange at https://bitcoin.stackexchange.com.
-        * For reporting security issues, please read instructions at https://bitcoincore.org/en/contact/.
+        * General Peercoin questions and/or support requests should use the Peercoin forum at https://talk.peercoin.net or the Peercoin docs at https://docs.peercoin.net.
+        * For reporting security issues, please read instructions at https://github.com/peercoin/peercoin/blob/master/SECURITY.md.
         * If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running `memtest` and observe CPU temperature with a load-test tool such as `linpack` before creating an issue.
 
         ----
@@ -50,14 +50,14 @@ body:
       description: |
         Please copy and paste any relevant log output or attach a debug log file.
 
-        You can find the debug.log in your [data dir.](https://github.com/bitcoin/bitcoin/blob/master/doc/files.md#data-directory-location)
+        You can find the debug.log in your [data dir.](https://github.com/peercoin/peercoin/blob/master/doc/files.md#data-directory-location)
 
         Please be aware that the debug log might contain personally identifying information.
     validations:
       required: false
   - type: dropdown
     attributes:
-      label: How did you obtain Bitcoin Core
+      label: How did you obtain Peercoin
       multiple: false
       options:
         - Compiled from source
@@ -69,9 +69,9 @@ body:
   - type: input
     id: core-version
     attributes:
-      label: What version of Bitcoin Core are you using?
-      description: Run `bitcoind --version` or in Bitcoin-QT use `Help > About Bitcoin Core`
-      placeholder: e.g. v24.0.1 or master@e1bf547
+      label: What version of Peercoin are you using?
+      description: Run `peercoind --version` or in Peercoin-Qt use `Help > About Peercoin`
+      placeholder: e.g. v0.16.0 or master@e1bf547
     validations:
       required: true
   - type: input

@@ -67,18 +67,18 @@ controlled by group membership.
 
 NOTE: When using the systemd .service file, the creation of the aforementioned
 directories and the setting of their permissions is automatically handled by
-systemd. Directories are given a permission of 710, giving the bitcoin group
+systemd. Directories are given a permission of 710, giving the peercoin group
 access to files under it _if_ the files themselves give permission to the
-bitcoin group to do so. This does not allow
+peercoin group to do so. This does not allow
 for the listing of files under the directory.
 
 NOTE: It is not currently possible to override `datadir` in
-`/etc/bitcoin/bitcoin.conf` with the current systemd, OpenRC, and Upstart init
+`/etc/peercoin/peercoin.conf` with the current systemd, OpenRC, and Upstart init
 files out-of-the-box. This is because the command line options specified in the
 init files take precedence over the configurations in
-`/etc/bitcoin/bitcoin.conf`. However, some init systems have their own
+`/etc/peercoin/peercoin.conf`. However, some init systems have their own
 configuration mechanisms that would allow for overriding the command line
-options specified in the init files (e.g. setting `BITCOIND_DATADIR` for
+options specified in the init files (e.g. setting `PEERCOIND_DATADIR` for
 OpenRC).
 
 ### macOS
@@ -89,15 +89,15 @@ files out-of-the-box. This is because the command line options specified in the
 init files take precedence over the configurations in
 `/etc/peercoin/peercoin.conf`. However, some init systems have their own
 configuration mechanisms that would allow for overriding the command line
-options specified in the init files (e.g. setting `BITCOIND_DATADIR` for
+options specified in the init files (e.g. setting `PEERCOIND_DATADIR` for
 OpenRC).
 
 ### macOS
 
 Binary:              `/usr/local/bin/peercoind`
-Configuration file:  `~/Library/Application Support/Peercoin/peercoin.conf`
-Data directory:      `~/Library/Application Support/Peercoin`
-Lock file:           `~/Library/Application Support/Peercoin/.lock`
+Configuration file:  `~/Library/Application Support/Bitcoin/peercoin.conf`
+Data directory:      `~/Library/Application Support/Bitcoin`
+Lock file:           `~/Library/Application Support/Bitcoin/.lock`
 
 Installing Service Configuration
 -----------------------------------

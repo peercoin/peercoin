@@ -1,6 +1,6 @@
 # Windows / MSVC Build Guide
 
-This guide describes how to build bitcoind, command-line utilities, and GUI on Windows using Microsoft Visual Studio.
+This guide describes how to build peercoind, command-line utilities, and GUI on Windows using Microsoft Visual Studio.
 
 For cross-compiling options, please see [`build-windows.md`](./build-windows.md).
 
@@ -42,24 +42,24 @@ To install Python, run:
 winget install python3
 ```
 
-### 2. Clone Bitcoin Repository
+### 2. Clone Peercoin Repository
 
 `git` should already be installed as a component of Visual Studio. If not, download and install [Git for Windows](https://git-scm.com/downloads/win).
 
-Clone the Bitcoin Core repository to a directory. All build scripts and commands will run from this directory.
+Clone the Peercoin repository to a directory. All build scripts and commands will run from this directory.
 
 ```powershell
-git clone https://github.com/bitcoin/bitcoin.git
+git clone https://github.com/peercoin/peercoin.git
 ```
 
 
 ## Triplets and Presets
 
-The Bitcoin Core project supports the following vcpkg triplets:
+The Peercoin project supports the following vcpkg triplets:
 - `x64-windows` (both CRT and library linkage is dynamic)
 - `x64-windows-static` (both CRT and library linkage is static)
 
-To facilitate build process, the Bitcoin Core project provides presets, which are used in this guide.
+To facilitate build process, the Peercoin project provides presets, which are used in this guide.
 
 Available presets can be listed as follows:
 ```powershell
@@ -95,7 +95,7 @@ ctest --test-dir build --build-config Release  # Append "-j N" for N parallel te
 
 ### vcpkg-specific Issues and Workarounds
 
-vcpkg installation during the configuration step might fail for various reasons unrelated to Bitcoin Core.
+vcpkg installation during the configuration step might fail for various reasons unrelated to Peercoin.
 
 If the failure is due to a "Buildtrees path … is too long" error, which is often encountered when building
 with `BUILD_GUI=ON` and using the default vcpkg installation provided by Visual Studio, you can
@@ -107,7 +107,7 @@ cmake -B build --preset vs2026-static -DVCPKG_INSTALL_OPTIONS="--x-buildtrees-ro
 ```
 
 If vcpkg installation fails with the message "Paths with embedded space may be handled incorrectly", which
-can occur if your local Bitcoin Core repository path contains spaces, you can override the vcpkg install directory
+can occur if your local Peercoin repository path contains spaces, you can override the vcpkg install directory
 by setting the [`VCPKG_INSTALLED_DIR`](https://github.com/microsoft/vcpkg-docs/blob/main/vcpkg/users/buildsystems/cmake-integration.md#vcpkg_installed_dir) variable:
 
 ```powershell

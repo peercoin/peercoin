@@ -2,7 +2,7 @@
 
 #### Preparation
 
-As of Bitcoin Core v22.0, releases are signed by a number of public keys on the basis
+As of Peercoin v22.0, releases are signed by a number of public keys on the basis
 of the [guix.sigs repository](https://github.com/bitcoin-core/guix.sigs/). When
 verifying binary downloads, you (the end user) decide which of these public keys you
 trust and then use that trust model to evaluate the signature on a file that contains
@@ -23,7 +23,7 @@ You can obtain these keys by
 #### Usage
 
 This script attempts to download the checksum file (`SHA256SUMS`) and corresponding
-signature file `SHA256SUMS.asc` from https://bitcoincore.org and https://bitcoin.org.
+signature file `SHA256SUMS.asc` from https://peercoin.net and https://bitcoin.org.
 
 It first checks if the checksum file is valid based upon a plurality of signatures, and
 then downloads the release files specified in the checksum file, and checks if the

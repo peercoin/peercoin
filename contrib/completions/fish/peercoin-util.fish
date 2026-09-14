@@ -1,5 +1,5 @@
 # Disable files from being included in completions by default
-complete --command bitcoin-util --no-files
+complete --command peercoin-util --no-files
 
 # Extract options
 function __fish_bitcoin_util_get_options
@@ -26,13 +26,13 @@ end
 
 # Add options
 complete \
-    --command bitcoin-util \
+    --command peercoin-util \
     --condition "not __fish_seen_subcommand_from (__fish_bitcoin_util_get_commands)" \
     --arguments "(__fish_bitcoin_util_get_options)"
 
 # Add commands
 complete \
-    --command bitcoin-util \
+    --command peercoin-util \
     --condition "not __fish_seen_subcommand_from (__fish_bitcoin_util_get_commands)" \
     --arguments "(__fish_bitcoin_util_get_commands)"
 

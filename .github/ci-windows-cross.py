@@ -24,21 +24,21 @@ def run(cmd, **kwargs):
 
 
 def print_version():
-    bitcoind = Path.cwd() / "bin" / "bitcoind.exe"
-    run([str(bitcoind), "-version"])
+    peercoind = Path.cwd() / "bin" / "peercoind.exe"
+    run([str(peercoind), "-version"])
 
 
 def check_manifests():
     release_dir = Path.cwd() / "bin"
-    manifest_path = release_dir / "bitcoind.manifest"
+    manifest_path = release_dir / "peercoind.manifest"
 
-    cmd_bitcoind_manifest = [
+    cmd_peercoind_manifest = [
         "mt.exe",
         "-nologo",
-        f"-inputresource:{release_dir / 'bitcoind.exe'}",
+        f"-inputresource:{release_dir / 'peercoind.exe'}",
         f"-out:{manifest_path}",
     ]
-    run(cmd_bitcoind_manifest)
+    run(cmd_peercoind_manifest)
     print(manifest_path.read_text())
 
     skipped = {  # Skip as they currently do not have manifests
@@ -102,7 +102,7 @@ def run_functional_tests():
         # feature_unsupported_utxo_db.py fails on Windows because of emojis in the test data directory.
         "--exclude",
         "feature_unsupported_utxo_db.py",
-        # See https://github.com/bitcoin/bitcoin/issues/31409.
+        # Known Windows wallet_multiwallet interaction issue.
         "--exclude",
         "wallet_multiwallet.py",
     ]

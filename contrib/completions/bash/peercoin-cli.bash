@@ -1,9 +1,9 @@
-# bash programmable completion for bitcoin-cli(1)
-# Copyright (c) 2012-present The Bitcoin Core developers
+# bash programmable completion for peercoin-cli(1)
+# Copyright (c) 2012-present The Peercoin developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-# call $bitcoin-cli for RPC
+# call $peercoin-cli for RPC
 _bitcoin_rpc() {
     # determine already specified args necessary for RPC
     local rpcargs=()
@@ -21,8 +21,8 @@ _bitcoin_cli() {
     local cur prev words=() cword
     local bitcoin_cli
 
-    # save and use original argument to invoke bitcoin-cli for -help, help and RPC
-    # as bitcoin-cli might not be in $PATH
+    # save and use original argument to invoke peercoin-cli for -help, help and RPC
+    # as peercoin-cli might not be in $PATH
     bitcoin_cli="$1"
 
     COMPREPLY=()
@@ -127,7 +127,7 @@ _bitcoin_cli() {
             ;;
     esac
 } &&
-complete -F _bitcoin_cli bitcoin-cli
+complete -F _bitcoin_cli peercoin-cli
 
 # Local variables:
 # mode: shell-script

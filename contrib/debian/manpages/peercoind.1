@@ -34,7 +34,7 @@ Start minimized - only applicable to the GUI version
 Show splash screen on startup - only applicable to the GUI version
 .TP
 \fB\-datadir=\fR<dir>
-Specify data directory (default: $HOME/.peercoin)
+Specify data directory (default: $HOME/.bitcoin)
 .TP
 \fB\-dbcache=\fR<n>
 Set database cache size in megabytes (default: 25)
@@ -212,7 +212,7 @@ Returns data needed to construct a block to work on:
    "bits"       : compressed target of next block
    "height"     : height of the next block
 
-See https://en.bitcoin.it/wiki/BIP_0022 for full specification.
+See https://en.peercoin.it/wiki/BIP_0022 for full specification.
 .TP
 \fBgetcheckpoint\fR
 Show info of synchronized checkpoint.
@@ -350,7 +350,7 @@ Stops the peercoin server.
 \fBsubmitblock 'hex data' [optional-params-obj]\fR
 [optional-params-obj] parameter is currently ignored.
 Attempts to submit new block to network.
-See https://en.bitcoin.it/wiki/BIP_0022 for full specification.
+See https://en.peercoin.it/wiki/BIP_0022 for full specification.
 .TP
 \fBvalidateaddress 'peercoinaddress'\fR
 Checks that 'peercoinaddress' looks like a proper peercoin address. Returns an object containing:
