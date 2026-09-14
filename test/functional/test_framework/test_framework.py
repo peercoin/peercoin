@@ -200,6 +200,11 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         parser.add_argument("--randomseed", type=int,
                             help="set a random seed for deterministically reproducing a previous test run")
         parser.add_argument("--timeout-factor", dest="timeout_factor", type=float, help="adjust test timeouts by a factor. Setting it to 0 disables all timeouts")
+        parser.add_argument("--v2transport", dest="v2transport", default=False, action="store_true", help="run with P2P v2 transport support (unsupported in this Peercoin build)")
+
+        wallet_mode_group = parser.add_mutually_exclusive_group()
+        wallet_mode_group.add_argument("--descriptors", action="store_const", const=True, dest="descriptors", default=None, help="accept descriptor wallet selection (unsupported wallet variants may be skipped by test_runner)")
+        wallet_mode_group.add_argument("--legacy-wallet", action="store_const", const=False, dest="descriptors", default=None, help="accept legacy wallet selection (unsupported wallet variants may be skipped by test_runner)")
 
         self.add_options(parser)
         # Running TestShell in a Jupyter notebook causes an additional -f argument
@@ -217,22 +222,17 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         self.config = config
 
         if "descriptors" not in self.options:
-            # Wallet is not required by the test at all and the value of self.options.descriptors won't matter.
-            # It still needs to exist and be None in order for tests to work however.
-            # So set it to None to force -disablewallet, because the wallet is not needed.
-            self.options.descriptors = None
+            # Peercoin builds use SQLite descriptor-capable wallets by default.
+            self.options.descriptors = True
         elif self.options.descriptors is None:
-            # Some wallet is either required or optionally used by the test.
-            # Prefer SQLite unless it isn't available
             if self.is_sqlite_compiled():
                 self.options.descriptors = True
             elif self.is_bdb_compiled():
                 self.options.descriptors = False
             else:
-                # If neither are compiled, tests requiring a wallet will be skipped and the value of self.options.descriptors won't matter
-                # It still needs to exist and be None in order for tests to work however.
-                # So set it to None, which will also set -disablewallet.
-                self.options.descriptors = None
+                # The runtime wallet backend is not reported by the build config,
+                # but Peercoin still exposes SQLite descriptor-capable wallets.
+                self.options.descriptors = True
 
         PortSeed.n = self.options.port_seed
 
@@ -456,6 +456,8 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
     # Public helper methods. These can be accessed by the subclass test scripts.
 
     def add_wallet_options(self, parser, *, descriptors=True, legacy=True):
+        if any(action.dest == "descriptors" for action in parser._actions):
+            return
         kwargs = {}
         if descriptors + legacy == 1:
             # If only one type can be chosen, set it as default
@@ -1028,6 +1030,10 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
     def is_bdb_compiled(self):
         """Checks whether the wallet module was compiled with BDB support."""
         return self.config["components"].getboolean("USE_BDB")
+
+    def is_embedded_asmap_compiled(self):
+        """Checks whether embedded asmap data was compiled."""
+        return self.config["components"].getboolean("ENABLE_EMBEDDED_ASMAP", fallback=False)
 
     def is_syscall_sandbox_compiled(self):
         """Checks whether the syscall sandbox was compiled."""
