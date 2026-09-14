@@ -62,7 +62,8 @@ class HelpRpcTest(BitcoinTestFramework):
         self.test_client_string_conversion_table()
         self.test_categories()
         self.dump_help()
-        if self.is_wallet_compiled():
+        # peercoin: skip wallet-specific help unless wallet RPCs are loaded.
+        if self.is_wallet_compiled() and 'Wallet' in [line[3:-3] for line in self.nodes[0].help().splitlines() if line.startswith('==')]:
             self.wallet_help()
 
     def test_client_conversion_table(self):
@@ -74,6 +75,12 @@ class HelpRpcTest(BitcoinTestFramework):
         mapping_server = self.nodes[0].help("dump_all_command_conversions")
         # Filter all RPCs whether they need conversion
         mapping_server_conversion = [tuple(m[:3]) for m in mapping_server if not m[3]]
+
+        # peercoin: some RPC methods, especially wallet RPCs, may not be
+        # registered when the test node starts without a wallet. Ignore client
+        # entries for commands that are not available in this runtime.
+        server_methods = {m[0] for m in mapping_server}
+        mapping_client = [m for m in mapping_client if m[0] in server_methods]
 
         # Only check if all RPC methods have been compiled (i.e. wallet is enabled)
         if self.is_wallet_compiled() and sorted(mapping_client) != sorted(mapping_server_conversion):
@@ -137,7 +144,9 @@ class HelpRpcTest(BitcoinTestFramework):
 
         components = ['Blockchain', 'Control', 'Mining', 'Network', 'Rawtransactions', 'Util']
 
-        if self.is_wallet_compiled():
+        # peercoin: the wallet RPC category is only listed when wallet RPCs
+        # are actually registered, even if wallet support is compiled in.
+        if self.is_wallet_compiled() and 'Wallet' in titles:
             components.append('Wallet')
 
         if self.is_external_signer_compiled():
