@@ -4,6 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Helpful routines for mempool testing."""
 import random
+from decimal import Decimal
 
 from .blocktools import (
     COINBASE_MATURITY,
@@ -24,6 +25,7 @@ from .util import (
     assert_greater_than,
     create_lots_of_big_transactions,
     gen_return_txouts,
+    peercoin_min_fee,
 )
 from .wallet import (
     MiniWallet,
@@ -92,11 +94,12 @@ def fill_mempool(test_framework, node, *, tx_sync_fun=None):
         create_lots_of_big_transactions(ephemeral_miniwallet, node, fee, tx_batch_size, txouts, utxos)
         del confirmed_utxos[:tx_batch_size]
 
-    # Increase the tx fee rate to give the subsequent transactions a higher priority in the mempool
-    # The tx has an approx. vsize of 65k, i.e. multiplying the previous fee rate (in sats/kvB)
-    # by 130 should result in a fee that corresponds to 2x of that fee rate
-    base_fee = minrelayfee * 130
-    batch_fees = [(i + 1) * base_fee for i in range(num_of_batches)]
+    # peercoin: large transactions must clear the absolute per-transaction fee floor, and each
+    # batch needs a distinct fee amount to make the eviction ordering deterministic.
+    huge_vsize = sum(len(tx.serialize()) for tx in txouts) + 172
+    incremental_fee = Decimal(node.getmempoolinfo()['incrementalrelayfee'])
+    base_fee = peercoin_min_fee(huge_vsize) + incremental_fee
+    batch_fees = [base_fee + Decimal(i) * incremental_fee for i in range(num_of_batches)]
 
     test_framework.log.debug("Fill up the mempool with txs with higher fee rate")
     for fee in batch_fees[:-3]:

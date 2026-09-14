@@ -53,6 +53,7 @@ from test_framework.util import (
     assert_equal,
     assert_greater_than_or_equal,
     get_fee,
+    peercoin_min_fee,
 )
 from test_framework.wallet_util import generate_keypair
 
@@ -375,11 +376,14 @@ class MiniWallet:
             vsize = Decimal(172)  # P2PK (73 bytes scriptSig + 35 bytes scriptPubKey + 64 bytes other)
         else:
             assert False
-        if target_vsize and not fee:  # respect fee_rate if target vsize is passed
-            fee = get_fee(target_vsize, fee_rate)
-        send_value = utxo_to_spend["value"] - (fee or (fee_rate * vsize / 1000))
+        fee_size = Decimal(target_vsize if target_vsize else int(vsize))
+        if fee:
+            fee = Decimal(fee)
+        else:
+            fee = max(Decimal(fee_rate) * fee_size / Decimal(1000), peercoin_min_fee(int(fee_size)))
+        send_value = utxo_to_spend["value"] - fee
         if send_value <= 0:
-            raise RuntimeError(f"UTXO value {utxo_to_spend['value']} is too small to cover fees {(fee or (fee_rate * vsize / 1000))}")
+            raise RuntimeError(f"UTXO value {utxo_to_spend['value']} is too small to cover fees {fee}")
         # create tx
         tx = self.create_self_transfer_multi(
             utxos_to_spend=[utxo_to_spend],

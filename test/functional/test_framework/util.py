@@ -262,6 +262,18 @@ def satoshi_round(amount):
     return Decimal(amount).quantize(Decimal('0.000001'), rounding=ROUND_DOWN)
 
 
+CENT = 10000
+MIN_TX_FEE = CENT // 10
+PERKB_TX_FEE = CENT
+
+
+def peercoin_min_fee(tx_size):
+    """Peercoin absolute minimum transaction fee in Peercoin."""
+    assert tx_size >= 0
+    fee_sat = MIN_TX_FEE if tx_size < 100 else tx_size * PERKB_TX_FEE // 1000
+    return Decimal(fee_sat) / Decimal(1000000)
+
+
 def wait_until_helper(predicate, *, attempts=float('inf'), timeout=float('inf'), lock=None, timeout_factor=1.0):
     """Sleep until the predicate resolves to be True.
 
@@ -598,13 +610,20 @@ def create_lots_of_big_transactions(mini_wallet, node, fee, tx_batch_size, txout
     txids = []
     use_internal_utxos = utxos is None
     for _ in range(tx_batch_size):
+        original_fee = Decimal(fee)
         tx = mini_wallet.create_self_transfer(
             utxo_to_spend=None if use_internal_utxos else utxos.pop(),
-            fee=fee,
+            fee=original_fee,
         )["tx"]
         tx.vout.extend(txouts)
+        fee = max(original_fee, peercoin_min_fee(tx.get_vsize()))
+        fee_delta_sat = int((fee - original_fee) * Decimal(1000000))
+        tx.vout[0].nValue -= fee_delta_sat
+        mini_wallet.sign_tx(tx)
         res = node.testmempoolaccept([tx.serialize().hex()])[0]
-        assert_equal(res['fees']['base'], fee)
+        if not res.get('allowed', False):
+            raise AssertionError(f"tx not allowed: {res}")
+        assert_equal(int(Decimal(res['fees']['base']) * Decimal(1000000)), int(fee * Decimal(1000000)))
         txids.append(node.sendrawtransaction(tx.serialize().hex()))
     return txids
 
