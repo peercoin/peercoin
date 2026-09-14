@@ -88,6 +88,11 @@ class MiniWalletMode(Enum):
     RAW_P2SH_OP_TRUE = 4
 
 
+class MiniWalletSendResult(dict):
+    def __iter__(self):
+        return iter((self["txid"], self["sent_vout"]))
+
+
 class MiniWallet:
     # peercoin: default to RAW_P2SH_OP_TRUE because Taproot is not supported here
     # and bare OP_TRUE outputs are non-standard.
@@ -290,13 +295,13 @@ class MiniWallet:
         tx.vout[0].nValue -= (amount + fee)           # change output -> MiniWallet
         tx.vout.append(CTxOut(amount, scriptPubKey))  # arbitrary output -> to be returned
         txid = self.sendrawtransaction(from_node=from_node, tx_hex=tx.serialize().hex())
-        return {
+        return MiniWalletSendResult({
             "sent_vout": 1,
             "txid": txid,
             "wtxid": tx.wtxid_hex,
             "hex": tx.serialize().hex(),
             "tx": tx,
-        }
+        })
 
     def send_self_transfer_multi(self, *, from_node, **kwargs):
         """Call create_self_transfer_multi and send the transaction."""
@@ -439,7 +444,7 @@ class MiniWallet:
         return chain
 
 
-def getnewdestination(address_type='bech32m'):
+def getnewdestination(address_type='legacy'):
     """Generate a random destination of the specified type and return the
        corresponding public key, scriptPubKey and address. Supported types are
        'legacy', 'p2sh-segwit', 'bech32' and 'bech32m'. Can be used when a random
