@@ -136,6 +136,7 @@ class TestNode():
         self.url = None
         self.log = logging.getLogger('TestFramework.node%d' % i)
         self.cleanup_on_exit = False # Whether to kill the node when this object goes away
+        self.blocksdir = None
         # Cache perf subprocesses here by their data output filename.
         self.perf_subprocesses = {}
 
@@ -205,6 +206,8 @@ class TestNode():
 
         if cwd is None:
             cwd = self.cwd
+
+        self._update_blocksdir(self.args + list(extra_args))
 
         # Delete any existing cookie file -- if such a file exists (eg due to
         # unclean shutdown), it will get overwritten anyway by peercoind, and
@@ -424,8 +427,36 @@ class TestNode():
             conf.write(conf_data)
 
     @property
+    def datadir_path(self) -> Path:
+        return Path(self.datadir)
+
+    @property
     def chain_path(self) -> Path:
         return Path(self.datadir) / self.chain
+
+    @property
+    def wallets_path(self) -> Path:
+        return self.chain_path / 'wallets'
+
+    def _filter_p2p_kwargs(self, p2p_conn, kwargs):
+        kwargs = dict(kwargs)
+        for name in ('supports_v2_p2p', 'advertise_v2_p2p', 'wait_for_v2_handshake'):
+            if name in kwargs:
+                kwargs.pop(name)
+        p2p_conn.supports_v2_p2p = False
+        return kwargs
+
+    def _update_blocksdir(self, args):
+        self.blocksdir = None
+        for i, arg in enumerate(args):
+            if arg.startswith('-blocksdir='):
+                self.blocksdir = arg.split('=', 1)[1]
+            elif arg == '-blocksdir' and i + 1 < len(args):
+                self.blocksdir = args[i + 1]
+
+    @property
+    def blocks_path(self) -> Path:
+        return Path(self.blocksdir or self.datadir) / self.chain / 'blocks'
 
     @property
     def debug_log_path(self) -> Path:
@@ -452,10 +483,10 @@ class TestNode():
                 log = dl.read()
             print_log = " - " + "\n - ".join(log.splitlines())
             for unexpected_msg in unexpected_msgs:
-                if re.search(re.escape(unexpected_msg), log, flags=re.MULTILINE):
+                if re.search(re.escape(unexpected_msg), log, flags=re.MULTILINE | re.IGNORECASE):
                     self._raise_assertion_error('Unexpected message "{}" partially matches log:\n\n{}\n\n'.format(unexpected_msg, print_log))
             for expected_msg in expected_msgs:
-                if re.search(re.escape(expected_msg), log, flags=re.MULTILINE) is None:
+                if re.search(re.escape(expected_msg), log, flags=re.MULTILINE | re.IGNORECASE) is None:
                     found = False
             if found:
                 return
@@ -482,8 +513,9 @@ class TestNode():
                 dl.seek(prev_size)
                 log = dl.read()
 
+            log_lower = log.lower()
             for expected_msg in expected_msgs:
-                if expected_msg not in log:
+                if expected_msg.lower() not in log_lower:
                     found = False
 
             if found:
@@ -632,6 +664,7 @@ class TestNode():
             kwargs['dstport'] = p2p_port(self.index)
         if 'dstaddr' not in kwargs:
             kwargs['dstaddr'] = '127.0.0.1'
+        kwargs = self._filter_p2p_kwargs(p2p_conn, kwargs)
 
         p2p_conn.peer_connect(**kwargs, net=self.chain, timeout_factor=self.timeout_factor)()
         self.p2ps.append(p2p_conn)
@@ -674,6 +707,7 @@ class TestNode():
             self.log.debug("Connecting to %s:%d %s" % (address, port, connection_type))
             self.addconnection('%s:%d' % (address, port), connection_type, False)
 
+        kwargs = self._filter_p2p_kwargs(p2p_conn, kwargs)
         p2p_conn.peer_accept_connection(connect_cb=addconnection_callback, connect_id=p2p_idx + 1, net=self.chain, timeout_factor=self.timeout_factor, **kwargs)()
 
         if connection_type == "feeler":
@@ -790,6 +824,15 @@ class RPCOverloadWrapper():
 
     def __getattr__(self, name):
         return getattr(self.rpc, name)
+
+    def gettxoutsetinfo(self, *args, **kwargs):
+        res = getattr(self.rpc, 'gettxoutsetinfo')(*args, **kwargs)
+        if isinstance(res, dict) and 'hash_serialized_3' not in res:
+            for name in ('hash_serialized_2', 'hash'):
+                if name in res:
+                    res['hash_serialized_3'] = res[name]
+                    break
+        return res
 
     def createwallet_passthrough(self, *args, **kwargs):
         return self.__getattr__("createwallet")(*args, **kwargs)
