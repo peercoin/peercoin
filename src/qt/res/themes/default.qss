@@ -274,15 +274,6 @@ QFrame#SendCoinsEntry {
     background-image: url(:/images/transparent);
 }
 
-/* Multisig Page */
-QFrame#MultisigAddressEntry {
-    background: #E3E3E3;
-}
-
-QFrame#MultisigInputEntry {
-    background: #E3E3E3;
-}
-
 QLabel#logo {
   margin-right: 30px;
 }

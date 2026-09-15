@@ -293,15 +293,6 @@ void BitcoinGUI::createActions()
     mintingAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     tabGroup->addAction(mintingAction);
 
-/*
-    multisigAction = new QAction(QIcon(":/icons/multisig"), tr("&Multisig"), this);
-    multisigAction->setStatusTip(tr("UI to create multisig addresses"));
-    multisigAction->setToolTip(multisigAction->statusTip());
-    multisigAction->setCheckable(true);
-    multisigAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
-    tabGroup->addAction(multisigAction);
-*/
-
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -315,8 +306,6 @@ void BitcoinGUI::createActions()
     connect(historyAction, &QAction::triggered, this, &BitcoinGUI::gotoHistoryPage);
     connect(mintingAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(mintingAction, SIGNAL(triggered()), this, SLOT(gotoMintingPage()));
-//    connect(multisigAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-//    connect(multisigAction, SIGNAL(triggered()), this, SLOT(gotoMultisigPage()));
 #endif // ENABLE_WALLET
 
     quitAction = new QAction(tr("E&xit"), this);
@@ -898,7 +887,6 @@ void BitcoinGUI::createTrayIconMenu()
         trayIconMenu->addSeparator();
         sign_action = trayIconMenu->addAction(signMessageAction->text(), signMessageAction, &QAction::trigger);
         verify_action = trayIconMenu->addAction(verifyMessageAction->text(), verifyMessageAction, &QAction::trigger);
-    //trayIconMenu->addAction(multisigAction);
         trayIconMenu->addSeparator();
     }
     QAction* options_action = trayIconMenu->addAction(optionsAction->text(), optionsAction, &QAction::trigger);
