@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <limits>
 #include <thread>
 #include <utility>
 
@@ -160,6 +161,67 @@ void BlockAssembler::resetBlock()
 // peercoin bridge: PoS minter status for RPC (getstakinginfo)
 std::string g_strMintWarning;
 std::atomic<bool> g_fStaking{false};
+std::atomic<uint64_t> g_wallet_stake_weight{0};
+
+static uint64_t ClampUnsigned(long double value)
+{
+    constexpr long double max_weight = static_cast<long double>(std::numeric_limits<uint64_t>::max());
+    if (!(value > 0.0L)) return 0;
+    if (value >= max_weight) return std::numeric_limits<uint64_t>::max();
+    return static_cast<uint64_t>(value);
+}
+
+uint64_t ApproxNetworkStakeWeight(double difficulty, int64_t target_spacing)
+{
+    if (!(difficulty > 0.0) || target_spacing <= 0) return 0;
+    return ClampUnsigned(static_cast<long double>(difficulty) * static_cast<long double>(target_spacing));
+}
+
+static uint64_t CoinDayWeight(CAmount value, int64_t age_seconds)
+{
+    if (value <= 0 || age_seconds <= 0) return 0;
+    constexpr long double seconds_per_day = 24.0L * 60.0L * 60.0L;
+    constexpr long double coins_per_unit = COIN;
+    return ClampUnsigned(static_cast<long double>(value) * static_cast<long double>(age_seconds) / coins_per_unit / seconds_per_day);
+}
+
+void UpdateWalletStakeWeight(CWallet& wallet)
+{
+    LOCK(wallet.cs_wallet);
+    const Consensus::Params& params = Params().GetConsensus();
+    const int64_t now = GetTime();
+    const CAmount reserve = std::max(CAmount{0}, std::min(wallet.GetReserveBalance(), std::numeric_limits<CAmount>::max()));
+
+    wallet::CoinsResult available_coins = wallet::AvailableCoins(wallet, nullptr);
+    long double raw_weight = 0.0L;
+    long double total_eligible_value = 0.0L;
+
+    for (const COutput& out : available_coins.All()) {
+        if (!out.safe) continue;
+        const int64_t age = now - out.time;
+        if (age < params.nStakeMinAge) continue;
+        const int64_t capped_age = std::min(age, params.nStakeMaxAge);
+        const int64_t weighted_age = capped_age - params.nStakeMinAge;
+        if (weighted_age <= 0) continue;
+
+        raw_weight += static_cast<long double>(CoinDayWeight(out.txout.nValue, weighted_age));
+        total_eligible_value += static_cast<long double>(out.txout.nValue);
+    }
+
+    if (total_eligible_value <= 0.0L || static_cast<CAmount>(total_eligible_value) <= 0) {
+        g_wallet_stake_weight.store(0);
+        return;
+    }
+
+    const CAmount effective_reserve = std::max(CAmount{0}, std::min(reserve, static_cast<CAmount>(total_eligible_value)));
+    if (effective_reserve >= static_cast<CAmount>(total_eligible_value)) {
+        g_wallet_stake_weight.store(0);
+        return;
+    }
+
+    raw_weight *= static_cast<long double>(static_cast<CAmount>(total_eligible_value) - effective_reserve) / total_eligible_value;
+    g_wallet_stake_weight.store(ClampUnsigned(raw_weight));
+}
 
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node, CTxDestination destination)
 {
@@ -446,6 +508,7 @@ void PoSMiner(NodeContext& m_node)
     {
 #endif
         g_strMintWarning = strMintDisabledMessage;
+        g_wallet_stake_weight.store(0);
         LogPrintf("proof-of-stake minter disabled\n");
         return;
 #ifdef ENABLE_WALLET
@@ -478,6 +541,7 @@ void PoSMiner(NodeContext& m_node)
             std::shared_ptr<CWallet> wallet = get_wallet();
             if (!wallet) {
                 g_fStaking = false;
+                g_wallet_stake_weight.store(0);
                 have_destination = false;
                 destination_wallet.reset();
                 if (g_strMintWarning != strMintNoWalletMessage) {
@@ -524,6 +588,7 @@ void PoSMiner(NodeContext& m_node)
             }
 
             while (wallet->IsLocked()) {
+                g_wallet_stake_weight.store(0);
                 if (g_strMintWarning != strMintMessage) {
                     g_strMintWarning = strMintMessage;
                     uiInterface.NotifyAlertChanged();
@@ -542,6 +607,7 @@ void PoSMiner(NodeContext& m_node)
             // unless at least one peer is connected and the wallet is synced.
             while (connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0 || m_node.chainman->IsInitialBlockDownload()) {
                 g_fStaking = false;
+                g_wallet_stake_weight.store(0);
                 if (connman == nullptr || connman->GetNodeCount(ConnectionDirection::Both) == 0) {
                     if (g_strMintWarning != strMintNoPeersMessage) {
                         g_strMintWarning = strMintNoPeersMessage;
@@ -603,6 +669,13 @@ void PoSMiner(NodeContext& m_node)
                 g_strMintWarning = strMintEmpty;
                 uiInterface.NotifyAlertChanged();
                 fNeedToClear = false;
+            }
+
+            static std::chrono::steady_clock::time_point last_stake_weight_update{};
+            const auto stake_weight_now = std::chrono::steady_clock::now();
+            if (stake_weight_now - last_stake_weight_update >= std::chrono::seconds(30)) {
+                UpdateWalletStakeWeight(*wallet);
+                last_stake_weight_update = stake_weight_now;
             }
 
             //

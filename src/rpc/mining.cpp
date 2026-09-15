@@ -32,6 +32,9 @@
 #include <timedata.h>
 #include <txmempool.h>
 #include <univalue.h>
+#include <atomic>
+#include <cstdint>
+#include <limits>
 #include <util/strencodings.h>
 #include <util/string.h>
 #include <util/system.h>
@@ -459,9 +462,13 @@ static RPCHelpMan generateblock()
 namespace node {
 extern std::string g_strMintWarning;
 extern std::atomic<bool> g_fStaking;
+extern std::atomic<uint64_t> g_wallet_stake_weight;
+uint64_t ApproxNetworkStakeWeight(double difficulty, int64_t target_spacing);
 }
+using node::ApproxNetworkStakeWeight;
 using node::g_strMintWarning;
 using node::g_fStaking;
+using node::g_wallet_stake_weight;
 
 static RPCHelpMan getstakinginfo()
 {
@@ -481,8 +488,8 @@ static RPCHelpMan getstakinginfo()
                         {RPCResult::Type::NUM, "search-interval", "Stake modifier selection interval, seconds"},
                         {RPCResult::Type::NUM, "modifier-interval", "Stake modifier interval, seconds"},
                         {RPCResult::Type::NUM, "min-stake-amount", "Minimum coin amount eligible for minting, satoshis"},
-                        {RPCResult::Type::NUM, "weight", "Total stake weight of mintable coins, coin-seconds"},
-                        {RPCResult::Type::NUM, "netstakeweight", "Approximate network stake weight, coin-seconds"},
+                         {RPCResult::Type::NUM, "weight", "Approximate wallet stake weight of mintable coins, coin-days"},
+                         {RPCResult::Type::NUM, "netstakeweight", "Approximate network stake weight estimated from PoS difficulty, coin-days"},
                     }},
                 RPCExamples{
                     HelpExampleCli("getstakinginfo", "")
@@ -503,15 +510,14 @@ static RPCHelpMan getstakinginfo()
     obj.pushKV("blocks", active_chain.Height());
     obj.pushKV("currentblocksize", BlockAssembler::m_last_block_weight ? *BlockAssembler::m_last_block_weight : int64_t{0});
     obj.pushKV("errors", 0);
-    // current PoS target difficulty from the next-pos-target compact bits
-    {
-        obj.pushKV("difficulty", active_chain.Tip() ? GetDifficulty(*active_chain.Tip()) : 0.0);
-    }
+    const CBlockIndex* last_pos_index = GetLastBlockIndex(active_chain.Tip(), true);
+    const double pos_difficulty = last_pos_index ? GetDifficulty(*last_pos_index) : 0.0;
+    obj.pushKV("difficulty", pos_difficulty);
     obj.pushKV("search-interval", consensus.nModifierInterval);
     obj.pushKV("modifier-interval", consensus.nModifierInterval);
     obj.pushKV("min-stake-amount", (int64_t)MIN_TXOUT_AMOUNT);
-    obj.pushKV("weight", (int64_t)0);
-    obj.pushKV("netstakeweight", (int64_t)0);
+    obj.pushKV("weight", (int64_t)g_wallet_stake_weight.load());
+    obj.pushKV("netstakeweight", (int64_t)ApproxNetworkStakeWeight(pos_difficulty, consensus.nStakeTargetSpacing));
     return obj;
 },
     };
