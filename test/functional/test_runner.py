@@ -207,6 +207,7 @@ BASE_SCRIPTS = [
     'wallet_taproot.py',
     'wallet_miniscript.py --descriptors',
     'wallet_miniscript_decaying_multisig_descriptor_psbt.py',
+    'wallet_multisig_descriptor_psbt.py --descriptors',
     'wallet_startup.py',
     'p2p_i2p_ports.py',
     'p2p_i2p_sessions.py',
@@ -381,7 +382,6 @@ UNSUPPORTED_SCRIPTS = [
 
     'wallet_listsinceblock.py --legacy-wallet',
     'wallet_listtransactions.py --legacy-wallet',
-    'wallet_multisig_descriptor_psbt.py --descriptors',
     'wallet_resendwallettransactions.py --legacy-wallet',
     'wallet_sendall.py --legacy-wallet',
     'wallet_signer.py --descriptors',
