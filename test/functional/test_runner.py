@@ -204,6 +204,7 @@ BASE_SCRIPTS = [
     'wallet_orphanedreward.py',
     'wallet_timelock.py',
     'wallet_address_types.py --descriptors',
+    'wallet_avoid_mixing_output_types.py --descriptors',
     'wallet_musig.py',
     'wallet_taproot.py',
     'wallet_miniscript.py --descriptors',
@@ -340,8 +341,6 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_abandonconflict.py --descriptors',
     'wallet_abandonconflict.py --legacy-wallet',
     'wallet_address_types.py --legacy-wallet',
-    'wallet_avoid_mixing_output_types.py --descriptors',
-
     'wallet_avoidreuse.py --legacy-wallet',
     'wallet_backup.py --legacy-wallet',
 

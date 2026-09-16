@@ -28,6 +28,8 @@ but still know when to expect mixing due to the wallet being close to empty.
 """
 
 import random
+from decimal import Decimal
+
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.blocktools import COINBASE_MATURITY
 
@@ -124,13 +126,25 @@ class AddressInputTypeGrouping(BitcoinTestFramework):
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
 
+    def balances_by_type(self, node):
+        balances = {t: Decimal("0") for t in ADDRESS_TYPES}
+        for utxo in node.listunspent():
+            addr = utxo["address"]
+            if is_legacy_address(node, addr):
+                balances["legacy"] += utxo["amount"]
+            elif is_p2sh_segwit_address(node, addr):
+                balances["p2sh-segwit"] += utxo["amount"]
+            elif is_bech32_address(node, addr):
+                balances["bech32"] += utxo["amount"]
+            elif is_bech32m_address(node, addr):
+                balances["bech32m"] += utxo["amount"]
+        return balances
+
     def make_payment(self, A, B, v, addr_type):
-        fee_rate = random.randint(1, 20)
-        self.log.debug(f"Making payment of {v} BTC at fee_rate {fee_rate}")
+        self.log.debug(f"Making payment of {v} at Peercoin fixed fee")
         tx = B.sendtoaddress(
             address=A.getnewaddress(address_type=addr_type),
             amount=v,
-            fee_rate=fee_rate,
         )
         return tx
 
@@ -167,7 +181,14 @@ class AddressInputTypeGrouping(BitcoinTestFramework):
             self.generate(A, 1)
             assert is_same_type(B, tx)
 
-        tx = self.make_payment(A, B, 30.99, random.choice(ADDRESS_TYPES))
+        type_balances = self.balances_by_type(B)
+        total_balance = sum(type_balances.values())
+        max_same_type_balance = max(type_balances.values())
+        final_amnt = max_same_type_balance + Decimal("0.000001")
+        if final_amnt >= total_balance:
+            final_amnt = total_balance - Decimal("0.000001")
+        assert final_amnt > max_same_type_balance
+        tx = B.sendtoaddress(address=A.getnewaddress(), amount=final_amnt, subtractfeefromamount=True)
         assert not is_same_type(B, tx)
 
 
