@@ -143,6 +143,7 @@ BASE_SCRIPTS = [
     'rpc_net.py',
     'wallet_keypool.py --legacy-wallet',
     'wallet_keypool.py --descriptors',
+    'wallet_keypool_topup.py --descriptors',
     'p2p_nobloomfilter_messages.py',
     'p2p_blocksonly.py',
     'p2p_invalid_locator.py',
@@ -355,7 +356,6 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_importprunedfunds.py --descriptors',
     'wallet_importprunedfunds.py --legacy-wallet',
     'wallet_inactive_hdchains.py --legacy-wallet',
-    'wallet_keypool_topup.py --descriptors',
     'wallet_keypool_topup.py --legacy-wallet',
 
     'wallet_labels.py --legacy-wallet',
