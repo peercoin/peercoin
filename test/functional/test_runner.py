@@ -157,6 +157,8 @@ BASE_SCRIPTS = [
     'rpc_signmessagewithprivkey.py',
     'wallet_hd.py --descriptors',
     'wallet_importdescriptors.py --descriptors',
+    'wallet_change_address.py --descriptors',
+    'wallet_coinbase_category.py --descriptors',
     'wallet_createwallet.py --descriptors',
     'wallet_descriptor.py --descriptors',
     'wallet_labels.py --descriptors',
@@ -323,9 +325,9 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_balance.py --legacy-wallet',
     'wallet_bumpfee.py --descriptors',
     'wallet_bumpfee.py --legacy-wallet',
-    'wallet_change_address.py --descriptors',
+
     'wallet_change_address.py --legacy-wallet',
-    'wallet_coinbase_category.py --descriptors',
+
     'wallet_coinbase_category.py --legacy-wallet',
     'wallet_create_tx.py --descriptors',
     'wallet_create_tx.py --legacy-wallet',
