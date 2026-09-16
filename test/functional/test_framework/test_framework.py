@@ -80,6 +80,42 @@ class BitcoinTestMetaClass(type):
         return super().__new__(cls, clsname, bases, dct)
 
 
+class BitcoinTestBinaries:
+    def __init__(self, bindir, exeext=''):
+        self.bindir = bindir
+        self.exeext = exeext
+
+    def _argv(self, name):
+        return [os.path.join(self.bindir, name + self.exeext)]
+
+    def node_argv(self):
+        return self._argv('peercoind')
+
+    def cli_argv(self):
+        return self._argv('peercoin-cli')
+
+    def wallet_argv(self):
+        return self._argv('peercoin-wallet')
+
+    def util_argv(self):
+        return self._argv('peercoin-util')
+
+    def tx_argv(self):
+        return self._argv('peercoin-tx')
+
+    def bench_argv(self):
+        return self._argv('bench_bitcoin')
+
+    def chainstate_argv(self):
+        return self._argv('peercoin-chainstate')
+
+    def qt_argv(self):
+        return self._argv('peercoin-qt')
+
+    def test_bitcoin_argv(self):
+        return self._argv('test_bitcoin')
+
+
 class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
     """Base class for a bitcoin test script.
 
@@ -949,6 +985,12 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         """Skip the running test if BDB has not been compiled."""
         if not self.is_bdb_compiled():
             raise SkipTest("BDB has not been compiled.")
+
+    def get_binaries(self):
+        return BitcoinTestBinaries(
+            os.path.join(self.config['environment']['BUILDDIR'], 'bin'),
+            self.config['environment']['EXEEXT'],
+        )
 
     def skip_if_no_wallet_tool(self):
         """Skip the running test if bitcoin-wallet has not been compiled."""
