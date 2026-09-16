@@ -986,6 +986,21 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         if not self.is_bdb_compiled():
             raise SkipTest("BDB has not been compiled.")
 
+    def create_outpoints(self, node, outputs):
+        result = node.send(outputs=outputs)
+        tx = node.decoderawtransaction(result['hex'])
+        outpoints = []
+        for output in outputs:
+            for address, amount in output.items():
+                vout = next(i for i, o in enumerate(tx['vout']) if o.get('scriptPubKey', {}).get('address') == address)
+                outpoints.append({
+                    'txid': result['txid'],
+                    'vout': vout,
+                    'amount': amount,
+                    'scriptPubKey': tx['vout'][vout]['scriptPubKey'],
+                })
+        return outpoints
+
     def get_binaries(self):
         return BitcoinTestBinaries(
             os.path.join(self.config['environment']['BUILDDIR'], 'bin'),
