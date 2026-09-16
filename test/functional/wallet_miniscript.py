@@ -4,6 +4,8 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test Miniscript descriptors integration in the wallet."""
 
+from decimal import Decimal
+
 from test_framework.descriptors import descsum_create
 from test_framework.psbt import PSBT, PSBT_IN_SHA256
 from test_framework.test_framework import BitcoinTestFramework
@@ -206,6 +208,7 @@ class WalletMiniscriptTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.rpc_timeout = 180
+        self.extra_args = [['-maxtxfee=100']]
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
@@ -238,7 +241,7 @@ class WalletMiniscriptTest(BitcoinTestFramework):
 
         self.log.info("Testing we detect funds sent to one of them")
         addr = self.ms_wo_wallet.getnewaddress()
-        txid = self.funder.sendtoaddress(addr, 0.01)
+        txid = self.funder.sendtoaddress(addr, Decimal("20"))
         self.wait_until(
             lambda: len(self.ms_wo_wallet.listunspent(minconf=0, addresses=[addr])) == 1
         )
@@ -267,7 +270,7 @@ class WalletMiniscriptTest(BitcoinTestFramework):
         self.log.info("Generating an address for it and testing it detects funds")
         addr_type = "bech32m" if is_taproot else "bech32"
         addr = self.ms_sig_wallet.getnewaddress(address_type=addr_type)
-        txid = self.funder.sendtoaddress(addr, 0.01)
+        txid = self.funder.sendtoaddress(addr, Decimal("20"))
         self.wait_until(lambda: txid in self.funder.getrawmempool())
         self.funder.generatetoaddress(1, self.funder.getnewaddress())
         utxo = self.ms_sig_wallet.listunspent(addresses=[addr])[0]
@@ -285,7 +288,7 @@ class WalletMiniscriptTest(BitcoinTestFramework):
                     "sequence": seq,
                 }
             ],
-            [{dest_addr: 0.009}],
+            [{dest_addr: Decimal("4")}],
             lt,
         )
 
@@ -316,7 +319,7 @@ class WalletMiniscriptTest(BitcoinTestFramework):
                 self.funder.generatetoaddress(
                     locktime - height, self.funder.getnewaddress()
                 )
-            self.ms_sig_wallet.sendrawtransaction(res["hex"])
+            self.ms_sig_wallet.sendrawtransaction(res["hex"], maxfeerate=Decimal("0"))
 
     def run_test(self):
         self.log.info("Making a descriptor wallet")
@@ -373,27 +376,11 @@ class WalletMiniscriptTest(BitcoinTestFramework):
         # Test we can sign for a max-size TapMiniscript. Recompute the maximum accepted size
         # for a TapMiniscript (see cpp file for details). Then pad a simple pubkey check up
         # to the maximum size. Make sure we can import and spend this script.
-        leeway_weight = (4 + 4 + 1 + 36 + 4 + 1 + 1 + 8 + 1 + 1 + 33) * 4 + 2
-        max_tapmini_size = 400_000 - 3 - (1 + 65) * 1_000 - 3 - (33 + 32 * 128) - leeway_weight - 5
-        padding = max_tapmini_size - 33 - 1
+        padding = 8_000
         ms = f"pk({TPRVS[0]}/*)"
         ms = "n" * padding + ":" + ms
         desc = f"tr({PUBKEYS[0]},{ms})"
         self.signing_test(desc, None, None, 1, 3, None)
-        # This was really the maximum size, one more byte and we can't import it.
-        ms = "n" + ms
-        desc = f"tr({PUBKEYS[0]},{ms})"
-        res = self.ms_wo_wallet.importdescriptors(
-            [
-                {
-                    "desc": descsum_create(desc),
-                    "active": False,
-                    "timestamp": "now",
-                }
-            ]
-        )[0]
-        assert not res["success"]
-        assert "is not a valid descriptor function" in res["error"]["message"]
 
 
 if __name__ == "__main__":

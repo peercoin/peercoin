@@ -669,6 +669,8 @@ class CTransaction:
 MAX_SEQUENCE_NONFINAL = 0xFFFFFFFE
 def from_binary(obj_type, binary):
     obj = obj_type()
+    if isinstance(binary, (bytes, bytearray, memoryview)):
+        binary = BytesIO(binary)
     obj.deserialize(binary)
     return obj
 
