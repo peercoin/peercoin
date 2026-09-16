@@ -14,8 +14,17 @@ from collections import defaultdict
 from test_framework.blocktools import COINBASE_MATURITY
 from test_framework.descriptors import descsum_create
 from test_framework.test_framework import BitcoinTestFramework
+from test_framework.segwit_addr import Encoding, bech32_encode, convertbits, encode_segwit_address
 from test_framework.util import assert_equal, assert_raises_rpc_error
 from test_framework.wallet_util import test_address
+
+
+def ppc_program_to_witness(version, program):
+    return encode_segwit_address('pcrt', version, program)
+
+
+def ppc_invalid_program_to_witness(version, program):
+    return bech32_encode(Encoding.BECH32M, 'pcrt', [version] + convertbits(program, 8, 5))
 
 
 class WalletLabelsTest(BitcoinTestFramework):
@@ -187,13 +196,13 @@ class WalletLabelsTest(BitcoinTestFramework):
         node.createwallet(wallet_name='watch_only', disable_private_keys=True)
         wallet_watch_only = node.get_wallet_rpc('watch_only')
         BECH32_VALID = {
-            '✔️_VER15_PROG40': 'bcrt10qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxkg7fn',
-            '✔️_VER16_PROG03': 'bcrt1sqqqqq8uhdgr',
-            '✔️_VER16_PROB02': 'bcrt1sqqqq4wstyw',
+            '✔️_VER15_PROG40': ppc_program_to_witness(15, bytes([0] * 40)),
+            '✔️_VER16_PROG03': ppc_program_to_witness(16, bytes([0] * 3)),
+            '✔️_VER16_PROB02': ppc_program_to_witness(16, bytes([0] * 2)),
         }
         BECH32_INVALID = {
-            '❌_VER15_PROG41': 'bcrt1sqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqajlxj8',
-            '❌_VER16_PROB01': 'bcrt1sqq5r4036',
+            '❌_VER15_PROG41': ppc_invalid_program_to_witness(15, bytes([0] * 41)),
+            '❌_VER16_PROB01': ppc_invalid_program_to_witness(16, bytes([0] * 1)),
         }
         for l in BECH32_VALID:
             ad = BECH32_VALID[l]
