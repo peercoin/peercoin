@@ -100,7 +100,6 @@ BASE_SCRIPTS = [
     'feature_maxtipage.py',
     'wallet_multiwallet.py --legacy-wallet',
     'wallet_multiwallet.py --descriptors',
-
     'wallet_multiwallet.py --usecli',
     'p2p_dns_seeds.py',
     'feature_blocksdir.py',
@@ -196,8 +195,6 @@ UNSUPPORTED_SCRIPTS = [
     'mempool_unbroadcast.py',
     'mining_basic.py',
     'wallet_crosschain.py',
-
-    'wallet_multiwallet.py --usecli',
     'wallet_orphanedreward.py',
     'wallet_reorgsrestore.py',
     'wallet_txn_clone.py',
