@@ -195,7 +195,6 @@ UNSUPPORTED_SCRIPTS = [
     'mempool_unbroadcast.py',
     'mining_basic.py',
     'wallet_crosschain.py',
-    'wallet_importdescriptors.py --descriptors',
     'wallet_multiwallet.py --descriptors',
     'wallet_multiwallet.py --usecli',
     'wallet_orphanedreward.py',

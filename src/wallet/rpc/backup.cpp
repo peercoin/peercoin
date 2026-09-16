@@ -267,6 +267,13 @@ static UniValue ProcessDescriptorImport(CWallet& wallet, const UniValue& data, c
 
             WalletDescriptor w_desc(std::move(parsed_desc), timestamp, range_start, range_end, next_index);
 
+            if (auto* existing_spkm = wallet.GetDescriptorScriptPubKeyMan(w_desc)) {
+                std::string update_error;
+                if (!existing_spkm->CanUpdateToWalletDescriptor(w_desc, update_error)) {
+                    throw JSONRPCError(RPC_INVALID_PARAMETER, update_error);
+                }
+            }
+
             // Add descriptor to the wallet
             auto spk_manager_res = wallet.AddWalletDescriptor(w_desc, keys, label, desc_internal);
 
