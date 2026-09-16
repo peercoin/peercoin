@@ -187,9 +187,10 @@ class ReceivedByTest(BitcoinTestFramework):
         label = "label"
         address = self.nodes[0].getnewaddress(label)
 
-        reward = Decimal("25")
         self.generatetoaddress(self.nodes[0], 1, address)
         hash = self.nodes[0].getbestblockhash()
+        coinbase = self.nodes[0].getblock(hash, 2)["tx"][0]
+        reward = sum(out["value"] for out in coinbase["vout"] if out.get("scriptPubKey", {}).get("address") == address)
 
         self.log.info("getreceivedbyaddress returns nothing with defaults")
         balance = self.nodes[0].getreceivedbyaddress(address)
