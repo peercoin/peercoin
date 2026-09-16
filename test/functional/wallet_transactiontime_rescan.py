@@ -87,7 +87,7 @@ class TransactionTimeRescanTest(BitcoinTestFramework):
 
         # generate blocks and check blockcount
         self.generatetoaddress(minernode, COINBASE_MATURITY, m1)
-        assert_equal(minernode.getblockcount(), initial_mine + 300)
+        assert_equal(minernode.getblockcount(), initial_mine + 200 + COINBASE_MATURITY)
 
         # synchronize nodes and time
         self.sync_all()
@@ -98,7 +98,7 @@ class TransactionTimeRescanTest(BitcoinTestFramework):
 
         # generate blocks and check blockcount
         self.generatetoaddress(minernode, COINBASE_MATURITY, m1)
-        assert_equal(minernode.getblockcount(), initial_mine + 400)
+        assert_equal(minernode.getblockcount(), initial_mine + 200 + 2 * COINBASE_MATURITY)
 
         # synchronize nodes and time
         self.sync_all()
@@ -109,7 +109,7 @@ class TransactionTimeRescanTest(BitcoinTestFramework):
 
         # generate more blocks and check blockcount
         self.generatetoaddress(minernode, COINBASE_MATURITY, m1)
-        assert_equal(minernode.getblockcount(), initial_mine + 500)
+        assert_equal(minernode.getblockcount(), initial_mine + 200 + 3 * COINBASE_MATURITY)
 
         self.log.info('Check user\'s final balance and transaction count')
         assert_equal(wo_wallet.getbalance(), 16)
