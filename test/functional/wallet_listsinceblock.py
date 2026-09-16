@@ -237,27 +237,23 @@ class ListSinceBlockTest(BitcoinTestFramework):
         self.split_network()
 
         # send from nodes[1] using utxo to nodes[0]
-        change = '%.8f' % (float(utxo['amount']) - 1.0003)
-        recipient_dict = {
-            self.nodes[0].getnewaddress(): 1,
-            self.nodes[1].getnewaddress(): change,
-        }
-        utxo_dicts = [{
-            'txid': utxo['txid'],
-            'vout': utxo['vout'],
-        }]
+        utxo_dicts = [{'txid': utxo['txid'], 'vout': utxo['vout']}]
+        change1 = self.nodes[1].getnewaddress()
+        recipient_dict = {self.nodes[0].getnewaddress(): 1}
+        funded1 = self.nodes[1].fundrawtransaction(
+            self.nodes[1].createrawtransaction(utxo_dicts, recipient_dict),
+            {"subtract_fee_from_outputs": [0], "changeAddress": change1})
         txid1 = self.nodes[1].sendrawtransaction(
-            self.nodes[1].signrawtransactionwithwallet(
-                self.nodes[1].createrawtransaction(utxo_dicts, recipient_dict))['hex'])
+            self.nodes[1].signrawtransactionwithwallet(funded1['hex'])['hex'], 0.999999)
 
         # send from nodes[2] using utxo to nodes[3]
-        recipient_dict2 = {
-            self.nodes[3].getnewaddress(): 1,
-            self.nodes[2].getnewaddress(): change,
-        }
+        change2 = self.nodes[2].getnewaddress()
+        recipient_dict2 = {self.nodes[3].getnewaddress(): 1}
+        funded2 = self.nodes[2].fundrawtransaction(
+            self.nodes[2].createrawtransaction(utxo_dicts, recipient_dict2),
+            {"subtract_fee_from_outputs": [0], "changeAddress": change2})
         self.nodes[2].sendrawtransaction(
-            self.nodes[2].signrawtransactionwithwallet(
-                self.nodes[2].createrawtransaction(utxo_dicts, recipient_dict2))['hex'])
+            self.nodes[2].signrawtransactionwithwallet(funded2['hex'])['hex'], 0.999999)
 
         # generate on both sides
         lastblockhash = self.generate(self.nodes[1], 3, sync_fun=self.no_op)[2]
@@ -313,29 +309,24 @@ class ListSinceBlockTest(BitcoinTestFramework):
         # create and sign a transaction
         utxos = self.nodes[2].listunspent()
         utxo = utxos[0]
-        change = '%.8f' % (float(utxo['amount']) - 1.0003)
-        recipient_dict = {
-            self.nodes[0].getnewaddress(): 1,
-            self.nodes[2].getnewaddress(): change,
-        }
-        utxo_dicts = [{
-            'txid': utxo['txid'],
-            'vout': utxo['vout'],
-        }]
-        signedtxres = self.nodes[2].signrawtransactionwithwallet(
-            self.nodes[2].createrawtransaction(utxo_dicts, recipient_dict))
+        recipient_dict = {self.nodes[0].getnewaddress(): 1}
+        utxo_dicts = [{'txid': utxo['txid'], 'vout': utxo['vout']}]
+        funded = self.nodes[2].fundrawtransaction(
+            self.nodes[2].createrawtransaction(utxo_dicts, recipient_dict),
+            {"subtract_fee_from_outputs": [0], "changeAddress": self.nodes[2].getnewaddress()})
+        signedtxres = self.nodes[2].signrawtransactionwithwallet(funded['hex'])
         assert signedtxres['complete']
 
         signedtx = signedtxres['hex']
 
         # send from nodes[1]; this will end up in aa1
-        txid1 = self.nodes[1].sendrawtransaction(signedtx)
+        txid1 = self.nodes[1].sendrawtransaction(signedtx, 0.999999)
 
         # generate bb1-bb2 on right side
         self.generate(self.nodes[2], 2, sync_fun=self.no_op)
 
         # send from nodes[2]; this will end up in bb3
-        txid2 = self.nodes[2].sendrawtransaction(signedtx)
+        txid2 = self.nodes[2].sendrawtransaction(signedtx, 0.999999)
 
         assert_equal(txid1, txid2)
 
@@ -378,11 +369,11 @@ class ListSinceBlockTest(BitcoinTestFramework):
 
         tx_input = dict(
             sequence=MAX_BIP125_RBF_SEQUENCE, **next(u for u in spending_node.listunspent()))
-        rawtx = spending_node.createrawtransaction(
-            [tx_input], {dest_address: tx_input["amount"] - Decimal("0.00051000"),
-                         spending_node.getrawchangeaddress(): Decimal("0.00050000")})
-        signedtx = spending_node.signrawtransactionwithwallet(rawtx)
-        orig_tx_id = spending_node.sendrawtransaction(signedtx["hex"])
+        rawtx = spending_node.createrawtransaction([tx_input], {dest_address: tx_input["amount"]})
+        fundedtx = spending_node.fundrawtransaction(
+            rawtx, {"subtract_fee_from_outputs": [0], "changeAddress": spending_node.getrawchangeaddress()})
+        signedtx = spending_node.signrawtransactionwithwallet(fundedtx["hex"])
+        orig_tx_id = spending_node.sendrawtransaction(signedtx["hex"], 0.999999)
         original_tx = spending_node.gettransaction(orig_tx_id)
 
         double_tx = spending_node.bumpfee(orig_tx_id)
