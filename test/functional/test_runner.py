@@ -187,6 +187,7 @@ BASE_SCRIPTS = [
     'wallet_sendall.py --descriptors',
     'wallet_signrawtransactionwithwallet.py --descriptors',
     'wallet_simulaterawtx.py --descriptors',
+    'wallet_reindex.py --descriptors',
     'p2p_fingerprint.py',
     'feature_bind_port_discover.py',
     'p2p_message_capture.py',
