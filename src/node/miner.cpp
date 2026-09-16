@@ -132,7 +132,8 @@ void ApplyArgsManOptions(const ArgsManager& args, BlockAssembler::Options& optio
 {
     // Block resource limits
     // If -blockmaxweight is not given, limit to DEFAULT_BLOCK_MAX_WEIGHT
-    options.nBlockMaxWeight = gArgs.GetIntArg("-blockmaxweight", DEFAULT_BLOCK_MAX_WEIGHT);
+    options.nBlockMaxWeight = args.GetIntArg("-blockmaxweight", DEFAULT_BLOCK_MAX_WEIGHT);
+    options.blockMinFeeRate = CFeeRate(args.GetIntArg("-blockmintxfee", DEFAULT_BLOCK_MIN_TX_FEE));
 }
 static BlockAssembler::Options ConfiguredOptions()
 {

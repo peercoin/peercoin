@@ -203,7 +203,8 @@ struct TestChain100Setup : public TestingSetup {
                                                       int input_height,
                                                       const std::vector<CKey>& input_signing_keys,
                                                       const std::vector<CTxOut>& outputs,
-                                                      bool submit = true);
+                                                      bool submit = true,
+                                                      bool enforce_min_fee = true);
 
     /**
      * Create a 1-in-1-out transaction and, optionally, submit to the mempool.
@@ -222,7 +223,8 @@ struct TestChain100Setup : public TestingSetup {
                                                       CKey input_signing_key,
                                                       CScript output_destination,
                                                       CAmount output_amount = CAmount(1 * COIN),
-                                                      bool submit = true);
+                                                      bool submit = true,
+                                                      bool enforce_min_fee = true);
 
     /** Create transactions spending from m_coinbase_txns. These transactions will only spend coins
      * that exist in the current chain, but may be premature coinbase spends, have missing

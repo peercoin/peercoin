@@ -3,10 +3,13 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <clientversion.h>
+#include <addresstype.h>
 #include <common/signmessage.h>
 #include <hash.h>
 #include <key.h>
+#include <key_io.h>
 #include <script/parsing.h>
+#include <script/script.h>
 #include <span.h>
 #include <sync.h>
 #include <test/util/common.h>
@@ -422,18 +425,19 @@ BOOST_AUTO_TEST_CASE(util_FormatMoney)
     BOOST_CHECK_EQUAL(FormatMoney(COIN/10000), "0.0001");
     BOOST_CHECK_EQUAL(FormatMoney(COIN/100000), "0.00001");
     BOOST_CHECK_EQUAL(FormatMoney(COIN/1000000), "0.000001");
-    BOOST_CHECK_EQUAL(FormatMoney(COIN/10000000), "0.0000001");
-    BOOST_CHECK_EQUAL(FormatMoney(COIN/100000000), "0.00000001");
+    // peercoin bridge: 6-decimal unit; sub-sat vector values collapse to zero.
+    BOOST_CHECK_EQUAL(FormatMoney(COIN/10000000), "0.00");
+    BOOST_CHECK_EQUAL(FormatMoney(COIN/100000000), "0.00");
 
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max()), "92233720368.54775807");
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max() - 1), "92233720368.54775806");
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max() - 2), "92233720368.54775805");
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max() - 3), "92233720368.54775804");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max()), "9223372036854.775807");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max() - 1), "9223372036854.775806");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max() - 2), "9223372036854.775805");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::max() - 3), "9223372036854.775804");
     // ...
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min() + 3), "-92233720368.54775805");
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min() + 2), "-92233720368.54775806");
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min() + 1), "-92233720368.54775807");
-    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min()), "-92233720368.54775808");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min() + 3), "-9223372036854.775805");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min() + 2), "-9223372036854.775806");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min() + 1), "-9223372036854.775807");
+    BOOST_CHECK_EQUAL(FormatMoney(std::numeric_limits<CAmount>::min()), "-9223372036854.775808");
 }
 
 BOOST_AUTO_TEST_CASE(util_ParseMoney)
@@ -442,7 +446,7 @@ BOOST_AUTO_TEST_CASE(util_ParseMoney)
     BOOST_CHECK_EQUAL(ParseMoney(".").value(), 0);
     BOOST_CHECK_EQUAL(ParseMoney("0.").value(), 0);
     BOOST_CHECK_EQUAL(ParseMoney(".0").value(), 0);
-    BOOST_CHECK_EQUAL(ParseMoney(".6789").value(), 6789'0000);
+    BOOST_CHECK_EQUAL(ParseMoney(".6789").value(), 678900); // 6-decimal unit
     BOOST_CHECK_EQUAL(ParseMoney("12345.").value(), COIN * 12345);
 
     BOOST_CHECK_EQUAL(ParseMoney("12345.6789").value(), (COIN/10000)*123456789);
@@ -465,11 +469,12 @@ BOOST_AUTO_TEST_CASE(util_ParseMoney)
     BOOST_CHECK_EQUAL(ParseMoney("0.0001").value(), COIN/10000);
     BOOST_CHECK_EQUAL(ParseMoney("0.00001").value(), COIN/100000);
     BOOST_CHECK_EQUAL(ParseMoney("0.000001").value(), COIN/1000000);
-    BOOST_CHECK_EQUAL(ParseMoney("0.0000001").value(), COIN/10000000);
-    BOOST_CHECK_EQUAL(ParseMoney("0.00000001").value(), COIN/100000000);
-    BOOST_CHECK_EQUAL(ParseMoney(" 0.00000001 ").value(), COIN/100000000);
-    BOOST_CHECK_EQUAL(ParseMoney("0.00000001 ").value(), COIN/100000000);
-    BOOST_CHECK_EQUAL(ParseMoney(" 0.00000001").value(), COIN/100000000);
+    // peercoin bridge: 6-decimal unit; finer decimals are rejected.
+    BOOST_CHECK(!ParseMoney("0.0000001").has_value());
+    BOOST_CHECK(!ParseMoney("0.00000001").has_value());
+    BOOST_CHECK(!ParseMoney(" 0.00000001 ").has_value());
+    BOOST_CHECK(!ParseMoney("0.00000001 ").has_value());
+    BOOST_CHECK(!ParseMoney(" 0.00000001").has_value());
 
     // Parsing amount that cannot be represented should fail
     BOOST_CHECK(!ParseMoney("100000000.00"));
@@ -927,9 +932,10 @@ BOOST_AUTO_TEST_CASE(test_FormatSubVersion)
     std::vector<std::string> comments2;
     comments2.emplace_back("comment1");
     comments2.push_back(SanitizeString(std::string("Comment2; .,_?@-; !\"#$%&'()*+/<=>[]\\^`{|}~"), SAFE_CHARS_UA_COMMENT)); // Semicolon is discouraged but not forbidden by BIP-0014
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, std::vector<std::string>()),std::string("/Test:9.99.0/"));
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments),std::string("/Test:9.99.0(comment1)/"));
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments2),std::string("/Test:9.99.0(comment1; Comment2; .,_?@-; )/"));
+    // peercoin branding: subversion always embeds the Peercoin agent segment.
+    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, std::vector<std::string>()),std::string("/Test:9.99.0/Peercoin:16.0.0(v0.16.0.0 Lepidoptera)/"));
+    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments),std::string("/Test:9.99.0(comment1)/Peercoin:16.0.0(v0.16.0.0 Lepidoptera)/"));
+    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments2),std::string("/Test:9.99.0(comment1; Comment2; .,_?@-; )/Peercoin:16.0.0(v0.16.0.0 Lepidoptera)/"));
 }
 
 BOOST_AUTO_TEST_CASE(test_ParseFixedPoint)
@@ -1506,7 +1512,7 @@ BOOST_AUTO_TEST_CASE(message_sign)
 {
     const std::array<unsigned char, 32> privkey_bytes = {
         // just some random data
-        // derived address from this private key: 15CRxFdyRpGZLW9w8HnHvVduizdL5jKNbs
+        // peercoin bridge: signature computed over the Peercoin signed-message magic
         0xD9, 0x7F, 0x51, 0x08, 0xF1, 0x1C, 0xDA, 0x6E,
         0xEE, 0xBA, 0xAA, 0x42, 0x0F, 0xEF, 0x07, 0x26,
         0xB1, 0xF8, 0x98, 0x06, 0x0B, 0x98, 0x48, 0x9F,
@@ -1516,7 +1522,7 @@ BOOST_AUTO_TEST_CASE(message_sign)
     const std::string message = "Trust no one";
 
     const std::string expected_signature =
-        "IPojfrX2dfPnH26UegfbGQQLrdK844DlHq5157/P6h57WyuS/Qsl+h/WSVGDF4MUi4rWSswW38oimDYfNNUBUOk=";
+        "HyadcCojAaZCX6rqgjaBo1cp4G5ErZ8TxWq/5f0Z8sIwTgloC0L+tqWOSQs8sktIN4VK92r5/0OrHX14AVJHgNI=";
 
     CKey privkey;
     std::string generated_signature;
@@ -1540,53 +1546,48 @@ BOOST_AUTO_TEST_CASE(message_sign)
 
 BOOST_AUTO_TEST_CASE(message_verify)
 {
+    // peercoin bridge: build Peercoin-native ('P...' PKHash) addresses and
+    // Peercoin-magic signatures at runtime so vectors are self-consistent.
+    auto privkey = ParseHex("0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE474BE800200117037D11");
+    auto other_privkey = ParseHex("0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE474BE800200117037D12");
+    CKey key, other;
+    key.Set(privkey.begin(), privkey.end(), true);
+    other.Set(other_privkey.begin(), other_privkey.end(), true);
+    BOOST_REQUIRE(key.IsValid() && other.IsValid());
+    const std::string pkh_addr{EncodeDestination(PKHash(key.GetPubKey()))};
+    const std::string script_addr{EncodeDestination(ScriptHash(CScript() << OP_0))};
+    std::string signature;
+    BOOST_REQUIRE(MessageSign(key, "Trust no one", signature));
+
     BOOST_CHECK_EQUAL(
-        MessageVerify(
-            "invalid address",
-            "signature should be irrelevant",
-            "message too"),
+        MessageVerify("invalid address", "sig", "message"),
         MessageVerificationResult::ERR_INVALID_ADDRESS);
 
     BOOST_CHECK_EQUAL(
-        MessageVerify(
-            "3B5fQsEXEaV8v6U3ejYc8XaKXAkyQj2MjV",
-            "signature should be irrelevant",
-            "message too"),
+        MessageVerify(script_addr, "signature should be irrelevant", "message too"),
         MessageVerificationResult::ERR_ADDRESS_NO_KEY);
 
     BOOST_CHECK_EQUAL(
-        MessageVerify(
-            "1KqbBpLy5FARmTPD4VZnDDpYjkUvkr82Pm",
-            "invalid signature, not in base64 encoding",
-            "message should be irrelevant"),
+        MessageVerify(pkh_addr, "invalid signature, not in base64 encoding", "message should be irrelevant"),
         MessageVerificationResult::ERR_MALFORMED_SIGNATURE);
 
     BOOST_CHECK_EQUAL(
-        MessageVerify(
-            "1KqbBpLy5FARmTPD4VZnDDpYjkUvkr82Pm",
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-            "message should be irrelevant"),
+        MessageVerify(pkh_addr, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "message should be irrelevant"),
         MessageVerificationResult::ERR_PUBKEY_NOT_RECOVERED);
 
+    // Signed by `other`, verified against `key`'s address -> NOT_SIGNED.
+    std::string wrong_key_sig;
+    BOOST_REQUIRE(MessageSign(other, "I never signed this", wrong_key_sig));
     BOOST_CHECK_EQUAL(
-        MessageVerify(
-            "15CRxFdyRpGZLW9w8HnHvVduizdL5jKNbs",
-            "IPojfrX2dfPnH26UegfbGQQLrdK844DlHq5157/P6h57WyuS/Qsl+h/WSVGDF4MUi4rWSswW38oimDYfNNUBUOk=",
-            "I never signed this"),
+        MessageVerify(pkh_addr, wrong_key_sig, "I never signed this"),
         MessageVerificationResult::ERR_NOT_SIGNED);
 
     BOOST_CHECK_EQUAL(
-        MessageVerify(
-            "15CRxFdyRpGZLW9w8HnHvVduizdL5jKNbs",
-            "IPojfrX2dfPnH26UegfbGQQLrdK844DlHq5157/P6h57WyuS/Qsl+h/WSVGDF4MUi4rWSswW38oimDYfNNUBUOk=",
-            "Trust no one"),
-        MessageVerificationResult::OK);
+        MessageVerify(pkh_addr, signature, "I never signed this"),
+        MessageVerificationResult::ERR_NOT_SIGNED);
 
     BOOST_CHECK_EQUAL(
-        MessageVerify(
-            "11canuhp9X2NocwCq7xNrQYTmUgZAnLK3",
-            "IIcaIENoYW5jZWxsb3Igb24gYnJpbmsgb2Ygc2Vjb25kIGJhaWxvdXQgZm9yIGJhbmtzIAaHRtbCeDZINyavx14=",
-            "Trust me"),
+        MessageVerify(pkh_addr, signature, "Trust no one"),
         MessageVerificationResult::OK);
 }
 

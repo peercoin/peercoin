@@ -26,7 +26,10 @@ CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey, int n
 CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CScriptWitness& scriptWitness, const CTransaction& txCredit)
 {
     CMutableTransaction txSpend;
-    txSpend.version = 1;
+    // peercoin bridge: upstream Peercoin builds spends at nVersion=3/nTime=0 so the
+    // legacy sighash preimage omits nTime (version < 3 gate) and stays canonical.
+    txSpend.version = 3;
+    txSpend.nTime = 0;
     txSpend.nLockTime = 0;
     txSpend.vin.resize(1);
     txSpend.vout.resize(1);

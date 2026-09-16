@@ -10,6 +10,7 @@
 #include <common/system.h>
 #include <consensus/consensus.h>
 #include <consensus/params.h>
+#include <consensus/tx_verify.h>
 #include <consensus/validation.h>
 #include <crypto/sha256.h>
 #include <init.h>
@@ -512,16 +513,39 @@ CMutableTransaction TestChain100Setup::CreateValidMempoolTransaction(const std::
                                                                      int input_height,
                                                                      const std::vector<CKey>& input_signing_keys,
                                                                      const std::vector<CTxOut>& outputs,
-                                                                     bool submit)
+                                                                     bool submit,
+                                                                     bool enforce_min_fee)
 {
-    CMutableTransaction mempool_txn = CreateValidTransaction(input_transactions, inputs, input_height, input_signing_keys, outputs, std::nullopt, std::nullopt).first;
-    // If submit=true, add transaction to the mempool.
-    if (submit) {
-        LOCK(cs_main);
-        const MempoolAcceptResult result = m_node.chainman->ProcessTransaction(MakeTransactionRef(mempool_txn));
-        assert(result.m_result_type == MempoolAcceptResult::ResultType::VALID);
+    std::vector<CTxOut> adjusted_outputs = outputs;
+    assert(!adjusted_outputs.empty());
+
+    for (int attempt = 0; attempt < 25; ++attempt) {
+        auto [mempool_txn, fee] = CreateValidTransaction(input_transactions, inputs, input_height,
+                                                          input_signing_keys, adjusted_outputs, std::nullopt, std::nullopt);
+        if (!enforce_min_fee) {
+            if (submit) {
+                LOCK(cs_main);
+                const MempoolAcceptResult result = m_node.chainman->ProcessTransaction(MakeTransactionRef(mempool_txn));
+                assert(result.m_result_type == MempoolAcceptResult::ResultType::VALID);
+            }
+            return mempool_txn;
+        }
+
+        const CAmount min_fee = GetMinFee(::GetSerializeSize(mempool_txn, SER_NETWORK, PROTOCOL_VERSION),
+                                           mempool_txn.nTime ? static_cast<uint32_t>(mempool_txn.nTime) : 0);
+        if (fee >= min_fee) {
+            if (submit) {
+                LOCK(cs_main);
+                const MempoolAcceptResult result = m_node.chainman->ProcessTransaction(MakeTransactionRef(mempool_txn));
+                assert(result.m_result_type == MempoolAcceptResult::ResultType::VALID);
+            }
+            return mempool_txn;
+        }
+
+        if (adjusted_outputs.back().nValue <= min_fee - fee) assert(false);
+        adjusted_outputs.back().nValue -= min_fee + 1 - fee;
     }
-    return mempool_txn;
+    assert(false);
 }
 
 CMutableTransaction TestChain100Setup::CreateValidMempoolTransaction(CTransactionRef input_transaction,
@@ -530,16 +554,23 @@ CMutableTransaction TestChain100Setup::CreateValidMempoolTransaction(CTransactio
                                                                      CKey input_signing_key,
                                                                      CScript output_destination,
                                                                      CAmount output_amount,
-                                                                     bool submit)
+                                                                     bool submit,
+                                                                     bool enforce_min_fee)
 {
     COutPoint input{input_transaction->GetHash(), input_vout};
-    CTxOut output{output_amount, output_destination};
+    CAmount min_fee = GetMinFee(250, 0);
+    CAmount desired_output = output_amount;
+    if (enforce_min_fee) {
+        desired_output = std::min(output_amount, input_transaction->vout.at(input_vout).nValue - min_fee);
+    }
+    CTxOut output{desired_output, output_destination};
     return CreateValidMempoolTransaction(/*input_transactions=*/{input_transaction},
                                          /*inputs=*/{input},
                                          /*input_height=*/input_height,
                                          /*input_signing_keys=*/{input_signing_key},
                                          /*outputs=*/{output},
-                                         /*submit=*/submit);
+                                         /*submit=*/submit,
+                                         /*enforce_min_fee=*/enforce_min_fee);
 }
 
 std::vector<CTransactionRef> TestChain100Setup::PopulateMempool(FastRandomContext& det_rand, size_t num_transactions, bool submit)

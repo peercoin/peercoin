@@ -16,8 +16,9 @@
 #include <string>
 
 // This module enforces rules for BIP 431 TRUC transactions which help make
-// RBF abilities more robust. A transaction with version=3 is treated as TRUC.
-static constexpr decltype(CTransaction::version) TRUC_VERSION{3};
+// RBF abilities more robust. Peercoin uses version=3 for its own transaction
+// semantics, so TRUC must not be keyed to version=3 here.
+static constexpr decltype(CTransaction::version) TRUC_VERSION{0};
 
 // TRUC only allows 1 parent and 1 child when unconfirmed. This translates to a descendant set size
 // of 2 and ancestor set size of 2.

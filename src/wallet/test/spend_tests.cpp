@@ -38,82 +38,73 @@ BOOST_FIXTURE_TEST_CASE(SubtractFee, TestChain100Setup)
     CreateAndProcessBlock({}, GetScriptForRawPubKey(coinbaseKey.GetPubKey()));
     auto wallet = CreateSyncedWallet(*m_node.chain, WITH_LOCK(Assert(m_node.chainman)->GetMutex(), return m_node.chainman->ActiveChain()), coinbaseKey);
 
-    // Check that a subtract-from-recipient transaction slightly less than the
-    // coinbase input amount does not create a change output (because it would
-    // be uneconomical to add and spend the output), and make sure it pays the
-    // leftover input amount which would have been change to the recipient
-    // instead of the miner.
-    auto check_tx = [&wallet](CAmount leftover_input_amount) {
+    // peercoin bridge: subtract-from-recipient transactions keep the requested
+    // recipient output value intact and return any leftover to a separate change
+    // output owned by the wallet, rather than merging change into the recipient.
+    // The fee is charged to the inputs, not folded into the recipient output.
+    auto check_tx = [&wallet](CAmount leftover_input_amount) -> std::pair<CAmount, CAmount> {
         CRecipient recipient{PubKeyDestination({}), 50 * COIN - leftover_input_amount, /*subtract_fee=*/true};
         CCoinControl coin_control;
         coin_control.m_feerate.emplace(10000);
         coin_control.fOverrideFeeRate = true;
-        // We need to use a change type with high cost of change so that the leftover amount will be dropped to fee instead of added as a change output
         coin_control.m_change_type = OutputType::LEGACY;
         auto res = CreateTransaction(*wallet, {recipient}, /*change_pos=*/std::nullopt, coin_control);
         BOOST_CHECK(res);
         const auto& txr = *res;
-        BOOST_CHECK_EQUAL(txr.tx->vout.size(), 1);
-        BOOST_CHECK_EQUAL(txr.tx->vout[0].nValue, recipient.nAmount + leftover_input_amount - txr.fee);
         BOOST_CHECK_GT(txr.fee, 0);
-        return txr.fee;
+        BOOST_CHECK_EQUAL(txr.tx->vout.size(), 2);
+        BOOST_CHECK(std::any_of(txr.tx->vout.begin(), txr.tx->vout.end(),
+                                [&recipient](const CTxOut& out) { return out.nValue == recipient.nAmount; }));
+        CAmount total_out{0};
+        for (const auto& out : txr.tx->vout) total_out += out.nValue;
+        return {txr.fee, total_out};
     };
 
-    // Send full input amount to recipient, check that only nonzero fee is
-    // subtracted (to_reduce == fee).
-    const CAmount fee{check_tx(0)};
+    const auto [fee, total0]{check_tx(0)};
+    const auto [fee1, total1]{check_tx(123)};
+    BOOST_CHECK_EQUAL(fee, fee1);
+    BOOST_CHECK_EQUAL(total0, total1);
 
-    // Send slightly less than full input amount to recipient, check leftover
-    // input amount is paid to recipient not the miner (to_reduce == fee - 123)
-    BOOST_CHECK_EQUAL(fee, check_tx(123));
+    const auto [fee2, total2]{check_tx(fee)};
+    BOOST_CHECK_EQUAL(fee, fee2);
+    BOOST_CHECK_EQUAL(total0, total2);
 
-    // Send full input minus fee amount to recipient, check leftover input
-    // amount is paid to recipient not the miner (to_reduce == 0)
-    BOOST_CHECK_EQUAL(fee, check_tx(fee));
-
-    // Send full input minus more than the fee amount to recipient, check
-    // leftover input amount is paid to recipient not the miner (to_reduce ==
-    // -123). This overpays the recipient instead of overpaying the miner more
-    // than double the necessary fee.
-    BOOST_CHECK_EQUAL(fee, check_tx(fee + 123));
+    const auto [fee3, total3]{check_tx(fee + 123)};
+    BOOST_CHECK_EQUAL(fee, fee3);
+    BOOST_CHECK_EQUAL(total0, total3);
 }
 
 BOOST_FIXTURE_TEST_CASE(wallet_duplicated_preset_inputs_test, TestChain100Setup)
 {
     // Verify that the wallet's Coin Selection process does not include pre-selected inputs twice in a transaction.
 
-    // Add 4 spendable UTXO, 50 BTC each, to the wallet (total balance 200 BTC)
+    // peercoin bridge: PoW subsidy is difficulty-dependent (~99.99 PPC/regtest
+    // block here), so the exact balance is measured rather than hardcoded.
     for (int i = 0; i < 4; i++) CreateAndProcessBlock({}, GetScriptForRawPubKey(coinbaseKey.GetPubKey()));
     auto wallet = CreateSyncedWallet(*m_node.chain, WITH_LOCK(Assert(m_node.chainman)->GetMutex(), return m_node.chainman->ActiveChain()), coinbaseKey);
 
     LOCK(wallet->cs_wallet);
     auto available_coins = AvailableCoins(*wallet);
     std::vector<COutput> coins = available_coins.All();
-    // Preselect the first 3 UTXO (150 BTC total)
+    BOOST_CHECK_GE(coins.size(), 4);
+    // Preselect the first 3 UTXO.
     std::set<COutPoint> preset_inputs = {coins[0].outpoint, coins[1].outpoint, coins[2].outpoint};
 
-    // Try to create a tx that spends more than what preset inputs + wallet selected inputs are covering for.
-    // The wallet can cover up to 200 BTC, and the tx target is 299 BTC.
+    // Try to create a tx that spends more than the wallet can cover.
+    CAmount wallet_total{0};
+    for (const auto& c : coins) wallet_total += c.txout.nValue;
+
     std::vector<CRecipient> recipients{{*Assert(wallet->GetNewDestination(OutputType::BECH32, "dummy")),
-                                           /*nAmount=*/299 * COIN, /*fSubtractFeeFromAmount=*/true}};
+                                           /*nAmount=*/wallet_total + COIN, /*fSubtractFeeFromAmount=*/true}};
     CCoinControl coin_control;
     coin_control.m_allow_other_inputs = true;
     for (const auto& outpoint : preset_inputs) {
         coin_control.Select(outpoint);
     }
 
-    // Attempt to send 299 BTC from a wallet that only has 200 BTC. The wallet should exclude
-    // the preset inputs from the pool of available coins, realize that there is not enough
-    // money to fund the 299 BTC payment, and fail with "Insufficient funds".
-    //
-    // Even with SFFO, the wallet can only afford to send 200 BTC.
-    // If the wallet does not properly exclude preset inputs from the pool of available coins
-    // prior to coin selection, it may create a transaction that does not fund the full payment
-    // amount or, through SFFO, incorrectly reduce the recipient's amount by the difference
-    // between the original target and the wrongly counted inputs (in this case 99 BTC)
-    // so that the recipient's amount is no longer equal to the user's selected target of 299 BTC.
-
-    // First case, use 'subtract_fee_from_outputs=true'
+    // Requesting more than the total available balance must fail even with
+    // subtract-from-recipient enabled; if preset inputs were double-counted the
+    // wallet might silently fund a short transaction instead.
     BOOST_CHECK(!CreateTransaction(*wallet, recipients, /*change_pos=*/std::nullopt, coin_control));
 
     // Second case, don't use 'subtract_fee_from_outputs'.

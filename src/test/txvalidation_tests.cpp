@@ -274,6 +274,9 @@ BOOST_FIXTURE_TEST_CASE(ephemeral_tests, RegTestingSetup)
 
 BOOST_FIXTURE_TEST_CASE(version3_tests, RegTestingSetup)
 {
+    BOOST_TEST_MESSAGE("Skipped: Peercoin uses version=3 for ordinary transactions; BIP431 TRUC is not enabled.");
+    return;
+
     // Test TRUC policy helper functions
     CTxMemPool& pool = *Assert(m_node.mempool);
     LOCK2(cs_main, pool.cs);
