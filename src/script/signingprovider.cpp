@@ -73,9 +73,19 @@ std::optional<std::reference_wrapper<MuSig2SecNonce>> HidingSigningProvider::Get
     return m_provider->GetMuSig2SecNonce(session_id);
 }
 
+std::vector<uint8_t> HidingSigningProvider::GetMuSig2PubNonce(const uint256& session_id) const
+{
+    return m_provider->GetMuSig2PubNonce(session_id);
+}
+
+void HidingSigningProvider::SetMuSig2PubNonce(const uint256& session_id, const std::vector<uint8_t>& pubnonce) const
+{
+    m_provider->SetMuSig2PubNonce(session_id, pubnonce);
+}
+
 void HidingSigningProvider::DeleteMuSig2Session(const uint256& session_id) const
 {
-    m_provider->DeleteMuSig2Session(session_id);
+    return m_provider->DeleteMuSig2Session(session_id);
 }
 
 bool FlatSigningProvider::GetCScript(const CScriptID& scriptid, CScript& script) const { return LookupHelper(scripts, scriptid, script); }
@@ -135,10 +145,25 @@ std::optional<std::reference_wrapper<MuSig2SecNonce>> FlatSigningProvider::GetMu
     return it->second;
 }
 
+std::vector<uint8_t> FlatSigningProvider::GetMuSig2PubNonce(const uint256& session_id) const
+{
+    if (!musig2_pubnonces) return {};
+    const auto& it = musig2_pubnonces->find(session_id);
+    if (it == musig2_pubnonces->end()) return {};
+    return it->second;
+}
+
+void FlatSigningProvider::SetMuSig2PubNonce(const uint256& session_id, const std::vector<uint8_t>& pubnonce) const
+{
+    if (!musig2_pubnonces) return;
+    (*musig2_pubnonces)[session_id] = pubnonce;
+}
+
 void FlatSigningProvider::DeleteMuSig2Session(const uint256& session_id) const
 {
     if (!Assume(musig2_secnonces)) return;
     musig2_secnonces->erase(session_id);
+    if (musig2_pubnonces) musig2_pubnonces->erase(session_id);
 }
 
 FlatSigningProvider& FlatSigningProvider::Merge(FlatSigningProvider&& b)
@@ -151,6 +176,7 @@ FlatSigningProvider& FlatSigningProvider::Merge(FlatSigningProvider&& b)
     aggregate_pubkeys.merge(b.aggregate_pubkeys);
     // We shouldn't be merging 2 different sessions, just overwrite with b's sessions.
     if (!musig2_secnonces) musig2_secnonces = b.musig2_secnonces;
+    if (!musig2_pubnonces) musig2_pubnonces = b.musig2_pubnonces;
     return *this;
 }
 

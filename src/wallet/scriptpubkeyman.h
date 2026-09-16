@@ -307,6 +307,7 @@ private:
      * to find ongoing signing sessions. It is the SHA256 of aggregate xonly key, + participant pubkey + sighash.
      */
     mutable std::map<uint256, MuSig2SecNonce> m_musig2_secnonces;
+    mutable std::map<uint256, std::vector<uint8_t>> m_musig2_pubnonces;
 
     bool AddDescriptorKeyWithDB(WalletBatch& batch, const CKey& key, const CPubKey &pubkey) EXCLUSIVE_LOCKS_REQUIRED(cs_desc_man);
 

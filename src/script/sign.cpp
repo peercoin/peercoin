@@ -118,12 +118,17 @@ std::vector<uint8_t> MutableTransactionSignatureCreator::CreateMuSig2Nonce(const
     std::optional<uint256> sighash = ComputeSchnorrSignatureHash(leaf_hash, sigversion);
     if (!sighash.has_value()) return {};
 
+    uint256 session_id = MuSig2SessionID(script_pubkey, part_pubkey, *sighash);
+    auto existing_pubnonce = provider.GetMuSig2PubNonce(session_id);
+    if (!existing_pubnonce.empty()) return existing_pubnonce;
+
     MuSig2SecNonce secnonce;
     std::vector<uint8_t> out = key.CreateMuSig2Nonce(secnonce, *sighash, aggregate_pubkey, pubkeys);
     if (out.empty()) return {};
 
     // Store the secnonce in the SigningProvider
-    provider.SetMuSig2SecNonce(MuSig2SessionID(script_pubkey, part_pubkey, *sighash), std::move(secnonce));
+    provider.SetMuSig2SecNonce(session_id, std::move(secnonce));
+    provider.SetMuSig2PubNonce(session_id, out);
 
     return out;
 }
@@ -349,6 +354,14 @@ static bool SignMuSig2(const BaseSignatureCreator& creator, SignatureData& sigda
         std::map<CPubKey, std::vector<uint8_t>>& pubnonces = sigdata.musig2_pubnonces[pub_key_leaf_hash];
         for (const CPubKey& part_pk : part_pks) {
             if (pubnonces.contains(part_pk)) continue;
+            bool nonce_already_created = false;
+            for (const auto& [nonce_key, nonce_map] : sigdata.musig2_pubnonces) {
+                if (nonce_key.first == plain_pub && nonce_key.second == pub_key_leaf_hash.second && nonce_map.contains(part_pk)) {
+                    nonce_already_created = true;
+                    break;
+                }
+            }
+            if (nonce_already_created) continue;
             std::vector<uint8_t> pubnonce = creator.CreateMuSig2Nonce(provider, agg_pub, plain_pub, part_pk, leaf_hash, merkle_root, sigversion, sigdata);
             if (pubnonce.empty()) continue;
             pubnonces[part_pk] = std::move(pubnonce);

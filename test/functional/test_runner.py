@@ -203,6 +203,7 @@ BASE_SCRIPTS = [
     'feature_unsupported_utxo_db.py',
     'wallet_orphanedreward.py',
     'wallet_timelock.py',
+    'wallet_musig.py',
     'wallet_miniscript_decaying_multisig_descriptor_psbt.py',
     'wallet_startup.py',
     'p2p_i2p_ports.py',
