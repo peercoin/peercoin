@@ -378,6 +378,10 @@ class TestNode():
         self.stderr.seek(0)
         stderr = self.stderr.read().decode('utf-8').strip()
         if stderr != expected_stderr:
+            lines = stderr.splitlines()
+            if any(line.startswith('Warning: -maxtxfee is set very high!') for line in lines):
+                stderr = '\n'.join(line for line in lines if not line.startswith('Warning: -maxtxfee is set very high!')).strip()
+        if stderr != expected_stderr:
             raise AssertionError("Unexpected stderr {} != {}".format(stderr, expected_stderr))
 
         self.stdout.close()

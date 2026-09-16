@@ -1421,7 +1421,7 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
 
     // peercoin: manual funding paths can raise the fixed fee after coin selection while
     // leaving no change output to absorb the deficit. Ask for more inputs/less output.
-    if (fee_needed > current_fee) {
+    if (!coin_selection_params.m_subtract_fee_outputs && fee_needed > current_fee) {
         return util::Error{_("Insufficient funds")};
     }
 

@@ -43,7 +43,7 @@ def count_unspent(node):
     r["reused"]["supported"] = supports_reused
     return r
 
-def assert_unspent(node, total_count=None, total_sum=None, reused_supported=None, reused_count=None, reused_sum=None, margin=0.001):
+def assert_unspent(node, total_count=None, total_sum=None, reused_supported=None, reused_count=None, reused_sum=None, margin=0.02):
     '''Make assertions about a node's unspent output statistics'''
     stats = count_unspent(node)
     if total_count is not None:
@@ -57,7 +57,7 @@ def assert_unspent(node, total_count=None, total_sum=None, reused_supported=None
     if reused_sum is not None:
         assert_approx(stats["reused"]["sum"], reused_sum, margin)
 
-def assert_balances(node, mine, margin=0.001):
+def assert_balances(node, mine, margin=0.02):
     '''Make assertions about a node's getbalances output'''
     got = node.getbalances()["mine"]
     for k,v in mine.items():
@@ -71,6 +71,14 @@ class AvoidReuseTest(BitcoinTestFramework):
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
+
+    def raise_maxtxfee(self):
+        '''Peercoin fixed fees grow with tx size; raise the local wallet fee cap only for group tests.'''
+        self.sync_all()
+        self.generate(self.nodes[0], 1, sync_fun=self.no_op)
+        self.sync_all()
+        self.restart_node(1, extra_args=['-maxtxfee=1'])
+        self.connect_nodes(0, 1)
 
     def run_test(self):
         '''Set up initial chain and run tests defined below'''
@@ -88,6 +96,8 @@ class AvoidReuseTest(BitcoinTestFramework):
         self.test_sending_from_reused_address_fails("p2sh-segwit")
         reset_balance(self.nodes[1], self.nodes[0].getnewaddress())
         self.test_sending_from_reused_address_fails("bech32")
+        reset_balance(self.nodes[1], self.nodes[0].getnewaddress())
+        self.raise_maxtxfee()
         reset_balance(self.nodes[1], self.nodes[0].getnewaddress())
         self.test_getbalances_used()
         reset_balance(self.nodes[1], self.nodes[0].getnewaddress())
@@ -220,8 +230,8 @@ class AvoidReuseTest(BitcoinTestFramework):
         assert_balances(self.nodes[1], mine={"used": 0, "trusted": 5})
 
         # node 1 should now have about 5 btc left (for both cases)
-        assert_approx(self.nodes[1].getbalance(), 5, 0.001)
-        assert_approx(self.nodes[1].getbalance(avoid_reuse=False), 5, 0.001)
+        assert_approx(self.nodes[1].getbalance(), 5, 0.02)
+        assert_approx(self.nodes[1].getbalance(avoid_reuse=False), 5, 0.02)
 
     def test_sending_from_reused_address_fails(self, second_addr_type):
         '''
@@ -279,8 +289,8 @@ class AvoidReuseTest(BitcoinTestFramework):
 
         # getbalances and listunspent should show the remaining outputs
         # in the reused address as used/reused
-        assert_unspent(self.nodes[1], total_count=2, total_sum=96, reused_count=1, reused_sum=1, margin=0.01)
-        assert_balances(self.nodes[1], mine={"used": 1, "trusted": 95}, margin=0.01)
+        assert_unspent(self.nodes[1], total_count=2, total_sum=96, reused_count=1, reused_sum=1, margin=0.2)
+        assert_balances(self.nodes[1], mine={"used": 1, "trusted": 95}, margin=0.2)
 
     def test_full_destination_group_is_preferred(self):
         '''

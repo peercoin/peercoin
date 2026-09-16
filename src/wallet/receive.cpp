@@ -289,7 +289,7 @@ bool CachedTxIsTrusted(const CWallet& wallet, const CWalletTx& wtx)
 Balance GetBalance(const CWallet& wallet, const int min_depth, bool avoid_reuse)
 {
     Balance ret;
-    isminefilter reuse_filter = avoid_reuse ? ISMINE_NO : ISMINE_USED;
+    const bool allow_used_addresses = !avoid_reuse || !wallet.IsWalletFlagSet(WALLET_FLAG_AVOID_REUSE);
     {
         LOCK(wallet.cs_wallet);
         std::set<Txid> trusted_parents;
@@ -301,6 +301,7 @@ Balance GetBalance(const CWallet& wallet, const int min_depth, bool avoid_reuse)
             const CTxOut& txout = txo.GetTxOut();
 
             if (wallet.IsSpent(outpoint)) continue;
+            if (!allow_used_addresses && wallet.IsSpentKey(txout.scriptPubKey)) continue;
             isminetype mine = wallet.IsMine(txout);
             if (!(mine & (ISMINE_SPENDABLE | ISMINE_WATCH_ONLY))) continue;
 

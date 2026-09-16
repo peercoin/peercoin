@@ -157,7 +157,9 @@ BASE_SCRIPTS = [
     'rpc_signmessagewithprivkey.py',
     'wallet_hd.py --descriptors',
     'wallet_importdescriptors.py --descriptors',
+    'wallet_avoidreuse.py --descriptors',
     'wallet_change_address.py --descriptors',
+    'wallet_fast_rescan.py --descriptors',
     'wallet_coinbase_category.py --descriptors',
     'wallet_createwallet.py --descriptors',
     'wallet_descriptor.py --descriptors',
@@ -317,7 +319,7 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_address_types.py --descriptors',
     'wallet_address_types.py --legacy-wallet',
     'wallet_avoid_mixing_output_types.py --descriptors',
-    'wallet_avoidreuse.py --descriptors',
+
     'wallet_avoidreuse.py --legacy-wallet',
     'wallet_backup.py --descriptors',
     'wallet_backup.py --legacy-wallet',
@@ -340,7 +342,7 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_encryption.py --legacy-wallet',
     'wallet_fallbackfee.py --descriptors',
     'wallet_fallbackfee.py --legacy-wallet',
-    'wallet_fast_rescan.py --descriptors',
+
     'wallet_groups.py --descriptors',
     'wallet_groups.py --legacy-wallet',
 
