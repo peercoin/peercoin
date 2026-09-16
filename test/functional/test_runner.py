@@ -158,6 +158,7 @@ BASE_SCRIPTS = [
     'wallet_hd.py --descriptors',
     'wallet_importdescriptors.py --descriptors',
     'wallet_createwallet.py --descriptors',
+    'wallet_descriptor.py --descriptors',
     'wallet_labels.py --descriptors',
     'wallet_listdescriptors.py --descriptors',
     'wallet_listreceivedby.py --descriptors',
@@ -331,7 +332,7 @@ UNSUPPORTED_SCRIPTS = [
 
     'wallet_createwallet.py --legacy-wallet',
     'wallet_createwallet.py --usecli',
-    'wallet_descriptor.py --descriptors',
+
     'wallet_dump.py --legacy-wallet',
     'wallet_encryption.py --descriptors',
     'wallet_encryption.py --legacy-wallet',
