@@ -155,6 +155,7 @@ BASE_SCRIPTS = [
     'p2p_eviction.py',
     'wallet_signmessagewithaddress.py',
     'rpc_signmessagewithprivkey.py',
+    'wallet_hd.py --descriptors',
     'wallet_importdescriptors.py --descriptors',
     'wallet_crosschain.py',
     'mining_basic.py',
@@ -334,7 +335,7 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_fast_rescan.py --descriptors',
     'wallet_groups.py --descriptors',
     'wallet_groups.py --legacy-wallet',
-    'wallet_hd.py --descriptors',
+
     'wallet_hd.py --legacy-wallet',
     'wallet_implicitsegwit.py --legacy-wallet',
     'wallet_import_rescan.py --legacy-wallet',

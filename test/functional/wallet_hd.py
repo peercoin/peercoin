@@ -7,11 +7,13 @@
 import shutil
 
 from test_framework.blocktools import COINBASE_MATURITY
+from test_framework.descriptors import descsum_create
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     wallet_importprivkey,
 )
+from test_framework.wallet_util import generate_wif_key
 
 
 class WalletHDTest(BitcoinTestFramework):
@@ -36,9 +38,10 @@ class WalletHDTest(BitcoinTestFramework):
         assert_equal(change_addrV["hdkeypath"], "m/84h/1h/0h/1/0")
 
         # Import a non-HD private key in the HD wallet
-        non_hd_add = 'bcrt1qmevj8zfx0wdvp05cqwkmr6mxkfx60yezwjksmt'
-        non_hd_key = 'cS9umN9w6cDMuRVYdbkfE4c7YUFLJRoXMfhQ569uY4odiQbVN8Rt'
+        non_hd_key = generate_wif_key()
+        non_hd_desc = descsum_create(f"pkh({non_hd_key})")
         wallet_importprivkey(self.nodes[1], non_hd_key, "now")
+        non_hd_add = self.nodes[1].deriveaddresses(non_hd_desc)[0]
 
         # This should be enough to keep the master key and the non-HD key
         self.nodes[1].backupwallet(self.nodes[1].datadir_path / "hd.bak")
@@ -72,6 +75,7 @@ class WalletHDTest(BitcoinTestFramework):
         # otherwise node1 would auto-recover all funds in flag the keypool keys as used
         shutil.rmtree(self.nodes[1].blocks_path)
         shutil.rmtree(self.nodes[1].chain_path / "chainstate")
+        shutil.rmtree(self.nodes[1].chain_path / "indexes" / "txindex", ignore_errors=True)
         shutil.copyfile(
             self.nodes[1].datadir_path / "hd.bak",
             self.nodes[1].wallets_path / self.default_wallet_name / self.wallet_data_filename
@@ -97,6 +101,7 @@ class WalletHDTest(BitcoinTestFramework):
         self.stop_node(1)
         shutil.rmtree(self.nodes[1].blocks_path)
         shutil.rmtree(self.nodes[1].chain_path / "chainstate")
+        shutil.rmtree(self.nodes[1].chain_path / "indexes" / "txindex", ignore_errors=True)
         shutil.copyfile(
             self.nodes[1].datadir_path / "hd.bak",
             self.nodes[1].wallets_path / self.default_wallet_name / self.wallet_data_filename
