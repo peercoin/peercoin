@@ -38,10 +38,9 @@ BOOST_FIXTURE_TEST_CASE(SubtractFee, TestChain100Setup)
     CreateAndProcessBlock({}, GetScriptForRawPubKey(coinbaseKey.GetPubKey()));
     auto wallet = CreateSyncedWallet(*m_node.chain, WITH_LOCK(Assert(m_node.chainman)->GetMutex(), return m_node.chainman->ActiveChain()), coinbaseKey);
 
-    // peercoin bridge: subtract-from-recipient transactions keep the requested
-    // recipient output value intact and return any leftover to a separate change
-    // output owned by the wallet, rather than merging change into the recipient.
-    // The fee is charged to the inputs, not folded into the recipient output.
+    // peercoin bridge: subtract-from-recipient transactions reduce the selected
+    // recipient output(s) by the fixed transaction fee and keep any remaining
+    // amount as change.
     auto check_tx = [&wallet](CAmount leftover_input_amount) -> std::pair<CAmount, CAmount> {
         CRecipient recipient{PubKeyDestination({}), 50 * COIN - leftover_input_amount, /*subtract_fee=*/true};
         CCoinControl coin_control;
@@ -54,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(SubtractFee, TestChain100Setup)
         BOOST_CHECK_GT(txr.fee, 0);
         BOOST_CHECK_EQUAL(txr.tx->vout.size(), 2);
         BOOST_CHECK(std::any_of(txr.tx->vout.begin(), txr.tx->vout.end(),
-                                [&recipient](const CTxOut& out) { return out.nValue == recipient.nAmount; }));
+                                [&recipient, &txr](const CTxOut& out) { return out.nValue == recipient.nAmount - txr.fee; }));
         CAmount total_out{0};
         for (const auto& out : txr.tx->vout) total_out += out.nValue;
         return {txr.fee, total_out};

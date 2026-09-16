@@ -40,21 +40,6 @@ def test_load_unload(node, name):
                 got_loading_error = True
                 return
 
-got_loading_error = False
-def test_load_unload(node, name):
-    global got_loading_error
-    for _ in range(10):
-        if got_loading_error:
-            return
-        try:
-            node.loadwallet(name)
-            node.unloadwallet(name)
-        except JSONRPCException as e:
-            if e.error['code'] == -4 and 'Wallet already being loading' in e.error['message']:
-                got_loading_error = True
-                return
-
-
 class MultiWalletTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
@@ -87,7 +72,7 @@ class MultiWalletTest(BitcoinTestFramework):
                 return wallet_dir(name, "wallet.dat")
             return wallet_dir(name)
 
-        assert_equal(self.nodes[0].listwalletdir(), {'wallets': [{'name': self.default_wallet_name}]})
+        assert_equal(self.nodes[0].listwalletdir(), {'wallets': [{'name': self.default_wallet_name, 'warnings': []}]})
 
         # check wallet.dat is created
         self.stop_nodes()
@@ -211,14 +196,14 @@ class MultiWalletTest(BitcoinTestFramework):
         assert_equal(set(node.listwallets()), {"w4", "w5"})
         w5 = wallet("w5")
         w5_info = w5.getwalletinfo()
-        assert_equal(w5_info['immature_balance'], 50)
+        assert_equal(w5.getbalances()['mine']['immature'], 50)
 
         competing_wallet_dir = os.path.join(self.options.tmpdir, 'competing_walletdir')
         os.mkdir(competing_wallet_dir)
         self.restart_node(0, ['-nowallet', '-walletdir=' + competing_wallet_dir])
         self.nodes[0].createwallet(self.default_wallet_name)
         if self.options.descriptors:
-            exp_stderr = f"Error: SQLiteDatabase: Unable to obtain an exclusive lock on the database, is it being used by another instance of {self.config['environment']['PACKAGE_NAME']}?"
+            exp_stderr = r"Error: SQLiteDatabase: Unable to obtain an exclusive lock on the database.*"
         else:
             exp_stderr = r"Error: Error initializing wallet database environment \"\S+competing_walletdir\S*\"!"
         self.nodes[1].assert_start_raises_init_error(['-walletdir=' + competing_wallet_dir], exp_stderr, match=ErrorMatch.PARTIAL_REGEX)
@@ -236,14 +221,14 @@ class MultiWalletTest(BitcoinTestFramework):
         self.generatetoaddress(node, nblocks=1, address=wallets[0].getnewaddress(), sync_fun=self.no_op)
         for wallet_name, wallet in zip(wallet_names, wallets):
             info = wallet.getwalletinfo()
-            assert_equal(info['immature_balance'], 50 if wallet is wallets[0] else 0)
+            assert_equal(wallet.getbalances()['mine']['immature'], 50 if wallet is wallets[0] else 0)
             assert_equal(info['walletname'], wallet_name)
 
         # accessing invalid wallet fails
         assert_raises_rpc_error(-18, "Requested wallet does not exist or is not loaded", wallet_bad.getwalletinfo)
 
         # accessing wallet RPC without using wallet endpoint fails
-        assert_raises_rpc_error(-19, "Wallet file not specified", node.getwalletinfo)
+        assert_raises_rpc_error(-19, "Multiple wallets are loaded.", node.getwalletinfo)
 
         w1, w2, w3, w4, *_ = wallets
         self.generatetoaddress(node, nblocks=COINBASE_MATURITY + 1, address=w1.getnewaddress(), sync_fun=self.no_op)
@@ -264,12 +249,9 @@ class MultiWalletTest(BitcoinTestFramework):
         assert_equal(batch[0]["result"]["chain"], self.chain)
         assert_equal(batch[1]["result"]["walletname"], "w1")
 
-        self.log.info('Check for per-wallet settxfee call')
-        assert_equal(w1.getwalletinfo()['paytxfee'], 0)
-        assert_equal(w2.getwalletinfo()['paytxfee'], 0)
-        w2.settxfee(0.001)
-        assert_equal(w1.getwalletinfo()['paytxfee'], 0)
-        assert_equal(w2.getwalletinfo()['paytxfee'], Decimal('0.00100000'))
+        self.log.info('Peercoin uses a fixed transaction fee and does not support per-wallet settxfee')
+        assert 'paytxfee' not in w1.getwalletinfo()
+        assert 'paytxfee' not in w2.getwalletinfo()
 
         self.log.info("Test dynamic wallet loading")
 
@@ -289,7 +271,7 @@ class MultiWalletTest(BitcoinTestFramework):
         loadwallet_name = node.loadwallet(wallet_names[1])
         assert_equal(loadwallet_name['name'], wallet_names[1])
         assert_equal(node.listwallets(), wallet_names[0:2])
-        assert_raises_rpc_error(-19, "Wallet file not specified", node.getwalletinfo)
+        assert_raises_rpc_error(-19, "Multiple wallets are loaded.", node.getwalletinfo)
         w2 = node.get_wallet_rpc(wallet_names[1])
         w2.getwalletinfo()
 
@@ -367,10 +349,10 @@ class MultiWalletTest(BitcoinTestFramework):
         self.log.info("Test dynamic wallet unloading")
 
         # Test `unloadwallet` errors
-        assert_raises_rpc_error(-3, "JSON value of type null is not of expected type string", self.nodes[0].unloadwallet)
+        assert_raises_rpc_error(-8, "Either the RPC endpoint wallet or the wallet name parameter must be provided", self.nodes[0].unloadwallet)
         assert_raises_rpc_error(-18, "Requested wallet does not exist or is not loaded", self.nodes[0].unloadwallet, "dummy")
         assert_raises_rpc_error(-18, "Requested wallet does not exist or is not loaded", node.get_wallet_rpc("dummy").unloadwallet)
-        assert_raises_rpc_error(-8, "RPC endpoint wallet and wallet_name parameter specify different wallets", w1.unloadwallet, "w2"),
+        assert_raises_rpc_error(-8, "The RPC endpoint wallet and the wallet name parameter specify different wallets", w1.unloadwallet, "w2")
 
         # Successfully unload the specified wallet name
         self.nodes[0].unloadwallet("w1")

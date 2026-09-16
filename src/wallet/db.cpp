@@ -56,7 +56,7 @@ std::vector<std::pair<fs::path, std::string>> ListDatabases(const fs::path& wall
                 }
             }
         } catch (const std::exception& e) {
-            LogWarning("Error while scanning wallet dir item: %s [%s].", e.what(), fs::PathToString(it->path()));
+            LogWarning("Error scanning wallet dir item: %s [%s].", e.what(), fs::PathToString(it->path()));
             it.disable_recursion_pending();
         }
     }

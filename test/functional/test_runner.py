@@ -100,6 +100,7 @@ BASE_SCRIPTS = [
     'feature_maxtipage.py',
     'wallet_multiwallet.py --legacy-wallet',
     'wallet_multiwallet.py --descriptors',
+
     'wallet_multiwallet.py --usecli',
     'p2p_dns_seeds.py',
     'feature_blocksdir.py',
@@ -195,7 +196,7 @@ UNSUPPORTED_SCRIPTS = [
     'mempool_unbroadcast.py',
     'mining_basic.py',
     'wallet_crosschain.py',
-    'wallet_multiwallet.py --descriptors',
+
     'wallet_multiwallet.py --usecli',
     'wallet_orphanedreward.py',
     'wallet_reorgsrestore.py',
@@ -697,7 +698,7 @@ class TestHandler:
             test = self.test_list.pop(0)
             test_argv = test.split()
             script_name = test_argv[0]
-            if any(s == script_name or s == test or s.startswith(script_name + " ") for s in self.unsupported_scripts):
+            if any(s == script_name or s == test for s in self.unsupported_scripts):
                 portseed = len(self.test_list)
                 testdir = "{}/{}_{}".format(self.tmpdir, re.sub(".py$", "", test_argv[0]), portseed)
                 skip_reason = f"{test_argv[0]} is not supported by this Peercoin build"

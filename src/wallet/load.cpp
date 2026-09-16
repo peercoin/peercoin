@@ -27,17 +27,31 @@ namespace wallet {
 // peercoin bridge: v0.16 loaded every wallet found in the wallets directory at startup,
 // regardless of persisted -wallet settings. Modern core only loads the explicit settings
 // list. Merge both so wallets in the directory keep auto-loading.
-static std::vector<std::string> AutoLoadNames(interfaces::Chain& chain)
+static std::vector<std::string> AutoLoadNames(interfaces::Chain& chain, const ArgsManager& args)
 {
     std::vector<std::string> names;
     for (const auto& wallet : chain.getSettingsList("wallet")) {
         if (wallet.isStr()) names.push_back(wallet.get_str());
     }
-    if (names.empty()) {
+    if (names.empty() && !args.IsArgSet("-wallet")) {
         std::error_code ec;
         for (const auto& entry : fs::directory_iterator(GetWalletDir(), ec)) {
             const auto& p = entry.path();
-            if (entry.is_directory() && (fs::exists(p / "wallet.cdb") || fs::exists(p / "wallet.dat"))) {
+            std::error_code dir_ec;
+            if (!entry.is_directory(dir_ec) || dir_ec) continue;
+
+            bool has_database = false;
+            for (const auto& filename : {"wallet.cdb", "wallet.dat"}) {
+                std::error_code link_ec;
+                if (std::filesystem::is_symlink(std::filesystem::symlink_status(p / filename, link_ec))) continue;
+
+                std::error_code file_ec;
+                if (std::filesystem::exists(p / filename, file_ec) && !file_ec) {
+                    has_database = true;
+                    break;
+                }
+            }
+            if (has_database) {
                 names.push_back(fs::PathToString(p.filename()));
             }
         }
@@ -98,7 +112,7 @@ bool VerifyWallets(WalletContext& context)
     // Keep track of each wallet absolute path to detect duplicates.
     std::set<fs::path> wallet_paths;
 
-    for (const auto& wallet_file : AutoLoadNames(chain)) {
+    for (const auto& wallet_file : AutoLoadNames(chain, args)) {
         const fs::path path = fsbridge::AbsPathJoin(GetWalletDir(), fs::PathFromString(wallet_file));
 
         if (!wallet_paths.insert(path).second) {
@@ -134,7 +148,7 @@ bool LoadWallets(WalletContext& context)
     interfaces::Chain& chain = *context.chain;
     try {
         std::set<fs::path> wallet_paths;
-        for (const auto& name : AutoLoadNames(chain)) {
+        for (const auto& name : AutoLoadNames(chain, *context.args)) {
             if (!wallet_paths.insert(fs::PathFromString(name)).second) {
                 continue;
             }
