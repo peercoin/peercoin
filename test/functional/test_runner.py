@@ -164,6 +164,7 @@ BASE_SCRIPTS = [
     'wallet_change_address.py --descriptors',
     'wallet_fast_rescan.py --descriptors',
     'wallet_coinbase_category.py --descriptors',
+    'wallet_create_tx.py --descriptors',
     'wallet_createwallet.py --descriptors',
     'wallet_descriptor.py --descriptors',
     'wallet_encryption.py --descriptors',
@@ -337,7 +338,6 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_change_address.py --legacy-wallet',
 
     'wallet_coinbase_category.py --legacy-wallet',
-    'wallet_create_tx.py --descriptors',
     'wallet_create_tx.py --legacy-wallet',
 
     'wallet_createwallet.py --legacy-wallet',

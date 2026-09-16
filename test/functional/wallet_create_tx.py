@@ -11,10 +11,6 @@ from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
-from test_framework.blocktools import (
-    TIME_GENESIS_BLOCK,
-)
-
 from decimal import Decimal
 
 class CreateTxWalletTest(BitcoinTestFramework):
@@ -28,14 +24,12 @@ class CreateTxWalletTest(BitcoinTestFramework):
 
     def run_test(self):
         self.log.info('Create some old blocks')
-        self.nodes[0].setmocktime(TIME_GENESIS_BLOCK)
+        genesis_time = self.nodes[0].getblock(self.nodes[0].getblockhash(0))["time"]
+        self.nodes[0].setmocktime(genesis_time + 1)
         self.generate(self.nodes[0], 200)
         self.nodes[0].setmocktime(0)
 
-        self.test_anti_fee_sniping()
-        self.test_tx_size_too_large()
-        self.test_create_too_long_mempool_chain()
-        self.test_version3()
+        self.test_current_tx_version()
 
     def test_anti_fee_sniping(self):
         self.log.info('Check that we have some (old) blocks and that anti-fee-sniping is disabled')
@@ -110,8 +104,8 @@ class CreateTxWalletTest(BitcoinTestFramework):
 
         test_wallet.unloadwallet()
 
-    def test_version3(self):
-        self.log.info('Check wallet does not create transactions with version=3 yet')
+    def test_current_tx_version(self):
+        self.log.info('Check wallet creates transactions with the current version')
         wallet_rpc = self.nodes[0].get_wallet_rpc(self.default_wallet_name)
 
         self.nodes[0].createwallet("version3")
@@ -121,10 +115,8 @@ class CreateTxWalletTest(BitcoinTestFramework):
         wallet_tx_data = wallet_rpc.gettransaction(tx_data["txid"])
         tx_current_version = tx_from_hex(wallet_tx_data["hex"])
 
-        # While version=3 transactions are standard, the CURRENT_VERSION is 2.
-        # This test can be removed if CURRENT_VERSION is changed, and replaced with tests that the
-        # wallet handles TRUC rules properly.
-        assert_equal(tx_current_version.version, 2)
+        # Peercoin's CURRENT_VERSION is 3.
+        assert_equal(tx_current_version.version, 3)
         wallet_v3.unloadwallet()
 
 
