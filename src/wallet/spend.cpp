@@ -1419,10 +1419,10 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         }
     }
 
-    // fee_needed should now always be less than or equal to the current fees that we pay.
-    // If it is not, it is a bug.
+    // peercoin: manual funding paths can raise the fixed fee after coin selection while
+    // leaving no change output to absorb the deficit. Ask for more inputs/less output.
     if (fee_needed > current_fee) {
-        return util::Error{Untranslated(STR_INTERNAL_BUG("Fee needed > fee paid"))};
+        return util::Error{_("Insufficient funds")};
     }
 
     // Give up if change keypool ran out and change is required

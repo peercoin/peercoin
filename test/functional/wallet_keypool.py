@@ -26,13 +26,22 @@ class KeyPoolTest(BitcoinTestFramework):
         return result
 
     def ppc_exact_psbt(self, wallet, inputs, address, amount):
-        amount -= Decimal('0.001')
-        for _ in range(1000):
+        change_address = self.nodes[0].get_wallet_rpc(self.default_wallet_name).getnewaddress()
+        last_error = None
+        for attempt in range(20):
             try:
-                return self.check_pp_psbt(wallet.walletcreatefundedpsbt(inputs=inputs, outputs=[{address: amount}]))
-            except Exception:
-                amount -= Decimal('0.000001')
-        raise AssertionError("No exact Peercoin fee amount found")
+                return self.check_pp_psbt(wallet.walletcreatefundedpsbt(
+                    inputs=inputs,
+                    outputs=[{address: amount}],
+                    options={
+                        "subtract_fee_from_outputs": [0],
+                        "changeAddress": change_address,
+                    },
+                ))
+            except Exception as e:
+                last_error = e
+                amount -= Decimal('0.001')
+        raise AssertionError(f"No exact Peercoin fee amount found: {amount} {last_error}")
 
     def run_test(self):
         nodes = self.nodes
