@@ -9,6 +9,8 @@ This is similar to `test/functional/wallet_multisig_descriptor_psbt.py`.
 """
 
 import random
+from decimal import Decimal
+
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_approx,
@@ -77,15 +79,16 @@ class WalletMiniscriptDecayingMultisigDescriptorPSBTTest(BitcoinTestFramework):
         self.generatetoaddress(self.node, 101, coordinator_wallet.getnewaddress())
 
         self.log.info("Send funds to the multisig's receiving address...")
-        deposit_amount = 6.15
+        deposit_amount = Decimal("6.15")
         coordinator_wallet.sendtoaddress(multisig.getnewaddress(), deposit_amount)
         self.generate(self.node, 1)
         assert_approx(multisig.getbalance(), deposit_amount, vspan=0.001)
 
         self.log.info("Send transactions from the multisig as required signers decay...")
-        amount = 1.5
+        amount = Decimal("1.5")
         receiver = signers[0]
-        sent = 0
+        sent = Decimal("0")
+        fees = Decimal("0")
         for locktime in [0] + self.locktimes:
             self.log.info(f"At block height >= {locktime} this multisig is {self.M}-of-{self.N}")
             current_height = self.node.getblock(self.node.getbestblockhash())['height']
@@ -111,12 +114,13 @@ class WalletMiniscriptDecayingMultisigDescriptorPSBTTest(BitcoinTestFramework):
             else:
                 self.log.info("All the signers are required to spend before the first locktime")
 
-            multisig.sendrawtransaction(psbt["hex"])
+            txid = multisig.sendrawtransaction(psbt["hex"])
             sent += amount
 
             self.log.info("Check that balances are correct after the transaction has been included in a block...")
             self.generate(self.node, 1)
-            assert_approx(multisig.getbalance(), deposit_amount - sent, vspan=0.001)
+            fees += Decimal(self.node.getrawtransaction(txid, 2)["fee"])
+            assert_approx(multisig.getbalance(), deposit_amount - sent - fees, vspan=0.001)
             assert_equal(receiver.getbalance(), sent)
 
             self.M -= 1  # decay the number of required signers for the next locktime..
