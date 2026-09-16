@@ -1337,9 +1337,11 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     {
         CMutableTransaction tx_est(txNew);
         if (wallet.SignTransaction(tx_est)) {
-            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION), nTime));
+            const size_t est_size = static_cast<size_t>(::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION));
+            fee_needed = std::max(fee_needed, GetMinFee(est_size, nTime));
         } else {
-            fee_needed = std::max(fee_needed, GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), nTime));
+            const size_t est_size = static_cast<size_t>(std::max<int64_t>(tx_sizes.weight, ::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION))) + 1;
+            fee_needed = std::max(fee_needed, GetMinFee(est_size, nTime));
         }
     }
     const CAmount output_value = CalculateOutputValue(txNew);
@@ -1377,7 +1379,7 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
 
     // Reduce output values for subtractFeeFromAmount
     if (coin_selection_params.m_subtract_fee_outputs) {
-        CAmount to_reduce = fee_needed - current_fee;
+        CAmount to_reduce = fee_needed;
         unsigned int i = 0;
         bool fFirst = true;
         for (const auto& recipient : vecSend)
@@ -1407,6 +1409,9 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
                 }
             }
             ++i;
+        }
+        if (current_fee > 0 && change_pos && *change_pos < txNew.vout.size()) {
+            txNew.vout.at(*change_pos).nValue += current_fee;
         }
         current_fee = result.GetSelectedValue() - CalculateOutputValue(txNew);
         if (fee_needed != current_fee) {

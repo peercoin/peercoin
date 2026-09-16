@@ -827,9 +827,10 @@ RPCHelpMan fundrawtransaction()
         destinations.emplace_back(dest, tx_out.nValue);
     }
     std::vector<std::string> dummy(destinations.size(), "dummy");
+    UniValue subtract_fee_outputs = options.exists("subtract_fee_from_outputs") ? options["subtract_fee_from_outputs"] : options["subtractFeeFromOutputs"];
     std::vector<CRecipient> recipients = CreateRecipients(
             destinations,
-            InterpretSubtractFeeFromOutputInstructions(options["subtractFeeFromOutputs"], dummy)
+            InterpretSubtractFeeFromOutputInstructions(subtract_fee_outputs, dummy)
     );
     CCoinControl coin_control;
     // Automatically select (additional) coins. Can be overridden by options.add_inputs.
@@ -1509,7 +1510,17 @@ RPCHelpMan sendall()
             if (tx_size.vsize == -1) {
                 throw JSONRPCError(RPC_WALLET_ERROR, "Unable to determine the size of the transaction, the wallet contains unsolvable descriptors");
             }
-            const CAmount fee_from_size{fee_rate.GetFee(tx_size.vsize)};
+            uint32_t pp_time = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime());
+            CAmount pp_min_fee{0};
+            {
+                CMutableTransaction tx_est(rawTx);
+                if (pwallet->SignTransaction(tx_est)) {
+                    pp_min_fee = GetMinFee((size_t)::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION), pp_time);
+                } else {
+                    pp_min_fee = GetMinFee(static_cast<size_t>(tx_size.weight), pp_time);
+                }
+            }
+            const CAmount fee_from_size{std::max({fee_rate.GetFee(tx_size.vsize), pp_min_fee})};
             const std::optional<CAmount> total_bump_fees{pwallet->chain().calculateCombinedBumpFee(outpoints_spent, fee_rate)};
             CAmount effective_value = total_input_value - fee_from_size - total_bump_fees.value_or(0);
 

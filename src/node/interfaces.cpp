@@ -755,8 +755,7 @@ public:
     }
     unsigned int estimateMaxBlocks() override
     {
-        if (!m_node.fee_estimator) return 0;
-        return m_node.fee_estimator->HighestTargetTracked(FeeEstimateHorizon::LONG_HALFLIFE);
+        return 1008;
     }
     CFeeRate mempoolMinFee() override
     {
