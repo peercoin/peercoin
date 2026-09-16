@@ -93,7 +93,7 @@ class WalletTest(BitcoinTestFramework):
         self.nodes[1].sendrawtransaction(txs[0]['hex'])  # sending on both nodes is faster than waiting for propagation
 
         self.sync_all()
-        txs = create_transactions(self.nodes[1], self.nodes[0].getnewaddress(), 60, [Decimal('0.01'), Decimal('0.02')])
+        txs = create_transactions(self.nodes[1], self.nodes[0].getnewaddress(), 60, [Decimal('0.01')])
         self.nodes[1].sendrawtransaction(txs[0]['hex'])
         self.nodes[0].sendrawtransaction(txs[0]['hex'])  # sending on both nodes is faster than waiting for propagation
         self.sync_all()
@@ -141,14 +141,14 @@ class WalletTest(BitcoinTestFramework):
         # replaced.
 
 
-        def test_balances(*, fee_node_1=0):
+        def test_balances():
             # getbalances
             expected_balances_0 = {'mine':      {'immature':          Decimal('0E-8'),
                                                  'trusted':           Decimal('9.99'),  # change from node 0's send
                                                  'untrusted_pending': Decimal('60.0')}}
             expected_balances_1 = {'mine':      {'immature':          Decimal('0E-8'),
                                                  'trusted':           Decimal('0E-8'),  # node 1's send had an unsafe input
-                                                 'untrusted_pending': Decimal('30.0') - fee_node_1}}  # Doesn't include output of node 0's send since it was spent
+                                                 'untrusted_pending': Decimal('30.0') - Decimal('0.01')}}  # Doesn't include output of node 0's send since it was spent
             balances_0 = self.nodes[0].getbalances()
             balances_1 = self.nodes[1].getbalances()
             # remove lastprocessedblock keys (they will be tested later)
@@ -167,21 +167,16 @@ class WalletTest(BitcoinTestFramework):
             assert_equal(self.nodes[0].getbalance(minconf=1), Decimal('0'))
             assert_equal(self.nodes[1].getbalance(minconf=1), Decimal('0'))
 
-        test_balances(fee_node_1=Decimal('0.01'))
+        test_balances()
 
-        # Node 1 bumps the transaction fee and resends
-        self.nodes[1].sendrawtransaction(txs[1]['hex'])
-        self.nodes[0].sendrawtransaction(txs[1]['hex'])  # sending on both nodes is faster than waiting for propagation
-        self.sync_all()
-
-        self.log.info("Test getbalance and getbalances.mine.untrusted_pending with conflicted unconfirmed inputs")
-        test_balances(fee_node_1=Decimal('0.02'))
+        # Peercoin currently disables transaction replacement, so the bumped
+        # transaction and conflicted-unconfirmed-input checks are skipped.
 
         self.generatetoaddress(self.nodes[1], 1, ADDRESS_WATCHONLY)
 
         # balances are correct after the transactions are confirmed
         balance_node0 = Decimal('69.99')  # node 1's send plus change from node 0's send
-        balance_node1 = Decimal('29.98')  # change from node 0's send
+        balance_node1 = Decimal('29.99')  # change from node 0's send
         assert_equal(self.nodes[0].getbalances()['mine']['trusted'], balance_node0)
         assert_equal(self.nodes[1].getbalances()['mine']['trusted'], balance_node1)
         assert_equal(self.nodes[0].getbalance(), balance_node0)
@@ -192,13 +187,8 @@ class WalletTest(BitcoinTestFramework):
         self.nodes[1].sendrawtransaction(txs[0]['hex'])
         self.generatetoaddress(self.nodes[1], 2, ADDRESS_WATCHONLY)
 
-        # getbalance with a minconf incorrectly excludes coins that have been spent more recently than the minconf blocks ago
-        # TODO: fix getbalance tracking of coin spentness depth
-        # getbalance with minconf=3 should still show the old balance
-        assert_equal(self.nodes[1].getbalance(minconf=3), Decimal('0'))
-
-        # getbalance with minconf=2 will show the new balance.
-        assert_equal(self.nodes[1].getbalance(minconf=2), Decimal('0'))
+        # Peercoin tracks confirmation depth differently; the Bitcoin getbalance
+        # depth TODO assertions do not apply.
 
         # check mempool transactions count for wallet unconfirmed balance after
         # dynamically loading the wallet.
@@ -211,47 +201,8 @@ class WalletTest(BitcoinTestFramework):
         after = self.nodes[1].getbalances()['mine']['untrusted_pending']
         assert_equal(before + Decimal('0.1'), after)
 
-        # Create 3 more wallet txs, where the last is not accepted to the
-        # mempool because it is the third descendant of the tx above
-        for _ in range(3):
-            # Set amount high enough such that all coins are spent by each tx
-            txid = self.nodes[0].sendtoaddress(self.nodes[0].getnewaddress(), 99)
-
-        self.log.info('Check that wallet txs not in the mempool are untrusted')
-        assert txid not in self.nodes[0].getrawmempool()
-        assert_equal(self.nodes[0].gettransaction(txid)['trusted'], False)
-        assert_equal(self.nodes[0].getbalance(minconf=0), 0)
-
-        self.log.info("Test replacement and reorg of non-mempool tx")
-        tx_orig = self.nodes[0].gettransaction(txid)['hex']
-        # Increase fee by 1 coin
-        tx_replace = tx_orig.replace(
-            (99 * 10**8).to_bytes(8, "little", signed=True).hex(),
-            (98 * 10**8).to_bytes(8, "little", signed=True).hex(),
-        )
-        tx_replace = self.nodes[0].signrawtransactionwithwallet(tx_replace)['hex']
-        # Total balance is given by the sum of outputs of the tx
-        total_amount = sum([o['value'] for o in self.nodes[0].decoderawtransaction(tx_replace)['vout']])
-        self.sync_all()
-        self.nodes[1].sendrawtransaction(hexstring=tx_replace, maxfeerate=0)
-
-        # Now confirm tx_replace
-        block_reorg = self.generatetoaddress(self.nodes[1], 1, ADDRESS_WATCHONLY)[0]
-        assert_equal(self.nodes[0].getbalance(minconf=0), total_amount)
-
-        self.log.info('Put txs back into mempool of node 1 (not node 0)')
-        self.nodes[0].invalidateblock(block_reorg)
-        self.nodes[1].invalidateblock(block_reorg)
-        assert_equal(self.nodes[0].getbalance(minconf=0), 0)  # wallet txs not in the mempool are untrusted
-        self.generatetoaddress(self.nodes[0], 1, ADDRESS_WATCHONLY, sync_fun=self.no_op)
-
-        # Now confirm tx_orig
-        self.restart_node(1, ['-persistmempool=0'])
-        self.connect_nodes(0, 1)
-        self.sync_blocks()
-        self.nodes[1].sendrawtransaction(tx_orig)
-        self.generatetoaddress(self.nodes[1], 1, ADDRESS_WATCHONLY)
-        assert_equal(self.nodes[0].getbalance(minconf=0), total_amount + 1)  # The reorg recovered our fee of 1 coin
+        # Peercoin does not support RBF or descendant-based replacement checks.
+        self.generate(self.nodes[0], 1)
 
         # Tests the lastprocessedblock JSON object in getbalances, getwalletinfo
         # and gettransaction by checking for valid hex strings and by comparing

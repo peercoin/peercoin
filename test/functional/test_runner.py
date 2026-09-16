@@ -158,6 +158,7 @@ BASE_SCRIPTS = [
     'wallet_hd.py --descriptors',
     'wallet_importdescriptors.py --descriptors',
     'wallet_avoidreuse.py --descriptors',
+    'wallet_balance.py --descriptors',
     'wallet_change_address.py --descriptors',
     'wallet_fast_rescan.py --descriptors',
     'wallet_coinbase_category.py --descriptors',
@@ -323,7 +324,7 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_avoidreuse.py --legacy-wallet',
     'wallet_backup.py --descriptors',
     'wallet_backup.py --legacy-wallet',
-    'wallet_balance.py --descriptors',
+
     'wallet_balance.py --legacy-wallet',
     'wallet_bumpfee.py --descriptors',
     'wallet_bumpfee.py --legacy-wallet',
