@@ -157,6 +157,7 @@ BASE_SCRIPTS = [
     'rpc_signmessagewithprivkey.py',
     'wallet_hd.py --descriptors',
     'wallet_importdescriptors.py --descriptors',
+    'wallet_listdescriptors.py --descriptors',
     'wallet_crosschain.py',
     'mining_basic.py',
     'rpc_named_arguments.py',
@@ -348,7 +349,7 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_keypool_topup.py --legacy-wallet',
     'wallet_labels.py --descriptors',
     'wallet_labels.py --legacy-wallet',
-    'wallet_listdescriptors.py --descriptors',
+
     'wallet_listreceivedby.py --descriptors',
     'wallet_listreceivedby.py --legacy-wallet',
     'wallet_listsinceblock.py --descriptors',
