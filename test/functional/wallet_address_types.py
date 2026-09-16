@@ -243,7 +243,7 @@ class AddressTypeTest(BitcoinTestFramework):
             self.log.info("Sending from node {} ({}) with{} multisig using {}".format(from_node, self.extra_args[from_node], "" if multisig else "out", "default" if address_type is None else address_type))
             old_balances = self.get_balances()
             self.log.debug("Old balances are {}".format(old_balances))
-            to_send = (old_balances[from_node] / (COINBASE_MATURITY + 1)).quantize(Decimal("0.00000001"))
+            to_send = (old_balances[from_node] / 1000).quantize(Decimal("0.000001"))
             sends = {}
             addresses = {}
 
@@ -280,8 +280,7 @@ class AddressTypeTest(BitcoinTestFramework):
                 sends[address] = to_send * 10 * (1 + n)
                 addresses[to_node] = (address, typ)
 
-            self.log.debug("Sending: {}".format(sends))
-            self.nodes[from_node].sendmany("", sends)
+            txid = self.nodes[from_node].sendmany("", sends)
             self.sync_mempools()
 
             unconf_balances = self.get_balances('untrusted_pending')
@@ -307,9 +306,12 @@ class AddressTypeTest(BitcoinTestFramework):
 
             new_balances = self.get_balances()
             self.log.debug("Check new balances: {}".format(new_balances))
-            # We don't know what fee was set, so we can only check bounds on the balance of the sending node
-            assert_greater_than(new_balances[from_node], to_send * 10)
-            assert_greater_than(to_send * 11, new_balances[from_node])
+            fee = Decimal(self.nodes[from_node].getrawtransaction(txid, 2)["fee"])
+            sent_total = Decimal("0")
+            for n, to_node in enumerate(range(from_node + 1, from_node + 4)):
+                to_node %= 4
+                sent_total += sends[addresses[to_node][0]]
+            assert_equal(new_balances[from_node], old_balances[from_node] - sent_total - fee)
             for n, to_node in enumerate(range(from_node + 1, from_node + 4)):
                 to_node %= 4
                 assert_equal(new_balances[to_node], old_balances[to_node] + to_send * 10 * (2 + n))

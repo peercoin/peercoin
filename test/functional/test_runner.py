@@ -203,6 +203,7 @@ BASE_SCRIPTS = [
     'feature_unsupported_utxo_db.py',
     'wallet_orphanedreward.py',
     'wallet_timelock.py',
+    'wallet_address_types.py --descriptors',
     'wallet_musig.py',
     'wallet_taproot.py',
     'wallet_miniscript.py --descriptors',
@@ -338,7 +339,6 @@ UNSUPPORTED_SCRIPTS = [
     'tool_wallet.py --legacy-wallet',
     'wallet_abandonconflict.py --descriptors',
     'wallet_abandonconflict.py --legacy-wallet',
-    'wallet_address_types.py --descriptors',
     'wallet_address_types.py --legacy-wallet',
     'wallet_avoid_mixing_output_types.py --descriptors',
 
