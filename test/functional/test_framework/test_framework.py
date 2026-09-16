@@ -988,7 +988,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
     def create_outpoints(self, node, outputs):
         result = node.send(outputs=outputs)
-        tx = node.decoderawtransaction(result['hex'])
+        tx = node.decoderawtransaction(node.gettransaction(result['txid'])['hex'])
         outpoints = []
         for output in outputs:
             for address, amount in output.items():
