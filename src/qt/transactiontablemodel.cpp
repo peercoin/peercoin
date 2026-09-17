@@ -220,8 +220,8 @@ public:
             // try to update the status of this transaction from the wallet.
             // Otherwise, simply re-use the cached status.
             interfaces::WalletTxStatus wtx;
-            int numBlocks;
-            int64_t block_time;
+            int numBlocks{0};
+            int64_t block_time{0};
             if (!cur_block_hash.IsNull() && rec->statusUpdateNeeded(cur_block_hash) && wallet.tryGetTxStatus(rec->hash, wtx, numBlocks, block_time)) {
                 rec->updateStatus(wtx, cur_block_hash, numBlocks, block_time);
             }

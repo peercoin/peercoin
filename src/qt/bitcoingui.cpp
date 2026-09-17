@@ -114,9 +114,10 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     updateWindowTitle();
     QFontDatabase::addApplicationFont(":/fonts/notosans-regular");
     QFile styleFile(":/themes/default");
-    styleFile.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(styleFile.readAll());
-    this->setStyleSheet(styleSheet);
+    if (styleFile.open(QFile::ReadOnly)) {
+        QString styleSheet = QLatin1String(styleFile.readAll());
+        this->setStyleSheet(styleSheet);
+    }
 
 
     rpcConsole = new RPCConsole(node, _platformStyle, nullptr);
@@ -290,7 +291,7 @@ void BitcoinGUI::createActions()
     mintingAction->setStatusTip(tr("Show your minting capacity"));
     mintingAction->setToolTip(mintingAction->statusTip());
     mintingAction->setCheckable(true);
-    mintingAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    mintingAction->setShortcut(QKeySequence(Qt::ALT | Qt::Key_5));
     tabGroup->addAction(mintingAction);
 
 #ifdef ENABLE_WALLET

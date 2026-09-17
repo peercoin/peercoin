@@ -127,13 +127,13 @@ void RPCNestedTests::rpcNestedTests()
     RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest(   abc   ,   cba )");
     QVERIFY(result == "[\"abc\",\"cba\"]");
 
-    QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo() .\n"), std::runtime_error); //invalid syntax
-    QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo() getblockchaininfo()"), std::runtime_error); //invalid syntax
-    RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo("); //tolerate non closing brackets if we have no arguments
-    RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo()()()"); //tolerate non command brackets
-    QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo(True)"), UniValue); //invalid argument
-    QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "a(getblockchaininfo(True))"), UniValue); //method not found
-    QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest abc,,abc"), std::runtime_error); //don't tolerate empty arguments when using ,
-    QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest(abc,,abc)"), std::runtime_error); //don't tolerate empty arguments when using ,
-    QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest(abc,,)"), std::runtime_error); //don't tolerate empty arguments when using ,
+    QVERIFY_THROWS_EXCEPTION(std::runtime_error, RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo() .\n"));                 // invalid syntax
+    QVERIFY_THROWS_EXCEPTION(std::runtime_error, RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo() getblockchaininfo()")); // invalid syntax
+    RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo(");                                                                    // tolerate non closing brackets if we have no arguments
+    RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo()()()");                                                               // tolerate non command brackets
+    QVERIFY_THROWS_EXCEPTION(UniValue, RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo(True)"));                           // invalid argument
+    QVERIFY_THROWS_EXCEPTION(UniValue, RPCConsole::RPCExecuteCommandLine(m_node, result, "a(getblockchaininfo(True))"));                        // method not found
+    QVERIFY_THROWS_EXCEPTION(std::runtime_error, RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest abc,,abc"));                  // don't tolerate empty arguments when using ,
+    QVERIFY_THROWS_EXCEPTION(std::runtime_error, RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest(abc,,abc)"));                 // don't tolerate empty arguments when using ,
+    QVERIFY_THROWS_EXCEPTION(std::runtime_error, RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest(abc,,)"));                    // don't tolerate empty arguments when using ,
 }

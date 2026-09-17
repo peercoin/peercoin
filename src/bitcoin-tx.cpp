@@ -257,7 +257,7 @@ static T TrimAndParse(const std::string& int_str, const std::string& err)
 }
 
 // peercoin: set TX timestamp (PPC-era nTime field)
-static void MutateTxTime(CMutableTransaction& tx, const std::string& cmdVal)
+[[maybe_unused]] static void MutateTxTime(CMutableTransaction& tx, const std::string& cmdVal)
 {
     int64_t newTime = std::atoll(cmdVal.c_str());
     if (newTime < 0 || newTime > 0xFFFFFFFF)

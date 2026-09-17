@@ -9,12 +9,11 @@
 #include <bitcoin-build-config.h>
 #endif
 
+#include <consensus/amount.h>
 #include <qt/bitcoinunits.h>
 #include <qt/clientmodel.h>
 #include <qt/guiutil.h>
 #include <qt/optionsdialog.h>
-
-#include <consensus/amount.h>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -22,8 +21,6 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QMenu>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QPoint>
 #include <QSystemTrayIcon>
 

@@ -5,9 +5,10 @@
 #ifndef BITCOIN_QT_CLIENTMODEL_H
 #define BITCOIN_QT_CLIENTMODEL_H
 
-#include <QObject>
 #include <QDateTime>
-#include <QNetworkReply>
+#include <QObject>
+
+class QNetworkReply;
 
 #include <atomic>
 #include <ctime>

@@ -103,7 +103,7 @@ static int PruneSizeGB(const common::SettingsValue& prune_setting)
 //! Parse pruning size value provided by user in GUI or loaded from QSettings
 //! (windows registry key or qt .conf file). Smallest value that the GUI can
 //! display is 1 GB, so round up if anything less is parsed.
-static int ParsePruneSizeGB(const QVariant& prune_size)
+[[maybe_unused]] static int ParsePruneSizeGB(const QVariant& prune_size)
 {
     return std::max(1, prune_size.toInt());
 }

@@ -5,6 +5,8 @@
 #ifndef BITCOIN_QT_INTRO_H
 #define BITCOIN_QT_INTRO_H
 
+#include <qt/freespacechecker.h>
+
 #include <QDialog>
 #include <QMutex>
 #include <QThread>
@@ -25,7 +27,7 @@ namespace Ui {
   Allows the user to choose a data directory,
   in which the wallet and block chain will be stored.
  */
-class Intro : public QDialog
+class Intro : public QDialog, public FreespaceChecker::PathQuery
 {
     Q_OBJECT
 
@@ -37,6 +39,8 @@ public:
     QString getDataDirectory();
     void setDataDirectory(const QString &dataDir);
     int64_t getPruneMiB() const;
+
+    QString getPathToCheck() override;
 
     /**
      * Determine data directory. Let the user choose if the current one doesn't exist.
@@ -74,11 +78,8 @@ private:
     uint64_t m_bytes_available{0};
 
     void startThread();
-    void checkPath(const QString &dataDir);
-    QString getPathToCheck();
+    void checkPath(const QString& dataDir);
     void UpdateFreeSpaceLabel();
-
-    friend class FreespaceChecker;
 };
 
 #endif // BITCOIN_QT_INTRO_H
