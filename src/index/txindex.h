@@ -9,6 +9,7 @@
 #include <primitives/transaction.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 
 class uint256;
@@ -52,6 +53,9 @@ public:
     /// @param[out]  tx  The transaction itself.
     /// @return  true if transaction is found, false otherwise
     bool FindTx(const Txid& tx_hash, uint256& block_hash, CTransactionRef& tx) const;
+
+    /// Look up a transaction and its block header time by transaction hash.
+    bool FindTxAndBlockTime(const Txid& tx_hash, uint256& block_hash, CTransactionRef& tx, uint32_t& block_time) const;
 };
 
 /// The global transaction index, used in GetTransaction. May be null.

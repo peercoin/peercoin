@@ -5793,30 +5793,28 @@ bool GetCoinAge(const CTransaction& tx, const CCoinsViewCache &view, uint64_t& n
         // First try finding the previous transaction in database
         const COutPoint &prevout = txin.prevout;
 
-        int64_t nTimeBlockFrom = 0;
-        int64_t nValueIn = 0;
-
-        auto coin{view.GetCoin(prevout)};
-        if (coin) {
-            nTimeBlockFrom = coin->nTime;
-            nValueIn = coin->out.nValue;
-        } else {
-            // peercoin bridge: fall back to the tx index instead of raw block-file reads
-            uint256 block_hash_prev;
-            CTransactionRef txPrev;
-            if (!g_txindex || !g_txindex->FindTx(Txid::FromUint256(prevout.hash), block_hash_prev, txPrev))
-                continue;  // previous transaction not in main chain
-            nTimeBlockFrom = txPrev->nTime;
-            nValueIn = txPrev->vout[prevout.n].nValue;
+        Coin coin;
+        if (isTrueCoinAge) {
+            auto coin_opt{view.GetCoin(prevout)};
+            if (!coin_opt)
+                continue; // previous transaction not in main chain
+            coin = *coin_opt;
         }
 
-        if (nTimeTx < nTimeBlockFrom)
+        if (nTimeTx < coin.nTime)
             return false;  // Transaction timestamp violation
 
-        if (nTimeBlockFrom + Params().GetConsensus().nStakeMinAge > (int64_t)nTimeTx)
+        uint256 block_hash_prev;
+        CTransactionRef txPrev;
+        uint32_t block_time{0};
+        if (!g_txindex->FindTxAndBlockTime(Txid::FromUint256(prevout.hash), block_hash_prev, txPrev, block_time))
+            return false;  // tx missing in tx index
+
+        if (block_time + Params().GetConsensus().nStakeMinAge > nTimeTx)
             continue; // only count coins meeting min age requirement
 
-        int nEffectiveAge = nTimeTx - nTimeBlockFrom;
+        int64_t nValueIn = txPrev->vout[prevout.n].nValue;
+        int nEffectiveAge = nTimeTx - (txPrev->nTime ? txPrev->nTime : block_time);
 
         if (!isTrueCoinAge || IsProtocolV09(nTimeTx))
             nEffectiveAge = std::min(nEffectiveAge, 365 * 24 * 60 * 60);

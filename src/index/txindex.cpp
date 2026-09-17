@@ -91,7 +91,7 @@ bool TxIndex::CustomAppend(const interfaces::BlockInfo& block)
 
 BaseIndex::DB& TxIndex::GetDB() const { return *m_db; }
 
-bool TxIndex::FindTx(const Txid& tx_hash, uint256& block_hash, CTransactionRef& tx) const
+bool TxIndex::FindTxAndBlockTime(const Txid& tx_hash, uint256& block_hash, CTransactionRef& tx, uint32_t& block_time) const
 {
     CDiskTxPos postx;
     if (!m_db->ReadTxPos(tx_hash, postx)) {
@@ -117,5 +117,12 @@ bool TxIndex::FindTx(const Txid& tx_hash, uint256& block_hash, CTransactionRef& 
         return false;
     }
     block_hash = header.GetHash();
+    block_time = header.GetBlockTime();
     return true;
+}
+
+bool TxIndex::FindTx(const Txid& tx_hash, uint256& block_hash, CTransactionRef& tx) const
+{
+    uint32_t block_time;
+    return FindTxAndBlockTime(tx_hash, block_hash, tx, block_time);
 }
