@@ -2274,14 +2274,7 @@ DisconnectResult Chainstate::DisconnectBlock(const CBlock& block, const CBlockIn
         return DISCONNECT_FAILED;
     }
 
-    // Ignore blocks that contain transactions which are 'overwritten' by later transactions,
-    // unless those are already completely spent.
-    // See https://github.com/bitcoin/bitcoin/issues/22596 for additional information.
-    // Note: the blocks specified here are different than the ones used in ConnectBlock because DisconnectBlock
-    // unwinds the blocks in reverse. As a result, the inconsistency is not discovered until the earlier
-    // blocks with the duplicate coinbase transactions are disconnected.
-    bool fEnforceBIP30 = !((pindex->nHeight==91722 && pindex->GetBlockHash() == uint256{"00000000000271a2dc26e7667f8419f2e15416dc6955e5a6c6cdf3f2574dd08e"}) ||
-                           (pindex->nHeight==91812 && pindex->GetBlockHash() == uint256{"00000000000af0aed4792b1acee3d966af36cf5def14935db8de83d6f9306f2f"}));
+    // BIP30 duplicate coinbase exceptions are handled during ConnectBlock().
 
     // undo transactions in reverse order
     for (int i = block.vtx.size() - 1; i >= 0; i--) {
@@ -2371,16 +2364,6 @@ script_verify_flags GetBlockScriptFlags(const CBlockIndex& block_index, const Ch
 
     return flags;
 }
-
-
-static SteadyClock::duration time_check{};
-static SteadyClock::duration time_forks{};
-static SteadyClock::duration time_connect{};
-static SteadyClock::duration time_verify{};
-static SteadyClock::duration time_undo{};
-static SteadyClock::duration time_index{};
-static SteadyClock::duration time_total{};
-static int64_t num_blocks_total = 0;
 
 
 // These checks can only be done when all previous block have been added.
@@ -4164,9 +4147,6 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
             assert(tx_state.GetResult() == TxValidationResult::TX_CONSENSUS);
             return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, tx_state.GetRejectReason(),
                                  strprintf("Transaction check failed (tx hash %s) %s", tx->GetHash().ToString(), tx_state.GetDebugMessage()));
-            // peercoin: check transaction timestamp
-            if (block.GetBlockTime() < (int64_t)tx->nTime)
-                return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-tx-time", strprintf("%s : block timestamp earlier than transaction timestamp", __func__));
         }
     }
     // This underestimates the number of sigops, because unlike ConnectBlock it

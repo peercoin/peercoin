@@ -149,8 +149,6 @@ public:
     const P& GetParams() const
     {
         static const P params{};
-using CHashWriter = HashWriter; // peercoin legacy alias
-
         return params;
     }
 };

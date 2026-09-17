@@ -1628,8 +1628,7 @@ BOOST_AUTO_TEST_CASE(bip341_keypath_test_vectors)
     // field (version < 3 gate), so these vectors cannot parse under PPC tx format.
     // Mirrors upstream Peercoin, which gutted this vector set (taproot not active).
     BOOST_TEST_MESSAGE("skipped: canonical BIP341 vectors incompatible with PPC tx format");
-    if (true) return;
-
+#if 0 // Taproot is not active on Peercoin v0.16.
     UniValue tests;
     tests.read(json_tests::bip341_wallet_vectors);
 
@@ -1699,6 +1698,7 @@ BOOST_AUTO_TEST_CASE(bip341_keypath_test_vectors)
             BOOST_CHECK_EQUAL(HexStr((HashWriter{HASHER_TAPSIGHASH} << std::span<const uint8_t>{ParseHex(input["intermediary"]["sigMsg"].get_str())}).GetSHA256()), input["intermediary"]["sigHash"].get_str());
         }
     }
+#endif
 }
 
 BOOST_AUTO_TEST_CASE(compute_tapbranch)

@@ -63,7 +63,7 @@ static inline std::vector<COutPoint> random_outpoints(size_t num_outpoints) {
     return outpoints;
 }
 
-static inline std::vector<CPubKey> random_keys(size_t num_keys) {
+[[maybe_unused]] static inline std::vector<CPubKey> random_keys(size_t num_keys) {
     std::vector<CPubKey> keys;
     keys.reserve(num_keys);
     for (size_t i{0}; i < num_keys; ++i) {
@@ -277,6 +277,7 @@ BOOST_FIXTURE_TEST_CASE(version3_tests, RegTestingSetup)
     BOOST_TEST_MESSAGE("Skipped: Peercoin uses version=3 for ordinary transactions; BIP431 TRUC is not enabled.");
     return;
 
+#if 0 // BIP431 TRUC tests are disabled on Peercoin v0.16.
     // Test TRUC policy helper functions
     CTxMemPool& pool = *Assert(m_node.mempool);
     LOCK2(cs_main, pool.cs);
@@ -566,6 +567,7 @@ BOOST_FIXTURE_TEST_CASE(version3_tests, RegTestingSetup)
 
     // Configuration where tx has multiple generations of descendants is not tested because that is
     // equivalent to the tx with multiple generations of ancestors.
+#endif
 }
 
 BOOST_AUTO_TEST_SUITE_END()

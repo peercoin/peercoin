@@ -1299,10 +1299,11 @@ public:
      * May not be called in a
      * validationinterface callback.
      *
+     * @param[in,out] nPoSTemperature PoS header cooling/DoS temperature state
+     * @param[in]  lastAcceptedHeader The last header accepted from this peer/connection context
      * @param[in]  headers The block headers themselves
      * @param[in]  min_pow_checked  True if proof-of-work anti-DoS checks have been done by caller for headers chain
      * @param[out] state This may be set to an Error state if any error occurred processing them
-     * @param[in]  chainparams The params for the chain we want to connect to
      * @param[out] ppindex If set, the pointer will be set to point to the last new block index object for the given headers
      * @returns false if AcceptBlockHeader fails on any of the headers, true otherwise (including if headers were already known)
      */

@@ -687,7 +687,6 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
     if (!pindexFrom)
         return error("CheckProofOfStake() : block index not found for kernel input");
     CBlockHeader header = pindexFrom->GetBlockHeader();
-    const int64_t nTimeBlockFrom = header.GetBlockTime();
     // peercoin: compute kernel offset on v31 disk layout (header + varint count + preceding txs)
     uint64_t nTxPrevOffset = 0;
     {

@@ -226,8 +226,6 @@ void UpdateWalletStakeWeight(CWallet& wallet)
 
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node, CTxDestination destination)
 {
-    const auto time_start{SteadyClock::now()};
-
     resetBlock();
 
     pblocktemplate.reset(new CBlockTemplate());
@@ -313,8 +311,6 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         m_mempool->StopBlockBuilding();
     }
 
-    const auto time_1{SteadyClock::now()};
-
     m_last_block_num_txs = nBlockTx;
     m_last_block_weight = nBlockWeight;
 
@@ -348,9 +344,6 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
             throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, state.ToString()));
         }
     }
-    const auto time_2{SteadyClock::now()};
-
-
     return std::move(pblocktemplate);
 }
 

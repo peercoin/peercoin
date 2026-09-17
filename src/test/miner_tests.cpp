@@ -150,7 +150,7 @@ static std::unique_ptr<CBlockIndex> CreateBlockIndex(int nHeight, CBlockIndex* a
 // Test suite for ancestor feerate transaction selection.
 // Implemented as an additional function, rather than a separate test case,
 // to allow reusing the blockchain created in CreateNewBlock_validity.
-void MinerTestingSetup::TestPackageSelection(const CScript& scriptPubKey, const std::vector<CTransactionRef>& txFirst)
+void MinerTestingSetup::TestPackageSelection(const CScript& scriptPubKey, const std::vector<CTransactionRef>& txFirst) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     CTxMemPool& tx_mempool{MakeMempool()};
     auto mining{MakeMining()};
@@ -242,7 +242,7 @@ void MinerTestingSetup::TestPackageSelection(const CScript& scriptPubKey, const 
         CAmount fee;
         uint64_t size;
     };
-    auto add_spend = [&](const COutPoint& prev, CAmount desired_fee, bool spends_coinbase) -> BuiltTx {
+    auto add_spend = [&](const COutPoint& prev, CAmount desired_fee, bool spends_coinbase) EXCLUSIVE_LOCKS_REQUIRED(::cs_main) -> BuiltTx {
         CMutableTransaction built;
         built.version = tx.version;
         built.nTime = tx.nTime;
@@ -264,7 +264,7 @@ void MinerTestingSetup::TestPackageSelection(const CScript& scriptPubKey, const 
         return false;
     };
 
-    auto add_multi_output_spend = [&](const COutPoint& prev, size_t output_count) -> BuiltTx {
+    auto add_multi_output_spend = [&](const COutPoint& prev, size_t output_count) EXCLUSIVE_LOCKS_REQUIRED(::cs_main) -> BuiltTx {
         CMutableTransaction built;
         built.version = tx.version;
         built.nTime = tx.nTime;
@@ -367,7 +367,7 @@ std::vector<CTransactionRef> CreateBigSigOpsCluster(const CTransactionRef& first
     return ret;
 }
 
-void MinerTestingSetup::TestBasicMining(const CScript& scriptPubKey, const std::vector<CTransactionRef>& txFirst, int baseheight)
+void MinerTestingSetup::TestBasicMining(const CScript& scriptPubKey, const std::vector<CTransactionRef>& txFirst, int baseheight) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     Txid hash;
     CMutableTransaction tx;
@@ -705,7 +705,7 @@ void MinerTestingSetup::TestBasicMining(const CScript& scriptPubKey, const std::
     BOOST_CHECK_EQUAL(block.vtx.size(), 5U);
 }
 
-void MinerTestingSetup::TestPrioritisedMining(const CScript& scriptPubKey, const std::vector<CTransactionRef>& txFirst)
+void MinerTestingSetup::TestPrioritisedMining(const CScript& scriptPubKey, const std::vector<CTransactionRef>& txFirst) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     auto mining{MakeMining()};
     BOOST_REQUIRE(mining);
@@ -723,7 +723,7 @@ void MinerTestingSetup::TestPrioritisedMining(const CScript& scriptPubKey, const
         Txid hash;
         CAmount fee;
     };
-    auto add_spend = [&](const COutPoint& prev, CAmount desired_fee, bool spends_coinbase) -> BuiltTx {
+    auto add_spend = [&](const COutPoint& prev, CAmount desired_fee, bool spends_coinbase) EXCLUSIVE_LOCKS_REQUIRED(::cs_main) -> BuiltTx {
         CMutableTransaction built;
         built.vin.resize(1);
         built.vin[0].prevout = prev;

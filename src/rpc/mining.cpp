@@ -762,9 +762,9 @@ static RPCHelpMan getblocktemplate()
     if (!lpval.isNull())
     {
         // Wait to respond until either the best block changes, OR a minute has passed and there are more transactions
-        uint256 hashWatchedChain;
-        std::chrono::steady_clock::time_point checktxtime;
-        unsigned int nTransactionsUpdatedLastLP;
+        [[maybe_unused]] uint256 hashWatchedChain;
+        [[maybe_unused]] std::chrono::steady_clock::time_point checktxtime;
+        [[maybe_unused]] unsigned int nTransactionsUpdatedLastLP;
 
         if (lpval.isStr())
         {
@@ -1090,7 +1090,6 @@ static RPCHelpMan submitheader()
     }
 
     BlockValidationState state;
-    int tmpTemp;
     CBlockIndex* tip;
     {
         LOCK(cs_main);

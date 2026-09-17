@@ -4039,16 +4039,20 @@ bool CWallet::PersistCoinStakes()
 
 // peercoin: create coin stake transaction
 typedef std::vector<unsigned char> valtype;
-bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, CTxDestination destination)
+bool CWallet::CreateCoinStake(ChainstateManager& chainman, CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, CTxDestination destination)
 {
     bool bDebug = (gArgs.GetBoolArg("-debug", false) && gArgs.GetBoolArg("-printcoinstake", false));
 
+    // peercoin: staking paths acquire cs_wallet before cs_main; keep that
+    // order here to avoid reversing the lock hierarchy used by wallet startup.
+    LOCK2(pwallet->cs_wallet, cs_main);
+
     // if there are pre signed coinstakes, we'll use them for minting
-    if (m_coinstakes.size()) {
+    if (pwallet->m_coinstakes.size()) {
         uint32_t nTime = GetTime();
         if (bDebug)
             LogPrintf("there are imported coinstakes, time is %d, nSearchInterval %d\n", nTime, nSearchInterval);
-        for (const auto& [timestamp, txn] : m_coinstakes) {
+        for (const auto& [timestamp, txn] : pwallet->m_coinstakes) {
             // check timestamp
             if (nTime > timestamp) {
                 if (nTime - nSearchInterval <= timestamp) {
@@ -4061,7 +4065,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                 else {
                     if (bDebug)
                         LogPrintf("timestamp too old, removing coinstake\n");
-                    m_coinstakes.erase(timestamp);
+                    pwallet->m_coinstakes.erase(timestamp);
                     break;
                 }
             }
@@ -4077,9 +4081,6 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
     }
     const Consensus::Params& params = chainman.GetParams().GetConsensus();
 
-    // peercoin: staking paths acquire cs_wallet before cs_main; keep that
-    // order here to avoid reversing the lock hierarchy used by wallet startup.
-    LOCK2(pwallet->cs_wallet, cs_main);
     txNew.vin.clear();
     txNew.vout.clear();
     // Mark coin stake transaction
@@ -4103,7 +4104,7 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
 
     // Choose coins to use
     CAmount nAllowedBalance = availableCoins.GetTotalAmount();
-    CAmount nReserveBalance = GetReserveBalance();
+    CAmount nReserveBalance = pwallet->GetReserveBalance();
     if (nReserveBalance < 0) {
         return error(std::string("CreateCoinStake : invalid reserve balance amount"));
     }
@@ -4136,7 +4137,6 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         if (!g_txindex || !g_txindex->FindTx(pcoin->outpoint.hash, block_hash, tx) || !tx)
         continue;
         CBlockHeader header;
-        CDiskTxPos postx;
         unsigned int nTxOffset = 0;
         if (!FindKernelBlockSource(chain(), block_hash, tx, header, nTxOffset))
         continue;
@@ -4187,8 +4187,8 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
                                 LogPrintf("CreateCoinStake : failed to get key for output %s\n", pcoin->txout.ToString());
                             break;
                         }
-                        CKey mintkey_tmp;
-                        bool mk_ok = provider.get()->GetKey(ckey, mintkey_tmp);
+                        [[maybe_unused]] CKey mintkey_tmp;
+                        [[maybe_unused]] bool mk_ok = provider.get()->GetKey(ckey, mintkey_tmp);
                         scriptPubKeyOut << ToByteVector(pkey) << OP_CHECKSIG;
                     }
                 }
@@ -4366,8 +4366,6 @@ bool CWallet::CreateCoinStake(ChainstateManager& chainman, const CWallet* pwalle
         }
 
         // Sign
-        int nIn = 0;
-
         {
             // Fetch previous transactions (inputs):
             std::map<COutPoint, Coin> coins;

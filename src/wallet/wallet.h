@@ -714,7 +714,7 @@ public:
     std::map<uint32_t, CTransactionRef> m_coinstakes GUARDED_BY(cs_wallet);
     bool ImportCoinStake(const CTransactionRef& tx, uint32_t timestamp, bilingual_str& error) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     bool PersistCoinStakes() EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
-    bool CreateCoinStake(ChainstateManager& chainman, const CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, CTxDestination destination);
+    bool CreateCoinStake(ChainstateManager& chainman, CWallet* pwallet, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, CTxDestination destination);
 
     /** Pass this transaction to node for optional mempool insertion and relay to peers. */
     bool SubmitTxMemoryPoolAndRelay(CWalletTx& wtx, std::string& err_string, node::TxBroadcast broadcast_method) const
