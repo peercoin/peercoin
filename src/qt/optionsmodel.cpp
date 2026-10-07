@@ -43,8 +43,6 @@ static const char* SettingName(OptionsModel::OptionID option)
     case OptionsModel::MapPortNatpmp: return "natpmp";
     case OptionsModel::Listen: return "listen";
     case OptionsModel::Server: return "server";
-    case OptionsModel::PruneSize: return "prune"; // peercoin
-    case OptionsModel::Prune: return "prune"; // peercoin
     case OptionsModel::ProxyIP: return "proxy";
     case OptionsModel::ProxyPort: return "proxy";
     case OptionsModel::ProxyUse: return "proxy";
@@ -77,35 +75,6 @@ static void UpdateRwSetting(interfaces::Node& node, OptionsModel::OptionID optio
     } else {
         node.updateRwSetting(SettingName(option) + suffix, value);
     }
-}
-//! Convert enabled/size values to bitcoin -prune setting.
-static common::SettingsValue PruneSetting(bool prune_enabled, int prune_size_gb)
-{
-    assert(!prune_enabled || prune_size_gb >= 1); // PruneSizeGB and ParsePruneSizeGB never return less
-    return prune_enabled ? common::PruneGBtoMiB(prune_size_gb) : 0;
-}
-
-//! Get pruning enabled value to show in GUI from bitcoin -prune setting.
-static bool PruneEnabled(const common::SettingsValue& prune_setting)
-{
-    // -prune=1 setting is manual pruning mode, so disabled for purposes of the gui
-    return SettingTo<int64_t>(prune_setting, 0) > 1;
-}
-
-//! Get pruning size value to show in GUI from bitcoin -prune setting. If
-//! pruning is not enabled, just show default recommended pruning size (2GB).
-static int PruneSizeGB(const common::SettingsValue& prune_setting)
-{
-    int value = SettingTo<int64_t>(prune_setting, 0);
-    return value > 1 ? common::PruneMiBtoGB(value) : DEFAULT_PRUNE_TARGET_GB;
-}
-
-//! Parse pruning size value provided by user in GUI or loaded from QSettings
-//! (windows registry key or qt .conf file). Smallest value that the GUI can
-//! display is 1 GB, so round up if anything less is parsed.
-[[maybe_unused]] static int ParsePruneSizeGB(const QVariant& prune_size)
-{
-    return std::max(1, prune_size.toInt());
 }
 struct ProxySetting {
     bool is_set;
@@ -214,7 +183,7 @@ bool OptionsModel::Init(bilingual_str& error)
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
     for (OptionID option : {DatabaseCache, ThreadsScriptVerif, SpendZeroConfChange, ExternalSignerPath, CheckGithub,
-                            SplitCoins, CombineCoins, MaxMintingUtxos, MapPortNatpmp, Listen, Server, Prune,
+                            SplitCoins, CombineCoins, MaxMintingUtxos, MapPortNatpmp, Listen, Server,
                             ProxyUse, ProxyUseTor, Language}) {
         std::string setting = SettingName(option);
         if (node().isSettingIgnored(setting)) addOverriddenOption("-" + setting);
@@ -358,32 +327,6 @@ static std::string ProxyString(bool is_set, QString ip, QString port)
 static QString GetDefaultProxyAddress()
 {
     return QString("%1:%2").arg(DEFAULT_GUI_PROXY_HOST).arg(DEFAULT_GUI_PROXY_PORT);
-}
-
-void OptionsModel::setPruneTargetGB(int prune_target_gb)
-{
-    const common::SettingsValue cur_value = node().getPersistentSetting("prune");
-    const common::SettingsValue new_value = PruneSetting(prune_target_gb > 0, prune_target_gb);
-
-    // Force setting to take effect. It is still safe to change the value at
-    // this point because this function is only called after the intro screen is
-    // shown, before the node starts.
-    node().forceSetting("prune", new_value);
-
-    // Update settings.json if value configured in intro screen is different
-    // from saved value. Avoid writing settings.json if bitcoin.conf value
-    // doesn't need to be overridden.
-    if (PruneEnabled(cur_value) != PruneEnabled(new_value) ||
-        PruneSizeGB(cur_value) != PruneSizeGB(new_value)) {
-        // Call UpdateRwSetting() instead of setOption() to avoid setting
-        // RestartRequired flag
-        UpdateRwSetting(node(), Prune, "", new_value);
-    }
-
-    // Keep previous pruning size, if pruning was disabled.
-    if (PruneEnabled(cur_value)) {
-        UpdateRwSetting(node(), Prune, "-prev", PruneEnabled(new_value) ? common::SettingsValue{} : cur_value);
-    }
 }
 
 // read QSettings values and return them

@@ -98,12 +98,6 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
     ui->databaseCache->setRange(MIN_DB_CACHE >> 20, std::numeric_limits<int>::max());
     ui->threadsScriptVerif->setMinimum(-GetNumCores());
     ui->threadsScriptVerif->setMaximum(MAX_SCRIPTCHECK_THREADS);
-    ui->pruneWarning->setVisible(false);
-    ui->pruneWarning->setStyleSheet("QLabel { color: red; }");
-
-    ui->pruneSize->setEnabled(false);
-    connect(ui->prune, &QPushButton::toggled, ui->pruneSize, &QWidget::setEnabled);
-
     /* Network elements init */
     ui->proxyIp->setEnabled(false);
     ui->proxyPort->setEnabled(false);
@@ -225,10 +219,6 @@ void OptionsDialog::setModel(OptionsModel *_model)
         if (_model->isRestartRequired())
             showRestartWarning(true);
 
-        // Prune values are in GB to be consistent with intro.cpp
-        static constexpr uint64_t nMinDiskSpace = (MIN_DISK_SPACE_FOR_BLOCK_FILES / GB_BYTES) + (MIN_DISK_SPACE_FOR_BLOCK_FILES % GB_BYTES) ? 1 : 0;
-        ui->pruneSize->setRange(nMinDiskSpace, std::numeric_limits<int>::max());
-
         QString strLabel = _model->getOverriddenByCommandLine();
         if (strLabel.isEmpty())
             strLabel = tr("none");
@@ -247,9 +237,6 @@ void OptionsDialog::setModel(OptionsModel *_model)
     /* warn when one of the following settings changes by user action (placed here so init via mapper doesn't trigger them) */
 
     /* Main */
-    connect(ui->prune, &QCheckBox::clicked, this, &OptionsDialog::showRestartWarning);
-    connect(ui->prune, &QCheckBox::clicked, this, &OptionsDialog::togglePruneWarning);
-    connect(ui->pruneSize, qOverload<int>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
     connect(ui->databaseCache, qOverload<int>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
     connect(ui->externalSignerPath, &QLineEdit::textChanged, [this]{ showRestartWarning(); });
     connect(ui->threadsScriptVerif, qOverload<int>(&QSpinBox::valueChanged), this, &OptionsDialog::showRestartWarning);
@@ -281,8 +268,6 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->bitcoinAtStartup, OptionsModel::StartAtStartup);
     mapper->addMapping(ui->threadsScriptVerif, OptionsModel::ThreadsScriptVerif);
     mapper->addMapping(ui->databaseCache, OptionsModel::DatabaseCache);
-    mapper->addMapping(ui->prune, OptionsModel::Prune);
-    mapper->addMapping(ui->pruneSize, OptionsModel::PruneSize);
 
     /* Wallet */
     mapper->addMapping(ui->spendZeroConfChange, OptionsModel::SpendZeroConfChange);
@@ -402,11 +387,6 @@ void OptionsDialog::on_showTrayIcon_stateChanged(int state)
         ui->minimizeToTray->setChecked(false);
         ui->minimizeToTray->setEnabled(false);
     }
-}
-
-void OptionsDialog::togglePruneWarning(bool enabled)
-{
-    ui->pruneWarning->setVisible(!ui->pruneWarning->isVisible());
 }
 
 void OptionsDialog::showRestartWarning(bool fPersistent)

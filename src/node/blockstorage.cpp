@@ -369,10 +369,6 @@ void BlockManager::FindFilesToPrune(
     if (chain.m_chain.Height() < 0 || target == 0) {
         return;
     }
-    if (static_cast<uint64_t>(chain.m_chain.Height()) <= chainman.GetParams().PruneAfterHeight()) {
-        return;
-    }
-
     const auto [min_block_to_prune, last_block_can_prune] = chain.GetPruneRange(last_prune);
 
     uint64_t nCurrentUsage = CalculateCurrentUsage();

@@ -510,7 +510,7 @@ void SetupServerArgs(ArgsManager& argsman, bool can_listen_ipc)
                              "(default: %u)",
                              kernel::DEFAULT_XOR_BLOCKSDIR),
                    ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-fastprune", "Use smaller block files and lower minimum prune height for testing purposes", ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
+    argsman.AddArg("-fastprune", "", ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::HIDDEN);
 #if HAVE_SYSTEM
     argsman.AddArg("-blocknotify=<cmd>", "Execute command when the best block changes (%s in cmd is replaced by block hash)", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 #endif
@@ -536,9 +536,9 @@ void SetupServerArgs(ArgsManager& argsman, bool can_listen_ipc)
                              DEFAULT_PERSIST_V1_DAT),
                    ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-pid=<file>", strprintf("Specify pid file. Relative paths will be prefixed by a net-specific datadir location. (default: %s)", BITCOIN_PID_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-prune=<n>", strprintf("Reduce storage requirements by enabling pruning (deleting) of old blocks. This allows the pruneblockchain RPC to be called to delete specific blocks and enables automatic pruning of old blocks if a target size in MiB is provided. This mode is incompatible with -txindex. "
-            "Warning: Reverting this setting requires re-downloading the entire blockchain. "
-            "(default: 0 = disable pruning blocks, 1 = allow manual pruning via RPC, >=%u = automatically prune block files to stay under the specified target size in MiB)", MIN_DISK_SPACE_FOR_BLOCK_FILES / 1024 / 1024), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    // Keep recognizing -prune for compatibility with existing configuration
+    // files, but hide it because Peercoin requires the full block history.
+    argsman.AddArg("-prune=<n>", "", ArgsManager::ALLOW_ANY, OptionsCategory::HIDDEN);
     argsman.AddArg("-reindex", "If enabled, wipe chain state and block index, and rebuild them from blk*.dat files on disk. Also wipe and rebuild other optional indexes that are active. If an assumeutxo snapshot was loaded, its chainstate will be wiped as well. The snapshot can then be reloaded via RPC.", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-reindex-chainstate", "If enabled, wipe chain state, and rebuild it from blk*.dat files on disk. If an assumeutxo snapshot was loaded, its chainstate will be wiped as well. The snapshot can then be reloaded via RPC.", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-settings=<file>", strprintf("Specify path to dynamic settings data file. Can be disabled with -nosettings. File is written at runtime and not meant to be edited by users (use %s instead for custom settings). Relative paths will be prefixed by datadir location. (default: %s)", BITCOIN_CONF_FILENAME, BITCOIN_SETTINGS_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
@@ -1038,16 +1038,6 @@ bool AppInitParameterInteraction(const ArgsManager& args)
         }
 
         g_local_services = ServiceFlags(g_local_services | NODE_COMPACT_FILTERS);
-    }
-
-    if (args.GetIntArg("-prune", 0)) {
-        if (args.GetBoolArg("-txindex", DEFAULT_TXINDEX))
-            return InitError(_("Prune mode is incompatible with -txindex."));
-        if (args.GetBoolArg("-txospenderindex", DEFAULT_TXOSPENDERINDEX))
-            return InitError(_("Prune mode is incompatible with -txospenderindex."));
-        if (args.GetBoolArg("-reindex-chainstate", false)) {
-            return InitError(_("Prune mode is incompatible with -reindex-chainstate. Use full -reindex instead."));
-        }
     }
 
     // If -forcednsseed is set to true, ensure -dnsseed has not been set to false

@@ -68,9 +68,8 @@ void OptionTests::migrateSettings()
 
 void OptionTests::integerGetArgBug()
 {
-    // Test regression https://github.com/bitcoin/bitcoin/issues/24457. Ensure
-    // that setting integer prune value doesn't cause an exception to be thrown
-    // in the OptionsModel constructor
+    // A legacy numeric prune setting must not make the GUI options model throw,
+    // even though node startup will reject pruning as unsupported.
     gArgs.LockSettings([&](common::Settings& settings) {
         settings.forced_settings.erase("prune");
         settings.rw_settings["prune"] = 3814;

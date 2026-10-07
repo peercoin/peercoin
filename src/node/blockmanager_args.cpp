@@ -18,20 +18,11 @@ namespace node {
 util::Result<void> ApplyArgsManOptions(const ArgsManager& args, BlockManager::Options& opts)
 {
     if (auto value{args.GetBoolArg("-blocksxor")}) opts.use_xor = *value;
-    // block pruning; get the amount of disk space (in MiB) to allot for block & undo files
     int64_t nPruneArg{args.GetIntArg("-prune", opts.prune_target)};
-    if (nPruneArg < 0) {
-        return util::Error{_("Prune cannot be configured with a negative value.")};
+    if (nPruneArg != 0) {
+        return util::Error{_("Block pruning is not supported by Peercoin.")};
     }
-    uint64_t nPruneTarget{uint64_t(nPruneArg) * 1024 * 1024};
-    if (nPruneArg == 1) { // manual pruning: -prune=1
-        nPruneTarget = BlockManager::PRUNE_TARGET_MANUAL;
-    } else if (nPruneTarget) {
-        if (nPruneTarget < MIN_DISK_SPACE_FOR_BLOCK_FILES) {
-            return util::Error{strprintf(_("Prune configured below the minimum of %d MiB.  Please use a higher number."), MIN_DISK_SPACE_FOR_BLOCK_FILES / 1024 / 1024)};
-        }
-    }
-    opts.prune_target = nPruneTarget;
+    opts.prune_target = 0;
 
     if (auto value{args.GetBoolArg("-fastprune")}) opts.fast_prune = *value;
 

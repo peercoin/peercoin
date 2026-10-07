@@ -38,14 +38,11 @@ public:
 
     QString getDataDirectory();
     void setDataDirectory(const QString &dataDir);
-    int64_t getPruneMiB() const;
 
     QString getPathToCheck() override;
 
     /**
      * Determine data directory. Let the user choose if the current one doesn't exist.
-     * Let the user configure additional preferences such as pruning.
-     *
      * @returns true if a data directory was selected, false if the user cancelled the selection
      * dialog.
      *

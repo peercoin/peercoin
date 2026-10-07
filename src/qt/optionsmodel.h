@@ -54,8 +54,6 @@ public:
         SplitCoins,             // bool
         CombineCoins,           // bool
         MaxMintingUtxos,        // int
-        Prune,                  // bool
-        PruneSize,              // int
         Language,               // QString
         FontForMoney,           // FontChoice
         CoinControlFeatures,    // bool
@@ -139,9 +137,6 @@ private:
     // Check settings version and upgrade default values if required
     void checkAndMigrate();
 
-    int getPruneTargetGB() const;
-    void setPruneTargetGB(int prune_target_gb); // peercoin v31 prune
-
 Q_SIGNALS:
     void displayUnitChanged(BitcoinUnit unit);
     void coinControlFeaturesChanged(bool);
@@ -152,4 +147,3 @@ Q_SIGNALS:
 Q_DECLARE_METATYPE(OptionsModel::FontChoice)
 
 #endif // BITCOIN_QT_OPTIONSMODEL_H
-
