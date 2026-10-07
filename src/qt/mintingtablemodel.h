@@ -55,7 +55,7 @@ private:
     QStringList columns;
     int mintingInterval;
     MintingTablePriv *priv;
-    MintingFilterProxy *mintingProxyModel;
+    MintingFilterProxy* mintingProxyModel{nullptr};
     int cachedNumBlocks;
 
     QTimer* m_update_timer{nullptr};
