@@ -5,6 +5,7 @@
 #include <consensus/amount.h>
 #include <key.h>
 #include <policy/fees/block_policy_estimator.h>
+#include <policy/truc_policy.h>
 #include <script/solver.h>
 #include <validation.h>
 #include <wallet/coincontrol.h>
@@ -13,6 +14,8 @@
 #include <wallet/test/wallet_test_fixture.h>
 
 #include <boost/test/unit_test.hpp>
+
+#include <algorithm>
 
 namespace wallet {
 BOOST_FIXTURE_TEST_SUITE(spend_tests, WalletTestingSetup)
@@ -31,6 +34,26 @@ BOOST_AUTO_TEST_CASE(max_signed_input_size_uses_external_outpoint)
     const int low_r{CalculateMaximumSignedInputSize(txout, COutPoint{}, &provider, /*can_grind_r=*/true, &coin_control)};
     const int high_r{CalculateMaximumSignedInputSize(txout, outpoint, &provider, /*can_grind_r=*/true, &coin_control)};
     BOOST_CHECK_EQUAL(high_r, low_r + 1);
+}
+
+BOOST_FIXTURE_TEST_CASE(available_coins_without_coin_control_handles_unconfirmed_truc, TestChain100Setup)
+{
+    auto wallet = CreateSyncedWallet(*m_node.chain, WITH_LOCK(Assert(m_node.chainman)->GetMutex(), return m_node.chainman->ActiveChain()), coinbaseKey);
+
+    CMutableTransaction tx;
+    tx.version = TRUC_VERSION;
+    tx.vout.emplace_back(COIN, GetScriptForRawPubKey(coinbaseKey.GetPubKey()));
+
+    LOCK(wallet->cs_wallet);
+    BOOST_REQUIRE(wallet->AddToWallet(MakeTransactionRef(tx), TxStateInMempool{}));
+
+    // A null coin control represents a normal, non-TRUC spend. The unconfirmed
+    // TRUC output must be filtered without dereferencing the null pointer.
+    const auto coins = AvailableCoins(*wallet);
+    const auto all_coins = coins.All();
+    BOOST_CHECK(std::none_of(all_coins.begin(), all_coins.end(), [&](const COutput& output) {
+        return output.outpoint.hash == tx.GetHash();
+    }));
 }
 
 BOOST_FIXTURE_TEST_CASE(SubtractFee, TestChain100Setup)
