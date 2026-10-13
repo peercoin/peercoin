@@ -281,17 +281,17 @@ This process could take many hours, or even days on slower than average systems.
 By default, blockchain and wallet data files will be stored in:
 
 ``` bash
-/Users/${USER}/Library/Application Support/Bitcoin/
+/Users/${USER}/Library/Application Support/Peercoin/
 ```
 
 Before running, you may create an empty configuration file:
 
 ```shell
-mkdir -p "/Users/${USER}/Library/Application Support/Bitcoin"
+mkdir -p "/Users/${USER}/Library/Application Support/Peercoin"
 
-touch "/Users/${USER}/Library/Application Support/Bitcoin/peercoin.conf"
+touch "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
 
-chmod 600 "/Users/${USER}/Library/Application Support/Bitcoin/peercoin.conf"
+chmod 600 "/Users/${USER}/Library/Application Support/Peercoin/peercoin.conf"
 ```
 
 You can monitor the download process by looking at the debug.log file:

@@ -95,9 +95,9 @@ OpenRC).
 ### macOS
 
 Binary:              `/usr/local/bin/peercoind`
-Configuration file:  `~/Library/Application Support/Bitcoin/peercoin.conf`
-Data directory:      `~/Library/Application Support/Bitcoin`
-Lock file:           `~/Library/Application Support/Bitcoin/.lock`
+Configuration file:  `~/Library/Application Support/Peercoin/peercoin.conf`
+Data directory:      `~/Library/Application Support/Peercoin`
+Lock file:           `~/Library/Application Support/Peercoin/.lock`
 
 Installing Service Configuration
 -----------------------------------

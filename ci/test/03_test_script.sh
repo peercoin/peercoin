@@ -65,9 +65,9 @@ fi
 
 # Make sure default datadir does not exist and is never read by creating a dummy file
 if [ "$CI_OS_NAME" == "macos" ]; then
-  echo > "${HOME}/Library/Application Support/Bitcoin"
+  echo > "${HOME}/Library/Application Support/Peercoin"
 else
-  echo > "${HOME}/.bitcoin"
+  echo > "${HOME}/.peercoin"
 fi
 
 if [ -z "$NO_DEPENDS" ]; then
