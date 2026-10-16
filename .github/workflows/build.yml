@@ -111,25 +111,27 @@ jobs:
           echo TARGET_CACHE=ghcr.io/${{ github.event_name == 'pull_request' && github.event.pull_request.base.repo.full_name || github.repository }}/ci-tools/guix-host-depends-cache:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
 
       - name: Build and Push guix-host Docker image
-        if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v7
         env:
           SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
         with:
           context: .
           file: contrib/guix/Dockerfile
-          push: true
+          # Pull requests cannot publish packages. Load the image into the
+          # job's Docker daemon so the binary build can use it directly.
+          push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
           allow: security.insecure
           tags: |
-            ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }}
+            ghcr.io/${{ github.event_name == 'pull_request' && github.event.pull_request.base.repo.full_name || github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }}
           target: guix-host
           build-args: |
             HOST=${{ matrix.host }}
           cache-from: |
-            type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }}
-            type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}
-            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }}
-            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}
+            type=registry,ref=ghcr.io/${{ github.event_name == 'pull_request' && github.event.pull_request.base.repo.full_name || github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }}
+            type=registry,ref=ghcr.io/${{ github.event_name == 'pull_request' && github.event.pull_request.base.repo.full_name || github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}
+            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }}
+            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}
           cache-to: type=inline
 
       - name: Build ${{ matrix.host }} Binaries
@@ -147,7 +149,7 @@ jobs:
             -v ~/.base_cache:/base_cache_aux \
             ${{ env.TARGET_CACHE }} \
           && echo cache-image-used=true >> $GITHUB_OUTPUT \
-          || docker run --pull=always --rm -d --privileged --name=build-${{ matrix.host }} \
+          || docker run --pull=${{ github.event_name == 'pull_request' && 'never' || 'always' }} --rm -d --privileged --name=build-${{ matrix.host }} \
             -v "${PWD}":/peercoin_aux \
             -v ~/.base_cache:/base_cache_aux \
             ${{ env.TARGET }}
