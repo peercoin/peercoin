@@ -161,6 +161,12 @@ BOOST_AUTO_TEST_CASE(reject_mismatched_proof_type)
     auto check_rejected = [&](bool retain_pos_marker_in_block) {
         auto block = Block(Params().GenesisBlock().GetHash());
         block->nFlags |= CBlockIndex::BLOCK_PROOF_OF_STAKE;
+
+        // Headers use the uncommitted marker during headers-first sync, but a
+        // full block derives its proof type exclusively from its transactions.
+        BOOST_CHECK(block->GetBlockHeader().IsProofOfStake());
+        BOOST_CHECK(!block->IsProofOfStake());
+
         block = FinalizeBlock(std::move(block));
 
         // nFlags is not part of the block hash. Exercise both a full block that
