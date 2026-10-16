@@ -174,9 +174,10 @@ BOOST_AUTO_TEST_CASE(reject_mismatched_proof_type)
         CBlockIndex* pindex{nullptr};
         bool new_block{false};
         LOCK(cs_main);
-        BOOST_CHECK(!Assert(m_node.chainman)->ActiveChainstate().AcceptBlock(
+        BOOST_CHECK(!Assert(m_node.chainman)->AcceptBlock(
             block, state, &pindex, /*fRequested=*/true, /*dbp=*/nullptr,
             &new_block, /*min_pow_checked=*/true));
+        BOOST_CHECK(state.GetResult() == BlockValidationResult::BLOCK_MUTATED);
         BOOST_CHECK_EQUAL(state.GetRejectReason(), "bad-proof-type");
         BOOST_CHECK(!new_block);
     };

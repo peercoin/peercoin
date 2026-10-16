@@ -4577,6 +4577,17 @@ bool ChainstateManager::AcceptBlock(const std::shared_ptr<const CBlock>& pblock,
 
     const CChainParams& params{GetParams()};
 
+    // The header's PoS marker is not committed to by the block hash, while the
+    // full block's proof type is determined by the presence of a coinstake.
+    // Require both views to agree before using the header-derived block index
+    // for proof validation and chain trust accounting. Treat a mismatch as a
+    // mutated block instead of invalidating the shared block hash.
+    const bool has_coinstake{block.vtx.size() > 1 && block.vtx[1]->IsCoinStake()};
+    if (pindex->IsProofOfStake() != has_coinstake) {
+        return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-proof-type",
+                             "header proof type does not match block transactions");
+    }
+
     if (!CheckBlock(block, state, params.GetConsensus()) ||
         !ContextualCheckBlock(block, state, pindex->pprev)) {
         if (state.IsInvalid() && state.GetResult() != BlockValidationResult::BLOCK_MUTATED) {
@@ -4585,17 +4596,6 @@ bool ChainstateManager::AcceptBlock(const std::shared_ptr<const CBlock>& pblock,
         }
         LogError("%s: %s\n", __func__, state.ToString());
         return false;
-    }
-
-    // The header's PoS marker is not committed to by the block hash, while the
-    // full block's proof type is determined by the presence of a coinstake.
-    // Require both views to agree before using the header-derived block index
-    // for proof validation and chain trust accounting.
-    if (pindex->IsProofOfStake() != block.IsProofOfStake()) {
-        pindex->nStatus |= BLOCK_FAILED_VALID;
-        m_blockman.m_dirty_blockindex.insert(pindex);
-        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-proof-type",
-                             "header proof type does not match block transactions");
     }
 
     // peercoin: check PoS
