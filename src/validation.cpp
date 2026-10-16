@@ -3909,6 +3909,17 @@ bool Chainstate::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, BlockV
 
     const CChainParams& params{m_chainman.GetParams()};
 
+    // The header's PoS marker is not committed to by the block hash, while
+    // the full block's proof type is determined by the presence of a
+    // coinstake transaction. Require both views to agree before using the
+    // header-derived block index for proof validation and chain trust
+    // accounting. Treat a mismatch as a mutated block so an attacker cannot
+    // poison the shared block hash with an invalid, uncommitted marker.
+    if (pindex->IsProofOfStake() != block.IsProofOfStake()) {
+        return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-proof-type",
+                             "header proof type does not match block transactions");
+    }
+
     if (!CheckBlock(block, state, params.GetConsensus()) ||
         !ContextualCheckBlock(block, state, pindex->pprev)) {
         if (state.IsInvalid() && state.GetResult() != BlockValidationResult::BLOCK_MUTATED) {
