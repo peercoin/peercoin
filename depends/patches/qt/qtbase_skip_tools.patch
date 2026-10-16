@@ -9,8 +9,7 @@ Skip building/installing unneeded tools:
 
 --- a/qtbase/cmake/QtBaseGlobalTargets.cmake
 +++ b/qtbase/cmake/QtBaseGlobalTargets.cmake
-@@ -118,9 +118,6 @@ qt_generate_global_module_pri_file()
- qt_generate_global_device_pri_file()
+@@ -145,8 +145,5 @@ qt_generate_global_device_pri_file()
  qt_generate_qmake_and_qtpaths_wrapper_for_target()
  
 -# Depends on the global features being evaluated.
@@ -19,19 +18,27 @@ Skip building/installing unneeded tools:
  
  qt_internal_add_platform_internal_target(GlobalConfigPrivate)
  target_link_libraries(GlobalConfigPrivate INTERFACE GlobalConfig)
-@@ -390,12 +387,3 @@ elseif(WASM)
-     qt_install(PROGRAMS "${QT_BUILD_DIR}/${INSTALL_LIBEXECDIR}/qt-wasmtestrunner.py"
-         DESTINATION "${INSTALL_LIBEXECDIR}")
+@@ -489,19 +486,6 @@ if(WIN32)
+     )
  endif()
 -
++
 -# Install CI support files to libexec.
--qt_path_join(__qt_libexec_install_dir "${QT_INSTALL_DIR}" "${INSTALL_LIBEXECDIR}")
--qt_copy_or_install(FILES coin/instructions/qmake/ensure_pro_file.cmake
--    DESTINATION "${__qt_libexec_install_dir}")
--qt_copy_or_install(PROGRAMS "util/testrunner/qt-testrunner.py"
--    DESTINATION "${__qt_libexec_install_dir}")
--qt_copy_or_install(PROGRAMS "util/testrunner/sanitizer-testrunner.py"
--    DESTINATION "${__qt_libexec_install_dir}")
+-if(QT_INSTALL_CI_FILES)
+-    qt_path_join(__qt_libexec_install_dir "${QT_INSTALL_DIR}" "${INSTALL_LIBEXECDIR}")
+-    qt_copy_or_install(FILES coin/instructions/qmake/ensure_pro_file.cmake
+-        DESTINATION "${__qt_libexec_install_dir}")
+-    qt_copy_or_install(PROGRAMS "util/testrunner/qt-testrunner.py"
+-        DESTINATION "${__qt_libexec_install_dir}")
+-    qt_copy_or_install(PROGRAMS "util/testrunner/sanitizer-testrunner.py"
+-        DESTINATION "${__qt_libexec_install_dir}")
+-    qt_copy_or_install(PROGRAMS "util/json_schema/check_qt_module_json_schemas.py"
+-        DESTINATION "${__qt_libexec_install_dir}")
+-endif()
+-
+ # Install json schemas for the users as well
+ qt_copy_or_install(FILES
+     "util/json_schema/modules.json"
 
 
 --- a/qtbase/src/CMakeLists.txt

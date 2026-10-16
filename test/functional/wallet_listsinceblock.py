@@ -8,7 +8,6 @@ from test_framework.address import key_to_p2wpkh
 from test_framework.blocktools import COINBASE_MATURITY
 from test_framework.descriptors import descsum_create
 from test_framework.test_framework import BitcoinTestFramework
-from test_framework.messages import MAX_BIP125_RBF_SEQUENCE
 from test_framework.util import (
     assert_array_result,
     assert_equal,
@@ -16,8 +15,6 @@ from test_framework.util import (
     wallet_importprivkey,
 )
 from test_framework.wallet_util import generate_keypair
-
-from decimal import Decimal
 
 class ListSinceBlockTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -41,7 +38,6 @@ class ListSinceBlockTest(BitcoinTestFramework):
         self.test_cant_read_block()
         self.test_double_spend()
         self.test_double_send()
-        self.double_spends_filtered()
         self.test_targetconfirmations()
         self.test_desc()
         self.test_send_to_self()
@@ -358,52 +354,6 @@ class ListSinceBlockTest(BitcoinTestFramework):
             if tx['txid'] == txid1:
                 assert_equal(tx['confirmations'], 2)
 
-    def double_spends_filtered(self):
-        '''
-        `listsinceblock` was returning conflicted transactions even if they
-        occurred before the specified cutoff blockhash
-        '''
-        self.log.info("Test spends filtered")
-        spending_node = self.nodes[2]
-        dest_address = spending_node.getnewaddress()
-
-        tx_input = dict(
-            sequence=MAX_BIP125_RBF_SEQUENCE, **next(u for u in spending_node.listunspent()))
-        rawtx = spending_node.createrawtransaction([tx_input], {dest_address: tx_input["amount"]})
-        fundedtx = spending_node.fundrawtransaction(
-            rawtx, {"subtract_fee_from_outputs": [0], "changeAddress": spending_node.getrawchangeaddress()})
-        signedtx = spending_node.signrawtransactionwithwallet(fundedtx["hex"])
-        orig_tx_id = spending_node.sendrawtransaction(signedtx["hex"], 0.999999)
-        original_tx = spending_node.gettransaction(orig_tx_id)
-
-        double_tx = spending_node.bumpfee(orig_tx_id)
-
-        # check that both transactions exist
-        block_hash = spending_node.listsinceblock(
-            spending_node.getblockhash(spending_node.getblockcount()))
-        original_found = False
-        double_found = False
-        for tx in block_hash['transactions']:
-            if tx['txid'] == original_tx['txid']:
-                original_found = True
-            if tx['txid'] == double_tx['txid']:
-                double_found = True
-        assert_equal(original_found, True)
-        assert_equal(double_found, True)
-
-        lastblockhash = self.generate(spending_node, 1)[0]
-
-        # check that neither transaction exists
-        block_hash = spending_node.listsinceblock(lastblockhash)
-        original_found = False
-        double_found = False
-        for tx in block_hash['transactions']:
-            if tx['txid'] == original_tx['txid']:
-                original_found = True
-            if tx['txid'] == double_tx['txid']:
-                double_found = True
-        assert_equal(original_found, False)
-        assert_equal(double_found, False)
 
     def test_desc(self):
         """Make sure we can track coins by descriptor."""

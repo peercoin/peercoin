@@ -1,26 +1,26 @@
-qt_details_version := 6.8.3
-qt_details_download_path := https://download.qt.io/archive/qt/6.8/$(qt_details_version)/submodules
+qt_details_version := 6.12.0
+qt_details_download_path := https://download.qt.io/official_releases/qt/6.12/$(qt_details_version)/submodules
 qt_details_suffix := everywhere-src-$(qt_details_version).tar.xz
 
 qt_details_qtbase_file_name := qtbase-$(qt_details_suffix)
-qt_details_qtbase_sha256_hash := 56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80
+qt_details_qtbase_sha256_hash := a951bd163c7b80fc6b8c88d7668fb56abf91c152373e13c10666763238131307
 
 qt_details_qttranslations_file_name := qttranslations-$(qt_details_suffix)
-qt_details_qttranslations_sha256_hash := c3c61d79c3d8fe316a20b3617c64673ce5b5519b2e45535f49bee313152fa531
+qt_details_qttranslations_sha256_hash := 85929c0c30d6f273f23bd879bb69803ea17b010ab73cab2f8abf95357f6f6bbb
 
 qt_details_qttools_file_name := qttools-$(qt_details_suffix)
-qt_details_qttools_sha256_hash := 02a4e219248b94f1333df843d25763f35251c1074cdc4fb5bda67d340f8c8b3a
+qt_details_qttools_sha256_hash := 8dab8f3611496486a470ad5f115ceea584f36bc22a2b8b6f6ebdbafbb8160693
 
 qt_details_patches_path := $(PATCHES_PATH)/qt
 
 qt_details_top_download_path := https://raw.githubusercontent.com/qt/qt5/refs/heads/$(qt_details_version)
 qt_details_top_cmakelists_file_name := CMakeLists.txt
 qt_details_top_cmakelists_download_file := $(qt_details_top_cmakelists_file_name)
-qt_details_top_cmakelists_sha256_hash := 54e9a4e554da37792446dda4f52bc308407b01a34bcc3afbad58e4e0f71fac9b
+qt_details_top_cmakelists_sha256_hash := e841d25050cfc7cac691755de225ded5f4ae0e2478ab2f597d1848b161d9dfe5
 qt_details_top_cmake_download_path := $(qt_details_top_download_path)/cmake
 qt_details_top_cmake_ecmoptionaladdsubdirectory_file_name := ECMOptionalAddSubdirectory.cmake
 qt_details_top_cmake_ecmoptionaladdsubdirectory_download_file := $(qt_details_top_cmake_ecmoptionaladdsubdirectory_file_name)
 qt_details_top_cmake_ecmoptionaladdsubdirectory_sha256_hash := 97ee8bbfcb0a4bdcc6c1af77e467a1da0c5b386c42be2aa97d840247af5f6f70
 qt_details_top_cmake_qttoplevelhelpers_file_name := QtTopLevelHelpers.cmake
 qt_details_top_cmake_qttoplevelhelpers_download_file := $(qt_details_top_cmake_qttoplevelhelpers_file_name)
-qt_details_top_cmake_qttoplevelhelpers_sha256_hash := e11581b2101a6836ca991817d43d49e1f6016e4e672bbc3523eaa8b3eb3b64c2
+qt_details_top_cmake_qttoplevelhelpers_sha256_hash := 53701f6afe8073f465ff5602e8856e110967c5fb40e213caad8761d0ac9fdfe4

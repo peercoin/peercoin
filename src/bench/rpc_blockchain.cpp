@@ -4,6 +4,7 @@
 
 #include <bench/bench.h>
 #include <bench/data/block413567.raw.h>
+#include <arith_uint256.h>
 #include <chain.h>
 #include <core_io.h>
 #include <primitives/block.h>
@@ -48,7 +49,7 @@ struct TestBlockAndIndex {
 static void BlockToJson(benchmark::Bench& bench, TxVerbosity verbosity)
 {
     TestBlockAndIndex data;
-    const uint256 pow_limit{data.testing_setup->m_node.chainman->GetParams().GetConsensus().powLimit};
+    const arith_uint256 pow_limit{UintToArith256(data.testing_setup->m_node.chainman->GetParams().GetConsensus().powLimit)};
     bench.run([&] {
         auto univalue = blockToJSON(data.testing_setup->m_node.chainman->m_blockman, data.block, data.blockindex, data.blockindex, verbosity, pow_limit);
         ankerl::nanobench::doNotOptimizeAway(univalue);
@@ -77,7 +78,7 @@ BENCHMARK(BlockToJsonVerbosity3);
 static void BlockToJsonVerboseWrite(benchmark::Bench& bench)
 {
     TestBlockAndIndex data;
-    const uint256 pow_limit{data.testing_setup->m_node.chainman->GetParams().GetConsensus().powLimit};
+    const arith_uint256 pow_limit{UintToArith256(data.testing_setup->m_node.chainman->GetParams().GetConsensus().powLimit)};
     auto univalue = blockToJSON(data.testing_setup->m_node.chainman->m_blockman, data.block, data.blockindex, data.blockindex, TxVerbosity::SHOW_DETAILS_AND_PREVOUT, pow_limit);
     bench.run([&] {
         auto str = univalue.write();

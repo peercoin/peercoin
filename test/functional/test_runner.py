@@ -345,8 +345,6 @@ UNSUPPORTED_SCRIPTS = [
     'wallet_backup.py --legacy-wallet',
 
     'wallet_balance.py --legacy-wallet',
-    'wallet_bumpfee.py --descriptors',
-    'wallet_bumpfee.py --legacy-wallet',
 
     'wallet_change_address.py --legacy-wallet',
 

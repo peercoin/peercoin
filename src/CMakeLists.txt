@@ -38,9 +38,9 @@ if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 endif()
 
 add_custom_target(generate_build_info
-  BYPRODUCTS ${PROJECT_BINARY_DIR}/src/bitcoin-build-info.h
-  COMMAND ${CMAKE_COMMAND} -DBUILD_INFO_HEADER_PATH=${PROJECT_BINARY_DIR}/src/bitcoin-build-info.h -DSOURCE_DIR=${PROJECT_SOURCE_DIR} -P ${PROJECT_SOURCE_DIR}/cmake/script/GenerateBuildInfo.cmake
-  COMMENT "Generating bitcoin-build-info.h"
+  BYPRODUCTS ${PROJECT_BINARY_DIR}/src/peercoin-build-info.h
+  COMMAND ${CMAKE_COMMAND} -DBUILD_INFO_HEADER_PATH=${PROJECT_BINARY_DIR}/src/peercoin-build-info.h -DSOURCE_DIR=${PROJECT_SOURCE_DIR} -P ${PROJECT_SOURCE_DIR}/cmake/script/GenerateBuildInfo.cmake
+  COMMENT "Generating peercoin-build-info.h"
   VERBATIM
 )
 add_library(bitcoin_clientversion STATIC
@@ -167,6 +167,7 @@ if(ENABLE_WALLET)
     target_link_libraries(bitcoin-wallet
       core_interface
       bitcoin_wallet
+      bitcoin_node
       bitcoin_common
       bitcoin_util
       Boost::headers
@@ -301,16 +302,17 @@ if(WITH_EMBEDDED_ASMAP)
   )
 endif()
 
-# Bitcoin wrapper executable that can call other executables.
+# Peercoin wrapper executable that can call other executables.
 if(BUILD_BITCOIN_BIN)
   add_executable(bitcoin bitcoin.cpp)
   add_windows_resources(bitcoin bitcoin-res.rc)
   add_windows_application_manifest(bitcoin)
   target_link_libraries(bitcoin core_interface bitcoin_common bitcoin_util)
-  install_binary_component(bitcoin HAS_MANPAGE)
+  set_target_properties(bitcoin PROPERTIES OUTPUT_NAME peercoin)
+  install_binary_component(bitcoin)
 endif()
 
-# Bitcoin Core bitcoind.
+# Peercoin daemon.
 if(BUILD_DAEMON)
   add_executable(bitcoind
     bitcoind.cpp

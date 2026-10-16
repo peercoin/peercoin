@@ -1,0 +1,30 @@
+Propagate the Wayland client's static dependencies (notably libffi), and link
+the cursor library to the client library it uses.
+
+--- a/qtbase/cmake/3rdparty/extra-cmake-modules/find-modules/FindWayland.cmake
++++ b/qtbase/cmake/3rdparty/extra-cmake-modules/find-modules/FindWayland.cmake
+@@ -93,6 +93,7 @@ foreach(_comp ${Wayland_known_components})
+     set(Wayland_${_comp}_header "wayland-${_lc_comp}.h")
+ endforeach()
+ set(Wayland_Egl_component_deps Client)
++set(Wayland_Cursor_component_deps Client)
+ 
+ ecm_find_package_parse_components(Wayland
+     RESULT_VAR Wayland_components
+@@ -102,6 +103,16 @@ ecm_find_package_handle_library_components(Wayland
+     COMPONENTS ${Wayland_components}
+ )
+ 
++if(TARGET Wayland::Client AND Wayland_Client_LIBRARY MATCHES "\\.a$")
++    function(_qt_find_static_wayland_client)
++        set(PKG_CONFIG_ARGN --static)
++        pkg_check_modules(WaylandClientStatic REQUIRED IMPORTED_TARGET wayland-client)
++        set_property(TARGET Wayland::Client APPEND PROPERTY
++            INTERFACE_LINK_LIBRARIES PkgConfig::WaylandClientStatic)
++    endfunction()
++    _qt_find_static_wayland_client()
++endif()
++
+ # If pkg-config didn't provide us with version information,
+ # try to extract it from wayland-version.h
+ # (Note that the version from wayland-egl.pc will probably be

@@ -15,10 +15,10 @@
 
 FUZZ_TARGET(bech32_random_decode)
 {
-    auto limit = bech32::CharLimit::BECH32;
+    static constexpr size_t BECH32_CHAR_LIMIT{90};
     FuzzedDataProvider fdp(buffer.data(), buffer.size());
-    auto random_string = fdp.ConsumeRandomLengthString(limit + 1);
-    auto decoded = bech32::Decode(random_string, limit);
+    auto random_string = fdp.ConsumeRandomLengthString(BECH32_CHAR_LIMIT + 1);
+    auto decoded = bech32::Decode(random_string);
 
     if (decoded.hrp.empty()) {
         assert(decoded.encoding == bech32::Encoding::INVALID);
@@ -54,8 +54,11 @@ FUZZ_TARGET(bech32_roundtrip)
     std::vector<uint8_t> converted_input;
     ConvertBits<8, 5, true>([&](auto c) { converted_input.push_back(c); }, input_chars.begin(), input_chars.end());
 
-    auto size = converted_input.size() + hrp.length() + std::string({bech32::SEPARATOR}).size() + bech32::CHECKSUM_SIZE;
-    if (size <= bech32::CharLimit::BECH32) {
+    static constexpr size_t BECH32_SEPARATOR_SIZE{1};
+    static constexpr size_t BECH32_CHECKSUM_SIZE{6};
+    static constexpr size_t BECH32_CHAR_LIMIT{90};
+    auto size = converted_input.size() + hrp.length() + BECH32_SEPARATOR_SIZE + BECH32_CHECKSUM_SIZE;
+    if (size <= BECH32_CHAR_LIMIT) {
         for (auto encoding: {bech32::Encoding::BECH32, bech32::Encoding::BECH32M}) {
             auto encoded = bech32::Encode(encoding, hrp, converted_input);
             assert(!encoded.empty());

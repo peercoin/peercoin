@@ -1,0 +1,12 @@
+Disable the macOS 26 accessibility language attribute when Qt is cross-compiled
+without Apple's compiler runtime. The @available checks otherwise introduce an
+unresolved __isPlatformVersionAtLeast reference.
+
+--- a/qtbase/src/plugins/platforms/cocoa/qcocoaaccessibilityelement.mm
++++ b/qtbase/src/plugins/platforms/cocoa/qcocoaaccessibilityelement.mm
+@@ -839 +839 @@ QT_END_NAMESPACE
+-#if QT_APPLE_SDK_EQUAL_OR_ABOVE(MACOS(26))
++#if QT_APPLE_SDK_EQUAL_OR_ABOVE(MACOS(26)) && !defined(QT_NO_MACOS26_ACCESSIBILITY)
+@@ -858 +858 @@ QT_END_NAMESPACE
+-#if QT_APPLE_SDK_EQUAL_OR_ABOVE(MACOS(26))
++#if QT_APPLE_SDK_EQUAL_OR_ABOVE(MACOS(26)) && !defined(QT_NO_MACOS26_ACCESSIBILITY)

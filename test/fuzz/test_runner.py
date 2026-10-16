@@ -5,15 +5,80 @@
 """Run fuzz test targets.
 """
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 from pathlib import Path
 import argparse
 import configparser
 import logging
 import os
 import random
+import signal
 import subprocess
 import sys
+import threading
+
+
+class FuzzPool(ThreadPoolExecutor):
+    """Stop active subprocesses and queued targets when a fuzz run fails."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._process_lock = threading.Lock()
+        self._processes = set()
+        self._stopped = False
+
+    @staticmethod
+    def _kill(process):
+        try:
+            if os.name == 'posix':
+                os.killpg(process.pid, signal.SIGKILL)
+            elif process.poll() is None:
+                process.kill()
+        except ProcessLookupError:
+            pass
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            with self._process_lock:
+                self._stopped = True
+                for process in self._processes:
+                    self._kill(process)
+        self.shutdown(wait=True, cancel_futures=exc_type is not None)
+
+    def run(self, args, *, env, check=False, timeout=None):
+        with self._process_lock:
+            if self._stopped:
+                raise CancelledError()
+            logging.info("Starting fuzz target %s", env['FUZZ'])
+            process = subprocess.Popen(
+                args,
+                env=env,
+                stderr=subprocess.PIPE,
+                text=True,
+                start_new_session=os.name == 'posix',
+            )
+            self._processes.add(process)
+        try:
+            try:
+                _, stderr = process.communicate(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                self._kill(process)
+                _, stderr = process.communicate()
+                logging.error("Fuzz target %s timed out after %s seconds", env['FUZZ'], timeout)
+                if stderr:
+                    logging.error(stderr)
+                raise subprocess.TimeoutExpired(args, timeout, stderr=stderr)
+            result = subprocess.CompletedProcess(args, process.returncode, stderr=stderr)
+            logging.info("Finished fuzz target %s (exit code %s)", env['FUZZ'], result.returncode)
+            if check:
+                result.check_returncode()
+            return result
+        finally:
+            if process.poll() is None:
+                self._kill(process)
+                process.wait()
+            with self._process_lock:
+                self._processes.remove(process)
 
 
 def get_fuzz_env(*, target, source_dir):
@@ -53,6 +118,12 @@ def main():
         help="If set, run at least this long, if the existing fuzz inputs directory is empty.",
     )
     parser.add_argument(
+        '--timeout',
+        type=float,
+        default=900,
+        help='Wall-clock timeout in seconds for each corpus replay target (including initialization).',
+    )
+    parser.add_argument(
         '-x',
         '--exclude',
         help="A comma-separated list of targets to exclude",
@@ -88,6 +159,8 @@ def main():
     )
 
     args = parser.parse_args()
+    if not 0 < args.timeout < float('inf'):
+        parser.error('--timeout must be a finite positive number')
     args.corpus_dir = Path(args.corpus_dir)
 
     # Set up logging
@@ -168,7 +241,7 @@ def main():
         logging.error("Must be built with libFuzzer")
         sys.exit(1)
 
-    with ThreadPoolExecutor(max_workers=args.par) as fuzz_pool:
+    with FuzzPool(max_workers=args.par) as fuzz_pool:
         if args.generate:
             return generate_corpus(
                 fuzz_pool=fuzz_pool,
@@ -198,6 +271,7 @@ def main():
             using_libfuzzer=using_libfuzzer,
             use_valgrind=args.valgrind,
             empty_min_time=args.empty_min_time,
+            timeout=args.timeout,
         )
 
 
@@ -254,15 +328,13 @@ def generate_corpus(*, fuzz_pool, src_dir, fuzz_bin, corpus_dir, targets):
         logging.debug(f"Running '{command}'")
         logging.debug("Command '{}' output:\n'{}'\n".format(
             command,
-            subprocess.run(
+            fuzz_pool.run(
                 command,
                 env={
                     **t_env,
                     **get_fuzz_env(target=t, source_dir=src_dir),
                 },
                 check=True,
-                stderr=subprocess.PIPE,
-                text=True,
             ).stderr,
         ))
 
@@ -312,12 +384,10 @@ def merge_inputs(*, fuzz_pool, corpus, test_list, src_dir, fuzz_bin, merge_dirs)
 
         def job(t, args):
             output = 'Run {} with args {}\n'.format(t, " ".join(args))
-            output += subprocess.run(
+            output += fuzz_pool.run(
                 args,
                 env=get_fuzz_env(target=t, source_dir=src_dir),
                 check=True,
-                stderr=subprocess.PIPE,
-                text=True,
             ).stderr
             logging.debug(output)
 
@@ -327,7 +397,7 @@ def merge_inputs(*, fuzz_pool, corpus, test_list, src_dir, fuzz_bin, merge_dirs)
         future.result()
 
 
-def run_once(*, fuzz_pool, corpus, test_list, src_dir, fuzz_bin, using_libfuzzer, use_valgrind, empty_min_time):
+def run_once(*, fuzz_pool, corpus, test_list, src_dir, fuzz_bin, using_libfuzzer, use_valgrind, empty_min_time, timeout):
     jobs = []
     for t in test_list:
         corpus_path = corpus / t
@@ -351,11 +421,10 @@ def run_once(*, fuzz_pool, corpus, test_list, src_dir, fuzz_bin, using_libfuzzer
 
         def job(t, args):
             output = 'Run {} with args {}'.format(t, args)
-            result = subprocess.run(
+            result = fuzz_pool.run(
                 args,
                 env=get_fuzz_env(target=t, source_dir=src_dir),
-                stderr=subprocess.PIPE,
-                text=True,
+                timeout=timeout,
             )
             output += result.stderr
             return output, result, t

@@ -1,12 +1,12 @@
 package=openssl
-$(package)_version=1.1.1t
+$(package)_version=3.5.9
 $(package)_download_path=https://www.openssl.org/source
 $(package)_file_name=$(package)-$($(package)_version).tar.gz
-$(package)_sha256_hash=8dee9b24bdb1dcbf0c3d1e9b02fb8f6bf22165e807f45adeb7c9677536859d3b
+$(package)_sha256_hash=603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a
 
 define $(package)_set_vars
 $(package)_config_env=AR="$($(package)_ar)" RANLIB="$($(package)_ranlib)" CC="$($(package)_cc)"
-$(package)_config_opts=--prefix=$(host_prefix) --openssldir=$(host_prefix)/etc/openssl
+$(package)_config_opts=--prefix=$(host_prefix) --libdir=lib --openssldir=$(host_prefix)/etc/openssl
 $(package)_config_opts+=no-camellia
 $(package)_config_opts+=no-capieng
 $(package)_config_opts+=no-cast
@@ -16,7 +16,6 @@ $(package)_config_opts+=no-dtls1
 $(package)_config_opts+=no-ec_nistp_64_gcc_128
 $(package)_config_opts+=no-engine
 $(package)_config_opts+=no-gost
-$(package)_config_opts+=no-heartbeats
 $(package)_config_opts+=no-idea
 $(package)_config_opts+=no-md2
 $(package)_config_opts+=no-mdc2
@@ -29,7 +28,6 @@ $(package)_config_opts+=no-seed
 $(package)_config_opts+=no-shared
 $(package)_config_opts+=no-sock
 $(package)_config_opts+=no-ssl-trace
-$(package)_config_opts+=no-ssl2
 $(package)_config_opts+=no-ssl3
 $(package)_config_opts+=no-tests
 $(package)_config_opts+=no-unit-test
@@ -43,7 +41,7 @@ $(package)_config_opts_x86_64_linux=linux-x86_64
 $(package)_config_opts_i686_linux=linux-generic32
 $(package)_config_opts_arm_linux=linux-generic32
 $(package)_config_opts_armv7l_linux=linux-generic32
-#$(package)_config_opts_aarch64_darwin=linux-generic64
+$(package)_config_opts_aarch64_darwin=darwin64-arm64-cc no-asm
 $(package)_config_opts_aarch64_linux=linux-generic64
 $(package)_config_opts_mipsel_linux=linux-generic32
 $(package)_config_opts_mips_linux=linux-generic32
@@ -53,11 +51,6 @@ $(package)_config_opts_riscv64_linux=linux-generic64
 $(package)_config_opts_x86_64_darwin=darwin64-x86_64-cc
 $(package)_config_opts_x86_64_mingw32=mingw64
 $(package)_config_opts_i686_mingw32=mingw
-ifeq ($(host_os)_$(host_arch),darwin_aarch64)
-$(package)_config_opts:=darwin64-arm64-cc no-asm
-else
-$(package)_config_opts+=$($(package)_config_opts_$(host_os)_$(host_arch))
-endif
 endef
 
 define $(package)_preprocess_cmds
@@ -69,14 +62,12 @@ define $(package)_config_cmds
 endef
 
 define $(package)_build_cmds
-  $(MAKE) -j$(JOBS) build_libs
+  $(MAKE) build_libs
 endef
 
 define $(package)_stage_cmds
   sed -i.old "s/^INSTALLTOP=/INSTALLTOP?=/g" Makefile && \
-  $($(package)_stage_env) $(MAKE) INSTALLTOP=$($(package)_staging_dir)/$(host_prefix) install_sw && \
-  find $($(package)_staging_dir)/$(host_prefix)/lib -name "*.so*" -delete 2>/dev/null || true && \
-  find $($(package)_staging_dir)/$(host_prefix)/lib -name "*.dylib*" -delete 2>/dev/null || true
+  $($(package)_stage_env) $(MAKE) INSTALLTOP=$($(package)_staging_dir)/$(host_prefix) install_dev
 endef
 
 define $(package)_postprocess_cmds

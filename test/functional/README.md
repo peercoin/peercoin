@@ -46,7 +46,7 @@ don't have test cases for.
 #### Naming guidelines
 
 - Name the test `<area>_test.py`, where area can be one of the following:
-    - `feature` for tests for full features that aren't wallet/mining/mempool, eg `feature_rbf.py`
+    - `feature` for tests for full features that aren't wallet/mining/mempool, eg `feature_proxy.py`
     - `interface` for tests for other interfaces (REST, ZMQ, etc), eg `interface_rest.py`
     - `mempool` for tests for mempool behaviour, eg `mempool_reorg.py`
     - `mining` for tests for mining features, eg `mining_prioritisetransaction.py`

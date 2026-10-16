@@ -97,13 +97,13 @@ class ListTransactionsTest(BitcoinTestFramework):
                             {"category": "receive", "amount": Decimal("0.44")},
                             {"txid": txid})
 
-        self.run_rbf_opt_in_test()
+        self.run_nonreplaceable_test()
         self.run_externally_generated_address_test()
         self.run_coinjoin_test()
         self.run_invalid_parameters_test()
         self.test_op_return()
 
-    def run_rbf_opt_in_test(self):
+    def run_nonreplaceable_test(self):
         """Test that Peercoin reports its non-replaceable transactions."""
 
         def is_opt_in(node, txid):

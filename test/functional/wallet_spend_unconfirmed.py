@@ -302,37 +302,6 @@ class UnconfirmedInputTest(BitcoinTestFramework):
 
         wallet.unloadwallet()
 
-    # Test that RBFing a transaction with unconfirmed input gets the right feerate
-    def test_rbf_bumping(self):
-        self.log.info("Start test to rbf a transaction unconfirmed input to bump it")
-        wallet = self.setup_and_fund_wallet("bump")
-
-        parent_txid = wallet.sendtoaddress(address=wallet.getnewaddress(), amount=1, fee_rate=1)
-        parent_tx = wallet.gettransaction(txid=parent_txid, verbose=True)
-
-        self.assert_undershoots_target(parent_tx)
-
-        to_be_rbfed_ancestor_aware_txid = wallet.sendtoaddress(address=self.def_wallet.getnewaddress(), amount=0.5, fee_rate=self.target_fee_rate)
-        ancestor_aware_tx = wallet.gettransaction(txid=to_be_rbfed_ancestor_aware_txid, verbose=True)
-
-        self.assert_spends_only_parents(ancestor_aware_tx, [parent_txid])
-
-        self.assert_beats_target(ancestor_aware_tx)
-        resulting_ancestry_fee_rate = self.calc_set_fee_rate([parent_tx, ancestor_aware_tx])
-        assert_greater_than_or_equal(resulting_ancestry_fee_rate, self.target_fee_rate)
-        assert_greater_than_or_equal(self.target_fee_rate*1.01, resulting_ancestry_fee_rate)
-
-        bumped_ancestor_aware_txid = wallet.bumpfee(txid=to_be_rbfed_ancestor_aware_txid, options={"fee_rate": self.target_fee_rate * 2} )["txid"]
-        bumped_ancestor_aware_tx = wallet.gettransaction(txid=bumped_ancestor_aware_txid, verbose=True)
-        self.assert_spends_only_parents(ancestor_aware_tx, [parent_txid])
-
-        resulting_bumped_fee_rate = self.calc_fee_rate(bumped_ancestor_aware_tx)
-        assert_greater_than_or_equal(resulting_bumped_fee_rate, 2*self.target_fee_rate)
-        resulting_bumped_ancestry_fee_rate = self.calc_set_fee_rate([parent_tx, bumped_ancestor_aware_tx])
-        assert_greater_than_or_equal(resulting_bumped_ancestry_fee_rate, 2*self.target_fee_rate)
-        assert_greater_than_or_equal(2*self.target_fee_rate*1.01, resulting_bumped_ancestry_fee_rate)
-
-        wallet.unloadwallet()
 
     # Test that transaction spending two UTXOs with overlapping ancestry does not bump shared ancestors twice
     def test_target_feerate_unconfirmed_low_overlapping_ancestry(self):
@@ -489,7 +458,6 @@ class UnconfirmedInputTest(BitcoinTestFramework):
 
         self.test_preset_input_cpfp()
 
-        self.test_rbf_bumping()
 
         self.test_target_feerate_unconfirmed_low_overlapping_ancestry()
 

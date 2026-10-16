@@ -7,6 +7,7 @@
 #include <consensus/merkle.h>
 #include <kernel/coinstats.h>
 #include <node/miner.h>
+#include <pow.h>
 #include <script/interpreter.h>
 #include <streams.h>
 #include <test/fuzz/FuzzedDataProvider.h>

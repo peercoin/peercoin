@@ -64,6 +64,16 @@ following from the top of a clean repository:
 ./contrib/guix/guix-build
 ```
 
+## Downloading CI binaries
+
+Branch-push builds outside `develop` and `release-*` publish successful binary
+archives as assets of an unsigned prerelease tagged `ci-<run-id>`. Use the
+**Direct downloads** links in the workflow summary or the corresponding GitHub
+release to download the original `.tar.gz`, `.zip`, `.exe`, or `.dmg` file,
+without the extra ZIP wrapper used by GitHub Actions artifacts. `SHA256SUMS`
+is provided alongside the archives. These are development builds, not official
+signed releases; the existing official release process is unchanged.
+
 ## Codesigning build outputs
 
 The `guix-codesign` command attaches codesignatures (produced by codesigners) to

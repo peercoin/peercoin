@@ -248,11 +248,6 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
 
 MAIN_FUNCTION
 {
-#ifdef WIN32
-    util::WinCmdLineArgs winArgs;
-    std::tie(argc, argv) = winArgs.get();
-#endif
-
     NodeContext node;
     int exit_status;
     std::unique_ptr<interfaces::Init> init = interfaces::MakeNodeInit(node, argc, argv, exit_status);

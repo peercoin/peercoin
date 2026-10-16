@@ -230,7 +230,7 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
 
     connect(labelBlocksIcon, &GUIUtil::ClickableLabel::clicked, this, &BitcoinGUI::showModalOverlay);
     connect(progressBar, &GUIUtil::ClickableProgressBar::clicked, this, &BitcoinGUI::showModalOverlay);
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
     m_app_nap_inhibitor = new CAppNapInhibitor;
 #endif
 

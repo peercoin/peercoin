@@ -24,15 +24,12 @@ static const CAmount MAX_MINT_PROOF_OF_WORK_V10 = 50 * COIN;
 static const std::string CURRENCY_UNIT = "PPC";
 static const std::string CURRENCY_ATOM = "sat"; // One indivisible minimum value unit
 
-/** No amount larger than this (in satoshi) is valid.
+/** No individual monetary value or transaction total larger than this is valid.
  *
- * Note that this constant is *not* the total money supply, which in Bitcoin
- * currently happens to be less than 21,000,000 BTC for various reasons, but
- * rather a sanity check. As this sanity check is used by consensus-critical
- * validation code, the exact value of the MAX_MONEY constant is consensus
- * critical; in unusual circumstances like a(nother) overflow bug that allowed
- * for the creation of coins out of thin air modification could lead to a fork.
- * */
+ * Peercoin has no fixed maximum total supply. This constant is only a sanity
+ * check used by consensus-critical validation code, so changing its value
+ * could lead to a fork.
+ */
 static constexpr CAmount MAX_MONEY = 21000000 * COIN;
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 

@@ -286,7 +286,6 @@ std::shared_future<void> CCoinsViewDB::CompactFull()
 static constexpr uint8_t DB_BLOCK_FILES{'f'};
 static constexpr uint8_t DB_BLOCK_INDEX{'b'};
 static constexpr uint8_t DB_FLAG{'F'};
-static constexpr uint8_t DB_REINDEX_FLAG{'R'};
 static constexpr uint8_t DB_LAST_BLOCK{'l'};
 
 bool CBlockTreeDB::WriteBatchSync(const std::vector<std::pair<int, const CBlockFileInfo*> >& fileInfo, int nLastFile, const std::vector<const CBlockIndex*>& blockinfo) {

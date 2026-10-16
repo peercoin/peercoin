@@ -10,6 +10,7 @@ export CONTAINER_NAME=ci_win64
 export CI_IMAGE_NAME_TAG="mirror.gcr.io/debian:trixie"  # Check that https://packages.debian.org/trixie/g++-mingw-w64-ucrt64 can cross-compile
 export HOST=x86_64-w64-mingw32ucrt
 export PACKAGES="g++-mingw-w64-ucrt64 nsis"
+export MAKEJOBS="-j2"
 export RUN_UNIT_TESTS=false
 export RUN_FUNCTIONAL_TESTS=false
 export GOAL="deploy"

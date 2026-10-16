@@ -5,21 +5,70 @@
 #define PEERCOIN_KERNEL_H
 
 #include <primitives/transaction.h> // CTransaction(Ref)
+#include <util/chaintype.h>
+
+#include <cstdint>
+#include <optional>
 
 class CBlockIndex;
 class BlockValidationState;
 class CBlockHeader;
 class CBlock;
+class CChain;
 class Chainstate;
+
+namespace Kernel {
+
+/** Consensus protocol revisions with independently configured activations. */
+enum class Protocol : uint8_t {
+    V03,
+    V04,
+    V05,
+    V06,
+    V07,
+    BTC16,
+    V09,
+    V10,
+    V12,
+    V14,
+    V15,
+    MAX,
+};
+
+/** Evaluate a protocol activation without relying on global chain parameters.
+ *
+ * previous_height is required for protocols whose activation has a height
+ * threshold in addition to a timestamp threshold.
+ */
+bool IsProtocolActive(Protocol protocol, ChainType chain_type, uint32_t time,
+                      std::optional<int> previous_height = std::nullopt);
+
+/** Find the first v0.3 stake modifier at least selection_interval after the
+ * source block, following the candidate branch represented by previous.
+ */
+const CBlockIndex* FindStakeModifierV03(const CBlockIndex& from, const CBlockIndex& previous,
+                                       const CChain& active_chain, int64_t selection_interval);
+
+/** Values serialized into the proof-of-stake kernel hash. */
+struct StakeKernelHashInputs {
+    bool use_stake_modifier{false};
+    uint32_t nBits{0};
+    uint64_t nStakeModifier{0};
+    uint32_t nTimeBlockFrom{0};
+    uint32_t nTxPrevOffset{0};
+    uint32_t nTimeTxPrev{0};
+    uint32_t nPrevOutput{0};
+    uint32_t nTimeTx{0};
+
+    uint256 GetHash() const;
+};
+
+} // namespace Kernel
 
 
 // MODIFIER_INTERVAL_RATIO:
 // ratio of group interval length between the last group and the first group
 static const int MODIFIER_INTERVAL_RATIO = 3;
-
-// Protocol switch time of v0.3 kernel protocol
-extern unsigned int nProtocolV03SwitchTime;
-extern unsigned int nProtocolV03TestSwitchTime;
 
 // Whether a given coinstake is subject to new v0.3 protocol
 bool IsProtocolV03(unsigned int nTimeCoinStake);

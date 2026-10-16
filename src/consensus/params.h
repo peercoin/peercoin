@@ -113,8 +113,9 @@ struct Params {
     /**
       * Enforce BIP94 timewarp attack mitigation. On testnet4 this also enforces
       * the block storm mitigation.
+      * Peercoin does not use BIP94; keep it disabled by default.
       */
-    bool enforce_BIP94;
+    bool enforce_BIP94{false};
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     std::chrono::seconds PowTargetSpacing() const

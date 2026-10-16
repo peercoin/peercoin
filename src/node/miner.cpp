@@ -67,11 +67,13 @@ bool StakeMinterStopRequested(const util::SignalInterrupt* shutdown_signal)
     return g_stake_minter_stop.load() || (shutdown_signal && bool{*shutdown_signal});
 }
 
+#ifdef ENABLE_WALLET
 static bool error(const bilingual_str& msg)
 {
     LogPrintf("ERROR: %s\n", msg.original);
     return false;
 }
+#endif
 
 template <class Rep, class Period>
 static bool StakeMinterSleep(const util::SignalInterrupt* shutdown_signal, std::chrono::duration<Rep, Period> duration)
@@ -178,6 +180,7 @@ uint64_t ApproxNetworkStakeWeight(double difficulty, int64_t target_spacing)
     return ClampUnsigned(static_cast<long double>(difficulty) * static_cast<long double>(target_spacing));
 }
 
+#ifdef ENABLE_WALLET
 static uint64_t CoinDayWeight(CAmount value, int64_t age_seconds)
 {
     if (value <= 0 || age_seconds <= 0) return 0;
@@ -223,6 +226,7 @@ void UpdateWalletStakeWeight(CWallet& wallet)
     raw_weight *= static_cast<long double>(static_cast<CAmount>(total_eligible_value) - effective_reserve) / total_eligible_value;
     g_wallet_stake_weight.store(ClampUnsigned(raw_weight));
 }
+#endif
 
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool* pfPoSCancel, NodeContext* m_node, CTxDestination destination)
 {
@@ -260,10 +264,10 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblocktemplate->vTxFees.push_back(-1); // updated at end
     pblocktemplate->vTxSigOpsCost.push_back(-1); // updated at end
 
+#ifdef ENABLE_WALLET
     // peercoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = pblock->nTime;  // only initialized at startup
 
-#ifdef ENABLE_WALLET
     if (pwallet)  // attemp to find a coinstake
     {
         *pfPoSCancel = true;
@@ -469,6 +473,7 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
 }
 
 
+#ifdef ENABLE_WALLET
 static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainparams, NodeContext& m_node)
 {
     LogPrintf("%s\n", pblock->ToString());
@@ -488,6 +493,7 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
 
     return true;
 }
+#endif
 
 void PoSMiner(NodeContext& m_node)
 {

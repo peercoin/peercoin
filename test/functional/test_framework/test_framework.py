@@ -236,7 +236,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         parser.add_argument("--randomseed", type=int,
                             help="set a random seed for deterministically reproducing a previous test run")
         parser.add_argument("--timeout-factor", dest="timeout_factor", type=float, help="adjust test timeouts by a factor. Setting it to 0 disables all timeouts")
-        parser.add_argument("--v2transport", dest="v2transport", default=False, action="store_true", help="run with P2P v2 transport support (unsupported in this Peercoin build)")
+        parser.add_argument("--v2transport", dest="v2transport", default=False, action="store_true", help="accepted for compatibility; Peercoin's test framework uses P2P v1")
 
         wallet_mode_group = parser.add_mutually_exclusive_group()
         wallet_mode_group.add_argument("--descriptors", action="store_const", const=True, dest="descriptors", default=None, help="accept descriptor wallet selection (unsupported wallet variants may be skipped by test_runner)")
@@ -248,6 +248,9 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         # source: https://stackoverflow.com/questions/48796169/how-to-fix-ipykernel-launcher-py-error-unrecognized-arguments-in-jupyter/56349168#56349168
         parser.add_argument("-f", "--fff", help="a dummy argument to fool ipython", default="1")
         self.options = parser.parse_args()
+        # Match the v1 connections enforced by TestNode._filter_p2p_kwargs, so
+        # accepting --v2transport cannot enable unsupported v2 test expectations.
+        self.options.v2transport = False
         if self.options.timeout_factor == 0:
             self.options.timeout_factor = 99999
         self.options.timeout_factor = self.options.timeout_factor or (4 if self.options.valgrind else 1)

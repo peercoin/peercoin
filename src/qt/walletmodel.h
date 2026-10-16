@@ -9,6 +9,11 @@
 #include <bitcoin-build-config.h>
 #endif
 
+#include <QObject>
+
+// Qt 6.4's moc cannot parse the C++20 concepts pulled in by these headers.
+// It only needs the declarations below to generate WalletModel's meta-object.
+#ifndef Q_MOC_RUN
 #include <chain.h>
 #include <key.h>
 
@@ -19,8 +24,7 @@
 #include <support/allocators/secure.h>
 
 #include <vector>
-
-#include <QObject>
+#endif
 
 enum class OutputType;
 

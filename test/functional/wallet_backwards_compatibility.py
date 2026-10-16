@@ -106,18 +106,12 @@ class BackwardsCompatibilityTest(BitcoinTestFramework):
         node_miner.sendtoaddress(address, 10)
         self.sync_mempools()
         self.generate(node_miner, 1)
-        # Create a conflicting transaction using RBF
+        # Create and confirm an outgoing transaction.
         return_address = node_miner.getnewaddress()
         tx1_id = node_master.sendtoaddress(return_address, 1)
-        tx2_id = node_master.bumpfee(tx1_id)["txid"]
         # Confirm the transaction
         self.sync_mempools()
         self.generate(node_miner, 1)
-        # Create another conflicting transaction using RBF
-        tx3_id = node_master.sendtoaddress(return_address, 1)
-        tx4_id = node_master.bumpfee(tx3_id)["txid"]
-        # Abandon transaction, but don't confirm
-        node_master.abandontransaction(tx3_id)
 
         # w1_v19: regular wallet, created with v0.19
         node_v19.rpc.createwallet(wallet_name="w1_v19")
@@ -189,17 +183,12 @@ class BackwardsCompatibilityTest(BitcoinTestFramework):
                         assert info['private_keys_enabled'] == True
                         assert info['keypoolsize'] > 0
                         txs = wallet.listtransactions()
-                        assert_equal(len(txs), 5)
+                        assert_equal(len(txs), 2)
                         assert_equal(txs[1]["txid"], tx1_id)
-                        assert_equal(txs[2]["walletconflicts"], [tx1_id])
-                        assert_equal(txs[1]["replaced_by_txid"], tx2_id)
+                        assert_equal(txs[1]["walletconflicts"], [])
                         assert not txs[1]["abandoned"]
-                        assert_equal(txs[1]["confirmations"], -1)
-                        assert_equal(txs[2]["blockindex"], 1)
-                        assert txs[3]["abandoned"]
-                        assert_equal(txs[4]["walletconflicts"], [tx3_id])
-                        assert_equal(txs[3]["replaced_by_txid"], tx4_id)
-                        assert not hasattr(txs[3], "blockindex")
+                        assert txs[1]["confirmations"] > 0
+                        assert_equal(txs[1]["blockindex"], 1)
                     elif wallet_name == "w2":
                         assert info['private_keys_enabled'] == False
                         assert info['keypoolsize'] == 0

@@ -4577,6 +4577,17 @@ bool ChainstateManager::AcceptBlock(const std::shared_ptr<const CBlock>& pblock,
 
     const CChainParams& params{GetParams()};
 
+    // The header's PoS marker is not committed to by the block hash, while the
+    // full block's proof type is determined by the presence of a coinstake.
+    // Require both views to agree before using the header-derived block index
+    // for proof validation and chain trust accounting. Treat a mismatch as a
+    // mutated block instead of invalidating the shared block hash.
+    const bool has_coinstake{block.vtx.size() > 1 && block.vtx[1]->IsCoinStake()};
+    if (pindex->IsProofOfStake() != has_coinstake) {
+        return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-proof-type",
+                             "header proof type does not match block transactions");
+    }
+
     if (!CheckBlock(block, state, params.GetConsensus()) ||
         !ContextualCheckBlock(block, state, pindex->pprev)) {
         if (state.IsInvalid() && state.GetResult() != BlockValidationResult::BLOCK_MUTATED) {
@@ -6360,7 +6371,7 @@ util::Result<void> ChainstateManager::PopulateAndValidateSnapshot(
 
     assert(index);
     assert(index == snapshot_start_block);
-    index->nChainTx = au_data.nChainTx;
+    index->nChainTx = au_data.m_chain_tx_count;
 
     LogInfo("[snapshot] validated snapshot (%.2f MB)",
         coins_cache.DynamicMemoryUsage() / (1000 * 1000));
@@ -6827,4 +6838,3 @@ const CChainParams& Chainstate::GetParams() const { return m_chainman.GetParams(
 const Consensus::Params& Chainstate::GetConsensus() const { return m_chainman.GetConsensus(); }
 bool Chainstate::IsInitialBlockDownload() const { return m_chainman.IsInitialBlockDownload(); }
 kernel::Notifications& Chainstate::GetNotifications() const { return m_chainman.GetNotifications(); }
-

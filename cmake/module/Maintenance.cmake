@@ -52,32 +52,32 @@ endfunction()
 
 function(add_macos_deploy_target)
   if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND TARGET bitcoin-qt)
-    set(macos_app "Bitcoin-Qt.app")
+    set(macos_app "Peercoin-Qt.app")
     # Populate Contents subdirectory.
     configure_file(${PROJECT_SOURCE_DIR}/share/qt/Info.plist.in ${macos_app}/Contents/Info.plist NO_SOURCE_PERMISSIONS)
     file(CONFIGURE OUTPUT ${macos_app}/Contents/PkgInfo CONTENT "APPL????")
     # Populate Contents/Resources subdirectory.
     file(CONFIGURE OUTPUT ${macos_app}/Contents/Resources/empty.lproj CONTENT "")
-    configure_file(${PROJECT_SOURCE_DIR}/src/qt/res/icons/bitcoin.icns ${macos_app}/Contents/Resources/bitcoin.icns NO_SOURCE_PERMISSIONS COPYONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/src/qt/res/icons/peercoin.icns ${macos_app}/Contents/Resources/peercoin.icns NO_SOURCE_PERMISSIONS COPYONLY)
     file(CONFIGURE OUTPUT ${macos_app}/Contents/Resources/Base.lproj/InfoPlist.strings
       CONTENT "{ CFBundleDisplayName = \"@CLIENT_NAME@\"; CFBundleName = \"@CLIENT_NAME@\"; }"
     )
 
     add_custom_command(
-      OUTPUT ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Bitcoin-Qt
+      OUTPUT ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Peercoin-Qt
       COMMAND ${CMAKE_COMMAND} --install ${PROJECT_BINARY_DIR} --config $<CONFIG> --component bitcoin-qt --prefix ${macos_app}/Contents/MacOS --strip
-      COMMAND ${CMAKE_COMMAND} -E rename ${macos_app}/Contents/MacOS/bin/$<TARGET_FILE_NAME:bitcoin-qt> ${macos_app}/Contents/MacOS/Bitcoin-Qt
+      COMMAND ${CMAKE_COMMAND} -E rename ${macos_app}/Contents/MacOS/bin/$<TARGET_FILE_NAME:bitcoin-qt> ${macos_app}/Contents/MacOS/Peercoin-Qt
       COMMAND ${CMAKE_COMMAND} -E rm -rf ${macos_app}/Contents/MacOS/bin
       COMMAND ${CMAKE_COMMAND} -E rm -rf ${macos_app}/Contents/MacOS/share
       VERBATIM
     )
 
-    set(macos_zip "bitcoin-macos-app")
+    set(macos_zip "peercoin-macos-app")
     if(CMAKE_HOST_APPLE)
       add_custom_command(
         OUTPUT ${PROJECT_BINARY_DIR}/${macos_zip}.zip
         COMMAND Python3::Interpreter ${PROJECT_SOURCE_DIR}/contrib/macdeploy/macdeployqtplus ${macos_app} -translations-dir=${QT_TRANSLATIONS_DIR} -zip=${macos_zip}
-        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Bitcoin-Qt
+        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Peercoin-Qt
         VERBATIM
       )
       add_custom_target(deploydir
@@ -87,14 +87,30 @@ function(add_macos_deploy_target)
         DEPENDS ${PROJECT_BINARY_DIR}/${macos_zip}.zip
       )
     else()
+      find_program(INSTALL_NAME_TOOL_EXECUTABLE NAMES llvm-install-name-tool)
+      if(NOT INSTALL_NAME_TOOL_EXECUTABLE)
+        # Debian provides this tool in LLVM's versioned bin directory.
+        find_program(LLVM_CONFIG_EXECUTABLE NAMES llvm-config REQUIRED)
+        execute_process(
+          COMMAND "${LLVM_CONFIG_EXECUTABLE}" --bindir
+          OUTPUT_VARIABLE llvm_bindir
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+          COMMAND_ERROR_IS_FATAL ANY
+        )
+        find_program(INSTALL_NAME_TOOL_EXECUTABLE NAMES llvm-install-name-tool HINTS "${llvm_bindir}" REQUIRED)
+      endif()
       add_custom_command(
-        OUTPUT ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Bitcoin-Qt
-        COMMAND ${CMAKE_COMMAND} -E env OBJDUMP=${CMAKE_OBJDUMP} $<TARGET_FILE:Python3::Interpreter> ${PROJECT_SOURCE_DIR}/contrib/macdeploy/macdeployqtplus ${macos_app} -translations-dir=${QT_TRANSLATIONS_DIR}
-        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Bitcoin-Qt
+        OUTPUT ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Peercoin-Qt
+        COMMAND ${CMAKE_COMMAND} -E env
+          "OBJDUMP=${CMAKE_OBJDUMP}"
+          "STRIP=${CMAKE_STRIP}"
+          "INSTALL_NAME_TOOL=${INSTALL_NAME_TOOL_EXECUTABLE}"
+          $<TARGET_FILE:Python3::Interpreter> ${PROJECT_SOURCE_DIR}/contrib/macdeploy/macdeployqtplus ${macos_app} -translations-dir=${QT_TRANSLATIONS_DIR}
+        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Peercoin-Qt
         VERBATIM
       )
       add_custom_target(deploydir
-        DEPENDS ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Bitcoin-Qt
+        DEPENDS ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Peercoin-Qt
       )
 
       find_program(ZIP_EXECUTABLE zip)

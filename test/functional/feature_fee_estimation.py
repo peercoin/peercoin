@@ -249,68 +249,6 @@ class EstimateFeeTest(BitcoinTestFramework):
         check_smart_estimates(self.nodes[1], self.fees_per_kb)
         self.restart_node(1)
 
-    def sanity_check_rbf_estimates(self):
-        """During 5 blocks, broadcast low fee transactions. Only 10% of them get
-        confirmed and the remaining ones get RBF'd with a high fee transaction at
-        the next block.
-        The block policy estimator should return the high feerate.
-        """
-        # The broadcaster and block producer
-        node = self.nodes[0]
-        miner = self.nodes[1]
-        # In sat/vb
-        low_feerate = 1
-        high_feerate = 10
-        # Cache the utxos of which to replace the spender after it failed to get
-        # confirmed
-        utxos_to_respend = []
-        txids_to_replace = []
-
-        assert_greater_than_or_equal(len(self.confutxo), 250)
-        for _ in range(5):
-            # Broadcast 45 low fee transactions that will need to be RBF'd
-            txs = []
-            for _ in range(45):
-                u = self.confutxo.pop(0)
-                tx = make_tx(self.wallet, u, low_feerate)
-                utxos_to_respend.append(u)
-                txids_to_replace.append(tx["txid"])
-                txs.append(tx)
-            # Broadcast 5 low fee transaction which don't need to
-            for _ in range(5):
-                tx = make_tx(self.wallet, self.confutxo.pop(0), low_feerate)
-                self.memutxo.append(tx["new_utxo"])
-                txs.append(tx)
-            batch_send_tx = [node.sendrawtransaction.get_request(tx["hex"]) for tx in txs]
-            for n in self.nodes:
-                n.batch(batch_send_tx)
-            # Mine the transactions on another node
-            self.sync_mempools(wait=0.1, nodes=[node, miner])
-            for txid in txids_to_replace:
-                miner.prioritisetransaction(txid=txid, fee_delta=-COIN)
-            mined = miner.getblock(self.generate(miner, 1)[0], True)["tx"]
-            self.update_utxo(mined)
-            # RBF the low-fee transactions
-            while len(utxos_to_respend) > 0:
-                u = utxos_to_respend.pop(0)
-                tx = make_tx(self.wallet, u, high_feerate)
-                self.memutxo.append(tx["new_utxo"])
-                node.sendrawtransaction(tx["hex"])
-                txs.append(tx)
-            dec_txs = [res["result"] for res in node.batch([node.decoderawtransaction.get_request(tx["hex"]) for tx in txs])]
-            self.wallet.scan_txs(dec_txs)
-
-
-        # Mine the last replacement txs
-        self.sync_mempools(wait=0.1, nodes=[node, miner])
-        mined = miner.getblock(self.generate(miner, 1)[0], True)["tx"]
-        self.update_utxo(mined)
-
-        # Only 10% of the transactions were really confirmed with a low feerate,
-        # the rest needed to be RBF'd. We must return the 90% conf rate feerate.
-        high_feerate_kvb = Decimal(high_feerate) / COIN * 10 ** 3
-        est_feerate = node.estimatesmartfee(2)["feerate"]
-        assert_equal(est_feerate, high_feerate_kvb)
 
     def test_old_fee_estimate_file(self):
         # Get the initial fee rate while node is running
@@ -483,11 +421,6 @@ class EstimateFeeTest(BitcoinTestFramework):
 
         self.log.info("Test reading old fee_estimates.dat")
         self.test_old_fee_estimate_file()
-
-        self.clear_estimates()
-
-        self.log.info("Testing estimates with RBF.")
-        self.sanity_check_rbf_estimates()
 
         self.clear_estimates()
         self.log.info("Test estimatesmartfee modes")

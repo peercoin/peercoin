@@ -2,13 +2,13 @@
 # Copyright (c) 2017-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Test wallet replace-by-fee capabilities in conjunction with the fallbackfee."""
+"""Test wallet transaction funding with and without the fallback fee."""
 
 from test_framework.blocktools import COINBASE_MATURITY
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_raises_rpc_error
 
-class WalletRBFTest(BitcoinTestFramework):
+class WalletFallbackFeeTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
@@ -29,4 +29,4 @@ class WalletRBFTest(BitcoinTestFramework):
         assert_raises_rpc_error(-6, "Fee estimation failed", lambda: self.nodes[0].sendmany("", {self.nodes[0].getnewaddress(): 1}))
 
 if __name__ == '__main__':
-    WalletRBFTest(__file__).main()
+    WalletFallbackFeeTest(__file__).main()

@@ -126,8 +126,6 @@ void StartScriptCheckWorkerThreads(int threads_num);
 /** Stop all of the script checking worker threads */
 void StopScriptCheckWorkerThreads();
 
-CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams);
-
 bool FatalError(kernel::Notifications& notifications, BlockValidationState& state, const bilingual_str& message);
 
 

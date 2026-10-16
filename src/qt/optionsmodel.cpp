@@ -742,6 +742,7 @@ void OptionsModel::checkAndMigrate()
     migrate_setting(SplitCoins, "bSplitCoins");
     migrate_setting(CombineCoins, "bCombineCoins");
 #endif
+    settings.remove("fUseUPnP");
     migrate_setting(MapPortNatpmp, "fUseNatpmp");
     migrate_setting(Listen, "fListen");
     migrate_setting(Server, "server");

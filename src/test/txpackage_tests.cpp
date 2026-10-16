@@ -7,7 +7,6 @@
 #include <key_io.h>
 #include <policy/packages.h>
 #include <policy/policy.h>
-#include <policy/rbf.h>
 #include <primitives/transaction.h>
 #include <script/script.h>
 #include <serialize.h>
@@ -1088,7 +1087,7 @@ BOOST_AUTO_TEST_CASE(package_cpfp_tests)
     }
 }
 
-BOOST_AUTO_TEST_CASE(package_rbf_tests)
+BOOST_AUTO_TEST_CASE(package_conflict_tests)
 {
     mineBlocks(5);
     LOCK(::cs_main);

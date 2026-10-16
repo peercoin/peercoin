@@ -19,6 +19,16 @@ See [further](#run-without-sanitizers-for-increased-throughput) for more informa
 There is also a runner script to execute all fuzz targets. Refer to
 `./build_fuzz/test/fuzz/test_runner.py --help` for more details.
 
+The runner logs when each target starts and finishes. Corpus replay has a wall-clock
+timeout of 900 seconds per target, including initialization; use `--timeout=SECONDS`
+to adjust it for large corpora or slow instrumentation. If a target fails, times out,
+or the runner is interrupted, queued targets are cancelled and active fuzz processes
+are killed. On POSIX systems this also kills their child processes. The replay timeout
+does not apply to corpus generation (`--generate`) or merging (`--m_dir`).
+
+Run the runner's subprocess regression tests on Linux or macOS with
+`python3 test/fuzz/test_runner_tests.py`. These tests do not require a fuzz build.
+
 For source-based coverage reports, see [developer notes](/doc/developer-notes.md#compiling-for-fuzz-coverage).
 
 macOS users: We recommend fuzzing on Linux, see [macOS notes](#macos-notes) for

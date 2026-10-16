@@ -47,7 +47,6 @@ struct AssumeutxoData {
     //! The hash of the base block for this snapshot. Used to refer to assumeutxo data
     //! prior to having a loaded blockindex.
     uint256 blockhash;
-    unsigned int nChainTx{0}; // peercoin compat
 };
 
 // peercoin bridge: canonical PPC checkpoint plumbing (master kernel/chainparams.h).

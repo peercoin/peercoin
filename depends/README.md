@@ -12,11 +12,17 @@ as well as [packages.md](packages.md) for how to add packages.
 
 Skip the following packages if you don't intend to use the GUI and will build with [`NO_QT=1`](#dependency-options):
 
-    apt install bison g++ ninja-build pkgconf python3 xz-utils
+    apt install bison g++ meson ninja-build pkgconf python3 xz-utils
 
 To build dependencies for the current arch+OS:
 
     make
+
+Linux GUI builds include both X11 (xcb) and Wayland platform plugins. Wayland
+client libraries and libffi are built statically; the native Wayland scanner is
+built separately so cross-builds do not execute target binaries. Qt uses software
+rendering, so no EGL/OpenGL dependencies are required. To select a backend when
+running the GUI, use `QT_QPA_PLATFORM=wayland` or `QT_QPA_PLATFORM=xcb`.
 
 ### macOS
 
@@ -35,7 +41,7 @@ To build dependencies for the current arch+OS:
 
 Skip the following packages if you don't intend to use the GUI and will build with [`NO_QT=1`](#dependency-options):
 
-    pkg install bison ninja pkgconf python3
+    pkg install bison meson ninja pkgconf python3
 
 To build dependencies for the current arch+OS:
 
@@ -63,7 +69,7 @@ To build dependencies for the current arch+OS:
 
 Skip the following packages if you don't intend to use the GUI and will build with [`NO_QT=1`](#dependency-options):
 
-    apk add bison linux-headers samurai pkgconf python3
+    apk add bison linux-headers meson samurai pkgconf python3
 
 To build dependencies for the current arch+OS:
 

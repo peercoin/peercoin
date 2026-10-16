@@ -17,7 +17,6 @@
 #include <test/util/setup_common.h>
 #include <test/util/txmempool.h>
 #include <util/hasher.h>
-#include <util/rbf.h>
 #include <util/time.h>
 #include <txmempool.h>
 #include <validation.h>

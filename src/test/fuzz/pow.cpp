@@ -56,14 +56,13 @@ FUZZ_TARGET(pow, .init = initialize_pow)
                 current_block.nBits = fixed_bits;
             }
             if (fuzzed_data_provider.ConsumeBool()) {
-                current_block.nChainWork = previous_block != nullptr ? previous_block->nChainWork + GetBlockProof(*previous_block) : arith_uint256{0};
+                current_block.nChainTrust = previous_block != nullptr ? previous_block->nChainTrust + GetBlockTrust(*previous_block) : arith_uint256{0};
             } else {
-                current_block.nChainWork = ConsumeArithUInt256(fuzzed_data_provider);
+                current_block.nChainTrust = ConsumeArithUInt256(fuzzed_data_provider);
             }
         }
         {
-            (void)GetBlockProof(current_block);
-            (void)CalculateNextWorkRequired(&current_block, fuzzed_data_provider.ConsumeIntegralInRange<int64_t>(0, std::numeric_limits<int64_t>::max()), consensus_params);
+            (void)GetBlockTrust(current_block);
             if (current_block.nHeight != std::numeric_limits<int>::max() && current_block.nHeight - (consensus_params.DifficultyAdjustmentInterval() - 1) >= 0) {
                 (void)GetNextWorkRequired(&current_block, &(*block_header), consensus_params);
             }
@@ -80,7 +79,7 @@ FUZZ_TARGET(pow, .init = initialize_pow)
         {
             const std::optional<uint256> hash = ConsumeDeserializable<uint256>(fuzzed_data_provider);
             if (hash) {
-                (void)CheckProofOfWorkImpl(*hash, fuzzed_data_provider.ConsumeIntegral<unsigned int>(), consensus_params);
+                (void)CheckProofOfWork(*hash, fuzzed_data_provider.ConsumeIntegral<unsigned int>(), consensus_params);
             }
         }
     }

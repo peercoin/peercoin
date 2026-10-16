@@ -25,14 +25,14 @@ static void AssembleBlock(benchmark::Bench& bench)
 
     // Collect some loose transactions that spend the coinbases of our mined blocks
     constexpr size_t NUM_BLOCKS{200};
-    std::vector<CTransactionRef> txs;
-    txs.reserve(NUM_BLOCKS - ::Params().GetConsensus().nCoinbaseMaturity + 1);
+    const size_t coinbase_maturity{static_cast<size_t>(::Params().GetConsensus().nCoinbaseMaturity)};
+    std::vector<CTransactionRef> txs(NUM_BLOCKS - coinbase_maturity + 1);
     for (size_t b{0}; b < NUM_BLOCKS; ++b) {
         CMutableTransaction tx;
         tx.vin.push_back(MineBlock(test_setup->m_node, P2WSH_OP_TRUE));
         tx.vin.back().scriptWitness = witness;
         tx.vout.emplace_back(1337, P2WSH_OP_TRUE);
-        if (NUM_BLOCKS - b >= ::Params().GetConsensus().nCoinbaseMaturity)
+        if (NUM_BLOCKS - b >= coinbase_maturity)
             txs.at(b) = MakeTransactionRef(tx);
     }
     {
@@ -61,5 +61,5 @@ static void BlockAssemblerAddPackageTxns(benchmark::Bench& bench)
     });
 }
 
-BENCHMARK(AssembleBlock, benchmark::PriorityLevel::HIGH);
-BENCHMARK(BlockAssemblerAddPackageTxns, benchmark::PriorityLevel::LOW);
+BENCHMARK(AssembleBlock);
+BENCHMARK(BlockAssemblerAddPackageTxns);

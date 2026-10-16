@@ -23,7 +23,10 @@ def unidirectional_node_sync_via_rpc(node_src, node_dest):
     blocks_to_copy.reverse()
     for blockhash in blocks_to_copy:
         blockdata = node_src.getblock(blockhash, False)
-        assert node_dest.submitblock(blockdata) in (None, 'inconclusive')
+        # The CLI prints no output for a successful JSON null response.
+        success = '' if node_dest.use_cli else None
+        result = node_dest.submitblock(blockdata)
+        assert result in (success, 'inconclusive'), result
 
 def node_sync_via_rpc(nodes):
     for node_src in nodes:

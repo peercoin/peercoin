@@ -157,8 +157,8 @@ BOOST_AUTO_TEST_CASE(block_malleation)
         block.vtx.push_back(MakeTransactionRef(CMutableTransaction{}));
         BOOST_CHECK(is_mutated(block, /*check_witness_root=*/false));
         HashWriter hasher;
-        hasher.write(Span(reinterpret_cast<const std::byte*>(block.vtx[0]->GetHash().data()), 32));
-        hasher.write(Span(reinterpret_cast<const std::byte*>(block.vtx[1]->GetHash().data()), 32));
+        hasher.write(MakeByteSpan(block.vtx[0]->GetHash()));
+        hasher.write(MakeByteSpan(block.vtx[1]->GetHash()));
         block.hashMerkleRoot = hasher.GetHash();
         BOOST_CHECK(is_not_mutated(block, /*check_witness_root=*/false));
 
@@ -167,8 +167,8 @@ BOOST_AUTO_TEST_CASE(block_malleation)
             block.vtx[1] = block.vtx[0];
             BOOST_CHECK(is_mutated(block, /*check_witness_root=*/false));
             HashWriter hasher;
-            hasher.write(Span(reinterpret_cast<const std::byte*>(block.vtx[0]->GetHash().data()), 32));
-            hasher.write(Span(reinterpret_cast<const std::byte*>(block.vtx[1]->GetHash().data()), 32));
+            hasher.write(MakeByteSpan(block.vtx[0]->GetHash()));
+            hasher.write(MakeByteSpan(block.vtx[1]->GetHash()));
             block.hashMerkleRoot = hasher.GetHash();
             BOOST_CHECK(is_mutated(block, /*check_witness_root=*/false));
         }
@@ -216,8 +216,8 @@ BOOST_AUTO_TEST_CASE(block_malleation)
         {
             // Verify that double_sha256(txid1||txid2) == txid3
             HashWriter hasher;
-            hasher.write(Span(reinterpret_cast<const std::byte*>(tx1.GetHash().data()), 32));
-            hasher.write(Span(reinterpret_cast<const std::byte*>(tx2.GetHash().data()), 32));
+            hasher.write(MakeByteSpan(tx1.GetHash()));
+            hasher.write(MakeByteSpan(tx2.GetHash()));
             assert(hasher.GetHash() == tx3.GetHash());
             // Verify that tx3 is 64 bytes in size (without witness).
             assert(GetSerializeSize(tx3, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) == 64);

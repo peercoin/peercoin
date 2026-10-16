@@ -75,7 +75,6 @@
 #include <script/sigcache.h>
 #include <shutdown.h>
 #include <cstdio>
-#include <unistd.h> // peercoin bridge: legacy shutdown token for stop RPC
 #include <sync.h>
 #include <torcontrol.h>
 #include <txdb.h>

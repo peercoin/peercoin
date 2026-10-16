@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.13.0-labs
 
-FROM alpine:3.21 AS guix
+FROM alpine:3.24 AS guix
 
 RUN apk --no-cache --update add \
       bash \
@@ -11,10 +11,10 @@ RUN apk --no-cache --update add \
       make \
       shadow
 
-ARG guix_download_path=ftp://ftp.gnu.org/gnu/guix
-ARG guix_version=1.4.0
-ARG guix_checksum_aarch64=72d807392889919940b7ec9632c45a259555e6b0942ea7bfd131101e08ebfcf4
-ARG guix_checksum_x86_64=236ca7c9c5958b1f396c2924fcc5bc9d6fdebcb1b4cf3c7c6d46d4bf660ed9c9
+ARG guix_download_path=https://ftp.gnu.org/gnu/guix
+ARG guix_version=1.5.0
+ARG guix_checksum_aarch64=a5d58b1d0294cad6adb1f2aff627d37feb5db763fdffbceb8551f2b12123cf39
+ARG guix_checksum_x86_64=aa41025489c5061543e9c48873eaa829b900b2da75d40f9648913622f5f47817
 ARG builder_count=32
 
 ENV PATH=/root/.config/guix/current/bin:$PATH
@@ -55,9 +55,9 @@ CMD ["/root/.config/guix/current/bin/guix-daemon","--build-users-group=guixbuild
 
 FROM guix AS guix-base
 
-ARG guix_dist_url="https://git.savannah.gnu.org/git/guix.git"
+ARG guix_dist_url="https://codeberg.org/guix/guix.git"
 ARG substitute_urls="https://ci.guix.gnu.org"
-ARG time_machine_commit=998eda3067c7d21e0d9bb3310d2f5a14b8f1c681
+ARG time_machine_commit=5cb84f2013c5b1e48a7d0e617032266f1e6059e2
 
 ENV GUIX_DIST_URL="${guix_dist_url}"
 ENV TIME_MACHINE_COMMIT="${time_machine_commit}"
@@ -98,16 +98,17 @@ RUN --security=insecure \
                    --profile="${GUIX_PROFILE}"
 
 RUN --mount=type=bind,src=depends,dst=/depends,rw \
-    make -C /depends -j"$(nproc)" download && mv /depends/sources /sources
+    --mount=type=bind,src=src/ipc/libmultiprocess,dst=/src/ipc/libmultiprocess \
+    make -C /depends HOST="${HOST}" -j"$(nproc)" download-one && mv /depends/sources /sources
 
-ARG xcode_download_path="https://peercoin.net/depends-sources/sdks/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers.tar.gz"
-ARG xcode_checksum=df75d30ecafc429e905134333aeae56ac65fac67cb4182622398fd717df77619
+ARG xcode_download_path="https://bitcoincore.org/depends-sources/sdks/Xcode-26.1.1-17B100-extracted-SDK-with-libcxx-headers.tar"
+ARG xcode_checksum=9600fa93644df674ee916b5e2c8a6ba8dacf631996a65dc922d003b98b5ea3b1
 
 RUN if [[ "${HOST}" == "x86_64-apple-darwin" || "${HOST}" == "arm64-apple-darwin" ]]; then \
-      wget -q -O /tmp/xcode.tar.gz ${xcode_download_path} && \
-      echo "${xcode_checksum}  /tmp/xcode.tar.gz" | sha256sum -c && \
-      tar -C /SDKs -xaf /tmp/xcode.tar.gz && \
-      rm /tmp/xcode.tar.gz; \
+      wget -q -O /tmp/xcode.tar ${xcode_download_path} && \
+      echo "${xcode_checksum}  /tmp/xcode.tar" | sha256sum -c && \
+      tar -C /SDKs -xaf /tmp/xcode.tar && \
+      rm /tmp/xcode.tar; \
     fi
 
 FROM guix-host AS guix-host-depends-cache

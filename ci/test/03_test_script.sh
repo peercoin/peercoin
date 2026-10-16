@@ -45,6 +45,7 @@ env
 echo "=== END env ==="
 
 if [ "$RUN_FUZZ_TESTS" = "true" ]; then
+  python3 "${BASE_ROOT_DIR}/test/fuzz/test_runner_tests.py"
   export DIR_FUZZ_IN=${DIR_QA_ASSETS}/fuzz_corpora/
   if [ ! -d "$DIR_FUZZ_IN" ]; then
     ${CI_RETRY_EXE} git clone --depth=1 https://github.com/bitcoin-core/qa-assets "${DIR_QA_ASSETS}"
@@ -64,9 +65,9 @@ fi
 
 # Make sure default datadir does not exist and is never read by creating a dummy file
 if [ "$CI_OS_NAME" == "macos" ]; then
-  echo > "${HOME}/Library/Application Support/Bitcoin"
+  echo > "${HOME}/Library/Application Support/Peercoin"
 else
-  echo > "${HOME}/.bitcoin"
+  echo > "${HOME}/.peercoin"
 fi
 
 if [ -z "$NO_DEPENDS" ]; then
@@ -138,8 +139,8 @@ if [ "$RUN_CHECK_DEPS" = "true" ]; then
 fi
 
 if [[ "$CI_OS_NAME" == "macos" && "${GOAL}" = "install deploy" ]]; then
-  unzip "${BASE_BUILD_DIR}/bitcoin-macos-app.zip" -d "${BASE_BUILD_DIR}/deploy"
-  if ! ( codesign --verify "${BASE_BUILD_DIR}/deploy/Bitcoin-Qt.app" ); then
+  unzip "${BASE_BUILD_DIR}/peercoin-macos-app.zip" -d "${BASE_BUILD_DIR}/deploy"
+  if ! ( codesign --verify "${BASE_BUILD_DIR}/deploy/Peercoin-Qt.app" ); then
     echo "Codesigning failed."
     false
   fi

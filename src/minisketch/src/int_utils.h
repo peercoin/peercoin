@@ -139,7 +139,7 @@ static inline int CountBits(I val, int max) {
     } else {
         return std::numeric_limits<unsigned long long>::digits - __builtin_clzll(val);
     }
-#elif _MSC_VER
+#elif defined(_MSC_VER)
     (void)max;
     unsigned long index;
     unsigned char ret;

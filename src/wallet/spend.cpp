@@ -17,6 +17,7 @@
 #include <primitives/transaction.h>
 #include <primitives/transaction_identifier.h>
 #include <script/script.h>
+#include <script/sign.h>
 #include <script/signingprovider.h>
 #include <script/solver.h>
 #include <timedata.h> // peercoin: GetAdjustedTime for fixed fee calculation
@@ -143,6 +144,74 @@ static std::optional<int64_t> GetSignedTxinWeight(const CWallet* wallet, const C
     return {};
 }
 
+/** Infer the serialized size of an input with its maximum-size satisfaction. */
+static std::optional<int64_t> GetSignedTxinSerializedSize(const CWallet* wallet, const CCoinControl* coin_control,
+                                                          const CTxIn& txin, const CTxOut& txo, const bool tx_is_segwit,
+                                                          const bool can_grind_r)
+{
+    // An externally supplied weight does not contain enough information to
+    // separate the base and witness sizes.
+    if (coin_control && coin_control->GetInputWeight(txin.prevout)) return {};
+
+    const std::unique_ptr<Descriptor> desc{GetDescriptor(wallet, coin_control, txo.scriptPubKey)};
+    if (!desc) return {};
+
+    const auto sat_weight{desc->MaxSatisfactionWeight(!can_grind_r || UseMaxSig(txin, coin_control))};
+    const auto elems_count{desc->MaxSatisfactionElems()};
+    const auto output_type{desc->GetOutputType()};
+    if (!sat_weight || !elems_count || !output_type) return {};
+
+    static constexpr int64_t TXIN_FIXED_SIZE{32 + 4 + 4};
+    if (*output_type == OutputType::LEGACY) {
+        if (*sat_weight % WITNESS_SCALE_FACTOR != 0) return {};
+        const int64_t scriptsig_size{*sat_weight / WITNESS_SCALE_FACTOR};
+        return TXIN_FIXED_SIZE + GetSizeOfCompactSize(scriptsig_size) + scriptsig_size + (tx_is_segwit ? 1 : 0);
+    }
+    if (*output_type == OutputType::BECH32 || *output_type == OutputType::BECH32M) {
+        return TXIN_FIXED_SIZE + 1 + GetSizeOfCompactSize(*elems_count) + *sat_weight;
+    }
+
+    // P2SH-wrapped witness spends mix base and witness bytes in sat_weight.
+    // Let the dummy-signature fallback below calculate those inputs.
+    return {};
+}
+
+/** Return the maximum serialized size of a transaction after signing.
+ *
+ * Peercoin's consensus fee is based on the full serialized size, including
+ * witness data. This is deliberately separate from virtual size and weight.
+ * Dummy signatures make the estimate independent of the variable length of
+ * the real ECDSA signatures produced later.
+ */
+static std::optional<int64_t> CalculateMaximumSignedTxSerializedSize(const CTransaction& tx,
+                                                                     const CWallet* wallet,
+                                                                     const std::vector<CTxOut>& txouts,
+                                                                     const CCoinControl* coin_control)
+{
+    CMutableTransaction max_signed_tx{tx};
+
+    for (uint32_t i = 0; i < txouts.size(); ++i) {
+        MultiSigningProvider providers;
+        for (ScriptPubKeyMan* spk_man : wallet->GetScriptPubKeyMans(txouts[i].scriptPubKey)) {
+            if (auto provider = spk_man->GetSolvingProvider(txouts[i].scriptPubKey)) {
+                providers.AddProvider(std::move(provider));
+            }
+        }
+        if (coin_control) {
+            providers.AddProvider(std::make_unique<FlatSigningProvider>(coin_control->m_external_provider));
+        }
+
+        SignatureData sigdata{DataFromTransaction(max_signed_tx, i, txouts[i])};
+        const bool use_max_sig{!wallet->CanGrindR() || UseMaxSig(max_signed_tx.vin[i], coin_control)};
+        const BaseSignatureCreator& creator{use_max_sig ? DUMMY_MAXIMUM_SIGNATURE_CREATOR : DUMMY_SIGNATURE_CREATOR};
+        if (!ProduceSignature(providers, creator, txouts[i].scriptPubKey, sigdata)) return {};
+
+        UpdateInput(max_signed_tx.vin[i], sigdata);
+    }
+
+    return ::GetSerializeSize(CTransaction(max_signed_tx), SER_NETWORK, PROTOCOL_VERSION);
+}
+
 // txouts needs to be in the order of tx.vin
 TxSize CalculateMaximumSignedTxSize(const CTransaction &tx, const CWallet *wallet, const std::vector<CTxOut>& txouts, const CCoinControl* coin_control)
 {
@@ -161,16 +230,31 @@ TxSize CalculateMaximumSignedTxSize(const CTransaction &tx, const CWallet *walle
     // Add the size of the transaction outputs.
     for (const auto& txo : tx.vout) weight += GetSerializeSize(txo) * WITNESS_SCALE_FACTOR;
 
+    int64_t serialized_size = 4 + 4 + GetSizeOfCompactSize(tx.vin.size()) + GetSizeOfCompactSize(tx.vout.size());
+    if (is_segwit) serialized_size += 2;
+    for (const auto& txo : tx.vout) serialized_size += GetSerializeSize(txo);
+
+    bool have_serialized_size{true};
     // Add the size of the transaction inputs as if they were signed.
     for (uint32_t i = 0; i < txouts.size(); i++) {
         const auto txin_weight = GetSignedTxinWeight(wallet, coin_control, tx.vin[i], txouts[i], is_segwit, wallet->CanGrindR());
-        if (!txin_weight) return TxSize{-1, -1};
+        if (!txin_weight) return TxSize{-1, -1, -1};
         assert(*txin_weight > -1);
         weight += *txin_weight;
+
+        const auto txin_size{GetSignedTxinSerializedSize(wallet, coin_control, tx.vin[i], txouts[i], is_segwit, wallet->CanGrindR())};
+        if (txin_size) {
+            serialized_size += *txin_size;
+        } else {
+            have_serialized_size = false;
+        }
     }
 
     // It's ok to use 0 as the number of sigops since we never create any pathological transaction.
-    return TxSize{GetVirtualTransactionSize(weight, 0, 0), weight};
+    if (!have_serialized_size) {
+        serialized_size = CalculateMaximumSignedTxSerializedSize(tx, wallet, txouts, coin_control).value_or(-1);
+    }
+    return TxSize{GetVirtualTransactionSize(weight, 0, 0), weight, serialized_size};
 }
 
 TxSize CalculateMaximumSignedTxSize(const CTransaction &tx, const CWallet *wallet, const CCoinControl* coin_control)
@@ -185,7 +269,7 @@ TxSize CalculateMaximumSignedTxSize(const CTransaction &tx, const CWallet *walle
             txouts.emplace_back(mi->second.tx->vout.at(input.prevout.n));
         } else if (coin_control) {
             const auto& txout{coin_control->GetExternalOutput(input.prevout)};
-            if (!txout) return TxSize{-1, -1};
+            if (!txout) return TxSize{-1, -1, -1};
             txouts.emplace_back(*txout);
         } else {
             return TxSize{-1, -1};
@@ -402,7 +486,7 @@ CoinsResult AvailableCoins(const CWallet& wallet,
             }
 
             if (nDepth == 0 && params.check_version_trucness) {
-                if (coinControl->m_version == TRUC_VERSION) {
+                if (coinControl && coinControl->m_version == TRUC_VERSION) {
                     if (wtx.tx->version != TRUC_VERSION) continue;
                     // this unconfirmed v3 transaction already has a child
                     if (wtx.truc_child_in_mempool.has_value()) continue;
@@ -1332,18 +1416,15 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     if (explicit_feerate) {
         fee_needed = coin_selection_params.m_effective_feerate.GetFee(nBytes) + result.GetTotalBumpFees();
     }
-    // peercoin: fixed fee is chunked on the full serialized signed transaction size.
-    // Estimate the signed size even for sign=false/PSBT funding paths by signing a throwaway copy.
-    {
-        CMutableTransaction tx_est(txNew);
-        if (wallet.SignTransaction(tx_est)) {
-            const size_t est_size = static_cast<size_t>(::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION));
-            fee_needed = std::max(fee_needed, GetMinFee(est_size, nTime));
-        } else {
-            const size_t est_size = static_cast<size_t>(std::max<int64_t>(tx_sizes.weight, ::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION))) + 1;
-            fee_needed = std::max(fee_needed, GetMinFee(est_size, nTime));
-        }
-    }
+    // Peercoin charges its fixed fee on the full serialized transaction size,
+    // not Bitcoin virtual size. Use maximum-size dummy signatures so unsigned
+    // funding paths do not depend on the size of one throwaway real signature.
+    const size_t max_signed_size = tx_sizes.serialized_size > 0
+        ? static_cast<size_t>(tx_sizes.serialized_size)
+        // Input weights may be supplied without enough solving data to build
+        // dummy signatures. Weight is a conservative upper bound on bytes.
+        : static_cast<size_t>(std::max<int64_t>(tx_sizes.weight, ::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION)));
+    fee_needed = std::max(fee_needed, GetMinFee(max_signed_size, nTime));
     const CAmount output_value = CalculateOutputValue(txNew);
     Assume(recipients_sum + change_amount == output_value);
     CAmount current_fee = result.GetSelectedValue() - output_value;
@@ -1434,26 +1515,27 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         return util::Error{_("Signing transaction failed")};
     }
 
-    // peercoin: re-check the chunked consensus min fee on the fully signed tx;
-    // actual signatures may be slightly larger than the pre-signing estimate.
+    // Re-check the consensus fee on the final signed transaction. If adjusting
+    // change alters the signature size, keep signing and checking until the fee
+    // covers the actual serialized size.
     if (sign) {
-        CAmount pp_min = GetMinFee((size_t)::GetSerializeSize(CTransaction(txNew), SER_NETWORK, PROTOCOL_VERSION), nTime);
-        CAmount paid = result.GetSelectedValue() - CalculateOutputValue(txNew);
-        if (paid < pp_min) {
-            if (change_pos && *change_pos < txNew.vout.size()) {
-                CAmount delta = pp_min - paid;
-                auto& change = txNew.vout.at(*change_pos);
-                CTxOut probe = change;
-                probe.nValue -= delta;
-                if (IsDust(probe, wallet.chain().relayDustFee())) {
-                    return util::Error{_("Insufficient funds")};
-                }
-                change.nValue -= delta;
-                if (!wallet.SignTransaction(txNew)) {
-                    return util::Error{_("Signing transaction failed")};
-                }
-            } else {
+        while (true) {
+            current_fee = result.GetSelectedValue() - CalculateOutputValue(txNew);
+            const CAmount pp_min{GetMinFee(CTransaction(txNew), nTime)};
+            if (current_fee >= pp_min) break;
+
+            if (!change_pos || *change_pos >= txNew.vout.size()) {
                 return util::Error{_("Insufficient funds")};
+            }
+            auto& change = txNew.vout.at(*change_pos);
+            CTxOut probe{change};
+            probe.nValue -= pp_min - current_fee;
+            if (IsDust(probe, wallet.chain().relayDustFee())) {
+                return util::Error{_("Insufficient funds")};
+            }
+            change = std::move(probe);
+            if (!wallet.SignTransaction(txNew)) {
+                return util::Error{_("Signing transaction failed")};
             }
         }
     }

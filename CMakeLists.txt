@@ -64,9 +64,6 @@ project(Peercoin
   LANGUAGES NONE
 )
 
-# peercoin: v0.16-era sources gate build config behind HAVE_CONFIG_H
-add_compile_definitions(HAVE_CONFIG_H)
-
 set(CLIENT_VERSION_STRING ${PROJECT_VERSION})
 if(CLIENT_VERSION_RC GREATER 0)
   string(APPEND CLIENT_VERSION_STRING "rc${CLIENT_VERSION_RC}")
@@ -174,10 +171,7 @@ endif()
 
 cmake_dependent_option(BUILD_GUI_TESTS "Build Peercoin Qt unit test executable." ON "BUILD_GUI;BUILD_TESTS" OFF)
 if(BUILD_GUI)
-  set(qt_components Core Gui Widgets LinguistTools)
-  if(ENABLE_WALLET)
-    list(APPEND qt_components Network)
-  endif()
+  set(qt_components Core Gui Widgets LinguistTools Network)
   if(WITH_DBUS)
     list(APPEND qt_components DBus)
     set(USE_DBUS TRUE)
@@ -218,6 +212,8 @@ check_linker_supports_pie(configure_warnings)
 add_library(core_interface INTERFACE)
 add_library(core_interface_relwithdebinfo INTERFACE)
 add_library(core_interface_debug INTERFACE)
+# Peercoin's v0.16-era sources gate build configuration behind HAVE_CONFIG_H.
+target_compile_definitions(core_interface INTERFACE HAVE_CONFIG_H)
 target_link_libraries(core_interface INTERFACE
   $<$<CONFIG:RelWithDebInfo>:core_interface_relwithdebinfo>
   $<$<CONFIG:Debug>:core_interface_debug>

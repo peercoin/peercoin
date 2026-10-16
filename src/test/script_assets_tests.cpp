@@ -41,11 +41,20 @@ static CScript ScriptFromHex(const std::string& str)
     return ToScript(*Assert(TryParseHex(str)));
 }
 
-static CMutableTransaction TxFromHex(const std::string& str)
+static bool TxFromHex(const std::string& str, CMutableTransaction& tx)
 {
-    CMutableTransaction tx;
-    SpanReader{ParseHex(str)} >> TX_NO_WITNESS(tx);
-    return tx;
+    const auto tx_data{ParseHex(str)};
+    SpanReader version_reader{tx_data};
+    uint32_t version;
+    version_reader >> version;
+
+    // Bitcoin's test corpus omits Peercoin's nTime field from version 1 and 2
+    // transactions. Those entries cannot be deserialized or have their
+    // Bitcoin signatures verified using Peercoin's transaction format.
+    if (version < 3) return false;
+
+    SpanReader{tx_data} >> TX_NO_WITNESS(tx);
+    return true;
 }
 
 static std::vector<CTxOut> TxOutsFromJSON(const UniValue& univalue)
@@ -103,7 +112,8 @@ static void AssetTest(const UniValue& test, SignatureCache& signature_cache)
 {
     BOOST_CHECK(test.isObject());
 
-    CMutableTransaction mtx = TxFromHex(test["tx"].get_str());
+    CMutableTransaction mtx;
+    if (!TxFromHex(test["tx"].get_str(), mtx)) return;
     const std::vector<CTxOut> prevouts = TxOutsFromJSON(test["prevouts"]);
     BOOST_CHECK(prevouts.size() == mtx.vin.size());
     size_t idx = test["index"].getInt<int64_t>();

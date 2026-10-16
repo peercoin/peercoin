@@ -435,7 +435,7 @@ public:
         LOCK(m_wallet->cs_wallet);
         return InputIsMine(*m_wallet, txin);
     }
-    bool txoutIsMine(const CTxOut& txout) override
+    isminetype txoutIsMine(const CTxOut& txout) override
     {
         LOCK(m_wallet->cs_wallet);
         return m_wallet->IsMine(txout);

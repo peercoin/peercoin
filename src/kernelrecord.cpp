@@ -5,6 +5,7 @@
 #include <chainparams.h>
 #include <timedata.h>
 #include <interfaces/wallet.h>
+#include <algorithm>
 #include <variant>
 #include <math.h>
 using namespace std;
@@ -85,8 +86,9 @@ int64_t KernelRecord::getAge() const
 int64_t KernelRecord::getCoinAge() const
 {
     const Consensus::Params& params = Params().GetConsensus();
-    int nDayWeight = (min((TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime()) - nTime), params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
-    return max(nValue * nDayWeight / COIN, (int64_t) 0);
+    const int64_t age = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime()) - nTime;
+    const int64_t day_weight = (std::min(age, params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
+    return std::max(nValue * day_weight / COIN, int64_t{0});
 }
 
 double KernelRecord::getProbToMintStake(double difficulty, int timeOffset) const
@@ -94,9 +96,10 @@ double KernelRecord::getProbToMintStake(double difficulty, int timeOffset) const
     const Consensus::Params& params = Params().GetConsensus();
     double maxTarget = pow(static_cast<double>(2), 224);
     double target = maxTarget / difficulty;
-    int dayWeight = (min((TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime()) - nTime) + timeOffset, params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
-    uint64_t coinAge = max(nValue * dayWeight / COIN, (int64_t)0);
-    return target * coinAge / pow(static_cast<double>(2), 256);
+    const int64_t age = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime()) - nTime + timeOffset;
+    const int64_t day_weight = (std::min(age, params.nStakeMaxAge) - params.nStakeMinAge) / 86400;
+    const uint64_t coin_age = std::max(nValue * day_weight / COIN, int64_t{0});
+    return target * coin_age / pow(static_cast<double>(2), 256);
 }
 
 double KernelRecord::getProbToMintWithinNMinutes(double difficulty, int minutes)

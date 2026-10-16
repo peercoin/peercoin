@@ -35,7 +35,6 @@
 #include <optional>
 #include <stdexcept>
 
-using kernel::CBlockFileInfo;
 using node::SnapshotMetadata;
 
 void initialize_deserialize()
@@ -134,7 +133,7 @@ FUZZ_TARGET(addr_info_deserialize, .init = initialize_deserialize)
     (void)ConsumeDeserializable<AddrInfo>(fdp, ConsumeDeserializationParams<CAddress::SerParams>(fdp));
 }
 FUZZ_TARGET_DESERIALIZE(block_file_info_deserialize, {
-    CBlockFileInfo block_file_info;
+    kernel::CBlockFileInfo block_file_info;
     DeserializeFromFuzzingInput(buffer, block_file_info);
 })
 FUZZ_TARGET_DESERIALIZE(block_header_and_short_txids_deserialize, {

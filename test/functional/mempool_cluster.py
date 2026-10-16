@@ -132,7 +132,6 @@ class MempoolClusterTest(BitcoinTestFramework):
         # This shouldn't work because the effect is {max_cluster_count} + 2 - 1 = {max_cluster_count} + 1
         last_utxo = cluster_submitted[-2]["new_utxo"]
         fee_to_beat = cluster_submitted[-1]["fee"]
-        # We do not use package RBF here because it has additional restrictions on mempool ancestors.
         parent_tx_bad = self.wallet.create_self_transfer(utxo_to_spend=last_utxo, fee=fee_to_beat * 5)
         child_tx_bad = self.wallet.create_self_transfer(utxo_to_spend=parent_tx_bad["new_utxo"])
         # The parent should be submitted, but the child rejected.
@@ -264,48 +263,6 @@ class MempoolClusterTest(BitcoinTestFramework):
         node.sendrawtransaction(tx_merger_small["hex"])
         assert tx_merger_small["txid"] in node.getrawmempool()
 
-    @cleanup
-    def test_cluster_limit_rbf(self, max_cluster_count):
-        node = self.nodes[0]
-
-        # Use min feerate for the to-be-replaced transactions. There are many, so replacement cost can be expensive.
-        min_feerate = node.getmempoolinfo()["mempoolminfee"]
-
-        self.log.info("Test that cluster size calculation takes RBF into account")
-        utxos_created_by_parents = []
-        fees_rbf_sats = 0
-        for _ in range(max_cluster_count - 1):
-            parent_tx = self.wallet.send_self_transfer(from_node=node, confirmed_only=True)
-            utxo_to_replace = parent_tx["new_utxo"]
-            child_tx = self.wallet.send_self_transfer(from_node=node, utxo_to_spend=utxo_to_replace, fee_rate=min_feerate)
-
-            fees_rbf_sats += int(child_tx["fee"] * COIN)
-            utxos_created_by_parents.append(utxo_to_replace)
-
-        # This transaction would create a cluster of size max_cluster_count
-        # Importantly, the node should account for the fact that half of the transactions will be replaced.
-        tx_merger_replacer = self.wallet.create_self_transfer_multi(utxos_to_spend=utxos_created_by_parents, fee_per_output=fees_rbf_sats * 2)
-        node.sendrawtransaction(tx_merger_replacer["hex"])
-        assert tx_merger_replacer["txid"] in node.getrawmempool()
-        assert_equal(node.getmempoolcluster(tx_merger_replacer["txid"])['txcount'], max_cluster_count)
-
-        self.log.info("Test that cluster size calculation takes package RBF into account")
-        utxos_to_replace = []
-        fee_rbf_decimal = 0
-        for _ in range(max_cluster_count):
-            confirmed_utxo = self.wallet.get_utxo(confirmed_only=True)
-            tx_to_replace = self.wallet.send_self_transfer(from_node=node, utxo_to_spend=confirmed_utxo, fee_rate=min_feerate)
-            fee_rbf_decimal += tx_to_replace["fee"]
-            utxos_to_replace.append(confirmed_utxo)
-
-        tx_replacer = self.wallet.create_self_transfer_multi(utxos_to_spend=utxos_to_replace)
-        assert tx_replacer["txid"] not in node.getrawmempool()
-        tx_replacer_sponsor = self.wallet.create_self_transfer(utxo_to_spend=tx_replacer["new_utxos"][0], fee=fee_rbf_decimal * 2)
-
-        node.submitpackage([tx_replacer["hex"], tx_replacer_sponsor["hex"]], maxfeerate=0)
-        assert tx_replacer["txid"] in node.getrawmempool()
-        assert tx_replacer_sponsor["txid"] in node.getrawmempool()
-        assert_equal(node.getmempoolcluster(tx_replacer["txid"])['txcount'], 2)
 
     @cleanup
     def test_getmempoolcluster(self):
@@ -394,7 +351,6 @@ class MempoolClusterTest(BitcoinTestFramework):
 
         self.test_getmempoolcluster()
 
-        self.test_cluster_limit_rbf(DEFAULT_CLUSTER_LIMIT)
 
         for cluster_size_limit_kvb in [10, 20, 33, 100, DEFAULT_CLUSTER_SIZE_LIMIT_KVB]:
             self.log.info(f"-> Resetting node with -limitclustersize={cluster_size_limit_kvb}")

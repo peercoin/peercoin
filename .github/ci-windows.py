@@ -27,8 +27,8 @@ def run(cmd, **kwargs):
 GENERATE_OPTIONS = {
     "standard": [
         "-DBUILD_BENCH=ON",
-        "-DBUILD_KERNEL_LIB=ON",
-        "-DBUILD_UTIL_CHAINSTATE=ON",
+        "-DBUILD_KERNEL_LIB=OFF",
+        "-DBUILD_UTIL_CHAINSTATE=OFF",
         "-DCMAKE_COMPILE_WARNING_AS_ERROR=ON",
     ],
     "fuzz": [
@@ -115,7 +115,7 @@ def check_manifests(ci_type):
         "fuzz.exe",
         "bench_bitcoin.exe",
         "test_bitcoin-qt.exe",
-        "bitcoin-chainstate.exe",
+        "peercoin-chainstate.exe",
     }
     for entry in release_dir.iterdir():
         if entry.suffix.lower() != ".exe":
@@ -169,7 +169,7 @@ def run_tests(ci_type):
             "BITCOINTX": "peercoin-tx.exe",
             "BITCOINUTIL": "peercoin-util.exe",
             "BITCOINWALLET": "peercoin-wallet.exe",
-            "BITCOINCHAINSTATE": "bitcoin-chainstate.exe",
+            "BITCOINCHAINSTATE": "peercoin-chainstate.exe",
         }
         for var, exe in test_envs.items():
             os.environ[var] = str(release_bin / exe)

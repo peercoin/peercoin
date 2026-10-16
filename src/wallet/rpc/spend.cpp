@@ -1511,15 +1511,10 @@ RPCHelpMan sendall()
                 throw JSONRPCError(RPC_WALLET_ERROR, "Unable to determine the size of the transaction, the wallet contains unsolvable descriptors");
             }
             uint32_t pp_time = TicksSinceEpoch<std::chrono::seconds>(GetAdjustedTime());
-            CAmount pp_min_fee{0};
-            {
-                CMutableTransaction tx_est(rawTx);
-                if (pwallet->SignTransaction(tx_est)) {
-                    pp_min_fee = GetMinFee((size_t)::GetSerializeSize(CTransaction(tx_est), SER_NETWORK, PROTOCOL_VERSION), pp_time);
-                } else {
-                    pp_min_fee = GetMinFee(static_cast<size_t>(tx_size.weight), pp_time);
-                }
-            }
+            const size_t max_signed_size{tx_size.serialized_size > 0
+                ? static_cast<size_t>(tx_size.serialized_size)
+                : static_cast<size_t>(tx_size.weight)};
+            const CAmount pp_min_fee{GetMinFee(max_signed_size, pp_time)};
             const CAmount fee_from_size{std::max({fee_rate.GetFee(tx_size.vsize), pp_min_fee})};
             const std::optional<CAmount> total_bump_fees{pwallet->chain().calculateCombinedBumpFee(outpoints_spent, fee_rate)};
             CAmount effective_value = total_input_value - fee_from_size - total_bump_fees.value_or(0);

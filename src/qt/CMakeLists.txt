@@ -18,6 +18,12 @@ function(import_plugins target)
     set(plugins Qt6::QMinimalIntegrationPlugin)
     if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|FreeBSD)$")
       list(APPEND plugins Qt6::QXcbIntegrationPlugin)
+      if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND TARGET Qt6::QWaylandIntegrationPlugin)
+        # Static Wayland needs both the platform and desktop shell plugins.
+        find_package(Qt6 REQUIRED COMPONENTS WaylandClient)
+        list(APPEND plugins Qt6::QWaylandIntegrationPlugin
+          Qt6::QWaylandXdgShellIntegrationPlugin Qt6::QWaylandBradientDecorationPlugin)
+      endif()
     elseif(WIN32)
       list(APPEND plugins Qt6::QWindowsIntegrationPlugin Qt6::QModernWindowsStylePlugin)
     elseif(APPLE)
@@ -31,6 +37,8 @@ function(import_plugins target)
         platforms_darwin
         xcbglintegrations
         platformthemes
+        wayland-shell-integration
+        wayland-decoration-client
         platforminputcontexts
         generic
         iconengines
@@ -151,6 +159,7 @@ target_link_libraries(bitcoinqt
     bitcoin_cli
     leveldb
     Boost::headers
+    Qt6::Network
     $<TARGET_NAME_IF_EXISTS:QRencode::QRencode>
     $<$<PLATFORM_ID:Darwin>:-framework\ AppKit>
     $<$<CXX_COMPILER_ID:MSVC>:shlwapi>
@@ -229,7 +238,6 @@ if(ENABLE_WALLET)
   target_link_libraries(bitcoinqt
     PRIVATE
       bitcoin_wallet
-      Qt6::Network
   )
 endif()
 
@@ -247,6 +255,8 @@ if(qt_lib_type STREQUAL "STATIC_LIBRARY")
       platforms_darwin
       xcbglintegrations
       platformthemes
+      wayland-shell-integration
+      wayland-decoration-client
       platforminputcontexts
       generic
       iconengines

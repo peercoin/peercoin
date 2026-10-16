@@ -76,6 +76,37 @@ CTxIn MineBlock(const NodeContext& node, const CScript& coinbase_scriptPubKey)
     return CTxIn{block->vtx[0]->GetHash(), 0};
 }
 
+COutPoint MineBlock(const NodeContext& node, const BlockAssembler::Options& assembler_options)
+{
+    auto block = PrepareBlock(node, assembler_options.coinbase_output_script, assembler_options);
+
+    while (!CheckProofOfWork(block->GetHash(), block->nBits, Params().GetConsensus())) {
+        ++block->nNonce;
+        assert(block->nNonce);
+    }
+
+    const COutPoint outpoint{ProcessBlock(node, block)};
+    assert(!outpoint.IsNull());
+    return outpoint;
+}
+
+COutPoint MineBlock(const NodeContext& node, std::shared_ptr<CBlock>& block)
+{
+    while (!CheckProofOfWork(block->GetHash(), block->nBits, Params().GetConsensus())) {
+        ++block->nNonce;
+        assert(block->nNonce);
+    }
+    return ProcessBlock(node, block);
+}
+
+COutPoint ProcessBlock(const NodeContext& node, const std::shared_ptr<CBlock>& block)
+{
+    bool new_block{false};
+    const bool processed{Assert(node.chainman)->ProcessNewBlock(block, true, true, &new_block)};
+    if (!processed || !new_block) return {};
+    return COutPoint{block->vtx[0]->GetHash(), 0};
+}
+
 std::shared_ptr<CBlock> PrepareBlock(const NodeContext& node, const CScript& coinbase_scriptPubKey,
                                      const BlockAssembler::Options& assembler_options)
 {
@@ -90,6 +121,12 @@ std::shared_ptr<CBlock> PrepareBlock(const NodeContext& node, const CScript& coi
 
     return block;
 }
+
+std::shared_ptr<CBlock> PrepareBlock(const NodeContext& node, const BlockAssembler::Options& assembler_options)
+{
+    return PrepareBlock(node, assembler_options.coinbase_output_script, assembler_options);
+}
+
 std::shared_ptr<CBlock> PrepareBlock(const NodeContext& node, const CScript& coinbase_scriptPubKey)
 {
     BlockAssembler::Options assembler_options;

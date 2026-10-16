@@ -129,6 +129,7 @@ MACHO_ALLOWED_LIBRARIES = {
 'libobjc.A.dylib', # Objective-C runtime library
 'Metal', # 3D graphics
 'QuartzCore', # animation
+'ScreenCaptureKit', # screen capture used by Qt's Cocoa platform plugin
 'Security', # access control and authentication
 'UniformTypeIdentifiers', # collection of types that map to MIME and file types
 }
@@ -136,6 +137,7 @@ MACHO_ALLOWED_LIBRARIES = {
 PE_ALLOWED_LIBRARIES = {
 'ADVAPI32.dll', # legacy security & registry
 'bcrypt.dll', # newer security and identity API
+'CRYPT32.dll', # certificate and cryptographic APIs used by static OpenSSL
 'IPHLPAPI.DLL', # IP helper API
 'KERNEL32.dll', # win32 base APIs
 'msvcrt.dll', # C standard library for MSVC
@@ -155,9 +157,12 @@ PE_ALLOWED_LIBRARIES = {
 'dxgi.dll', # DirectX Graphics Infrastructure
 'GDI32.dll', # graphics device interface
 'IMM32.dll', # input method editor
+'mscms.dll', # color management
 'NETAPI32.dll', # network management
+'ntdll.dll', # Windows NT runtime APIs
 'ole32.dll', # component object model
 'OLEAUT32.dll', # OLE Automation API
+'Secur32.dll', # security support provider interface
 'SHLWAPI.dll', # light weight shell API
 'USER32.dll', # user interface
 'USERENV.dll', # user management
@@ -231,12 +236,12 @@ def check_MACHO_libraries(binary) -> bool:
     return ok
 
 def check_MACHO_min_os(binary) -> bool:
-    if binary.build_version.minos == [14,0,0]:
+    if binary.build_version.minos == [15,0,0]:
         return True
     return False
 
 def check_MACHO_sdk(binary) -> bool:
-    if binary.build_version.sdk == [14, 0, 0]:
+    if binary.build_version.sdk == [15, 0, 0]:
         return True
     return False
 

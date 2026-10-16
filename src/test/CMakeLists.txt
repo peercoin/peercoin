@@ -73,6 +73,7 @@ add_executable(test_bitcoin
   node_warnings_tests.cpp
   orphanage_tests.cpp
   pcp_tests.cpp
+  peercoin_kernel_tests.cpp
   peerman_tests.cpp
   pmt_tests.cpp
   policyestimator_tests.cpp
@@ -82,7 +83,6 @@ add_executable(test_bitcoin
   private_broadcast_tests.cpp
   raii_event_tests.cpp
   random_tests.cpp
-  rbf_tests.cpp
   rest_tests.cpp
   result_tests.cpp
   reverselock_tests.cpp

@@ -21,9 +21,9 @@ By default, wallets are created in the `wallets` folder of the data directory, w
 
 | Operating System | Default wallet directory                                    |
 | -----------------|:------------------------------------------------------------|
-| Linux            | `/home/<user>/.bitcoin/wallets`                             |
-| Windows          | `C:\Users\<user>\AppData\Local\Bitcoin\wallets`             |
-| macOS            | `/Users/<user>/Library/Application Support/Bitcoin/wallets` |
+| Linux            | `/home/<user>/.peercoin/wallets`                             |
+| Windows          | `C:\Users\<user>\AppData\Local\Peercoin\wallets`             |
+| macOS            | `/Users/<user>/Library/Application Support/Peercoin/wallets` |
 
 ### 1.2 Encrypting the Wallet
 

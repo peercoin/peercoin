@@ -1,6 +1,6 @@
 # NetBSD Build Guide
 
-This guide describes how to build peercoind and command-line utilities on NetBSD.
+**Updated for NetBSD [10.1](https://netbsd.org/releases/formal-10/NetBSD-10.1.html)**
 
 This guide describes how to build peercoind, command-line utilities, and GUI on NetBSD.
 
@@ -12,12 +12,40 @@ Install the required dependencies the usual way you [install software on NetBSD]
 The example commands below use `pkgin`.
 
 ```bash
-pkgin install autoconf automake libtool pkg-config git gmake boost libevent
-
+pkgin install git cmake pkg-config boost libevent
 ```
 
-git clone https://github.com/peercoin/peercoin.git
+NetBSD currently ships with an older version of `gcc` than is needed to build. You should upgrade your `gcc` and then pass this new version to CMake.
+
+For example, grab `gcc12`:
 ```
+pkgin install gcc12
+```
+
+Then, when configuring, pass the following:
+```bash
+cmake -B build
+    ...
+    -DCMAKE_C_COMPILER="/usr/pkg/gcc12/bin/gcc" \
+    -DCMAKE_CXX_COMPILER="/usr/pkg/gcc12/bin/g++" \
+    ...
+```
+
+SQLite is required for the wallet:
+
+```bash
+pkgin install sqlite3
+```
+
+To build Peercoin without the wallet, use `-DENABLE_WALLET=OFF`.
+
+Cap'n Proto is needed for IPC functionality (see [multiprocess.md](multiprocess.md)):
+
+```bash
+pkgin install capnproto
+```
+
+Compile with `-DENABLE_IPC=OFF` if you do not need IPC functionality.
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
@@ -31,38 +59,32 @@ git clone https://github.com/peercoin/peercoin.git
 
 ### 3. Install Optional Dependencies
 
-#### Wallet Dependencies
-
-It is not necessary to build wallet functionality to run peercoind or the GUI.
-
-###### Descriptor Wallet Support
-
-`sqlite3` is required to enable support for [descriptor wallets](https://github.com/peercoin/peercoin/blob/master/doc/descriptors.md).
-
-```bash
-pkgin install sqlite3
-```
-
-###### Legacy Wallet Support
-
-`db4` is required to enable support for legacy wallets.
-
-```bash
-pkgin install db4
-```
-
 #### GUI Dependencies
+###### Qt6
 
-Peercoin includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install `qt5`.
+Peercoin includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install
+the necessary parts of Qt, the libqrencode and pass `-DBUILD_GUI=ON`. Skip if you don't intend to use the GUI.
 
 ```bash
-pkgin install qt5
+pkgin install qt6-qtbase qt6-qttools
 ```
 
-The GUI can encode addresses in a QR Code. To build in QR support for the GUI, install `qrencode`.
+###### libqrencode
+
+The GUI will be able to encode addresses in QR codes unless this feature is explicitly disabled. To install libqrencode, run:
 
 ```bash
 pkgin install qrencode
+```
+
+Otherwise, if you don't need QR encoding support, use the `-DWITH_QRENCODE=OFF` option to disable this feature in order to compile the GUI.
+
+#### Notifications
+###### ZeroMQ
+
+Peercoin can provide notifications via ZeroMQ. To compile ZMQ support, install the following dependency and pass `-DWITH_ZMQ=ON` when configuring.
+```bash
+pkgin install zeromq
 ```
 
 #### Test Suite Dependencies
@@ -71,13 +93,10 @@ There is an included test suite that is useful for testing code changes when dev
 To run the test suite (recommended), you will need to have Python 3 installed:
 
 ```bash
-pkgin install python37
+pkgin install python313 py313-zmq
 ```
 
-### Building Peercoin
-
-**Note**: Use `gmake` (the non-GNU `make` will exit with an error).
-
+## Building Peercoin
 
 ### 1. Configuration
 
@@ -85,58 +104,16 @@ There are many ways to configure Peercoin. Here is an example that
 explicitly disables the wallet and GUI:
 
 ```bash
-./autogen.sh
-./configure --without-wallet --with-gui=no \
-    CPPFLAGS="-I/usr/pkg/include" \
-    MAKE=gmake
+cmake -B build -DENABLE_WALLET=OFF -DBUILD_GUI=OFF
 ```
 
-For a full list of configuration options, see the output of `./configure --help`
+Run `cmake -B build -LH` to see the full list of available options.
 
-BerkeleyDB is use for legacy wallet functionality.
-
-It is recommended to use Berkeley DB 4.8. You cannot use the BerkeleyDB library
-from ports.
-You can use [the installation script included in contrib/](/contrib/install_db4.sh) like so:
-
-```bash
-./contrib/install_db4.sh `pwd`
-```
-
-from the root of the repository. Then set `BDB_PREFIX` for the next section:
-
-```bash
-export BDB_PREFIX="$PWD/db4"
-```
-
-### Building Peercoin
-
-**Important**: Use `gmake` (the non-GNU `make` will exit with an error).
-
-With wallet:
-```bash
-./autogen.sh
-./configure --with-gui=no CPPFLAGS="-I/usr/pkg/include" \
-    LDFLAGS="-L/usr/pkg/lib" \
-    BOOST_CPPFLAGS="-I/usr/pkg/include" \
-    BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
-    BDB_CFLAGS="-I${BDB_PREFIX}/include" \
-    MAKE=gmake
-```
-
-#### Without wallet:
-```bash
-./autogen.sh
-./configure --with-gui=no --disable-wallet \
-    CPPFLAGS="-I/usr/pkg/include" \
-    LDFLAGS="-L/usr/pkg/lib" \
-    BOOST_CPPFLAGS="-I/usr/pkg/include" \
-    MAKE=gmake
-```
+### 2. Compile
 
 Build and run the tests:
 
 ```bash
-gmake # use "-j N" here for N parallel jobs
-gmake check # Run tests if Python 3 is available
+cmake --build build     # Append "-j N" for N parallel jobs.
+ctest --test-dir build  # Append "-j N" for N parallel tests.
 ```

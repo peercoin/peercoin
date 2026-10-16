@@ -13,6 +13,7 @@
 
 class CBlock;
 class CChainParams;
+class COutPoint;
 class CScript;
 class CTxIn;
 namespace node {
@@ -24,9 +25,13 @@ std::vector<std::shared_ptr<CBlock>> CreateBlockChain(size_t total_height, const
 
 /** Returns the generated coin */
 CTxIn MineBlock(const node::NodeContext&, const CScript& coinbase_scriptPubKey);
+COutPoint MineBlock(const node::NodeContext&, const node::BlockAssembler::Options& assembler_options);
+COutPoint MineBlock(const node::NodeContext&, std::shared_ptr<CBlock>& block);
+COutPoint ProcessBlock(const node::NodeContext&, const std::shared_ptr<CBlock>& block);
 
 /** Prepare a block to be mined */
 std::shared_ptr<CBlock> PrepareBlock(const node::NodeContext&, const CScript& coinbase_scriptPubKey);
+std::shared_ptr<CBlock> PrepareBlock(const node::NodeContext&, const node::BlockAssembler::Options& assembler_options);
 std::shared_ptr<CBlock> PrepareBlock(const node::NodeContext& node, const CScript& coinbase_scriptPubKey,
                                      const node::BlockAssembler::Options& assembler_options);
 

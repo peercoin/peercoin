@@ -10,6 +10,7 @@
 #include <univalue.h>
 #include <util/chaintype.h>
 #include <util/fs.h>
+#include <util/fs_helpers.h>
 #include <util/strencodings.h>
 
 #include <array>
@@ -23,6 +24,15 @@
 using util::ToString;
 
 BOOST_FIXTURE_TEST_SUITE(argsman_tests, BasicTestingSetup)
+
+BOOST_AUTO_TEST_CASE(default_datadir_is_peercoin)
+{
+#if defined(WIN32) || defined(__APPLE__)
+    BOOST_CHECK_EQUAL(fs::PathToString(GetDefaultDataDir().filename()), "Peercoin");
+#else
+    BOOST_CHECK_EQUAL(fs::PathToString(GetDefaultDataDir().filename()), ".peercoin");
+#endif
+}
 
 BOOST_AUTO_TEST_CASE(util_datadir)
 {

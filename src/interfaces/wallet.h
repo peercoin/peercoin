@@ -226,7 +226,7 @@ public:
     virtual bool txinIsMine(const CTxIn& txin) = 0;
 
     //! Return whether transaction output belongs to wallet.
-    virtual bool txoutIsMine(const CTxOut& txout) = 0;
+    virtual wallet::isminetype txoutIsMine(const CTxOut& txout) = 0;
 
     //! Return debit amount if transaction input belongs to wallet.
     virtual CAmount getDebit(const CTxIn& txin) = 0;

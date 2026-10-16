@@ -614,3 +614,17 @@ std::vector<int> CChainParams::GetAvailableSnapshotHeights() const
     }
     return heights;
 }
+
+std::optional<ChainType> GetNetworkForMagic(const MessageStartChars& message)
+{
+    const auto mainnet_msg{CChainParams::Main()->MessageStart()};
+    const auto testnet_msg{CChainParams::TestNet()->MessageStart()};
+    const auto signet_msg{CChainParams::SigNet({})->MessageStart()};
+    const auto regtest_msg{CChainParams::RegTest({})->MessageStart()};
+
+    if (std::ranges::equal(message, mainnet_msg)) return ChainType::MAIN;
+    if (std::ranges::equal(message, testnet_msg)) return ChainType::TESTNET;
+    if (std::ranges::equal(message, signet_msg)) return ChainType::SIGNET;
+    if (std::ranges::equal(message, regtest_msg)) return ChainType::REGTEST;
+    return std::nullopt;
+}

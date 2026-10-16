@@ -24,15 +24,16 @@
 #include <qt/transactiontablemodel.h>
 #include <qt/transactionview.h>
 #include <qt/walletmodel.h>
+#include <script/solver.h>
 #include <test/util/setup_common.h>
 #include <validation.h>
+#include <wallet/test/util.h>
 #include <wallet/wallet.h>
 
 #include <chrono>
 #include <memory>
 
 #include <QAbstractButton>
-#include <QAction>
 #include <QApplication>
 #include <QCheckBox>
 #include <QClipboard>
@@ -46,7 +47,7 @@
 
 using wallet::AddWallet;
 using wallet::CWallet;
-using wallet::CreateMockWalletDatabase;
+using wallet::CreateMockableWalletDatabase;
 using wallet::RemoveWallet;
 using wallet::WALLET_FLAG_DESCRIPTORS;
 using wallet::WALLET_FLAG_DISABLE_PRIVATE_KEYS;
@@ -104,32 +105,6 @@ QModelIndex FindTx(const QAbstractItemModel& model, const uint256& txid)
     return {};
 }
 
-//! Invoke bumpfee on txid and check results.
-void BumpFee(TransactionView& view, const uint256& txid, bool expectDisabled, std::string expectError, bool cancel)
-{
-    QTableView* table = view.findChild<QTableView*>("transactionView");
-    QModelIndex index = FindTx(*table->selectionModel()->model(), txid);
-    QVERIFY2(index.isValid(), "Could not find BumpFee txid");
-
-    // Select row in table, invoke context menu, and make sure bumpfee action is
-    // enabled or disabled as expected.
-    QAction* action = view.findChild<QAction*>("bumpFeeAction");
-    table->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-    action->setEnabled(expectDisabled);
-    table->customContextMenuRequested({});
-    QCOMPARE(action->isEnabled(), !expectDisabled);
-
-    action->setEnabled(true);
-    QString text;
-    if (expectError.empty()) {
-        ConfirmSend(&text, cancel ? QMessageBox::Cancel : QMessageBox::Yes);
-    } else {
-        ConfirmMessage(&text, 0ms);
-    }
-    action->trigger();
-    QVERIFY(text.indexOf(QString::fromStdString(expectError)) != -1);
-}
-
 void CompareBalance(WalletModel& walletModel, CAmount expected_balance, QLabel* balance_label_to_check)
 {
     BitcoinUnit unit = walletModel.getOptionsModel()->getDisplayUnit();
@@ -183,40 +158,27 @@ void SyncUpWallet(const std::shared_ptr<CWallet>& wallet, interfaces::Node& node
     QVERIFY(result.last_failed_block.IsNull());
 }
 
-std::shared_ptr<CWallet> SetupLegacyWatchOnlyWallet(interfaces::Node& node, TestChain100Setup& test)
+std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChain100Setup& test, bool watch_only = false)
 {
-    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockWalletDatabase());
-    wallet->LoadWallet();
-    {
-        LOCK(wallet->cs_wallet);
-        wallet->SetWalletFlag(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
-        wallet->SetupLegacyScriptPubKeyMan();
-        // Add watched key
-        CPubKey pubKey = test.coinbaseKey.GetPubKey();
-        bool import_keys = wallet->ImportPubKeys({pubKey.GetID()}, {{pubKey.GetID(), pubKey}} , /*key_origins=*/{}, /*add_keypool=*/false, /*internal=*/false, /*timestamp=*/1);
-        assert(import_keys);
-        wallet->SetLastBlockProcessed(105, WITH_LOCK(node.context()->chainman->GetMutex(), return node.context()->chainman->ActiveChain().Tip()->GetBlockHash()));
-    }
-    SyncUpWallet(wallet, node);
-    return wallet;
-}
-
-std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChain100Setup& test)
-{
-    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockWalletDatabase());
-    wallet->LoadWallet();
+    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockableWalletDatabase());
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
-    wallet->SetupDescriptorScriptPubKeyMans();
+    if (watch_only) {
+        wallet->SetWalletFlag(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
+    } else {
+        wallet->SetupDescriptorScriptPubKeyMans();
+    }
 
     // Add the coinbase key
     FlatSigningProvider provider;
     std::string error;
-    std::unique_ptr<Descriptor> desc = Parse("combo(" + EncodeSecret(test.coinbaseKey) + ")", provider, error, /* require_checksum=*/ false);
-    assert(desc);
+    const std::string key{watch_only ? HexStr(test.coinbaseKey.GetPubKey()) : EncodeSecret(test.coinbaseKey)};
+    auto descriptors = Parse("combo(" + key + ")", provider, error, /*require_checksum=*/false);
+    assert(descriptors.size() == 1);
+    auto& desc = descriptors.front();
     WalletDescriptor w_desc(std::move(desc), 0, 0, 1, 1);
-    if (!wallet->AddWalletDescriptor(w_desc, provider, "", false)) assert(false);
-    CTxDestination dest = GetDestinationForKey(test.coinbaseKey.GetPubKey(), wallet->m_default_address_type);
+    Assert(wallet->AddWalletDescriptor(w_desc, provider, "", false));
+    const PKHash dest{test.coinbaseKey.GetPubKey()};
     wallet->SetAddressBook(dest, "", wallet::AddressPurpose::RECEIVE);
     wallet->SetLastBlockProcessed(105, WITH_LOCK(node.context()->chainman->GetMutex(), return node.context()->chainman->ActiveChain().Tip()->GetBlockHash()));
     SyncUpWallet(wallet, node);
@@ -271,8 +233,6 @@ void TestGUI(interfaces::Node& node, const std::shared_ptr<CWallet>& wallet)
     mini_gui.initModelForWallet(node, wallet, platformStyle.get());
     WalletModel& walletModel = *mini_gui.walletModel;
     SendCoinsDialog& sendCoinsDialog = mini_gui.sendCoinsDialog;
-    TransactionView& transactionView = mini_gui.transactionView;
-
     // Update walletModel cached balance which will trigger an update for the 'labelBalance' QLabel.
     walletModel.pollBalanceChanged();
     // Check balance in send dialog
@@ -286,7 +246,7 @@ void TestGUI(interfaces::Node& node, const std::shared_ptr<CWallet>& wallet)
     QCOMPARE(transactionTableModel->rowCount({}), 105);
     uint256 txid1 = SendCoins(*wallet.get(), sendCoinsDialog, PKHash(), 5 * COIN);
     uint256 txid2 = SendCoins(*wallet.get(), sendCoinsDialog, PKHash(), 10 * COIN);
-    QCOMPARE(transactionTableModel->rowCount({}), 107);
+    QTRY_COMPARE(transactionTableModel->rowCount({}), 107);
     QVERIFY(FindTx(*transactionTableModel, txid1).isValid());
     QVERIFY(FindTx(*transactionTableModel, txid2).isValid());
 
@@ -322,15 +282,15 @@ void TestGUI(interfaces::Node& node, const std::shared_ptr<CWallet>& wallet)
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("payment_header")->text(), QString("Payment information"));
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("uri_tag")->text(), QString("URI:"));
             QString uri = receiveRequestDialog->QObject::findChild<QLabel*>("uri_content")->text();
-            QCOMPARE(uri.count("bitcoin:"), 2);
+            QCOMPARE(uri.count("peercoin:"), 2);
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("address_tag")->text(), QString("Address:"));
             QVERIFY(address.isEmpty());
             address = receiveRequestDialog->QObject::findChild<QLabel*>("address_content")->text();
             QVERIFY(!address.isEmpty());
 
-            QCOMPARE(uri.count("amount=0.00000001"), 2);
+            QCOMPARE(uri.count("amount=0.000001"), 2);
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("amount_tag")->text(), QString("Amount:"));
-            QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("amount_content")->text(), QString::fromStdString("0.00000001 " + CURRENCY_UNIT));
+            QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("amount_content")->text(), QString::fromStdString("0.000001 " + CURRENCY_UNIT));
 
             QCOMPARE(uri.count("label=TEST_LABEL_1"), 2);
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("label_tag")->text(), QString("Label:"));
@@ -381,7 +341,7 @@ void TestGUI(interfaces::Node& node, const std::shared_ptr<CWallet>& wallet)
 
 void TestGUIWatchOnly(interfaces::Node& node, TestChain100Setup& test)
 {
-    const std::shared_ptr<CWallet>& wallet = SetupLegacyWatchOnlyWallet(node, test);
+    const std::shared_ptr<CWallet>& wallet = SetupDescriptorsWallet(node, test, /*watch_only=*/true);
 
     // Create widgets and init models
     std::unique_ptr<const PlatformStyle> platformStyle(PlatformStyle::instantiate("other"));
@@ -393,11 +353,11 @@ void TestGUIWatchOnly(interfaces::Node& node, TestChain100Setup& test)
     // Update walletModel cached balance which will trigger an update for the 'labelBalance' QLabel.
     walletModel.pollBalanceChanged();
     // Check balance in send dialog
-    CompareBalance(walletModel, walletModel.wallet().getBalances().watch_only_balance,
+    CompareBalance(walletModel, walletModel.wallet().getBalances().balance,
                    sendCoinsDialog.findChild<QLabel*>("labelBalance"));
 
     // Set change address
-    sendCoinsDialog.getCoinControl()->destChange = GetDestinationForKey(test.coinbaseKey.GetPubKey(), OutputType::LEGACY);
+    sendCoinsDialog.getCoinControl()->destChange = PKHash{test.coinbaseKey.GetPubKey()};
 
     // Time to reject "save" PSBT dialog ('SendCoins' locks the main thread until the dialog receives the event).
     QTimer timer;
@@ -459,8 +419,8 @@ void WalletTests::walletTests()
         // framework when it tries to look up unimplemented cocoa functions,
         // and fails to handle returned nulls
         // (https://bugreports.qt.io/browse/QTBUG-49686).
-        QWARN("Skipping WalletTests on mac build with 'minimal' platform set due to Qt bugs. To run AppTests, invoke "
-              "with 'QT_QPA_PLATFORM=cocoa test_bitcoin-qt' on mac, or else use a linux or windows build.");
+        qWarning() << "Skipping WalletTests on mac build with 'minimal' platform set due to Qt bugs. To run AppTests, invoke "
+                      "with 'QT_QPA_PLATFORM=cocoa test_bitcoin-qt' on mac, or else use a linux or windows build.";
         return;
     }
 #endif

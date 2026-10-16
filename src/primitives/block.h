@@ -149,8 +149,6 @@ public:
     // peercoin: two types of block: proof-of-work or proof-of-stake
     bool IsProofOfStake() const
     {
-        // peercoin: flags bit is authoritative on headers; vtx check when present.
-        if (nFlags & /*BLOCK_PROOF_OF_STAKE*/ 1u) return true; // peercoin bridge
         return (vtx.size() > 1 && vtx[1]->IsCoinStake());
     }
 

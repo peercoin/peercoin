@@ -87,9 +87,10 @@ void initialize_chain()
     };
     if constexpr (INVALID) {
         auto& chainman{*setup->m_node.chainman};
+        int32_t pos_temperature{0};
         for (const auto& block : chain) {
             BlockValidationState dummy;
-            bool processed{chainman.ProcessNewBlockHeaders({{*block}}, true, dummy)};
+            bool processed{chainman.ProcessNewBlockHeaders(pos_temperature, block->hashPrevBlock, {{*block}}, true, dummy)};
             Assert(processed);
             const auto* index{WITH_LOCK(::cs_main, return chainman.m_blockman.LookupBlockIndex(block->GetHash()))};
             Assert(index);
@@ -169,9 +170,10 @@ void utxo_snapshot_fuzz(FuzzBufferType buffer)
     if (fuzzed_data_provider.ConsumeBool()) {
         // Consume the bool, but skip the code for the INVALID fuzz target
         if constexpr (!INVALID) {
+            int32_t pos_temperature{0};
             for (const auto& block : *g_chain) {
                 BlockValidationState dummy;
-                bool processed{chainman.ProcessNewBlockHeaders({{*block}}, true, dummy)};
+                bool processed{chainman.ProcessNewBlockHeaders(pos_temperature, block->hashPrevBlock, {{*block}}, true, dummy)};
                 Assert(processed);
                 const auto* index{WITH_LOCK(::cs_main, return chainman.m_blockman.LookupBlockIndex(block->GetHash()))};
                 Assert(index);
@@ -192,9 +194,9 @@ void utxo_snapshot_fuzz(FuzzBufferType buffer)
             if (index->nHeight == chainman.ActiveChainstate().SnapshotBase()->nHeight) {
                 auto params{chainman.GetParams().AssumeutxoForHeight(index->nHeight)};
                 Assert(params.has_value());
-                Assert(params.value().m_chain_tx_count == index->m_chain_tx_count);
+                Assert(params.value().m_chain_tx_count == index->nChainTx);
             } else {
-                Assert(index->m_chain_tx_count == 0);
+                Assert(index->nChainTx == 0);
             }
         }
         Assert(g_chain->size() == coinscache.GetCacheSize());

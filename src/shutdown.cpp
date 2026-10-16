@@ -58,5 +58,5 @@ bool ShutdownRequested()
 
 void WaitForShutdown()
 {
-    g_shutdown_interrupt.wait();
+    (void)g_shutdown_interrupt.wait();
 }

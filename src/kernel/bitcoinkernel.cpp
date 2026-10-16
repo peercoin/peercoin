@@ -94,6 +94,13 @@ public:
         ::Serialize(*this, obj);
         return *this;
     }
+
+    template <typename P>
+    const P& GetParams() const
+    {
+        static constexpr P params{};
+        return params;
+    }
 };
 
 template <typename C, typename CPP>
@@ -1307,7 +1314,9 @@ int btck_chainstate_manager_process_block_header(
 {
     try {
         auto& chainman = btck_ChainstateManager::get(chainstate_manager).m_chainman;
-        auto result = chainman->ProcessNewBlockHeaders({&btck_BlockHeader::get(header), 1}, /*min_pow_checked=*/true, btck_BlockValidationState::get(state), /*ppindex=*/nullptr);
+        const auto& block_header{btck_BlockHeader::get(header)};
+        int32_t pos_temperature{0};
+        auto result = chainman->ProcessNewBlockHeaders(pos_temperature, block_header.hashPrevBlock, {&block_header, 1}, /*min_pow_checked=*/true, btck_BlockValidationState::get(state), /*ppindex=*/nullptr);
 
         return result ? 0 : -1;
     } catch (const std::exception& e) {

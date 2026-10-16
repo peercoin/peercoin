@@ -465,8 +465,8 @@ bool BlockManager::LoadBlockIndex(const std::optional<uint256>& snapshot_blockha
         // Since nChainTx (responsible for estimated progress) isn't persisted
         // to disk, we must bootstrap the value for assumedvalid chainstates
         // from the hardcoded assumeutxo chainparams.
-        base->nChainTx = au_data.nChainTx;
-        LogInfo("[snapshot] set nChainTx=%d for %s", au_data.nChainTx, snapshot_blockhash->ToString());
+        base->nChainTx = au_data.m_chain_tx_count;
+        LogInfo("[snapshot] set nChainTx=%d for %s", au_data.m_chain_tx_count, snapshot_blockhash->ToString());
     } else {
         // If this isn't called with a snapshot blockhash, make sure the cached snapshot height
         // is null. This is relevant during snapshot completion, when the blockman may be loaded

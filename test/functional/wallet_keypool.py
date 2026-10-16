@@ -4,7 +4,6 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the wallet keypool and interaction with wallet encryption/locking."""
 
-import time
 from decimal import Decimal
 
 from test_framework.test_framework import BitcoinTestFramework
@@ -160,8 +159,7 @@ class KeyPoolTest(BitcoinTestFramework):
         nodes[0].keypoolrefill(3)
 
         # test walletpassphrase timeout
-        time.sleep(1.1)
-        assert_equal(nodes[0].getwalletinfo()["unlocked_until"], 0)
+        self.wait_until(lambda: nodes[0].getwalletinfo()["unlocked_until"] == 0)
 
         # drain the keypool
         for _ in range(3):

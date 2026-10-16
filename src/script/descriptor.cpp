@@ -8,6 +8,7 @@
 #include <key_io.h>
 #include <pubkey.h>
 #include <musig.h>
+#include <script/interpreter.h>
 #include <script/miniscript.h>
 #include <script/parsing.h>
 #include <script/script.h>
@@ -23,6 +24,7 @@
 #include <util/vector.h>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -1391,7 +1393,11 @@ public:
         if (const auto sat_size = m_subdescriptor_args[0]->MaxSatSize(use_max_sig)) {
             if (const auto subscript_size = m_subdescriptor_args[0]->ScriptSize()) {
                 // The subscript is never witness data.
-                const auto subscript_weight = (1 + *subscript_size) * WITNESS_SCALE_FACTOR;
+                const int64_t push_opcode_size = *subscript_size < OP_PUSHDATA1 ? 1
+                    : *subscript_size <= std::numeric_limits<uint8_t>::max() ? 2
+                    : *subscript_size <= std::numeric_limits<uint16_t>::max() ? 3
+                    : 5;
+                const auto subscript_weight = (push_opcode_size + *subscript_size) * WITNESS_SCALE_FACTOR;
                 // The weight depends on whether the inner descriptor is satisfied using the witness stack.
                 if (IsSegwit()) return subscript_weight + *sat_size;
                 return subscript_weight + *sat_size * WITNESS_SCALE_FACTOR;
@@ -1519,14 +1525,30 @@ public:
 
     std::optional<int64_t> ScriptSize() const override { return 1 + 1 + 32; }
 
-    std::optional<int64_t> MaxSatisfactionWeight(bool) const override {
-        // FIXME: We assume keypath spend, which can lead to very large underestimations.
-        return 1 + 65;
+    std::optional<int64_t> MaxSatisfactionWeight(bool use_max_sig) const override {
+        int64_t max_size{1 + 65}; // Key-path signature.
+        for (size_t pos = 0; pos < m_subdescriptor_args.size(); ++pos) {
+            const auto sat_size{m_subdescriptor_args[pos]->MaxSatSize(use_max_sig)};
+            const auto script_size{m_subdescriptor_args[pos]->ScriptSize()};
+            if (!sat_size || !script_size) return {};
+
+            const int64_t control_size{static_cast<int64_t>(TAPROOT_CONTROL_BASE_SIZE
+                                                            + TAPROOT_CONTROL_NODE_SIZE * static_cast<size_t>(m_depths[pos]))};
+            const int64_t script_path_size{*sat_size + GetSizeOfCompactSize(*script_size) + *script_size
+                                           + GetSizeOfCompactSize(control_size) + control_size};
+            max_size = std::max(max_size, script_path_size);
+        }
+        return max_size;
     }
 
     std::optional<int64_t> MaxSatisfactionElems() const override {
-        // FIXME: See above, we assume keypath spend.
-        return 1;
+        int64_t max_elems{1}; // Key-path signature.
+        for (const auto& subdescriptor : m_subdescriptor_args) {
+            const auto sub_elems{subdescriptor->MaxSatisfactionElems()};
+            if (!sub_elems) return {};
+            max_elems = std::max(max_elems, *sub_elems + 2); // Script and control block.
+        }
+        return max_elems;
     }
 
     std::unique_ptr<DescriptorImpl> Clone() const override

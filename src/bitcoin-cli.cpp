@@ -425,6 +425,7 @@ private:
     std::string ChainToString() const
     {
         switch (gArgs.GetChainType()) {
+        case ChainType::TESTNET4: return " testnet4";
         case ChainType::TESTNET: return " testnet";
         case ChainType::SIGNET: return " signet";
         case ChainType::REGTEST: return " regtest";
@@ -1229,10 +1230,6 @@ static int CommandLineRPC(int argc, char *argv[])
 
 MAIN_FUNCTION
 {
-#ifdef WIN32
-    util::WinCmdLineArgs winArgs;
-    std::tie(argc, argv) = winArgs.get();
-#endif
     SetupEnvironment();
     if (!SetupNetworking()) {
         tfm::format(std::cerr, "Error: Initializing networking failed\n");

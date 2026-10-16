@@ -82,7 +82,8 @@ class TimeoutsTest(BitcoinTestFramework):
         no_verack_node.send_without_ping(msg_ping())
         no_version_node.send_without_ping(msg_ping())
 
-        if self.options.v2transport:
+        # Peercoin's framework forces v1 connections even when --v2transport is requested.
+        if no_verack_node.supports_v2_p2p:
             expected_timeout_logs = [
                 "version handshake timeout, disconnecting peer=0",
                 "version handshake timeout, disconnecting peer=1",

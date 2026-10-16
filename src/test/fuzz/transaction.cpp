@@ -17,7 +17,6 @@
 #include <test/util/random.h>
 #include <univalue.h>
 #include <util/chaintype.h>
-#include <util/rbf.h>
 #include <validation.h>
 
 #include <cassert>
@@ -84,7 +83,6 @@ FUZZ_TARGET(transaction, .init = initialize_transaction)
     (void)GetVirtualTransactionSize(tx);
     (void)IsFinalTx(tx, /* nBlockHeight= */ 1024, /* nBlockTime= */ 1024);
     (void)RecursiveDynamicUsage(tx);
-    (void)SignalsOptInRBF(tx);
 
     CCoinsView coins_view;
     const CCoinsViewCache coins_view_cache(&coins_view);

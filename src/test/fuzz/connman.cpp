@@ -169,7 +169,8 @@ FUZZ_TARGET(connman, .init = initialize_connman)
             [&] {
                 ConnectionType conn_type{
                     fuzzed_data_provider.PickValueInArray(ALL_CONNECTION_TYPES)};
-                if (conn_type == ConnectionType::INBOUND) { // INBOUND is not allowed
+                // INBOUND is not allowed here, and PRIVATE_BROADCAST requires a proxy.
+                if (conn_type == ConnectionType::INBOUND || conn_type == ConnectionType::PRIVATE_BROADCAST) {
                     conn_type = ConnectionType::OUTBOUND_FULL_RELAY;
                 }
 
@@ -179,7 +180,8 @@ FUZZ_TARGET(connman, .init = initialize_connman)
                     /*grant_outbound=*/{},
                     /*pszDest=*/fuzzed_data_provider.ConsumeBool() ? nullptr : random_string.c_str(),
                     /*conn_type=*/conn_type,
-                    /*use_v2transport=*/fuzzed_data_provider.ConsumeBool());
+                    /*use_v2transport=*/fuzzed_data_provider.ConsumeBool(),
+                    /*proxy_override=*/std::nullopt);
             },
             [&] {
                 connman.SetNetworkActive(fuzzed_data_provider.ConsumeBool());

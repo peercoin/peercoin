@@ -28,6 +28,8 @@ int CalculateMaximumSignedInputSize(const CTxOut& txout, COutPoint outpoint, con
 struct TxSize {
     int64_t vsize{-1};
     int64_t weight{-1};
+    /** Maximum serialized size including witness data, used by Peercoin's byte-based fee rule. */
+    int64_t serialized_size{-1};
 };
 
 /** Calculate the size of the transaction using CoinControl to determine

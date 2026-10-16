@@ -1,6 +1,6 @@
 # OpenBSD Build Guide
 
-This guide describes how to build peercoind, peercoin-qt, and command-line utilities on OpenBSD.
+**Updated for OpenBSD [7.8](https://www.openbsd.org/78.html)**
 
 This guide describes how to build peercoind, command-line utilities, and GUI on OpenBSD.
 
@@ -10,15 +10,24 @@ This guide describes how to build peercoind, command-line utilities, and GUI on 
 Run the following as root to install the base dependencies for building.
 
 ```bash
-pkg_add git gmake libevent libtool boost
-pkg_add qt5 # (optional for enabling the GUI)
-pkg_add autoconf # (select highest version, e.g. 2.69)
-pkg_add automake # (select highest version, e.g. 1.16)
-pkg_add python # (select highest version, e.g. 3.8)
-pkg_add bash
-
-git clone https://github.com/peercoin/peercoin.git
+pkg_add git cmake boost libevent
 ```
+
+SQLite is required for the wallet:
+
+```bash
+pkg_add sqlite3
+```
+
+To build Peercoin without the wallet, use `-DENABLE_WALLET=OFF`.
+
+Cap'n Proto is needed for IPC functionality (see [multiprocess.md](multiprocess.md)):
+
+```bash
+pkg_add capnproto
+```
+
+Compile with `-DENABLE_IPC=OFF` if you do not need IPC functionality.
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
@@ -30,103 +39,67 @@ git clone https://github.com/peercoin/peercoin.git
 
 ### 3. Install Optional Dependencies
 
-#### Wallet Dependencies
+#### GUI Dependencies
+###### Qt6
 
-It is not necessary to build wallet functionality to run either `peercoind` or `peercoin-qt`.
-
-###### Descriptor Wallet Support
-
-`sqlite3` is required to support [descriptor wallets](descriptors.md).
-
-``` bash
-pkg_add sqlite3
-```
-
-###### Legacy Wallet Support
-BerkeleyDB is only required to support legacy wallets.
-
-It is recommended to use Berkeley DB 4.8. You cannot use the BerkeleyDB library
-from ports. However you can build it yourself, [using depends](/depends).
+Peercoin includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install
+the necessary parts of Qt, the libqrencode and pass `-DBUILD_GUI=ON`. Skip if you don't intend to use the GUI.
 
 ```bash
-gmake -C depends NO_BOOST=1 NO_LIBEVENT=1 NO_QT=1 NO_SQLITE=1 NO_NATPMP=1 NO_UPNP=1 NO_ZMQ=1 NO_USDT=1
-...
-to: /path/to/peercoin/depends/x86_64-unknown-openbsd
+pkg_add qt6-qtbase qt6-qttools
 ```
 
-Then set `BDB_PREFIX`:
+###### libqrencode
+
+The GUI will be able to encode addresses in QR codes unless this feature is explicitly disabled. To install libqrencode, run:
 
 ```bash
-export BDB_PREFIX="/path/to/peercoin/depends/x86_64-unknown-openbsd"
+pkg_add libqrencode
 ```
 
-### Building Peercoin
+Otherwise, if you don't need QR encoding support, use the `-DWITH_QRENCODE=OFF` option to disable this feature in order to compile the GUI.
 
-**Important**: Use `gmake` (the non-GNU `make` will exit with an error).
+---
 
-Preparation:
+#### Notifications
+###### ZeroMQ
+
+Peercoin can provide notifications via ZeroMQ. To compile ZMQ support, install the following dependency and pass `-DWITH_ZMQ=ON` when configuring.
 ```bash
-
-# Adapt the following for the version you installed (major.minor only):
-export AUTOCONF_VERSION=2.71
-export AUTOMAKE_VERSION=1.16
-
-./autogen.sh
+pkg_add zeromq
 ```
+
+#### Test Suite Dependencies
+There is an included test suite that is useful for testing code changes when developing.
+To run the test suite (recommended), you will need to have Python 3 installed:
+
+```bash
+pkg_add python py3-zmq  # Select the newest version of the python package if necessary.
+```
+
+## Building Peercoin
 
 ### 1. Configuration
 
 There are many ways to configure Peercoin, here are a few common examples:
 
-##### Descriptor Wallet and GUI:
-This enables the GUI and descriptor wallet support, assuming `sqlite` and `qt5` are installed.
+##### Wallet and GUI:
+This enables wallet support and the GUI, assuming SQLite and Qt 6 are installed.
 
 ```bash
-./configure MAKE=gmake
+cmake -B build -DBUILD_GUI=ON
 ```
 
-##### Descriptor & Legacy Wallet. No GUI:
-This enables support for both wallet types and disables the GUI:
-
-```bash
-./configure --with-gui=no \
-    BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
-    BDB_CFLAGS="-I${BDB_PREFIX}/include" \
-    MAKE=gmake
-```
+Run `cmake -B build -LH` to see the full list of available options.
 
 ### 2. Compile
-**Important**: Use `gmake` (the non-GNU `make` will exit with an error).
 
 ```bash
-gmake # use "-j N" for N parallel jobs
-gmake check # Run tests if Python 3 is available
+cmake --build build     # Append "-j N" for N parallel jobs.
+ctest --test-dir build  # Append "-j N" for N parallel tests.
 ```
 
-To configure with GUI:
-```bash
-./configure --with-gui=yes --disable-external-signer CC=cc CXX=c++ \
-    BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
-    BDB_CFLAGS="-I${BDB_PREFIX}/include" \
-    MAKE=gmake
-```
-
-To configure with GUI:
-```bash
-./configure --with-gui=yes --disable-external-signer CC=cc CXX=c++ \
-    BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
-    BDB_CFLAGS="-I${BDB_PREFIX}/include" \
-    MAKE=gmake
-```
-
-Build and run the tests:
-```bash
-gmake # use "-j N" here for N parallel jobs
-gmake check
-```
-
-Resource limits
--------------------
+## Resource limits
 
 If the build runs into out-of-memory errors, the instructions in this section
 might help.

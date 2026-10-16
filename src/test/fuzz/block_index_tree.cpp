@@ -142,12 +142,12 @@ FUZZ_TARGET(block_index_tree, .init = initialize_block_index_tree)
                         chain.SetTip(*block);
                         chainman.ActiveChainstate().PruneBlockIndexCandidates();
                         // ActivateBestChainStep may release cs_main / not connect all blocks in one go - but only if we have at least as much chain work as we had at the start.
-                        if (block->nChainWork > old_tip->nChainWork && fuzzed_data_provider.ConsumeBool()) {
+                        if (block->nChainTrust > old_tip->nChainTrust && fuzzed_data_provider.ConsumeBool()) {
                             break;
                         }
                     }
                 } while (node::CBlockIndexWorkComparator()(chain.Tip(), old_tip));
-                assert(chain.Tip()->nChainWork >= old_tip->nChainWork);
+                assert(chain.Tip()->nChainTrust >= old_tip->nChainTrust);
             },
             [&] {
                 // Prune chain - dealing with block files is beyond the scope of this test, so just prune random blocks, making no assumptions

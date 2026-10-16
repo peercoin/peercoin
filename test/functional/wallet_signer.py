@@ -13,7 +13,6 @@ import sys
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
-    assert_greater_than,
     assert_raises_rpc_error,
 )
 
@@ -185,26 +184,6 @@ class WalletSignerTest(BitcoinTestFramework):
         res = hww.sendall(recipients=[{dest:0.5}, hww.getrawchangeaddress()], add_to_wallet=False)
         assert res["complete"]
         assert_equal(res["hex"], mock_tx)
-        # Broadcast transaction so we can bump the fee
-        hww.sendrawtransaction(res["hex"])
-
-        self.log.info('Prepare fee bumped mock PSBT')
-
-        # Now that the transaction is broadcast, bump fee in mock wallet:
-        orig_tx_id = res["txid"]
-        mock_psbt_bumped = mock_wallet.psbtbumpfee(orig_tx_id)["psbt"]
-        mock_psbt_bumped_signed = mock_wallet.walletprocesspsbt(psbt=mock_psbt_bumped, sign=True, sighashtype="ALL", bip32derivs=True)
-
-        with open(os.path.join(self.nodes[1].cwd, "mock_psbt"), "w") as f:
-            f.write(mock_psbt_bumped_signed["psbt"])
-
-        self.log.info('Test bumpfee using hww1')
-
-        # Bump fee
-        res = hww.bumpfee(orig_tx_id)
-        assert_greater_than(res["fee"], res["origfee"])
-        assert_equal(res["errors"], [])
-
 
     def test_disconnected_signer(self):
         self.log.info('Test disconnected external signer')

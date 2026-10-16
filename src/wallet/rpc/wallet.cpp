@@ -1155,10 +1155,7 @@ RPCHelpMan rescanblockchain();
 RPCHelpMan abortrescan();
 
 // peercoin commands
-RPCHelpMan importcoinstake();
-RPCHelpMan listminting();
 RPCHelpMan optimizeutxoset();
-RPCHelpMan reservebalance();
 
 std::span<const CRPCCommand> GetWalletRPCCommands()
 {

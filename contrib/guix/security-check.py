@@ -123,7 +123,7 @@ def check_ELF_CONTROL_FLOW(binary) -> bool:
 
 def check_ELF_FORTIFY(binary) -> bool:
 
-    # bitcoin wrapper does not currently contain any fortified functions
+    # peercoin wrapper does not currently contain any fortified functions
     if '--monolithic' in binary.strings:
         return True
 

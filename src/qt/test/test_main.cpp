@@ -48,6 +48,8 @@ const std::function<void(const std::string&)> G_TEST_LOG_FUN{};
 
 const std::function<std::vector<const char*>()> G_TEST_COMMAND_LINE_ARGUMENTS{};
 
+const std::function<std::string()> G_TEST_GET_FULL_NAME{};
+
 // This is all you need to run all the tests
 int main(int argc, char* argv[])
 {
@@ -61,6 +63,11 @@ int main(int argc, char* argv[])
         BasicTestingSetup dummy{ChainType::REGTEST};
         return gArgs.GetDataDirNet() / "blocks";
     }());
+    std::string config_error;
+    if (!gArgs.ReadConfigFiles(config_error)) {
+        qWarning() << config_error;
+        return 1;
+    }
 
     std::unique_ptr<interfaces::Init> init = interfaces::MakeGuiInit(argc, argv);
     gArgs.ForceSetArg("-listen", "0");
