@@ -4587,6 +4587,17 @@ bool ChainstateManager::AcceptBlock(const std::shared_ptr<const CBlock>& pblock,
         return false;
     }
 
+    // The header's PoS marker is not committed to by the block hash, while the
+    // full block's proof type is determined by the presence of a coinstake.
+    // Require both views to agree before using the header-derived block index
+    // for proof validation and chain trust accounting.
+    if (pindex->IsProofOfStake() != block.IsProofOfStake()) {
+        pindex->nStatus |= BLOCK_FAILED_VALID;
+        m_blockman.m_dirty_blockindex.insert(pindex);
+        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-proof-type",
+                             "header proof type does not match block transactions");
+    }
+
     // peercoin: check PoS
     if (fCheckPoS && !PeercoinContextualBlockChecks(block, state, pindex, false, ActiveChainstate())) {
         pindex->nStatus |= BLOCK_FAILED_VALID;

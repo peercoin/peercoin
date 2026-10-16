@@ -156,6 +156,35 @@ void MinerTestingSetup::BuildChain(const uint256& root, int height, const unsign
     }
 }
 
+BOOST_AUTO_TEST_CASE(reject_mismatched_proof_type)
+{
+    auto check_rejected = [&](bool retain_pos_marker_in_block) {
+        auto block = Block(Params().GenesisBlock().GetHash());
+        block->nFlags |= CBlockIndex::BLOCK_PROOF_OF_STAKE;
+        block = FinalizeBlock(std::move(block));
+
+        // nFlags is not part of the block hash. Exercise both a full block that
+        // repeats the malicious header marker and one whose marker is changed
+        // after the header has already been cached as PoS.
+        if (!retain_pos_marker_in_block) {
+            block->nFlags &= ~CBlockIndex::BLOCK_PROOF_OF_STAKE;
+        }
+
+        BlockValidationState state;
+        CBlockIndex* pindex{nullptr};
+        bool new_block{false};
+        LOCK(cs_main);
+        BOOST_CHECK(!Assert(m_node.chainman)->ActiveChainstate().AcceptBlock(
+            block, state, &pindex, /*fRequested=*/true, /*dbp=*/nullptr,
+            &new_block, /*min_pow_checked=*/true));
+        BOOST_CHECK_EQUAL(state.GetRejectReason(), "bad-proof-type");
+        BOOST_CHECK(!new_block);
+    };
+
+    check_rejected(/*retain_pos_marker_in_block=*/true);
+    check_rejected(/*retain_pos_marker_in_block=*/false);
+}
+
 BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
 {
     // build a large-ish chain that's likely to have some forks
