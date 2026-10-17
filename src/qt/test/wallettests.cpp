@@ -24,9 +24,9 @@
 #include <qt/transactiontablemodel.h>
 #include <qt/transactionview.h>
 #include <qt/walletmodel.h>
-#include <script/solver.h>
 #include <test/util/setup_common.h>
 #include <validation.h>
+#include <wallet/scriptpubkeyman.h>
 #include <wallet/test/util.h>
 #include <wallet/wallet.h>
 
@@ -158,27 +158,37 @@ void SyncUpWallet(const std::shared_ptr<CWallet>& wallet, interfaces::Node& node
     QVERIFY(result.last_failed_block.IsNull());
 }
 
-std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChain100Setup& test, bool watch_only = false)
+std::shared_ptr<CWallet> SetupLegacyWatchOnlyWallet(interfaces::Node& node, TestChain100Setup& test)
+{
+    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockableWalletDatabase());
+    {
+        LOCK(wallet->cs_wallet);
+        wallet->SetWalletFlag(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
+        // Add watched key
+        CPubKey pubKey = test.coinbaseKey.GetPubKey();
+        bool import_key = wallet->GetOrCreateLegacyDataSPKM()->LoadWatchOnly(GetScriptForRawPubKey(pubKey));
+        assert(import_key);
+        wallet->SetLastBlockProcessed(105, WITH_LOCK(node.context()->chainman->GetMutex(), return node.context()->chainman->ActiveChain().Tip()->GetBlockHash()));
+    }
+    SyncUpWallet(wallet, node);
+    return wallet;
+}
+
+std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChain100Setup& test)
 {
     std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockableWalletDatabase());
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
-    if (watch_only) {
-        wallet->SetWalletFlag(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
-    } else {
-        wallet->SetupDescriptorScriptPubKeyMans();
-    }
+    wallet->SetupDescriptorScriptPubKeyMans();
 
     // Add the coinbase key
     FlatSigningProvider provider;
     std::string error;
-    const std::string key{watch_only ? HexStr(test.coinbaseKey.GetPubKey()) : EncodeSecret(test.coinbaseKey)};
-    auto descriptors = Parse("combo(" + key + ")", provider, error, /*require_checksum=*/false);
-    assert(descriptors.size() == 1);
-    auto& desc = descriptors.front();
-    WalletDescriptor w_desc(std::move(desc), 0, 0, 1, 1);
-    Assert(wallet->AddWalletDescriptor(w_desc, provider, "", false));
-    const PKHash dest{test.coinbaseKey.GetPubKey()};
+    auto descs = Parse("combo(" + EncodeSecret(test.coinbaseKey) + ")", provider, error, /* require_checksum=*/ false);
+    assert(descs.size() == 1);
+    WalletDescriptor w_desc(std::move(descs.at(0)), 0, 0, 1, 1);
+    if (!wallet->AddWalletDescriptor(w_desc, provider, "", false)) assert(false);
+    CTxDestination dest = wallet->m_default_address_type == OutputType::LEGACY ? CTxDestination(PKHash(test.coinbaseKey.GetPubKey())) : CTxDestination(WitnessV0KeyHash(test.coinbaseKey.GetPubKey()));
     wallet->SetAddressBook(dest, "", wallet::AddressPurpose::RECEIVE);
     wallet->SetLastBlockProcessed(105, WITH_LOCK(node.context()->chainman->GetMutex(), return node.context()->chainman->ActiveChain().Tip()->GetBlockHash()));
     SyncUpWallet(wallet, node);
@@ -341,7 +351,7 @@ void TestGUI(interfaces::Node& node, const std::shared_ptr<CWallet>& wallet)
 
 void TestGUIWatchOnly(interfaces::Node& node, TestChain100Setup& test)
 {
-    const std::shared_ptr<CWallet>& wallet = SetupDescriptorsWallet(node, test, /*watch_only=*/true);
+    const std::shared_ptr<CWallet>& wallet = SetupLegacyWatchOnlyWallet(node, test);
 
     // Create widgets and init models
     std::unique_ptr<const PlatformStyle> platformStyle(PlatformStyle::instantiate("other"));
@@ -353,11 +363,11 @@ void TestGUIWatchOnly(interfaces::Node& node, TestChain100Setup& test)
     // Update walletModel cached balance which will trigger an update for the 'labelBalance' QLabel.
     walletModel.pollBalanceChanged();
     // Check balance in send dialog
-    CompareBalance(walletModel, walletModel.wallet().getBalances().balance,
+    CompareBalance(walletModel, walletModel.wallet().getBalances().watch_only_balance,
                    sendCoinsDialog.findChild<QLabel*>("labelBalance"));
 
     // Set change address
-    sendCoinsDialog.getCoinControl()->destChange = PKHash{test.coinbaseKey.GetPubKey()};
+    sendCoinsDialog.getCoinControl()->destChange = PKHash(test.coinbaseKey.GetPubKey());
 
     // Time to reject "save" PSBT dialog ('SendCoins' locks the main thread until the dialog receives the event).
     QTimer timer;
