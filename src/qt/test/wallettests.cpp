@@ -26,6 +26,8 @@
 #include <qt/walletmodel.h>
 #include <test/util/setup_common.h>
 #include <validation.h>
+#include <wallet/scriptpubkeyman.h>
+#include <wallet/test/util.h>
 #include <wallet/wallet.h>
 
 #include <chrono>
@@ -46,7 +48,7 @@
 
 using wallet::AddWallet;
 using wallet::CWallet;
-using wallet::CreateMockWalletDatabase;
+using wallet::CreateMockableWalletDatabase;
 using wallet::RemoveWallet;
 using wallet::WALLET_FLAG_DESCRIPTORS;
 using wallet::WALLET_FLAG_DISABLE_PRIVATE_KEYS;
@@ -185,16 +187,14 @@ void SyncUpWallet(const std::shared_ptr<CWallet>& wallet, interfaces::Node& node
 
 std::shared_ptr<CWallet> SetupLegacyWatchOnlyWallet(interfaces::Node& node, TestChain100Setup& test)
 {
-    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockWalletDatabase());
-    wallet->LoadWallet();
+    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockableWalletDatabase());
     {
         LOCK(wallet->cs_wallet);
         wallet->SetWalletFlag(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
-        wallet->SetupLegacyScriptPubKeyMan();
         // Add watched key
         CPubKey pubKey = test.coinbaseKey.GetPubKey();
-        bool import_keys = wallet->ImportPubKeys({pubKey.GetID()}, {{pubKey.GetID(), pubKey}} , /*key_origins=*/{}, /*add_keypool=*/false, /*internal=*/false, /*timestamp=*/1);
-        assert(import_keys);
+        bool import_key = wallet->GetOrCreateLegacyDataSPKM()->LoadWatchOnly(GetScriptForRawPubKey(pubKey));
+        assert(import_key);
         wallet->SetLastBlockProcessed(105, WITH_LOCK(node.context()->chainman->GetMutex(), return node.context()->chainman->ActiveChain().Tip()->GetBlockHash()));
     }
     SyncUpWallet(wallet, node);
@@ -203,8 +203,7 @@ std::shared_ptr<CWallet> SetupLegacyWatchOnlyWallet(interfaces::Node& node, Test
 
 std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChain100Setup& test)
 {
-    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockWalletDatabase());
-    wallet->LoadWallet();
+    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockableWalletDatabase());
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
     wallet->SetupDescriptorScriptPubKeyMans();
@@ -212,11 +211,11 @@ std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChai
     // Add the coinbase key
     FlatSigningProvider provider;
     std::string error;
-    std::unique_ptr<Descriptor> desc = Parse("combo(" + EncodeSecret(test.coinbaseKey) + ")", provider, error, /* require_checksum=*/ false);
-    assert(desc);
-    WalletDescriptor w_desc(std::move(desc), 0, 0, 1, 1);
+    auto descs = Parse("combo(" + EncodeSecret(test.coinbaseKey) + ")", provider, error, /* require_checksum=*/ false);
+    assert(descs.size() == 1);
+    WalletDescriptor w_desc(std::move(descs.at(0)), 0, 0, 1, 1);
     if (!wallet->AddWalletDescriptor(w_desc, provider, "", false)) assert(false);
-    CTxDestination dest = GetDestinationForKey(test.coinbaseKey.GetPubKey(), wallet->m_default_address_type);
+    CTxDestination dest = wallet->m_default_address_type == OutputType::LEGACY ? CTxDestination(PKHash(test.coinbaseKey.GetPubKey())) : CTxDestination(WitnessV0KeyHash(test.coinbaseKey.GetPubKey()));
     wallet->SetAddressBook(dest, "", wallet::AddressPurpose::RECEIVE);
     wallet->SetLastBlockProcessed(105, WITH_LOCK(node.context()->chainman->GetMutex(), return node.context()->chainman->ActiveChain().Tip()->GetBlockHash()));
     SyncUpWallet(wallet, node);
@@ -397,7 +396,7 @@ void TestGUIWatchOnly(interfaces::Node& node, TestChain100Setup& test)
                    sendCoinsDialog.findChild<QLabel*>("labelBalance"));
 
     // Set change address
-    sendCoinsDialog.getCoinControl()->destChange = GetDestinationForKey(test.coinbaseKey.GetPubKey(), OutputType::LEGACY);
+    sendCoinsDialog.getCoinControl()->destChange = PKHash(test.coinbaseKey.GetPubKey());
 
     // Time to reject "save" PSBT dialog ('SendCoins' locks the main thread until the dialog receives the event).
     QTimer timer;
