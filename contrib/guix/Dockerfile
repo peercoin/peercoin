@@ -11,7 +11,7 @@ RUN apk --no-cache --update add \
       make \
       shadow
 
-ARG guix_download_path=ftp://ftp.gnu.org/gnu/guix
+ARG guix_download_path=https://ftp.gnu.org/gnu/guix
 ARG guix_version=1.4.0
 ARG guix_checksum_aarch64=72d807392889919940b7ec9632c45a259555e6b0942ea7bfd131101e08ebfcf4
 ARG guix_checksum_x86_64=236ca7c9c5958b1f396c2924fcc5bc9d6fdebcb1b4cf3c7c6d46d4bf660ed9c9
@@ -55,7 +55,7 @@ CMD ["/root/.config/guix/current/bin/guix-daemon","--build-users-group=guixbuild
 
 FROM guix AS guix-base
 
-ARG guix_dist_url="https://git.savannah.gnu.org/git/guix.git"
+ARG guix_dist_url="https://codeberg.org/guix/guix.git"
 ARG substitute_urls="https://ci.guix.gnu.org"
 ARG time_machine_commit=998eda3067c7d21e0d9bb3310d2f5a14b8f1c681
 
