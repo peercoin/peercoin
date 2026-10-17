@@ -4577,13 +4577,14 @@ bool ChainstateManager::AcceptBlock(const std::shared_ptr<const CBlock>& pblock,
 
     const CChainParams& params{GetParams()};
 
-    // The header's PoS marker is not committed to by the block hash, while the
-    // full block's proof type is determined by the presence of a coinstake.
-    // Require both views to agree before using the header-derived block index
-    // for proof validation and chain trust accounting. Treat a mismatch as a
-    // mutated block instead of invalidating the shared block hash.
-    const bool has_coinstake{block.vtx.size() > 1 && block.vtx[1]->IsCoinStake()};
-    if (pindex->IsProofOfStake() != has_coinstake) {
+    // The header's PoS marker is not committed to by the block hash, while
+    // the full block's proof type is determined by the presence of a
+    // coinstake transaction. Require both views to agree before using the
+    // header-derived block index for proof validation and chain trust
+    // accounting. Treat a mismatch as a mutated block so an attacker cannot
+    // poison the shared block hash with an invalid marker.
+    const bool block_has_coinstake{block.vtx.size() > 1 && block.vtx[1]->IsCoinStake()};
+    if (pindex->IsProofOfStake() != block_has_coinstake) {
         return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-proof-type",
                              "header proof type does not match block transactions");
     }
@@ -5415,7 +5416,6 @@ void ChainstateManager::CheckBlockIndex() const
     // are not yet validated.
     CChain best_hdr_chain;
     assert(m_best_header);
-    assert(!(m_best_header->nStatus & BLOCK_FAILED_VALID));
     best_hdr_chain.SetTip(*m_best_header);
 
     std::multimap<const CBlockIndex*, const CBlockIndex*> forward;

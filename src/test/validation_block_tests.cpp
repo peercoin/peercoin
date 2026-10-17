@@ -192,6 +192,66 @@ BOOST_AUTO_TEST_CASE(reject_mismatched_proof_type)
     check_rejected(/*retain_pos_marker_in_block=*/false);
 }
 
+// Replay of the 896621-style split-brain attack: the attacker gossips a
+// PoS-marked header (same hash as the body, since nFlags is not hashed), so
+// the block index and trust accounting record it as proof-of-stake, but then
+// delivers a PoW-shaped body (nFlags cleared) so CheckBlock takes the PoW
+// branch, skips the coinstake requirement, and pays the PoW coinbase subsidy.
+// Before dd4ce36cd0 no check ever compared the header proof type to the
+// delivered block shape.
+BOOST_AUTO_TEST_CASE(reject_split_brain_pos_header_pow_body)
+{
+    const CBlockIndex* parent{WITH_LOCK(cs_main, return Assert(m_node.chainman)->ActiveChain().Tip())};
+    auto block = Block(parent->GetBlockHash());
+
+    // PoW-shaped body whose nBits match what ContextualCheckBlock expects for
+    // a PoW block at this tip, and whose nonce solves that PoW.
+    block->nFlags = 0;
+    block->nBits = WITH_LOCK(cs_main, return GetNextTargetRequired(parent, /*fProofOfStake=*/false, m_node.chainman->GetConsensus()));
+    block->hashMerkleRoot = BlockMerkleRoot(*block);
+    while (!CheckProofOfWork(block->GetHash(), block->nBits, Params().GetConsensus())) {
+        ++(block->nNonce);
+    }
+
+    // Attacker header: identical except for the PoS marker. The hash is the
+    // same because nFlags is excluded from it.
+    CBlockHeader hdr = block->GetBlockHeader();
+    hdr.nFlags |= CBlockIndex::BLOCK_PROOF_OF_STAKE;
+    BOOST_REQUIRE(hdr.GetHash() == block->GetHash());
+
+    // Stage 1: gossip headers-first. The header is recorded as proof-of-stake.
+    int32_t nPoSTemperature{0};
+    BlockValidationState header_state;
+    BOOST_CHECK_MESSAGE(Assert(m_node.chainman)->ProcessNewBlockHeaders(nPoSTemperature, parent->GetBlockHash(), std::vector<CBlockHeader>{hdr}, /*min_pow_checked=*/true, header_state), header_state.ToString());
+
+    CBlockIndex* pindex{nullptr};
+    {
+        LOCK(cs_main);
+        pindex = m_node.chainman->m_blockman.LookupBlockIndex(hdr.GetHash());
+    }
+    BOOST_REQUIRE(pindex);
+    BOOST_CHECK(pindex->IsProofOfStake()); // header half was recorded as PoS
+
+    // The exploit's incentive: the PoW reward that pre-dd4ce36cd0 nodes would
+    // have paid out for this block shape.
+    BOOST_CHECK_GT(GetProofOfWorkReward(block->nBits, block->GetBlockTime()), 0);
+
+    // Stage 2: deliver the PoW-shaped body. Must be rejected with
+    // bad-proof-type, must not connect, and must not mint.
+    BlockValidationState state;
+    bool new_block{false};
+    {
+        LOCK(cs_main);
+        BOOST_CHECK(!Assert(m_node.chainman)->AcceptBlock(block, state, &pindex, /*fRequested=*/true, /*dbp=*/nullptr, &new_block, /*min_pow_checked=*/true));
+    }
+    BOOST_CHECK_EQUAL(state.GetRejectReason(), "bad-proof-type");
+    BOOST_CHECK(!new_block);
+    // The mismatch is treated as mutation, so the block index is not marked
+    // permanently failed: the attacker cannot poison the shared block hash.
+    BOOST_CHECK(!(pindex->nStatus & BLOCK_FAILED_VALID));
+    BOOST_CHECK(WITH_LOCK(cs_main, return Assert(m_node.chainman)->ActiveChain().Tip()->GetBlockHash() != block->GetHash()));
+}
+
 BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
 {
     // build a large-ish chain that's likely to have some forks
