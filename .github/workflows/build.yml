@@ -296,6 +296,8 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     needs: binary
+    permissions:
+      contents: write
     if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release-')
     steps:
       - name: Detect env
