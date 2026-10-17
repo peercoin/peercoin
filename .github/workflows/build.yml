@@ -7,8 +7,11 @@ on:
   pull_request:
     paths-ignore:
       - 'doc/**'
-      - 'contrib/**'
       - '**/*.md'
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   guix-base:
@@ -24,7 +27,9 @@ jobs:
             depends
             contrib/guix
 
-      - run: echo tag-hash="$(echo "${{ hashFiles('contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}" | cut -c 1-8)" >> $GITHUB_OUTPUT
+      - run: |
+          HASH="${{ hashFiles('contrib/guix/Dockerfile', 'contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}"
+          echo "tag-hash=${HASH:0:8}" >> "$GITHUB_OUTPUT"
         id: detect
 
       - name: Set up Docker Buildx
@@ -59,11 +64,13 @@ jobs:
             type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}
           cache-to: type=inline
 
-  guix-host:
+  binary:
     runs-on: ubuntu-24.04
     needs: guix-base
-    if: github.event_name != 'pull_request'
+    # Prepare and build each platform independently.
+    if: ${{ !cancelled() && (github.event_name == 'pull_request' || needs.guix-base.result == 'success') }}
     strategy:
+      fail-fast: false
       matrix:
         host:
           - x86_64-linux-gnu
@@ -74,12 +81,7 @@ jobs:
           - x86_64-apple-darwin
           - arm64-apple-darwin
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            depends
-            contrib/guix
+      - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -93,8 +95,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Get Git commit timestamps
-        run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+      - run: |
+          HASH="${{ hashFiles('contrib/guix/Dockerfile', 'contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}"
+          echo "tag-hash=${HASH:0:8}" >> "$GITHUB_OUTPUT"
+        id: detect
+
+      - run: |
+          echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+          echo TARGET=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
+          echo TARGET_CACHE=ghcr.io/${{ github.repository }}/ci-tools/guix-host-depends-cache:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
 
       - name: Build and Push guix-host Docker image
         uses: docker/build-push-action@v6
@@ -103,51 +112,22 @@ jobs:
         with:
           context: .
           file: contrib/guix/Dockerfile
-          push: true
+          # Pull requests cannot publish packages. Load the image into the
+          # job's Docker daemon so the binary build can use it directly.
+          push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
           allow: security.insecure
           tags: |
-            ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }}
+            ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }}
           target: guix-host
           build-args: |
             HOST=${{ matrix.host }}
           cache-from: |
-            type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }}
-            type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}
-            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-host:${{ needs.guix-base.outputs.tag-hash }}-${{ matrix.host }}
-            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ needs.guix-base.outputs.tag-hash }}
+            type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }}
+            type=registry,ref=ghcr.io/${{ github.repository }}/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}
+            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }}
+            type=registry,ref=ghcr.io/peercoin/peercoin/ci-tools/guix-base:${{ steps.detect.outputs.tag-hash }}
           cache-to: type=inline
-
-  binary:
-    runs-on: ubuntu-24.04
-    needs: [guix-base, guix-host]
-    if: ${{ !cancelled() }}
-    strategy:
-      matrix:
-        host:
-          - x86_64-linux-gnu
-          - arm-linux-gnueabihf
-          - aarch64-linux-gnu
-          - riscv64-linux-gnu
-          - x86_64-w64-mingw32
-          - x86_64-apple-darwin
-          - arm64-apple-darwin
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-
-      - run: echo tag-hash="$(echo "${{ hashFiles('contrib/guix/manifest.scm', 'contrib/guix/patches/**') }}" | cut -c 1-8)" >> $GITHUB_OUTPUT
-        id: detect
-
-      - run: |
-          echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-          echo TARGET=ghcr.io/${{ github.repository }}/ci-tools/guix-host:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
-          echo TARGET_CACHE=ghcr.io/${{ github.repository }}/ci-tools/guix-host-depends-cache:${{ steps.detect.outputs.tag-hash }}-${{ matrix.host }} >> $GITHUB_ENV
 
       - name: Build ${{ matrix.host }} Binaries
         shell: bash
@@ -164,7 +144,7 @@ jobs:
             -v ~/.base_cache:/base_cache_aux \
             ${{ env.TARGET_CACHE }} \
           && echo cache-image-used=true >> $GITHUB_OUTPUT \
-          || docker run --pull=always --rm -d --privileged --name=build-${{ matrix.host }} \
+          || docker run --pull=${{ github.event_name == 'pull_request' && 'never' || 'always' }} --rm -d --privileged --name=build-${{ matrix.host }} \
             -v "${PWD}":/peercoin_aux \
             -v ~/.base_cache:/base_cache_aux \
             ${{ env.TARGET }}
@@ -185,18 +165,12 @@ jobs:
           docker stop build-${{ matrix.host }}
 
       - run: cp -r ~/.base_cache base_cache
+        if: github.event_name != 'pull_request'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           buildkitd-flags: --allow-insecure-entitlement=security.insecure
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
 
       - name: Build and Push guix-host-depends-cache Docker image
         uses: docker/build-push-action@v6

@@ -249,18 +249,28 @@ and abstract ELF, PE and MachO formats.")
     (name "osslsigncode")
     (version "2.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mtrojnar/"
-                                  name "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mtrojnar/osslsigncode")
+                    (commit version)))
               (sha256
                (base32
-                "03by9706gg0an6dn48pljx38vcb76ziv11bgm8ilwsf293x2k4hv"))))
+                "1j47vwq4caxfv0xw68kw5yh00qcpbd56d7rq6c483ma3y7s96yyz"))))
     (build-system cmake-build-system)
     (inputs
-     `(("openssl", openssl)))
+     `(("openssl", openssl)
+       ("libfaketime", libfaketime)))
     (arguments
      '(#:configure-flags
-        (list "-DCMAKE_DISABLE_FIND_PACKAGE_CURL=TRUE")))
+        (list "-DCMAKE_DISABLE_FIND_PACKAGE_CURL=TRUE")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "faketime" "-f" "@2025-01-01 00:00:00" ;; Tests fail after 2025.
+                         "ctest" "--output-on-failure" "--no-tests=error")
+                 (format #t "test suite not run~%")))))))
     (home-page "https://github.com/mtrojnar/osslsigncode")
     (synopsis "Authenticode signing and timestamping tool")
     (description "osslsigncode is a small tool that implements part of the

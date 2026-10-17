@@ -385,7 +385,7 @@ TL;DR If you decided to use Guile v2.2, do not use `{scheme,guile}-bytestructure
 Start by cloning Guix:
 
 ```
-git clone https://git.savannah.gnu.org/git/guix.git
+git clone https://codeberg.org/guix/guix.git
 cd guix
 ```
 
