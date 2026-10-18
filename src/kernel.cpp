@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2025 The Peercoin developers
+// Copyright (c) 2012-2026 The Peercoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -75,6 +75,7 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints =
     (714688, 0xd70a5b68u )
     (770396, 0x565fb851u )
     (801334, 0x90485c37u )
+    (896621, 0xfd5730f1u )
     ;
 
 static std::map<int, unsigned int> mapStakeModifierTestnetCheckpoints =
