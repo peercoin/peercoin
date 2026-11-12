@@ -160,12 +160,15 @@ if(ENABLE_WALLET)
     add_executable(bitcoin-wallet
       bitcoin-wallet.cpp
       init/bitcoin-wallet.cpp
+      kernel.h
+      kernel.cpp
       wallet/wallettool.cpp
     )
     add_windows_resources(bitcoin-wallet bitcoin-wallet-res.rc)
     add_windows_application_manifest(bitcoin-wallet)
     target_link_libraries(bitcoin-wallet
       core_interface
+      bitcoin_node
       bitcoin_wallet
       bitcoin_common
       bitcoin_util
