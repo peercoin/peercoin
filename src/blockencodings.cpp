@@ -179,7 +179,24 @@ bool PartiallyDownloadedBlock::IsTxAvailable(size_t index) const
     return txn_available[index] != nullptr;
 }
 
-ReadStatus PartiallyDownloadedBlock::FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing)
+// peercoin: IsBlockMutated() plus the block signature. vchBlockSig travels in
+// the compact block message but, like witness data, is not committed to by
+// the block hash, so a peer can alter it on an otherwise valid block.
+static bool IsReconstructedBlockMutated(const CBlock& block, bool check_witness_root)
+{
+    if (IsBlockMutated(block, check_witness_root)) return true;
+
+    // CheckBlock() requires a valid signature on every proof-of-stake block.
+    // IsProofOfStake() guarantees vtx[1]->vout[1] exists, which
+    // CheckBlockSignature() dereferences.
+    if (block.IsProofOfStake() && !CheckBlockSignature(block)) {
+        LogPrint(BCLog::CMPCTBLOCK, "Reconstructed block %s has a bad block signature\n", block.GetHash().ToString());
+        return true;
+    }
+    return false;
+}
+
+ReadStatus PartiallyDownloadedBlock::FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing, bool segwit_active)
 {
     if (header.IsNull()) return READ_STATUS_INVALID;
 
@@ -205,16 +222,11 @@ ReadStatus PartiallyDownloadedBlock::FillBlock(CBlock& block, const std::vector<
     if (vtx_missing.size() != tx_missing_offset)
         return READ_STATUS_INVALID;
 
-    BlockValidationState state;
-    CheckBlockFn check_block = m_check_block_mock ? m_check_block_mock : CheckBlock;
-    if (!check_block(block, state, Params().GetConsensus(), /*fCheckPoW=*/true, /*fCheckMerkleRoot=*/true, true)) {
-        // TODO: We really want to just check merkle tree manually here,
-        // but that is expensive, and CheckBlock caches a block's
-        // "checked-status" (in the CBlock?). CBlock should be able to
-        // check its own merkle root and cache that check.
-        if (state.GetResult() == BlockValidationResult::BLOCK_MUTATED)
-            return READ_STATUS_FAILED; // Possible Short ID collision
-        return READ_STATUS_CHECKBLOCK_FAILED;
+    // Check for possible mutations early now that we have a seemingly good block
+    IsBlockMutatedFn check_mutated{m_check_block_mutated_mock ? m_check_block_mutated_mock : IsReconstructedBlockMutated};
+    if (check_mutated(/*block=*/block,
+                      /*check_witness_root=*/segwit_active)) {
+        return READ_STATUS_FAILED; // Possible Short ID collision
     }
 
     LogPrint(BCLog::CMPCTBLOCK, "Successfully reconstructed block %s with %lu txn prefilled, %lu txn from mempool (incl at least %lu from extra pool) and %lu txn requested\n", hash.ToString(), prefilled_count, mempool_count, extra_count, vtx_missing.size());
