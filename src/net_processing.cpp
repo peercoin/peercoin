@@ -4668,6 +4668,15 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         CBlockIndex* tip;
         CBlockIndex* prev_block{WITH_LOCK(m_chainman.GetMutex(), return m_chainman.m_blockman.LookupBlockIndex(pblock2->hashPrevBlock))};
+        if (!prev_block) {
+            // peercoin: blocks wait in mapBlocksWait keyed by their parent's
+            // block index entry, so a block whose parent header is unknown
+            // (or the genesis block) cannot be queued. Ignore it; it can be
+            // downloaded normally once its header chain is known.
+            LogPrint(BCLog::NET, "ignoring block %s with unknown parent %s from peer=%d\n",
+                     pblock2->GetHash().ToString(), pblock2->hashPrevBlock.ToString(), pfrom.GetId());
+            return;
+        }
         // Check for possible mutation if it connects to something we know so we can check for DEPLOYMENT_SEGWIT being active
         if (prev_block && IsBlockMutated(/*block=*/*pblock2,
                            /*check_witness_root=*/IsBTC16BIPsEnabled(prev_block->nTime))) {
