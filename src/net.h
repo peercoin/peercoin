@@ -754,6 +754,8 @@ public:
     const uint64_t nKeyedNetGroup;
     std::atomic_bool fPauseRecv{false};
     std::atomic_bool fPauseSend{false};
+    /** When was fPauseSend last set from false to true */
+    std::atomic<std::chrono::seconds> m_pause_send_since{0s};
 
     /** Network key used to prevent fingerprinting our node across networks.
      *  Influenced by the network and the bind address (+ bind port for inbounds) */
@@ -1372,7 +1374,7 @@ public:
     uint32_t GetMappedAS(const CNetAddr& addr) const;
     void GetNodeStats(std::vector<CNodeStats>& vstats) const;
     bool DisconnectNode(std::string_view node);
-    bool DisconnectNode(const CSubNet& subnet);
+    bool DisconnectNode(const CSubNet& subnet, bool disconnect_private_broadcast = true);
     bool DisconnectNode(const CNetAddr& addr);
     bool DisconnectNode(NodeId id);
 

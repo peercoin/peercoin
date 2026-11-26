@@ -56,10 +56,15 @@ static RPCHelpMan sendrawtransaction()
         "privacy by leaking the transaction's origin, as nodes will normally not\n"
         "rebroadcast non-wallet transactions already in their mempool.\n"
 
-        "\nIf -privatebroadcast is enabled, then the transaction will be sent only via\n"
-        "dedicated, short-lived connections to Tor or I2P peers or IPv4/IPv6 peers\n"
-        "via the Tor network. This conceals the transaction's origin. The transaction\n"
-        "will only enter the local mempool when it is received back from the network.\n"
+        "\nIf -privatebroadcast is enabled, then the transaction will be sent via\n"
+        "dedicated, short-lived connections to Tor or I2P peers, or to IPv4/IPv6 peers\n"
+        "via the Tor network. This provides best-effort concealment of the transaction's origin.\n"
+        "Private broadcast is experimental and may change in future releases.\n"
+        "Submission does not itself add the transaction to the local mempool; normal\n"
+        "mempool acceptance and relay apply when it is received back from the network.\n"
+        "The private broadcast queue is bounded: when it is full, this RPC fails and\n"
+        "the transaction is not scheduled until an existing one completes or is\n"
+        "aborted. Use getprivatebroadcastinfo to inspect the queue and abortprivatebroadcast to abort.\n"
 
         "\nA specific exception, RPC_TRANSACTION_ALREADY_IN_UTXO_SET, may throw if the transaction cannot be added to the mempool.\n"
 
@@ -155,6 +160,7 @@ static RPCHelpMan getprivatebroadcastinfo()
                                 {RPCResult::Type::STR_HEX, "txid", "The transaction hash in hex"},
                                 {RPCResult::Type::STR_HEX, "wtxid", "The transaction witness hash in hex"},
                                 {RPCResult::Type::STR_HEX, "hex", "The serialized, hex-encoded transaction data"},
+                                {RPCResult::Type::NUM_TIME, "time_added", "The time this transaction was added to the private broadcast queue (seconds since epoch)"},
                                 {RPCResult::Type::ARR, "peers", "Per-peer send and acknowledgment information for this transaction",
                                     {
                                         {RPCResult::Type::OBJ, "", "",
@@ -183,6 +189,7 @@ static RPCHelpMan getprivatebroadcastinfo()
                 o.pushKV("txid", tx_info.tx->GetHash().ToString());
                 o.pushKV("wtxid", tx_info.tx->GetWitnessHash().ToString());
                 o.pushKV("hex", EncodeHexTx(*tx_info.tx));
+                o.pushKV("time_added", TicksSinceEpoch<std::chrono::seconds>(tx_info.time_added));
                 UniValue peers(UniValue::VARR);
                 for (const auto& peer : tx_info.peers) {
                     UniValue p(UniValue::VOBJ);

@@ -506,7 +506,9 @@ bool BlockManager::LoadBlockIndex(const std::optional<uint256>& snapshot_blockha
                     pindex->nChainTx = pindex->pprev->nChainTx + pindex->nTx;
                 } else {
                     pindex->nChainTx = 0;
-                    m_blocks_unlinked.insert(std::make_pair(pindex->pprev, pindex));
+                    if (pindex->nStatus & BLOCK_HAVE_DATA) {
+                        m_blocks_unlinked.insert(std::make_pair(pindex->pprev, pindex));
+                    }
                 }
             } else {
                 pindex->nChainTx = pindex->nTx;

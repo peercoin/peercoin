@@ -12,21 +12,7 @@ Install the required dependencies the usual way you [install software on NetBSD]
 The example commands below use `pkgin`.
 
 ```bash
-pkgin install autoconf automake libtool pkg-config git gmake boost libevent
-
-```
-
-git clone https://github.com/peercoin/peercoin.git
-```
-
-See [dependencies.md](dependencies.md) for a complete overview.
-
-### 2. Clone Peercoin Repo
-
-Clone the Peercoin repository to a directory. All build scripts and commands will run from this directory.
-
-```bash
-git clone https://github.com/peercoin/peercoin.git
+pkgin install git cmake pkgconf boost libevent
 ```
 
 ### 3. Install Optional Dependencies

@@ -170,7 +170,7 @@ Check out the [further configuration](#further-configuration) section for more i
 
 #### ZMQ Dependencies
 
-Support for ZMQ notifications requires the following dependency.
+Bitcoin Core can provide notifications via ZeroMQ. To compile ZMQ support, install the following dependency and pass `-DWITH_ZMQ=ON` when configuring.
 Skip if you do not need ZMQ functionality.
 
 ``` bash

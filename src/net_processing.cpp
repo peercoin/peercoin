@@ -57,6 +57,7 @@
 #include <txmempool.h>
 #include <uint256.h>
 #include <util/check.h>
+#include <util/hasher.h>
 #include <util/strencodings.h>
 #include <util/time.h>
 #include <util/trace.h>
@@ -85,6 +86,7 @@
 #include <span>
 #include <typeinfo>
 #include <kernel.h>
+#include <unordered_set>
 #include <utility>
 
 using kernel::ChainstateRole;
@@ -547,7 +549,7 @@ public:
     std::vector<CTransactionRef> AbortPrivateBroadcast(const uint256& id) override EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex);
     void SendPings() override EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex);
     void InitiateTxBroadcastToAll(const Txid& txid, const Wtxid& wtxid) override EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex);
-    void InitiateTxBroadcastPrivate(const CTransactionRef& tx) override EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex);
+    node::TransactionError InitiateTxBroadcastPrivate(const CTransactionRef& tx) override EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex);
     void SetBestBlock(int height, std::chrono::seconds time) override
     {
         m_best_height = height;
@@ -766,6 +768,8 @@ private:
 
     FastRandomContext m_rng GUARDED_BY(NetEventsInterface::g_msgproc_mutex);
 
+    /** Copied into short-lived tx INV deduplication sets to avoid generating salts per message. */
+    const SaltedUint256Hasher m_txhash_hasher;
     FeeFilterRounder m_fee_filter_rounder GUARDED_BY(NetEventsInterface::g_msgproc_mutex);
 
     const CChainParams& m_chainparams;
@@ -1663,8 +1667,9 @@ void PeerManagerImpl::ReattemptPrivateBroadcast(CScheduler& scheduler)
     size_t num_for_rebroadcast{0};
     const auto stale_txs = m_tx_for_private_broadcast.GetStale();
     if (!stale_txs.empty()) {
-        LOCK(cs_main);
         for (const auto& stale_tx : stale_txs) {
+            // Only hold lock per single submission
+            LOCK(cs_main);
             auto mempool_acceptable = m_chainman.ProcessTransaction(stale_tx, /*test_accept=*/true);
             if (mempool_acceptable.m_result_type == MempoolAcceptResult::ResultType::VALID) {
                 LogDebug(BCLog::PRIVBROADCAST,
@@ -1882,7 +1887,8 @@ std::vector<CTransactionRef> PeerManagerImpl::AbortPrivateBroadcast(const uint25
     std::vector<CTransactionRef> removed_txs;
 
     size_t connections_cancelled{0};
-    for (const auto& [tx, _] : snapshot) {
+    for (const auto& tx_info : snapshot) {
+        const CTransactionRef& tx{tx_info.tx};
         if (tx->GetHash().ToUint256() != id && tx->GetWitnessHash().ToUint256() != id) continue;
         if (const auto peer_acks{m_tx_for_private_broadcast.Remove(tx)}) {
             removed_txs.push_back(tx);
@@ -2280,15 +2286,22 @@ void PeerManagerImpl::InitiateTxBroadcastToAll(const Txid& txid, const Wtxid& wt
     }
 }
 
-void PeerManagerImpl::InitiateTxBroadcastPrivate(const CTransactionRef& tx)
+node::TransactionError PeerManagerImpl::InitiateTxBroadcastPrivate(const CTransactionRef& tx)
 {
     const auto txstr{strprintf("txid=%s, wtxid=%s", tx->GetHash().ToString(), tx->GetWitnessHash().ToString())};
-    if (m_tx_for_private_broadcast.Add(tx)) {
+    switch (m_tx_for_private_broadcast.Add(tx)) {
+    case PrivateBroadcast::AddResult::Added:
         LogDebug(BCLog::PRIVBROADCAST, "Requesting %d new connections due to %s", NUM_PRIVATE_BROADCAST_PER_TX, txstr);
         m_connman.m_private_broadcast.NumToOpenAdd(NUM_PRIVATE_BROADCAST_PER_TX);
-    } else {
+        return node::TransactionError::OK;
+    case PrivateBroadcast::AddResult::AlreadyPresent:
         LogDebug(BCLog::PRIVBROADCAST, "Ignoring unnecessary request to schedule an already scheduled transaction: %s", txstr);
-    }
+        return node::TransactionError::OK;
+    case PrivateBroadcast::AddResult::QueueFull:
+        LogDebug(BCLog::PRIVBROADCAST, "Rejecting private broadcast, queue full (cap=%u): %s", PrivateBroadcast::MAX_TRANSACTIONS, txstr);
+        return node::TransactionError::PRIVATE_BROADCAST_FULL;
+    } // no default case, so the compiler can warn about missing cases
+    assert(false);
 }
 
 void PeerManagerImpl::RelayAddress(NodeId originator,
@@ -4158,6 +4171,8 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
         }
 
         const bool reject_tx_invs{RejectIncomingTxs(pfrom)};
+        std::unordered_set<uint256, SaltedUint256Hasher> seen_txids{0, m_txhash_hasher};
+        std::unordered_set<uint256, SaltedUint256Hasher> seen_wtxids{0, m_txhash_hasher};
 
         LOCK2(cs_main, m_tx_download_mutex);
 
@@ -4196,6 +4211,9 @@ void PeerManagerImpl::ProcessMessage(Peer& peer, CNode& pfrom, const std::string
                     pfrom.fDisconnect = true;
                     return;
                 }
+                // MSG_WITNESS_TX is treated as a txid, despite only being specified for getdata.
+                auto& seen_hashes{inv.IsMsgWtx() ? seen_wtxids : seen_txids};
+                if (!seen_hashes.insert(inv.hash).second) continue;
                 const GenTxid gtxid = ToGenTxid(inv);
                 AddKnownTx(peer, inv.hash);
 
@@ -5351,6 +5369,12 @@ bool PeerManagerImpl::MaybeDiscourageAndDisconnect(CNode& pnode, Peer& peer)
         return false;
     }
 
+    if (pnode.IsPrivateBroadcastConn()) {
+        LogDebug(BCLog::PRIVBROADCAST, "Disconnecting misbehaving private broadcast peer=%d", peer.m_id);
+        pnode.fDisconnect = true;
+        return true;
+    }
+
     if (pnode.addr.IsLocal()) {
         // We disconnect local peers for bad behavior but don't discourage (since that would discourage
         // all peers on the same local address)
@@ -5363,7 +5387,7 @@ bool PeerManagerImpl::MaybeDiscourageAndDisconnect(CNode& pnode, Peer& peer)
     // Normal case: Disconnect the peer and discourage all nodes sharing the address
     LogDebug(BCLog::NET, "Disconnecting and discouraging peer %d!\n", peer.m_id);
     if (m_banman) m_banman->Discourage(pnode.addr);
-    m_connman.DisconnectNode(pnode.addr);
+    m_connman.DisconnectNode(CSubNet{pnode.addr}, /*disconnect_private_broadcast=*/false);
     return true;
 }
 
