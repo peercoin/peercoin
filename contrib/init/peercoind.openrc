@@ -21,7 +21,7 @@ PEERCOIND_OPTS="${PEERCOIND_OPTS:-${PEERCOIN_OPTS}}"
 name="Peercoin Daemon"
 description="Peercoin cryptocurrency P2P network daemon"
 
-command="/usr/bin/peercoind"
+command="${PEERCOIND_BIN}"
 command_args="-pid=\"${PEERCOIND_PIDFILE}\" \
 		-conf=\"${PEERCOIND_CONFIGFILE}\" \
 		-datadir=\"${PEERCOIND_DATADIR}\" \
@@ -30,6 +30,7 @@ command_args="-pid=\"${PEERCOIND_PIDFILE}\" \
 
 required_files="${PEERCOIND_CONFIGFILE}"
 start_stop_daemon_args="-u ${PEERCOIND_USER} \
+			-g ${PEERCOIND_GROUP} \
 			-N ${PEERCOIND_NICE} -w 2000"
 pidfile="${PEERCOIND_PIDFILE}"
 
