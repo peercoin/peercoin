@@ -192,6 +192,24 @@ bool PartiallyDownloadedBlock::IsTxAvailable(size_t index) const
     return txn_available[index] != nullptr;
 }
 
+// peercoin: IsBlockMutated() plus the block signature. vchBlockSig travels in
+// the compact block message but, like witness data, is not committed to by
+// the block hash, so a peer can alter it on an otherwise valid block.
+static bool IsReconstructedBlockMutated(const CBlock& block, bool check_witness_root)
+{
+    if (IsBlockMutated(block, check_witness_root)) return true;
+
+    // CheckBlock() requires a valid signature on every proof-of-stake block;
+    // use the same IsProofOfStake() predicate so the two always agree.
+    // IsProofOfStake() may be true from the header's nFlags marker alone, but
+    // CheckBlockSignature() validates the coinstake shape before using it.
+    if (block.IsProofOfStake() && !CheckBlockSignature(block)) {
+        LogDebug(BCLog::CMPCTBLOCK, "Reconstructed block %s has a bad block signature\n", block.GetHash().ToString());
+        return true;
+    }
+    return false;
+}
+
 ReadStatus PartiallyDownloadedBlock::FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing, bool segwit_active)
 {
     if (header.IsNull()) return READ_STATUS_INVALID;
@@ -221,7 +239,7 @@ ReadStatus PartiallyDownloadedBlock::FillBlock(CBlock& block, const std::vector<
     }
 
     // Check for possible mutations early now that we have a seemingly good block
-    IsBlockMutatedFn check_mutated{m_check_block_mutated_mock ? m_check_block_mutated_mock : IsBlockMutated};
+    IsBlockMutatedFn check_mutated{m_check_block_mutated_mock ? m_check_block_mutated_mock : IsReconstructedBlockMutated};
     if (check_mutated(/*block=*/block, /*check_witness_root=*/segwit_active)) {
         return READ_STATUS_FAILED; // Possible Short ID collision
     }
