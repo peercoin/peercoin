@@ -2118,6 +2118,13 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     // doesn't invalidate pointers into the vector, and keep txsdata in scope
     // for as long as `control`.
     std::vector<PrecomputedTransactionData> txsdata(block.vtx.size());
+    // `control` MUST be declared after `txsdata`. C++ destroys locals in
+    // reverse order of declaration, so on any early return the
+    // CCheckQueueControl destructor (which calls Wait() to block until all
+    // queued script checks have finished) runs before txsdata is freed.
+    // Declaring it first let background script threads read freed
+    // PrecomputedTransactionData (use-after-free, CVE-2024-52911):
+    // https://bitcoincore.org/en/2026/05/05/disclose-cve-2024-52911
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && parallel_script_checks ? &scriptcheckqueue : nullptr);
 
     std::vector<int> prevheights;
