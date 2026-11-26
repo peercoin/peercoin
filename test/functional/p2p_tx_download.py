@@ -325,7 +325,7 @@ class TxDownloadTest(BitcoinTestFramework):
         node.logging(include=['net'])
 
         def send_invs_and_read_log(peer, invs):
-            log_start = node.debug_log_size(encoding='utf-8')
+            log_start = node.debug_log_bytes()  # peercoin: framework helper is named debug_log_bytes
             peer.send_and_ping(msg_inv(invs))
             with open(node.debug_log_path, encoding='utf-8', errors='replace') as debug_log:
                 debug_log.seek(log_start)
