@@ -683,13 +683,29 @@ bool CheckProofOfStake(BlockValidationState &state, CBlockIndex* pindexPrev, con
     if (txPrev->GetHash() != txin.prevout.hash)
         return error("%s() : txid mismatch in CheckProofOfStake()", __PRETTY_FUNCTION__);
 
+    // The kernel outpoint index comes from the (untrusted) coinstake. Make sure
+    // it refers to an existing output before it is used to index txPrev->vout
+    // here and in CheckStakeKernelHash().
+    if (txin.prevout.n >= txPrev->vout.size())
+        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cs-kernel-prevout",
+            strprintf("%s: kernel prevout index %u out of range on coinstake %s",
+                __func__, txin.prevout.n, tx->GetHash().ToString()));
+
     // Verify signature
     {
         int nIn = 0;
-        const CTxOut& prevOut = txPrev->vout[tx->vin[nIn].prevout.n];
-        TransactionSignatureChecker checker(&(*tx), nIn, prevOut.nValue, PrecomputedTransactionData(*tx), MissingDataBehavior(1));
+        const CTxOut& prevOut = txPrev->vout[txin.prevout.n];
+        // checker keeps a pointer to txdata, so it must outlive VerifyScript()
+        const PrecomputedTransactionData txdata(*tx);
+        TransactionSignatureChecker checker(&(*tx), nIn, prevOut.nValue, txdata, MissingDataBehavior::FAIL);
 
-        if (!VerifyScript(tx->vin[nIn].scriptSig, prevOut.scriptPubKey, &(tx->vin[nIn].scriptWitness), SCRIPT_VERIFY_P2SH, checker, nullptr))
+        // Without SCRIPT_VERIFY_WITNESS a witness program is anyone-can-spend,
+        // so enforce it once segwit is active.
+        unsigned int nScriptFlags = SCRIPT_VERIFY_P2SH;
+        if (IsBTC16BIPsEnabled(nTimeTx))
+            nScriptFlags |= SCRIPT_VERIFY_WITNESS;
+
+        if (!VerifyScript(tx->vin[nIn].scriptSig, prevOut.scriptPubKey, &(tx->vin[nIn].scriptWitness), nScriptFlags, checker, nullptr))
             return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "invalid-pos-script", strprintf("%s: VerifyScript failed on coinstake %s", __func__, tx->GetHash().ToString()));
     }
 
